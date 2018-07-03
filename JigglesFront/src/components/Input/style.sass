@@ -1,0 +1,33 @@
+@import "./../../resources"
+
+.form-input
+  width: 100%
+  @extend %flexbox-flex-start-col
+
+  > *
+    margin: $marginSibling 0
+
+.form-input-label
+  display: flex
+  font-family: $fontFamilySansSerif
+  font-size: $paragraphTextSize
+  font-weight: 600
+  color: $motionPrimaryDarkColor
+
+.form-input-action
+  outline: none
+  border: 2px solid rgba($accentColor, 0.2)
+  padding: 0 $marginComponent
+  border-radius: 2px
+  color: $primaryTextColor
+  height: 44px
+  width: 320px
+
+  &:focus
+    border: 2px solid rgba($accentColor, 0.4)
+
+  &::placeholder
+    font-size: $subparagraphTextSize
+    color: $primaryTextColor
+    opacity: 0.3
+    font-weight: 600

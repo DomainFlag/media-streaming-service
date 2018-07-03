@@ -1,0 +1,31 @@
+@import "./../../resources"
+
+.button
+  outline: none
+  border-radius: 6px
+  border: none
+  width: 80px
+  height: 40px
+  padding: 0 12px
+  background-color: $accentColor
+  font-family: $fontFamilySansSerif
+  font-weight: 600
+  color: $iconsTextColor
+  box-shadow: 1.5px 1.5px 6px 1px rgba($accentColor, 0.2)
+
+  &:hover
+    background-color: darken($accentColor, 10%)
+
+  &:active
+    box-shadow: none
+
+
+.button-unselectable
+  background-color: rgba($secondaryColor, 0.4)
+  box-shadow: 1.5px 1.5px 6px 1px rgba($secondaryColor, 0.2)
+  &:hover
+    background-color: rgba($secondaryColor, 0.4)
+
+  &:active
+    box-shadow: 1.5px 1.5px 6px 1px rgba($secondaryColor, 0.2)
+

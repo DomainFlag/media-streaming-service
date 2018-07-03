@@ -1,0 +1,29 @@
+@import "./../../resources"
+
+.form-checkbox
+  @extend %flexbox-flex-start-row
+
+.form-checkbox-label
+  color: $accentColor
+  font-size: $paragraphTextSize
+  font-family: $fontFamilySansSerif
+  margin-right: $marginSibling
+  font-weight: 600
+
+.form-checkbox-container
+  @extend %flexbox-centered-col
+  border: 2px solid rgba($accentColor, 0.6)
+  margin-left: $marginSibling
+  background-color: rgba(white, 0.6)
+  width: 25px
+  height: 25px
+  border-radius: 6px
+
+.checkbox-toggled
+  border: 2px solid $accentColor
+  background-color: white
+
+.form-update-checkbox-done
+  user-select: none
+  width: 15px
+  height: 15px

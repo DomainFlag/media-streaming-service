@@ -1,0 +1,94 @@
+@import "resources.sass"
+
+*
+  margin: 0
+  padding: 0
+  box-sizing: border-box
+
+html, body, #root, .welcome
+  height: 100%
+  width: 100%
+
+#root
+  display: flex
+  justify-content: center
+  align-items: center
+  flex-direction: column
+  background-color: white
+
+/* Welcome Layout */
+.welcome
+  position: relative
+  display: flex
+  justify-content: flex-start
+  align-items: flex-start
+  flex-direction: column
+
+.welcome-header
+  position: absolute
+  width: 100%
+  display: flex
+  justify-content: space-between
+  align-items: center
+  flex-direction: row
+  margin: $marginSection 0
+
+/* Welcome Layout - Logo */
+.welcome-header-logo
+  margin: 0 $marginSection
+  display: flex
+  justify-content: center
+  align-items: center
+  flex-direction: row
+
+#welcome-header-logo
+  height: 48px
+  width: auto
+
+.welcome-header-menu
+  display: flex
+  justify-content: center
+  align-items: center
+  flex-direction: row
+  margin: 0 $marginSection
+
+/* Welcome Layout - Links */
+.welcome-header-links
+  display: flex
+  justify-content: center
+  align-items: center
+  flex-direction: row
+  font-weight: 600
+  margin: 0 $marginComponent
+
+.welcome-header-links-item
+  display: flex
+  font-size: $subheaderTextSize
+  font-family: $fontFamilySansSerif
+  margin: 0 $marginSibling
+  color: $primaryDarkColor
+
+/* Welcome Layout - Authentication */
+.welcome-header-authentication
+  display: flex
+  justify-content: center
+  font-size: $subheaderTextSize
+  font-family: $fontFamilySansSerif
+  margin: 0 $marginComponent
+
+.welcome-header-authentication-auth
+  display: flex
+  font-weight: 600
+  font-size: $subheaderTextSize
+  font-family: $fontFamilySansSerif
+  margin: 0 $marginSibling
+  color: $primaryDarkColor
+
+.welcome-body
+  width: 100%
+  display: flex
+  flex: 1
+  justify-content: center
+  align-items: center
+  flex-direction: row
+  background-color: $backgroundColor

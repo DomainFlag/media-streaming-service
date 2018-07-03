@@ -1,0 +1,40 @@
+@import "./../../resources"
+
+.form
+  @extend %flexbox-centered-col
+  border-radius: 4px
+  padding: $marginComponent $marginSection
+  background-color: $iconsTextColor
+
+.form
+  > *
+    margin: $marginSibling 0
+
+/* Form Header */
+.form-header
+  @extend %flexbox-centered-col
+  width: 100%
+
+.form-header-welcoming
+  width: 156px
+  height: auto
+
+/* Form Content */
+.form-content
+  @extend %flexbox-flex-start-col
+
+.form-content-social-auth
+  @extend %flexbox-flex-start-col
+
+.form-content-container
+  @extend %flexbox-flex-start-col
+
+  > *
+    margin: $marginRelative 0
+
+/* Form Action */
+.form-action
+  @extend %flexbox-centered-row
+  justify-content: space-between
+  width: 100%
+
