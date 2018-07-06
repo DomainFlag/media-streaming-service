@@ -10,9 +10,12 @@ export default class Checkbox extends Component {
         super(props);
 
         this.state = {
-            checkboxToggle: null
+            checkboxToggle: null,
+            visibility: "hidden"
         }
     }
+
+    componentWillMount() {}
 
     onSubmit = () => {};
 
@@ -20,10 +23,12 @@ export default class Checkbox extends Component {
         this.setState((prevState) => {
             if(prevState.checkboxToggle) {
                 return {
-                    checkboxToggle: null
+                    checkboxToggle: null,
+                    visibility: "hidden"
                 };
             } else return {
-                checkboxToggle: "checkbox-toggled"
+                checkboxToggle: "checkbox-toggled",
+                visibility: "initial"
             };
         });
     };
@@ -34,11 +39,7 @@ export default class Checkbox extends Component {
                 {this.props.label}
             </label>
             <div className={"form-checkbox-container " + this.state.checkboxToggle} onClick={this.onCheckboxToggle}>
-                {
-                    this.state.checkboxToggle ? (
-                        <img src={CheckboxIcon} className="form-update-checkbox-done"/>
-                    ) : null
-                }
+                <img src={CheckboxIcon} className="form-update-checkbox-done" style={{visibility: this.state.visibility}}/>
             </div>
         </div>
     );

@@ -1,0 +1,248 @@
+@import "./../../../resources"
+
+/* Talk Main */
+.talk
+  width: 44%
+  height: 65%
+  @extend %flexbox-centered-row
+
+/* Chat Main */
+.talk-chat
+  @extend %flexbox-centered-col
+  flex: 1
+  height: 100%
+
+  > *
+    width: 100%
+
+.chat-header
+  @extend %flexbox-flex-start-row
+  flex: 2
+  background-color: $motionPrimaryColor
+  border-radius: 12px 0 0 0
+
+.chat-recipient
+  @extend %flexbox-flex-start-row
+
+.chat-recipient-name
+  margin: $marginComponent
+  font-family: $fontFamilySansSerif
+  font-weight: 600
+  font-size: $paragraphTextSize
+  color: $iconsTextColor
+
+.chat-body
+  @extend %flexbox-centered-col
+  flex: 14
+  overflow: auto
+  background-color: $iconsTextColor
+  padding: 0 $marginComponent $marginComponent $marginComponent
+
+/* Scrollbar */
+/* Width */
+::-webkit-scrollbar
+  width: 4px
+
+/* Scrollbar */
+::-webkit-scrollbar
+  background-color: transparent
+
+/* Thumb */
+::-webkit-scrollbar-thumb
+  width: 2px
+  border-radius: 4px
+  background: transparentize($motionPrimaryLightColor, 0.6)
+
+/* Thumb on hover */
+::-webkit-scrollbar-thumb:hover
+  background: $motionPrimaryLightColor
+
+.chat-body-container
+  width: 100%
+  height: 100%
+  overflow-y: scroll
+  margin: $marginComponent
+
+.chat-message
+  @extend %flexbox-centered-col
+  margin: $marginRelative 0
+  width: 100%
+  height: auto
+
+.chat-message-body
+  max-width: 60%
+  background-color: $motionPrimaryLightColor
+  border-radius: 8px
+  padding: $marginRelative $marginParent
+  font-family: $fontFamilySansSerif
+  font-weight: 600
+  font-size: $subparagraphTextSize
+  color: $iconsTextColor
+  word-wrap: break-word
+
+.sender
+  align-items: flex-end
+
+.recipient
+  align-items: flex-start
+
+.chat-divider-container
+  @extend %flexbox-centered-col
+  width: 100%
+  background-color: $iconsTextColor
+
+.chat-divider
+  width: 80%
+  height: 2px
+  background-color: transparentize($motionPrimaryLightColor, 0.6)
+
+.chat-action
+  @extend %flexbox-centered-row
+  padding: 0 $marginComponent
+  background-color: $iconsTextColor
+  flex-basis: content
+
+.chat-input
+  display: table-cell
+  vertical-align: middle
+  width: 100%
+  height: auto
+  outline: none
+  overflow-y: scroll
+  margin: $marginComponent
+  color: $primaryTextColor
+  font-family: $fontFamilySansSerif
+  font-size: $subparagraphTextSize
+  border: none
+
+  &::placeholder
+    font-size: $subparagraphTextSize
+    color: $primaryTextColor
+    opacity: 0.3
+
+.chat-send-icon
+  display: flex
+  width: 24px
+  height: auto
+  margin: $marginComponent
+
+
+/* Social Talk Main */
+.talk-social
+  @extend %flexbox-centered-col
+  flex: 1
+  height: 100%
+  position: relative
+
+.talk-slider-action
+  position: absolute
+  width: 24px
+  height: auto
+  transform: translate(0, -50%)
+  transform-origin: top
+  top: 50%
+  left: 0
+
+  &:hover
+    transform: scale(1.1) translate(0, -50%)
+
+.talk-slider-action_slided
+  left: 100%
+  z-index: 3
+  transform-origin: center
+  transform: translate(-100%, -50%) rotate(-180deg)
+
+  &:hover
+    transform-origin: center
+    transform: scale(1.1) translate(-100%, -50%) rotate(-180deg)
+
+.talk-social-container
+  display: none
+  flex: 1
+  width: 100%
+  background-color: $iconsTextColor
+  padding: $marginComponent
+  position: relative
+  z-index: 1
+
+  > *
+    margin: $marginSection 0
+
+.talk-container-toggle
+  display: flex
+  flex-direction: column
+
+.social-profile
+  @extend %flexbox-flex-start-row
+  margin: $marginComponent
+
+.social-profile-acc
+  width: 36px
+  height: auto
+
+.social-profile-details
+  @extend %flexbox-flex-start-col
+  margin: 0 $marginComponent
+
+.social-profile-name
+  color: $primaryTextColor
+  font-family: $fontFamilySansSerif
+  font-size: $subparagraphTextSize
+  font-weight: 600
+
+.social-profile-connection
+  @extend %flexbox-flex-start-row
+
+  > *
+    margin: 0 $marginRelative
+
+
+.social-profile-connection-value
+  color: $primaryTextColor
+  font-family: $fontFamilySansSerif
+  font-size: $subparagraphTextSize
+  font-weight: 400
+
+.social-profile-connection-icon
+  width: 6px
+  height: 6px
+  border-radius: 3px
+
+.connection_0
+  background-color: green
+
+.connection_1
+  background-color: yellow
+
+.connection_2
+  background-color: red
+
+.social-list
+  @extend %flexbox-flex-start-col
+  flex: 1
+
+.social-search
+  @extend %flexbox-centered-row
+  position: relative
+  margin: $marginComponent
+
+.social-search-input
+  display: flex
+  flex: 1
+  width: 100%
+  height: auto
+  outline: none
+  overflow-y: scroll
+  margin: $marginComponent
+  color: $primaryTextColor
+  font-family: $fontFamilySansSerif
+  font-size: $subparagraphTextSize
+  border: none
+
+.social-search-icon
+  position: absolute
+  top: 50%
+  left: 100%
+  transform: translate(-50%, -50%)
+  width: 24px
+  height: auto

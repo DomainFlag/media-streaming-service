@@ -28,7 +28,6 @@ export default class Welcome extends Component {
                 </div>
             </div>
             <div className="welcome-body">
-                <Form/>
             </div>
         </div>
     )

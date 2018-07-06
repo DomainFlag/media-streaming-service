@@ -1,0 +1,70 @@
+@import "./../../resources"
+
+.search
+  @extend %flexbox-centered-col
+  justify-content: flex-start
+  align-items: flex-start
+  position: relative
+  width: 100%
+  height: 100%
+  background-color: transparentize(darken($secondaryColor, 45), 0.15)
+
+.search-container
+  @extend %flexbox-centered-col
+  width: 100%
+  height: 100%
+  position: absolute
+
+.search-container-input
+  @extend %flexbox-centered-col
+  justify-content: flex-start
+  align-items: flex-start
+
+.search-cancel
+  left: 100%
+  transform: translate(-200%, 100%)
+  position: absolute
+  z-index: 1
+  width: 24px
+  height: auto
+
+  &:hover
+    transform: translate(-200%, 100%) scale(1.15)
+
+.search-test
+  @extend %flexbox-centered-col
+  visibility: hidden
+  font-family: $fontFamilySansSerif
+  font-size: $headerTextSize
+  font-weight: 600
+
+.search-input
+  outline: none
+  border: none
+  background-color: transparent
+  border-radius: 2px
+  font-family: monospace
+  color: transparentize($iconsTextColor, 0.4)
+  font-size: $headerTextSize
+  height: 44px
+  width: 100%
+  font-weight: 400
+
+  &::placeholder
+    font-size: $subheaderTextSize
+    color: $iconsTextColor
+    font-family: monospace
+    opacity: 0.3
+    font-weight: 400
+
+  &:focus
+    color: $iconsTextColor
+
+    + .search-input-border
+      background-color: $accentColor
+
+.search-input-border
+  height: 4px
+  width: 10px
+  border-radius: 10px
+  background-color: rgba($accentColor, 0.4)

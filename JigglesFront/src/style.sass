@@ -14,7 +14,8 @@ html, body, #root, .welcome
   justify-content: center
   align-items: center
   flex-direction: column
-  background-color: white
+  //background-color: white
+  background-color: $backgroundColor
 
 /* Welcome Layout */
 .welcome
@@ -42,7 +43,7 @@ html, body, #root, .welcome
   flex-direction: row
 
 #welcome-header-logo
-  height: 48px
+  height: 54px
   width: auto
 
 .welcome-header-menu
@@ -92,3 +93,10 @@ html, body, #root, .welcome
   align-items: center
   flex-direction: row
   background-color: $backgroundColor
+
+.divider
+  margin: $marginComponent 0
+  width: 60%
+  height: 1px
+  border-radius: 1px
+  background-color: transparentize($secondaryColor, 0.9)

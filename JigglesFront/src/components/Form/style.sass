@@ -13,6 +13,7 @@
 /* Form Header */
 .form-header
   @extend %flexbox-centered-col
+  margin: $marginComponent 0
   width: 100%
 
 .form-header-welcoming
@@ -24,7 +25,32 @@
   @extend %flexbox-flex-start-col
 
 .form-content-social-auth
-  @extend %flexbox-flex-start-col
+  @extend %flexbox-centered-col
+  width: 100%
+
+  > *
+    margin: $marginRelative 0
+
+.form-content-auth-header
+  @extend %flexbox-centered-col
+  width: 100%
+
+.form-content-auth-header-text
+  font-family: $fontFamilySansSerif
+  font-size: $subheaderTextSize
+  color: $primaryLightColor
+  font-weight: 600
+
+.form-content-auth-container
+  @extend %flexbox-centered-row
+  width: 100%
+
+  > *
+    margin: 0 $marginComponent
+
+.form-content-auth
+  height: 32px
+  width: auto
 
 .form-content-container
   @extend %flexbox-flex-start-col
