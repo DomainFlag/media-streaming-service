@@ -2,46 +2,57 @@
 
 /* Talk Main */
 .talk
-  width: 44%
-  height: 65%
+  width: 20%
+  height: 60%
   @extend %flexbox-centered-row
 
-/* Chat Main */
-.talk-chat
+.talk-container
   @extend %flexbox-centered-col
-  flex: 1
+  width: 100%
   height: 100%
-
+  border-radius: 16px
+  background: linear-gradient(0, $motionPrimaryDarkColor, $pleasureColor)
+  box-shadow: 1px 1px 6px 1px transparentize($motionPrimaryDarkColor, 0.6)
   > *
     width: 100%
 
 .chat-header
   @extend %flexbox-flex-start-row
-  flex: 2
-  background-color: $motionPrimaryColor
-  border-radius: 12px 0 0 0
+  justify-content: space-between
+  padding: $marginComponent
+  flex: 1
+
+.chat-menu
+  margin: 0 $marginRelative
+  width: 24px
+  height: auto
 
 .chat-recipient
   @extend %flexbox-flex-start-row
+  margin: 0 $marginRelative
+
+.chat-close
+  margin: 0 $marginRelative
+  width: 14px
+  height: auto
 
 .chat-recipient-name
-  margin: $marginComponent
   font-family: $fontFamilySansSerif
   font-weight: 600
   font-size: $paragraphTextSize
   color: $iconsTextColor
 
 .chat-body
-  @extend %flexbox-centered-col
-  flex: 14
+  @extend %flexbox-flex-start-col
+  justify-content: flex-start
+  flex: 10
+  padding: $marginComponent 0 $marginComponent $marginComponent
   overflow: auto
-  background-color: $iconsTextColor
-  padding: 0 $marginComponent $marginComponent $marginComponent
 
 /* Scrollbar */
 /* Width */
 ::-webkit-scrollbar
-  width: 4px
+  width: 36px
 
 /* Scrollbar */
 ::-webkit-scrollbar
@@ -49,19 +60,19 @@
 
 /* Thumb */
 ::-webkit-scrollbar-thumb
-  width: 2px
-  border-radius: 4px
-  background: transparentize($motionPrimaryLightColor, 0.6)
+  background-clip: padding-box !important
+  border: 16px solid rgba(0, 0, 0, 0)
+  border-radius: 18px
+  background: transparentize($iconsTextColor, 0.6)
 
 /* Thumb on hover */
 ::-webkit-scrollbar-thumb:hover
-  background: $motionPrimaryLightColor
+  background: $iconsTextColor
 
 .chat-body-container
   width: 100%
   height: 100%
   overflow-y: scroll
-  margin: $marginComponent
 
 .chat-message
   @extend %flexbox-centered-col
@@ -71,7 +82,7 @@
 
 .chat-message-body
   max-width: 60%
-  background-color: $motionPrimaryLightColor
+  background-color: transparentize($motionPrimaryLightColor, 0.4)
   border-radius: 8px
   padding: $marginRelative $marginParent
   font-family: $fontFamilySansSerif
@@ -86,98 +97,36 @@
 .recipient
   align-items: flex-start
 
-.chat-divider-container
-  @extend %flexbox-centered-col
-  width: 100%
-  background-color: $iconsTextColor
-
-.chat-divider
-  width: 80%
-  height: 2px
-  background-color: transparentize($motionPrimaryLightColor, 0.6)
-
 .chat-action
-  @extend %flexbox-centered-row
+  @extend %flexbox-centered-col
+  position: relative
+  width: 100%
   padding: 0 $marginComponent
-  background-color: $iconsTextColor
-  flex-basis: content
+  border-radius: 16px
 
 .chat-input
-  display: table-cell
-  vertical-align: middle
+  display: inline-block
+  text-align: center
   width: 100%
-  height: auto
   outline: none
-  overflow-y: scroll
-  margin: $marginComponent
-  color: $primaryTextColor
+  overflow-y: hidden
+  margin: $marginSection
+  color: transparentize($iconsTextColor, 0.2)
   font-family: $fontFamilySansSerif
   font-size: $subparagraphTextSize
   border: none
 
-  &::placeholder
-    font-size: $subparagraphTextSize
-    color: $primaryTextColor
-    opacity: 0.3
+  &:focus
+    color: $iconsTextColor
 
-.chat-send-icon
-  display: flex
-  width: 24px
-  height: auto
-  margin: $marginComponent
-
-
-/* Social Talk Main */
-.talk-social
-  @extend %flexbox-centered-col
-  flex: 1
-  height: 100%
-  position: relative
-
-.talk-slider-action
-  position: absolute
-  width: 24px
-  height: auto
-  transform: translate(0, -50%)
-  transform-origin: top
-  top: 50%
-  left: 0
-
-  &:hover
-    transform: scale(1.1) translate(0, -50%)
-
-.talk-slider-action_slided
-  left: 100%
-  z-index: 3
-  transform-origin: center
-  transform: translate(-100%, -50%) rotate(-180deg)
-
-  &:hover
-    transform-origin: center
-    transform: scale(1.1) translate(-100%, -50%) rotate(-180deg)
-
-.talk-social-container
-  display: none
-  flex: 1
-  width: 100%
-  background-color: $iconsTextColor
-  padding: $marginComponent
-  position: relative
-  z-index: 1
-
-  > *
-    margin: $marginSection 0
-
-.talk-container-toggle
-  display: flex
-  flex-direction: column
+/* Social Main */
 
 .social-profile
   @extend %flexbox-flex-start-row
-  margin: $marginComponent
+  margin: $marginRelative 0
 
 .social-profile-acc
-  width: 36px
+  width: 32px
   height: auto
 
 .social-profile-details
@@ -185,64 +134,30 @@
   margin: 0 $marginComponent
 
 .social-profile-name
-  color: $primaryTextColor
+  color: $iconsTextColor
   font-family: $fontFamilySansSerif
   font-size: $subparagraphTextSize
   font-weight: 600
 
-.social-profile-connection
-  @extend %flexbox-flex-start-row
-
-  > *
-    margin: 0 $marginRelative
-
-
-.social-profile-connection-value
-  color: $primaryTextColor
+.social-profile-active
+  color: transparentize($iconsTextColor, 0.2)
   font-family: $fontFamilySansSerif
-  font-size: $subparagraphTextSize
+  font-size: $spanTextSize
   font-weight: 400
-
-.social-profile-connection-icon
-  width: 6px
-  height: 6px
-  border-radius: 3px
-
-.connection_0
-  background-color: green
-
-.connection_1
-  background-color: yellow
-
-.connection_2
-  background-color: red
-
-.social-list
-  @extend %flexbox-flex-start-col
-  flex: 1
-
-.social-search
-  @extend %flexbox-centered-row
-  position: relative
-  margin: $marginComponent
 
 .social-search-input
   display: flex
   flex: 1
   width: 100%
+  background-color: transparent
   height: auto
   outline: none
   overflow-y: scroll
   margin: $marginComponent
-  color: $primaryTextColor
+  color: $iconsTextColor
   font-family: $fontFamilySansSerif
   font-size: $subparagraphTextSize
   border: none
 
-.social-search-icon
-  position: absolute
-  top: 50%
-  left: 100%
-  transform: translate(-50%, -50%)
-  width: 24px
-  height: auto
+  &::placeholder
+    color: transparentize($iconsTextColor, 0.15)

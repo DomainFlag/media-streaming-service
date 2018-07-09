@@ -1,0 +1,183 @@
+@import "./../../../resources"
+
+.gig
+  @extend %flexbox-flex-start-row
+  align-items: flex-start
+  width: 80%
+  height: 80%
+  flex-wrap: wrap
+
+  > *
+    margin: $marginComponent
+
+.fireplace
+  @extend %flexbox-flex-start-col
+  box-shadow: 2px 2px 8px 1px transparentize($motionPrimaryLightColor, 0.4)
+  height: auto
+  width: auto
+
+.fireplace-caption
+  display: flex
+  position: relative
+  overflow: auto
+  width: auto
+  height: auto
+
+.fireplace-caption-content
+  max-width: 480px
+  max-height: 360px
+  width: auto
+  height: auto
+
+.fireplace-utility
+  @extend %flexbox-flex-start-row
+  position: absolute
+  top: 100%
+  left: 0
+  transform: translate($marginRelative, -150%)
+
+  > *
+    margin: 0 $marginComponent
+    color: $iconsTextColor
+
+.fireplace-votes
+  @extend %flexbox-flex-start-row
+
+  > *
+    margin: 0 $marginRelative
+
+.fireplace-votes-content
+  font-family: $fontFamilySansSerif
+  font-weight: 600
+  font-size: $subparagraphTextSize
+
+.fireplace-like
+  width: 14px
+  height: auto
+
+.fireplace-created_by
+  font-family: $fontFamilySansSerif
+  font-weight: 600
+  font-size: $subparagraphTextSize
+
+.fireplace-date_when
+  font-family: $fontFamilySansSerif
+  font-weight: 600
+  font-size: $subparagraphTextSize
+
+.fireplace-extra
+  @extend %flexbox-centered-row
+  margin-bottom: $marginComponent
+  justify-content: center
+  align-items: center
+  width: 100%
+
+.fireplace-extra-more
+  letter-spacing: 2px
+  font-family: $fontFamilySansSerif
+  font-weight: 600
+  font-size: $spanTextSize
+  color: transparentize($motionPrimaryLightColor, 0.2)
+
+
+/* Fireplace Social Content */
+.fireplace-content
+  @extend %flexbox-flex-start-col
+  justify-content: flex-start
+  background-color: $iconsTextColor
+  width: 100%
+  height: auto
+
+.fireplace-content-container
+  @extend %flexbox-flex-start-col
+  width: 100%
+
+.fireplace-content-text
+  margin: $marginComponent
+  font-family: $fontFamilySansSerif
+  font-weight: 600
+  font-size: $subparagraphTextSize
+
+/* Fireplace Social */
+.fireplace-social
+  @extend %flexbox-flex-start-col
+  margin: $marginComponent
+  justify-content: flex-start
+  width: 100%
+  height: auto
+
+/* Fireplace Social Implementation */
+.spark
+  @extend %flexbox-flex-start-col
+  margin-bottom: $marginRelative
+
+.spark-section
+  @extend %flexbox-flex-start-row
+  align-items: flex-start
+
+  > *
+    margin: 0 $marginSibling
+
+.spark-header
+  @extend %flexbox-flex-start-col
+  justify-content: flex-start
+
+.spark-avatar
+  width: 24px
+  height: auto
+
+.spark-container
+  @extend %flexbox-flex-start-col
+  width: 100%
+  flex: 1
+
+  > *
+    margin-bottom: $marginComponent
+
+.spark-content
+  @extend %flexbox-flex-start-row
+  width: 100%
+  align-items: flex-start
+  font-family: $fontFamilySerif
+  font-weight: 400
+  font-size: $subparagraphTextSize
+
+.spark-miscellaneous
+  @extend %flexbox-flex-start-row
+  justify-content: space-between
+
+  > *
+    margin-right: $marginSibling
+
+.spark-miscellaneous-container
+  @extend %flexbox-flex-start-row
+  justify-content: space-between
+
+  > *
+    margin-right: $marginRelative
+
+.spark-like
+  width: 14px
+  height: auto
+  opacity: 0.8
+
+  &:hover
+    opacity: 1.0
+
+.spark-votes
+  font-family: $fontFamilySansSerif
+  font-weight: 400
+  font-size: $spanTextSize
+
+.spark-date
+  font-family: $fontFamilySansSerif
+  font-weight: 400
+  font-size: $spanTextSize
+
+.spark-inception
+  @extend %flexbox-flex-start-col
+  justify-content: flex-start
+  padding-top: $marginRelative
+
+  > *
+    margin: $marginRelative 0 $marginRelative $marginComponent

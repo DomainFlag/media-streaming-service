@@ -6,7 +6,6 @@ import "./style.sass"
 import cancel from "./../../resources/icons/cancel.svg"
 import cancelFocused from "./../../resources/icons/cancel_focused.svg"
 
-// On focus out we need to implement
 export default class Search extends Component {
     constructor(props) {
         super(props);

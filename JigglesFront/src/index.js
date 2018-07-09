@@ -7,10 +7,8 @@ import ThunkMiddleware from "redux-thunk"
 import logger from "redux-logger"
 import rootReducer from "./reducers/root-reducer"
 
-import Chat from "./components/Gig/Chat/Chat"
-
 import './style.sass';
-import Search from "./components/Search/Search";
+import Gig from "./components/Gig/FirePlace/FirePlace";
 
 let app = {
 
@@ -21,38 +19,7 @@ let store = createStore(rootReducer, app, applyMiddleware(
     logger
 ));
 
-const interaction = {
-    id: 6,
-    messages: [
-        {
-            id: 0,
-            name: "Jane Doe",
-            body: "Hey!"
-        }, {
-            id: 1,
-            name: "John Doe",
-            body: "Hi Back!"
-        }, {
-            id: 2,
-            name: "Jane Doe",
-            body: "Do you know smth about the weather?"
-        }, {
-            id: 3,
-            name: "Jane Doe",
-            body: "You know the weather in MD?"
-        }, {
-            id: 4,
-            name: "John Doe",
-            body: "It's like s**t"
-        }, {
-            id: 5,
-            name: "John Doe",
-            body: "As always"
-        }
-    ]
-};
-
-const profile = {
+const social = {
     profile: {
         name: "John Doe",
         connection: 1
@@ -61,40 +28,166 @@ const profile = {
         {
             id: 0,
             name: "Joe Davin",
-            connection: 2,
-            portraitPath: "./account.svg"
+            date: "3 hours ago",
+            portraitPath: "./account.svg",
+            messages: [
+                {
+                    id: 0,
+                    name: "Jane Doe",
+                    body: "Hey!"
+                }
+            ]
         }, {
             id: 1,
             name: "Jerry Man",
-            connection: 0,
-            portraitPath: "./account.svg"
+            date: "3 hours ago",
+            portraitPath: "./account.svg",
+            messages: [
+                {
+                    id: 0,
+                    name: "Jane Doe",
+                    body: "Hey!"
+                }
+            ]
         }, {
             id: 2,
             name: "Terry Luke",
-            connection: 1,
-            portraitPath: "./account.svg"
+            date: "3 hours ago",
+            portraitPath: "./account.svg",
+            messages: [
+                {
+                    id: 0,
+                    name: "Jane Doe",
+                    body: "Hey!"
+                }
+            ]
         }, {
             id: 3,
             name: "Rick Malvin",
-            connection: 2,
-            portraitPath: "./account.svg"
-        }, {
-            id: 4,
-            name: "Honey Berry",
-            connection: 0,
-            portraitPath: "./account.svg"
-        }, {
-            id: 5,
-            name: "Tracey Georgia",
-            connection: 2,
-            portraitPath: "./account.svg"
+            date: "3 hours ago",
+            portraitPath: "./account.svg",
+            messages: [
+                {
+                    id: 0,
+                    name: "Jane Doe",
+                    body: "Hey!"
+                }
+            ]
         }
     ]
 };
 
+let comments = [
+    {
+        "id" : 1,
+        "parent" : 0,
+        "depth" : 0,
+        likes: 6,
+        "content" : {
+            "text" : "I suppose the concert will be bonkers"
+        },
+        "header" : {
+            "avatar" : "./tests/account.svg",
+            "date" : (new Date((Date.now()-Math.random()*50000+25000))).toDateString()
+        }
+    }, {
+        "id" : 2,
+        "parent" : 0,
+        "depth" : 0,
+        likes: 5,
+        "content" : {
+            "text" : "No shit, I won't miss this gig, yeah!"
+        },
+        "header" : {
+            "avatar" : "./tests/account.svg",
+            "date" : (new Date((Date.now()-Math.random()*50000+25000))).toDateString()
+        }
+    }, {
+        "id" : 3,
+        "parent" : 2,
+        "depth" : 1,
+        likes: 0,
+        "content" : {
+            "text" : "What is the price for the concert ticket??"
+        },
+        "header" : {
+            "avatar" : "./tests/account.svg",
+            "date" : (new Date((Date.now()-Math.random()*50000+25000))).toDateString()
+        }
+    }, {
+        "id" : 4,
+        "parent" : 3,
+        "depth" : 2,
+        likes: 13,
+        "content" : {
+            "text" : "I missed once, not gonna miss it twice"
+        },
+        "header" : {
+            "avatar" : "./tests/account.svg",
+            "date" : (new Date((Date.now()-Math.random()*50000+25000))).toDateString()
+        }
+    }, {
+        "id" : 5,
+        "parent" : 1,
+        "depth" : 1,
+        likes: 2,
+        "content" : {
+            "text" : "Yeahhhh"
+        },
+        "header" : {
+            "avatar" : "./tests/account.svg",
+            "date" : (new Date((Date.now()-Math.random()*50000+25000))).toDateString()
+        }
+    }, {
+        "id" : 7,
+        "parent" : 5,
+        "depth" : 2,
+        likes: 2,
+        "content" : {
+            "text" : "Let's go yeah"
+        },
+        "header" : {
+            "avatar" : "./tests/account.svg",
+            "date" : (new Date((Date.now()-Math.random()*50000+25000))).toDateString()
+        }
+    }, {
+        "id" : 6,
+        "parent" : 1,
+        "depth" : 1,
+        likes: 20,
+        "content" : {
+            "text" : "Oh, Hi Mark!"
+        },
+        "header" : {
+            "avatar" : "./tests/account.svg",
+            "date" : (new Date((Date.now()-Math.random()*50000+25000))).toDateString()
+        }
+    }
+];
+
+const gig = [
+    {
+        id: 0,
+        caption: "./tests/interpol_concert.jpg",
+        content: "Interpol concert on 21 July, book your tickets here.",
+        created_by: "John Doe",
+        votes: 25,
+        comments: comments,
+        created_when: "08/07/2018"
+    }, {
+        id: 1,
+        caption: "./tests/bloc_party.jpg",
+        content: "Bloc Party album reissue on 31 July, pre-order right now.",
+        created_by: "Jane Doe",
+        votes: 13,
+        comments: comments,
+        created_when: "02/07/2017"
+    }
+];
+
 render(
     <Provider store={store}>
-        <Chat profile={profile} messages={interaction.messages} placeholder="Message here..."/>
+        <Gig gig={gig}/>
     </Provider>,
     document.getElementById("root")
 );
