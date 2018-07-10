@@ -1,0 +1,144 @@
+@import "./../../../resources"
+
+.gig
+  @extend %flexbox-flex-start-row
+  height: 100%
+  width: 100%
+  overflow-x: hidden
+
+.gig-header
+  @extend %flexbox-centered-col
+  width: 240px
+  max-width: 240px
+  min-width: 240px
+  height: 100%
+  background-color: $primaryTextColor
+
+  &:first-of-type
+    position: fixed
+
+.gig-container
+  @extend %flexbox-flex-start-col
+  width: 100%
+  flex: 1
+  margin: $marginComponent
+
+.gig-menu
+  margin: $marginComponent
+  width: 28px
+  height: auto
+
+.gig-container-extended
+  @extend %flexbox-flex-start-col
+  width: 100%
+  justify-content: flex-start
+  flex: 6
+  margin: $marginComponent
+
+  > *
+    margin: $marginSibling $marginComponent
+.gig-label
+  font-family: $fontFamilySansSerif
+  font-weight: 600
+  font-size: $paragraphTextSize
+  color: $iconsTextColor
+
+.gig-link
+  font-family: $fontFamilySansSerif
+  font-weight: 600
+  font-size: $subparagraphTextSize
+  color: transparentize($iconsTextColor, 0.25)
+
+.gig-main
+  @extend %flexbox-flex-start-col
+  position: relative
+  width: 100%
+  height: 100%
+
+.gig-main-header
+  @extend %flexbox-flex-start-row
+  justify-content: space-between
+  width: 100%
+  height: 100px
+  background-color: transparentize($primaryTextColor, 0.1)
+  padding: $marginComponent
+
+.gig-finder
+  border: none
+  outline: none
+  background-color: transparent
+  width: 240px
+  height: 40px
+  border-bottom: 2px solid white
+  color: $iconsTextColor
+  font-size: $subheaderTextSize
+
+.gig-profile-container
+  @extend %flexbox-flex-start-row
+  position: relative
+  margin: $marginComponent
+
+.gig-profile
+  width: 32px
+  height: auto
+  border-radius: 16px
+
+  &:hover
+    filter: sepia(100%) hue-rotate(40deg) saturate(150%)
+    transform: scale(1.15)
+    box-shadow: 0 0 8px 4px transparentize($motionPrimaryLightColor, 0.8)
+
+/* Settings */
+.settings-profile
+  @extend %flexbox-flex-start-col
+  justify-content: flex-start
+  position: absolute
+  top: 0
+  left: 0
+  transform: translate(calc(-100% + 40px), 32px+$marginSibling+6px)
+  background-color: darken($pleasureColor, 10%)
+  height: auto
+  width: 180px
+  border-radius: 4px
+  padding: $marginComponent
+
+.settings-arrow
+  position: absolute
+  left: 100%
+  top: 0
+  width: 0
+  height: 0
+  transform: translate(calc(-100% - 11.5px), calc(-100% + 1px))
+  border-left: 12px solid transparent
+  border-right: 12px solid transparent
+  border-bottom: 12px solid darken($pleasureColor, 10%)
+
+.settings-option
+  margin: $marginDivider $marginComponent
+  color: transparentize($iconsTextColor, 0.05)
+  font-size: $subparagraphTextSize
+  font-weight: 600
+  font-family: $fontFamilySansSerif
+
+.gig-main-container
+  display: flex
+  width: 100%
+  flex: 1
+  align-items: flex-start
+  justify-content: flex-start
+  margin: $marginComponent
+
+.gig-main-content
+  display: flex
+  width: 100%
+  height: 100%
+  align-items: flex-start
+  justify-content: flex-start
+  flex-wrap: wrap
+  padding: $marginSection
+
+.gig-main-logo-content
+  padding: $marginComponent
+  width: 96px
+  height: auto
+  opacity: 0.4

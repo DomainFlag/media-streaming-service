@@ -17,22 +17,29 @@ class Spark extends Component {
     render = () => {
         return <div className="spark">
             <div className="spark-section">
-                <div className="spark-header">
+                <div className="spark-container">
                     <img className="spark-avatar"
                          src={`${this.props.comment.comment.header.avatar}`}/>
+
+                    <div className="spark-miscellaneous-container">
+                        <p className="spark-author">
+                            {this.props.comment.comment.name}
+                        </p>
+
+                        <p className="spark-date">
+                            {this.props.comment.comment.header.date}
+                            </p>
+                    </div>
                 </div>
                 <div className="spark-container">
                     <div className="spark-content">
                         {this.props.comment.comment.content.text}
                     </div>
-                    <div className="spark-miscellaneous">
-                        <div className="spark-miscellaneous-container">
-                            <img src={like_blue} className="spark-like"/>
-                            <p className="spark-votes">{this.props.comment.comment.likes}</p>
-                        </div>
-                        <div className="spark-miscellaneous-container">
-                            <p className="spark-date">{this.props.comment.comment.header.date}</p>
-                        </div>
+                </div>
+                <div className="spark-container">
+                    <div className="spark-like-container">
+                        <img src={like_blue} className="spark-like"/>
+                        <p className="spark-votes">{this.props.comment.comment.likes}</p>
                     </div>
                 </div>
             </div>
@@ -47,7 +54,7 @@ class Spark extends Component {
     }
 }
 
-class FirePlace extends Component {
+class Fireplace extends Component {
     constructor(props) {
         super(props);
 
@@ -65,10 +72,12 @@ class FirePlace extends Component {
         return queryTree(commentsProv, depth);
     };
 
-    onLoadImage = () => {
+    onLoadImage = (e) => {
         this.setState({
             color: constrantizer(this.img, this.container)
         });
+
+        this.fireplace_content.style.width = (e.target.width + "px");
     };
 
     extendSocial = () => {
@@ -104,7 +113,7 @@ class FirePlace extends Component {
                     </div>
                 </div>
             </div>
-            <div className="fireplace-content">
+            <div className="fireplace-content" ref={(fireplace_content) => this.fireplace_content = fireplace_content}>
                 <div className="fireplace-content-container">
                     <p className="fireplace-content-text" >{this.props.fireplace.content}</p>
                     <div className="fireplace-social">
@@ -118,7 +127,7 @@ class FirePlace extends Component {
                     <div className="fireplace-extra">
                         <p className="fireplace-extra-more" onClick={this.extendSocial}>
                             {
-                                this.state.depth === 1 ? "More..." : "Less..."
+                                this.state.depth === 1 ? "More..." : "...Less"
                             }
                         </p>
                     </div>
@@ -128,18 +137,4 @@ class FirePlace extends Component {
     )
 }
 
-export default class Gig extends Component {
-    constructor(props) {
-        super(props);
-    }
-
-    render = () => (
-        <div className="gig">
-            {
-                this.props.gig.map((fireplace) => (
-                    <FirePlace key={fireplace.id} fireplace={fireplace}/>
-                ))
-            }
-        </div>
-    )
-}
+export default Fireplace;

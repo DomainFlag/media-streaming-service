@@ -1,37 +1,29 @@
 @import "./../../../resources"
 
-.gig
-  @extend %flexbox-flex-start-row
-  align-items: flex-start
-  width: 80%
-  height: 80%
-  flex-wrap: wrap
-
-  > *
-    margin: $marginComponent
-
 .fireplace
   @extend %flexbox-flex-start-col
   box-shadow: 2px 2px 8px 1px transparentize($motionPrimaryLightColor, 0.4)
   height: auto
   width: auto
+  margin: $marginComponent
 
 .fireplace-caption
   display: flex
   position: relative
-  overflow: auto
+  overflow: hidden
   width: auto
   height: auto
 
 .fireplace-caption-content
-  max-width: 480px
-  max-height: 360px
+  max-width: 360px
+  max-height: 220px
   width: auto
   height: auto
 
 .fireplace-utility
   @extend %flexbox-flex-start-row
   position: absolute
+  flex-wrap: wrap
   top: 100%
   left: 0
   transform: translate($marginRelative, -150%)
@@ -85,7 +77,7 @@
   @extend %flexbox-flex-start-col
   justify-content: flex-start
   background-color: $iconsTextColor
-  width: 100%
+  max-width: 100%
   height: auto
 
 .fireplace-content-container
@@ -93,15 +85,15 @@
   width: 100%
 
 .fireplace-content-text
-  margin: $marginComponent
-  font-family: $fontFamilySansSerif
+  margin: $marginSection $marginSection 0 $marginSection
+  font-family: $fontFamilyReading
   font-weight: 600
   font-size: $subparagraphTextSize
 
 /* Fireplace Social */
 .fireplace-social
   @extend %flexbox-flex-start-col
-  margin: $marginComponent
+  padding: $marginComponent
   justify-content: flex-start
   width: 100%
   height: auto
@@ -112,49 +104,35 @@
   margin-bottom: $marginRelative
 
 .spark-section
-  @extend %flexbox-flex-start-row
+  @extend %flexbox-flex-start-col
   align-items: flex-start
 
   > *
     margin: 0 $marginSibling
 
-.spark-header
-  @extend %flexbox-flex-start-col
-  justify-content: flex-start
-
 .spark-avatar
-  width: 24px
+  width: 28px
   height: auto
 
 .spark-container
-  @extend %flexbox-flex-start-col
+  @extend %flexbox-flex-start-row
   width: 100%
   flex: 1
-
-  > *
-    margin-bottom: $marginComponent
-
-.spark-content
-  @extend %flexbox-flex-start-row
-  width: 100%
-  align-items: flex-start
-  font-family: $fontFamilySerif
-  font-weight: 400
-  font-size: $subparagraphTextSize
-
-.spark-miscellaneous
-  @extend %flexbox-flex-start-row
-  justify-content: space-between
-
-  > *
-    margin-right: $marginSibling
+  margin: $marginRelative $marginComponent $marginRelative 0
 
 .spark-miscellaneous-container
-  @extend %flexbox-flex-start-row
-  justify-content: space-between
+  @extend %flexbox-flex-start-col
+  margin-left: $marginSibling
 
   > *
-    margin-right: $marginRelative
+    margin: $marginSpan 0
+
+
+.spark-like-container
+  @extend %flexbox-flex-start-row
+  justify-content: center
+  > *
+    margin-right: $marginSibling
 
 .spark-like
   width: 14px
@@ -164,15 +142,32 @@
   &:hover
     opacity: 1.0
 
+.spark-content
+  @extend %flexbox-flex-start-row
+  width: 100%
+  align-items: flex-start
+  font-family: $fontFamilyReading
+  font-weight: 500
+  font-size: $spanTextSize
+  color: transparentize($primaryTextColor, 0.25)
+
 .spark-votes
-  font-family: $fontFamilySansSerif
+  font-family: $fontFamilyReading
   font-weight: 400
   font-size: $spanTextSize
+  color: $primaryTextColor
+
+.spark-author
+  font-family: $fontFamilyReading
+  font-weight: 500
+  font-size: $spanTextSize
+  color: transparentize($primaryTextColor, 0.1)
 
 .spark-date
-  font-family: $fontFamilySansSerif
-  font-weight: 400
-  font-size: $spanTextSize
+  font-family: $fontFamilyReading
+  font-weight: 500
+  font-size: $subspanTextSize
+  color: transparentize($primaryTextColor, 0.25)
 
 .spark-inception
   @extend %flexbox-flex-start-col

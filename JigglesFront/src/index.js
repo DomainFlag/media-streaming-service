@@ -8,7 +8,7 @@ import logger from "redux-logger"
 import rootReducer from "./reducers/root-reducer"
 
 import './style.sass';
-import Gig from "./components/Gig/FirePlace/FirePlace";
+import Gig from "./components/Gig/Gig/Gig";
 
 let app = {
 
@@ -79,93 +79,100 @@ const social = {
 
 let comments = [
     {
-        "id" : 1,
-        "parent" : 0,
-        "depth" : 0,
+        id : 1,
+        parent : 0,
+        depth : 0,
         likes: 6,
-        "content" : {
+        name: "Rick Malvin",
+        content : {
             "text" : "I suppose the concert will be bonkers"
         },
-        "header" : {
+        header : {
             "avatar" : "./tests/account.svg",
             "date" : (new Date((Date.now()-Math.random()*50000+25000))).toDateString()
         }
     }, {
-        "id" : 2,
-        "parent" : 0,
-        "depth" : 0,
+        id : 2,
+        parent : 0,
+        depth : 0,
         likes: 5,
-        "content" : {
+        name: "Terry Luke",
+        content : {
             "text" : "No shit, I won't miss this gig, yeah!"
         },
-        "header" : {
+        header : {
             "avatar" : "./tests/account.svg",
             "date" : (new Date((Date.now()-Math.random()*50000+25000))).toDateString()
         }
     }, {
-        "id" : 3,
-        "parent" : 2,
-        "depth" : 1,
+        id : 3,
+        parent : 2,
+        depth : 1,
         likes: 0,
-        "content" : {
+        name: "Jerry Man",
+        content : {
             "text" : "What is the price for the concert ticket??"
         },
-        "header" : {
+        header : {
             "avatar" : "./tests/account.svg",
             "date" : (new Date((Date.now()-Math.random()*50000+25000))).toDateString()
         }
     }, {
-        "id" : 4,
-        "parent" : 3,
-        "depth" : 2,
+        id : 4,
+        parent: 3,
+        depth : 2,
         likes: 13,
-        "content" : {
+        name: "Joe Davin",
+        content : {
             "text" : "I missed once, not gonna miss it twice"
         },
-        "header" : {
+        header : {
             "avatar" : "./tests/account.svg",
             "date" : (new Date((Date.now()-Math.random()*50000+25000))).toDateString()
         }
     }, {
-        "id" : 5,
-        "parent" : 1,
-        "depth" : 1,
+        id : 5,
+        parent : 1,
+        depth : 1,
         likes: 2,
-        "content" : {
+        name: "Rick Malvin",
+        content : {
             "text" : "Yeahhhh"
         },
-        "header" : {
+        header : {
             "avatar" : "./tests/account.svg",
             "date" : (new Date((Date.now()-Math.random()*50000+25000))).toDateString()
         }
     }, {
-        "id" : 7,
-        "parent" : 5,
-        "depth" : 2,
+        id : 7,
+        parent : 5,
+        depth : 2,
         likes: 2,
-        "content" : {
+        name: "Luke Skywalker",
+        content : {
             "text" : "Let's go yeah"
         },
-        "header" : {
+        header : {
             "avatar" : "./tests/account.svg",
             "date" : (new Date((Date.now()-Math.random()*50000+25000))).toDateString()
         }
     }, {
-        "id" : 6,
-        "parent" : 1,
-        "depth" : 1,
+        id : 6,
+        parent : 1,
+        depth : 1,
         likes: 20,
-        "content" : {
+        name: "Rick Malvin",
+        content : {
             "text" : "Oh, Hi Mark!"
         },
-        "header" : {
+        header : {
             "avatar" : "./tests/account.svg",
             "date" : (new Date((Date.now()-Math.random()*50000+25000))).toDateString()
         }
     }
 ];
 
-const gig = [
+const fireplaces = [
     {
         id: 0,
         caption: "./tests/interpol_concert.jpg",
@@ -177,17 +184,17 @@ const gig = [
     }, {
         id: 1,
         caption: "./tests/bloc_party.jpg",
-        content: "Bloc Party album reissue on 31 July, pre-order right now.",
+        content: "Bloc Party album reissue on 31 July, pre-order right now, go for it right now.",
         created_by: "Jane Doe",
         votes: 13,
-        comments: comments,
+        comments: [],
         created_when: "02/07/2017"
     }
 ];
 
 render(
     <Provider store={store}>
-        <Gig gig={gig}/>
+        <Gig fireplaces={fireplaces}/>
     </Provider>,
     document.getElementById("root")
 );
