@@ -44,7 +44,7 @@ if (!checkRequiredFiles([paths.appHtml, paths.appIndexJs])) {
 // This lets us display how much they changed later.
 measureFileSizesBeforeBuild(paths.appBuild)
   .then(previousFileSizes => {
-    // Remove all content but keep the directory so that
+    // Remove all releases but keep the directory so that
     // if you're in it, you don't end up in Trash
     fs.emptyDirSync(paths.appBuild);
     // Merge with the public folder

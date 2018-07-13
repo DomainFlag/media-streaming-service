@@ -1,0 +1,229 @@
+@import "./../../resources"
+
+/* Welcome Layout */
+.main
+  @extend %flexbox-centered-col
+  width: 100%
+  height: 100%
+  position: relative
+
+.main-container
+  @extend %flexbox-centered-col
+  width: 100%
+  height: 100%
+
+  &:first-of-type
+    z-index: 1
+    display: none
+    top: 0
+    left: 0
+    position: fixed
+
+  &:last-of-type
+    z-index: 0
+
+.main-header
+  @extend %flexbox-flex-start-row
+  width: 100%
+  justify-content: space-between
+  align-items: flex-start
+  padding: $marginSection
+
+#main-header-logo
+  height: 48px
+  width: auto
+  margin: $marginSibling
+
+/* Welcome Layout - Authentication */
+.main-header-authentication
+  @extend %flexbox-flex-start-row
+  margin: $marginSibling
+
+.main-header-authentication-auth
+  font-weight: bold
+  font-size: $paragraphTextSize
+  font-family: "Brandon Grotesque Black"
+  margin: 0 $marginComponent
+  color: $primaryDarkColor
+
+.main-searcher
+  @extend %flexbox-centered-col
+  height: 175px
+
+.main-body
+  @extend %flexbox-centered-col
+  width: 100%
+  position: relative
+  flex: 1
+  background-color: $primaryTextColor
+
+  > *
+    margin: $marginSection 0
+
+.main-divider
+  width: 60%
+  height: 2px
+  border-radius: 2px
+  background: linear-gradient(90deg, $primaryTextColor, transparentize($primaryColor, 0.4), $primaryTextColor)
+
+.entertainer
+  @extend %flexbox-flex-start-row
+
+.entertainment
+  @extend %flexbox-flex-start-col
+  padding: $marginSection
+  width: 100%
+  height: 100%
+  flex-wrap: wrap
+
+.entertainment-label
+  @extend %flexbox-flex-start-col
+  margin: $marginSection
+
+.entertainment-label-value
+  color: $iconsTextColor
+  font-size: $ogreTextSize
+  font-family: $fontFamilySansSerif
+  font-weight: 600
+  margin: $marginRelative 0
+
+.entertainment-container
+  @extend %flexbox-flex-start-row
+  margin-bottom: $marginSection
+  align-items: flex-start
+  overflow: hidden
+  width: 100%
+  height: auto
+  flex-wrap: wrap
+
+.highlight
+  @extend %flexbox-flex-start-col
+  align-items: flex-start
+  margin: $marginSection
+  padding: $marginComponent
+  background-color: $iconsTextColor
+  height: auto
+  width: auto
+
+.highlight-container
+  @extend %flexbox-flex-start-row
+  height: auto
+  width: 350px
+
+.highlight-spotlight
+  @extend %flexbox-flex-start-col
+  position: relative
+
+.highlight-poster
+  @extend %flexbox-flex-start-row
+  flex: 1
+  width: 175px
+
+.highlight-impact
+  width: 42px
+  height: auto
+
+.highlight-content
+  position: absolute
+  display: flex
+  width: 100%
+  height: 100%
+  justify-content: flex-end
+  align-items: flex-end
+  flex-direction: column
+  transform: translate(-$marginSibling, -$marginSibling)
+
+.highlight-content-title
+  color: white
+  font-size: $spanTextSize
+  font-family: $fontFamilySansSerif
+  margin: $marginRelative 0
+
+.highlight-content-artist
+  color: white
+  font-size: $subparagraphTextSize
+  font-family: $fontFamilySansSerif
+  margin: $marginRelative 0
+
+.highlight-score
+  @extend %flexbox-centered-row
+  flex: 1
+  height: 100%
+  width: 100%
+  margin-top: $marginSection
+
+  > *
+    margin: 0 $marginSibling
+
+.highlight-score-value
+  color: $primaryDarkColor
+  font-size: $headerTextSize
+  font-family: $fontFamilySansSerif
+  font-weight: bold
+
+.highlights-reviews
+  @extend %flexbox-flex-start-col
+  margin: $marginSection $marginSibling
+
+.highlight-review
+  @extend %flexbox-centered-row
+  margin: $marginRelative 0
+
+.highlight-review-container
+  @extend %flexbox-centered-col
+  justify-content: flex-start
+  align-items: flex-start
+  margin: $marginRelative 0
+
+  &:first-of-type
+    margin: 0 $marginRelative
+
+  &:last-of-type
+    flex: 1
+    margin: 0 $marginComponent
+
+.highlight-review-critic
+  font-size: $subparagraphTextSize
+  font-family: $fontFamilySansSerif
+  font-weight: 600
+
+.highlight-review-content
+  font-size: $subparagraphTextSize
+  font-family: $fontFamilySansSerif
+
+.highlight-review-score
+  @extend %flexbox-centered-col
+  width: 40px
+  height: 40px
+  font-size: $subparagraphTextSize
+  font-family: $fontFamilySansSerif
+  font-weight: bold
+  color: $iconsTextColor
+
+/* News */
+.news
+  @extend %flexbox-flex-start-col
+  align-items: flex-start
+  margin: $marginComponent
+  height: 420px
+  width: 420px
+  background-color: $iconsTextColor
+
+.news-image
+  @extend %flexbox-flex-start-row
+  width: 100%
+  height: 270px
+
+.news-content
+  @extend %flexbox-flex-start-row
+  align-items: flex-start
+  padding: $marginSection
+  flex: 1
+  width: 100%
+
+.news-content-title
+  margin: $marginSection 0
+  font-size: $subparagraphTextSize
+  font-family: $fontFamilySansSerif
+  font-weight: bold
+  color: $primaryTextColor

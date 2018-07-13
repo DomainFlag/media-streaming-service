@@ -8,6 +8,11 @@ class UriBuilder {
 
     }
 
+    clear = () => {
+        this.path.length = 0;
+        this.queryParameters.length = 0;
+    };
+
     setAuthority = (authority) => {
         this.authority = authority;
 
@@ -21,24 +26,33 @@ class UriBuilder {
     };
 
     appendPath = (newSegment) => {
-        this.path.push(newSegment);
+        if(newSegment !== null)
+            this.path.push(newSegment);
 
         return this;
     };
 
     appendQueryParameter = (obj) => {
-        this.queryParameters.push(obj);
+        if(obj !== null)
+            this.queryParameters.push(obj);
 
         return this;
     };
 
-    build = () => {
-        this.uri = this.scheme + "://" +
-            this.authority + "/" +
-            this.path.reduce((acc, currPath) => acc + currPath + "/", "") + "?" +
-            this.queryParameters.map((obj) => Object.keys(obj)
+    constructQueryParameters = function() {
+        if(this.queryParameters.length !== 0)
+            return "?" + this.queryParameters.map((obj) => Object.keys(obj)
                 .map((key) => key.toLowerCase() + "=" + obj[key]))
                 .join("&");
+
+        return "";
+    };
+
+    build = () => {
+        this.uri = this.scheme + "://" +
+            this.authority +
+            this.path.reduce((acc, currPath) => acc + "/" + currPath , "") +
+            this.constructQueryParameters();
 
         return this.uri;
     };

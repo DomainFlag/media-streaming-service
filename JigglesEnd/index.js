@@ -39,8 +39,19 @@ app.get("/bad", function(req, res) {
 });
 
 app.use(function(req, res, next) {
-    //Do latter
-    res.send("Ops, bad.");
+    if(req.method === "OPTIONS") {
+        res.setHeader("Access-Control-Allow-Headers", "Method, Origin, X-Requested-With," +
+            " Content-Type," +
+            " Accept");
+        res.setHeader("Content-Type", "application/json");
+        res.setHeader("Access-Control-Allow-Origin", "*");
+        res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT");
+
+        res.status(200).end();
+    } else {
+        //Do latter
+        res.send("Ops, bad.");
+    }
 });
 
 app.listen(process.env.PORT || 8080);

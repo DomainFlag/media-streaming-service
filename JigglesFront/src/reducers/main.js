@@ -1,7 +1,5 @@
 import REDUCER_VALIDATOR from "./reducer-validator"
 import UriBuilder from "./../utils/uri-builder";
-import queryFetch from "../utils/http-builder";
-
 const SEARCH_QUERY = "SEARCH_QUERY";
 
 export const ACTIONS = {
@@ -20,15 +18,15 @@ export const ACTIONS = {
 
             dispatch(ACTIONS.SEARCH_QUERY("pending"));
 
-            return queryFetch()
-                .then((data) => {
-                    console.log(data.body);
-                    return data;
-                })
-                .then((data) => data.json())
-                .then(console.log)
-                .then((data) => dispatch(ACTIONS.SEARCH_QUERY("success", data)))
-                .catch(console.error);
+            // return queryFetch()
+            //     .then((data) => {
+            //         console.log(data.body);
+            //         return data;
+            //     })
+            //     .then((data) => data.json())
+            //     .then(console.log)
+            //     .then((data) => dispatch(ACTIONS.SEARCH_QUERY("success", data)))
+            //     .catch(console.error);
         }
     }
 };
