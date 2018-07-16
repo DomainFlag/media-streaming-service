@@ -1,6 +1,6 @@
 @import "./../../../resources"
 
-/* Talk Main */
+/* Talk Speaker */
 .talk
   width: 20%
   height: 60%
@@ -23,16 +23,16 @@
   flex: 1
 
 .chat-menu
-  margin: 0 $marginRelative
+  margin: 0 $marginSibling
   width: 24px
   height: auto
 
 .chat-recipient
   @extend %flexbox-flex-start-row
-  margin: 0 $marginRelative
+  margin: 0 $marginSibling
 
 .chat-close
-  margin: 0 $marginRelative
+  margin: 0 $marginSibling
   width: 14px
   height: auto
 
@@ -76,7 +76,7 @@
 
 .chat-message
   @extend %flexbox-centered-col
-  margin: $marginRelative 0
+  margin: $marginSibling 0
   width: 100%
   height: auto
 
@@ -84,7 +84,7 @@
   max-width: 60%
   background-color: transparentize($motionPrimaryLightColor, 0.4)
   border-radius: 8px
-  padding: $marginRelative $marginParent
+  padding: $marginSibling $marginParent
   font-family: $fontFamilySansSerif
   font-weight: 600
   font-size: $subparagraphTextSize
@@ -119,11 +119,11 @@
   &:focus
     color: $iconsTextColor
 
-/* Social Main */
+/* Social Speaker */
 
 .social-profile
   @extend %flexbox-flex-start-row
-  margin: $marginRelative 0
+  margin: $marginSibling 0
 
 .social-profile-acc
   width: 32px

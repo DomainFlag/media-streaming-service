@@ -26,7 +26,7 @@
   flex-wrap: wrap
   top: 100%
   left: 0
-  transform: translate($marginRelative, -150%)
+  transform: translate($marginSibling, -150%)
 
   > *
     margin: 0 $marginComponent
@@ -36,7 +36,7 @@
   @extend %flexbox-flex-start-row
 
   > *
-    margin: 0 $marginRelative
+    margin: 0 $marginSibling
 
 .fireplace-votes-content
   font-family: $fontFamilySansSerif
@@ -101,14 +101,14 @@
 /* Fireplace Social Implementation */
 .spark
   @extend %flexbox-flex-start-col
-  margin-bottom: $marginRelative
+  margin-bottom: $marginSibling
 
 .spark-section
   @extend %flexbox-flex-start-col
   align-items: flex-start
 
   > *
-    margin: 0 $marginSibling
+    margin: 0 $marginRelative
 
 .spark-avatar
   width: 28px
@@ -118,21 +118,21 @@
   @extend %flexbox-flex-start-row
   width: 100%
   flex: 1
-  margin: $marginRelative $marginComponent $marginRelative 0
+  margin: $marginSibling $marginComponent $marginSibling 0
 
 .spark-miscellaneous-container
   @extend %flexbox-flex-start-col
-  margin-left: $marginSibling
+  margin-left: $marginRelative
 
   > *
-    margin: $marginSpan 0
+    margin: $marginGnome 0
 
 
 .spark-like-container
   @extend %flexbox-flex-start-row
   justify-content: center
   > *
-    margin-right: $marginSibling
+    margin-right: $marginRelative
 
 .spark-like
   width: 14px
@@ -172,7 +172,7 @@
 .spark-inception
   @extend %flexbox-flex-start-col
   justify-content: flex-start
-  padding-top: $marginRelative
+  padding-top: $marginSibling
 
   > *
-    margin: $marginRelative 0 $marginRelative $marginComponent
+    margin: $marginSibling 0 $marginSibling $marginComponent

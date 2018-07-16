@@ -32,12 +32,12 @@
 #main-header-logo
   height: 48px
   width: auto
-  margin: $marginSibling
+  margin: $marginRelative
 
 /* Welcome Layout - Authentication */
 .main-header-authentication
   @extend %flexbox-flex-start-row
-  margin: $marginSibling
+  margin: $marginRelative
 
 .main-header-authentication-auth
   font-weight: bold
@@ -85,7 +85,7 @@
   font-size: $ogreTextSize
   font-family: $fontFamilySansSerif
   font-weight: 600
-  margin: $marginRelative 0
+  margin: $marginSibling 0
 
 .entertainment-container
   @extend %flexbox-flex-start-row
@@ -131,19 +131,19 @@
   justify-content: flex-end
   align-items: flex-end
   flex-direction: column
-  transform: translate(-$marginSibling, -$marginSibling)
+  transform: translate(-$marginRelative, -$marginRelative)
 
 .highlight-content-title
   color: white
   font-size: $spanTextSize
   font-family: $fontFamilySansSerif
-  margin: $marginRelative 0
+  margin: $marginSibling 0
 
 .highlight-content-artist
   color: white
   font-size: $subparagraphTextSize
   font-family: $fontFamilySansSerif
-  margin: $marginRelative 0
+  margin: $marginSibling 0
 
 .highlight-score
   @extend %flexbox-centered-row
@@ -153,7 +153,7 @@
   margin-top: $marginSection
 
   > *
-    margin: 0 $marginSibling
+    margin: 0 $marginRelative
 
 .highlight-score-value
   color: $primaryDarkColor
@@ -163,20 +163,20 @@
 
 .highlights-reviews
   @extend %flexbox-flex-start-col
-  margin: $marginSection $marginSibling
+  margin: $marginSection $marginRelative
 
 .highlight-review
   @extend %flexbox-centered-row
-  margin: $marginRelative 0
+  margin: $marginSibling 0
 
 .highlight-review-container
   @extend %flexbox-centered-col
   justify-content: flex-start
   align-items: flex-start
-  margin: $marginRelative 0
+  margin: $marginSibling 0
 
   &:first-of-type
-    margin: 0 $marginRelative
+    margin: 0 $marginSibling
 
   &:last-of-type
     flex: 1

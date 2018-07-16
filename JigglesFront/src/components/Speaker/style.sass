@@ -1,0 +1,52 @@
+@import "./../../resources"
+
+/* Welcome Layout */
+.speaker
+  @extend %flexbox-centered-col
+  flex: 1
+  width: 100%
+
+.speaker-container
+  @extend %flexbox-centered-col
+  width: auto
+  height: auto
+  margin: $marginSection
+  padding: $marginSection
+
+.speaker-upload
+  width: 60px
+  height: auto
+
+.music-player
+  @extend %flexbox-centered-col
+  width: auto
+  height: auto
+  margin: $marginSection
+  padding: $marginSection
+
+.music-player-container
+  @extend %flexbox-centered-col
+  margin: $marginRelative 0
+
+.music-thumbnail
+  width: 400px
+  height: 400px
+
+.music-player-playback
+  @extend %flexbox-centered-col
+  margin: $marginComponent 0
+  width: 100%
+
+.music-player-playback-interaction
+  @extend %flexbox-centered-row
+  margin: $marginRelative 0
+  width: 100%
+
+.music-player-volume
+  @extend %flexbox-centered-col
+  position: relative
+
+.music-player-icon
+  margin: 0 $marginComponent
+  width: 16px
+  height: 16px
