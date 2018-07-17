@@ -7,37 +7,47 @@ export default class Slider extends Component {
     constructor(props) {
         super(props);
 
-        this.styleOrientation = {
-            "position" : {
-                "vertical" : "top",
-                "horizontal" : "left"
-            },
-            "length" : {
-                "vertical" : "height",
-                "horizontal" : "width"
-            }
-        };
-
-        this.state = {
-            sliderValue : 0,
-            sliderPlaceholder : null,
-            thumbValue : null
-        }
+        this.state = Object.assign({}, this.changeOnEvent(this.props.sliderValue || 0));
     }
 
+
+    changeOnEvent = (currentValue) => {
+        let valuePercentage = currentValue / (this.props.trackMaxBoundary - this.props.trackMinBoundary) * 100;
+        let value = Math.round(this.props.trackMinBoundary + (this.props.trackMaxBoundary - this.props.trackMinBoundary) * valuePercentage / 100);
+        
+        return {
+            sliderValue: value,
+            sliderPercentage: valuePercentage + "%"
+        };
+    };
+
+    setAudioUpdater = () => {
+        if(this.props.getState === undefined)
+            return;
+
+        let audioTicker = this.props.getState();
+
+        this.audioTick = setInterval(() => {
+            this.setState(
+                    this.changeOnEvent(audioTicker())
+                );
+        }, 1000);
+    };
+
     componentDidMount = () => {
-        if(this.props.orientation === "horizontal") {
-            this.sliderDimen = this.slider.clientWidth;
-            this.sliderOffset = this.slider.offsetLeft;
-        } else {
-            this.sliderDimen = this.slider.clientHeight;
-            this.sliderOffset = this.slider.offsetTop;
-        }
+        this.sliderDimen = this.slider.clientWidth;
+        this.sliderOffset = this.slider.offsetLeft;
+
+        this.setAudioUpdater();
     };
 
     componentWillUnmount = () => {
         document.removeEventListener("mousemove", this.mouseMove);
         document.removeEventListener("mouseup", this.mouseUp);
+
+        if(this.props.for === "tracker") {
+            clearInterval(this.audioTick);
+        }
     };
 
     mouseDown = (event) => {
@@ -46,13 +56,13 @@ export default class Slider extends Component {
         document.addEventListener("mouseup", this.mouseUp);
         event.stopPropagation();
         event.preventDefault();
+
+        if(this.props.for === "tracker")
+            clearInterval(this.audioTick);
     };
 
     mouseMove = (event) => {
-        let pageDimenOrient, valuePercentage;
-        if(this.props.orientation === "horizontal")
-            pageDimenOrient = event.pageX;
-        else pageDimenOrient = event.pageY;
+        let pageDimenOrient = event.pageX, valuePercentage;
 
         if(pageDimenOrient >= this.sliderOffset && pageDimenOrient <= this.sliderDimen + this.sliderOffset) {
             valuePercentage = (pageDimenOrient - this.sliderOffset) / this.sliderDimen * 100;
@@ -66,19 +76,40 @@ export default class Slider extends Component {
 
         this.setState({
             sliderValue : value,
-            sliderPlaceholder : this.props.orientation === "horizontal" ? this.thumb.style.left : this.thumb.style.top,
-            thumbValue: this.props.orientation === "horizontal" ? valuePercentage + "%" : valuePercentage + "%"
+            sliderPercentage : valuePercentage + "%"
         });
+
+        if(this.props.for !== "tracker") {
+            this.props.changeVolume(valuePercentage);
+            this.props.changeVolumeLevel(valuePercentage / 100);
+        }
 
         event.stopPropagation();
         event.preventDefault();
+
+        return value;
     };
 
     mouseUp = () => {
         document.removeEventListener("mousemove", this.mouseMove);
+        document.removeEventListener("mouseup", this.mouseUp);
         this.thumb.addEventListener("mousedown", this.mouseDown);
+
+        if(this.props.for === "tracker") {
+            this.props.jumpTrack(this.state.sliderValue);
+            this.setAudioUpdater();
+        }
     };
 
+    mousePlaceholderDown = (e) => {
+        if(this.props.for === "tracker")
+            clearInterval(this.audioTick);
+
+        if(this.props.for === "tracker") {
+            this.props.jumpTrack(this.mouseMove(e));
+            this.setAudioUpdater();
+        }
+    };
 
     getCurrentTrackTime = () => {
         let seconds = this.state.sliderValue % 60;
@@ -87,25 +118,18 @@ export default class Slider extends Component {
         return minutes + ":" +  ("" + seconds).padStart(2, '0');
     };
 
-    orientationStyle = (type, value) => {
-        let style = {};
-        style[this.styleOrientation[type][this.props.orientation]] = value;
-
-        return style;
-    };
-
     render = () => (
-        <div className={"slider slider-" + this.props.orientation}>
+        <div className="slider">
             {
-                this.orientation === "horizontal" && (
+                this.props.for === "tracker" && (
                     <span className="slider-value">
                         { this.getCurrentTrackTime() }
                     </span>
                 )
             }
-            <div className={"slider-container-" + this.props.orientation + " slider-container"} ref={(slider) => this.slider = slider}>
-                <div className={"slider-placeholder slider-placeholder-" + this.props.orientation} style={this.orientationStyle("length", this.state.sliderPlaceholder)} />
-                <div className={"thumb thumb-" + this.props.orientation} style={this.orientationStyle("position", this.state.thumbValue)} ref={(thumb) => this.thumb = thumb} onMouseDown={this.mouseDown}/>
+            <div className="slider-container" ref={(slider) => this.slider = slider} onClick={this.mousePlaceholderDown}>
+                <div className="slider-placeholder" style={{ width : this.state.sliderPercentage}} />
+                <div className="thumb" style={{ left: this.state.sliderPercentage}} ref={(thumb) => this.thumb = thumb} onMouseDown={this.mouseDown}/>
             </div>
         </div>
     )

@@ -3,15 +3,8 @@
 .slider
   @extend %flexbox-centered-col
   margin: $marginSibling 0
-
-.slider-horizontal
   width: 100%
   height: auto
-
-.slider-vertical
-  position: absolute
-  top: 0
-  transform: translate(0, $marginComponent)
 
 .slider-value
   margin: $marginSibling 0
@@ -26,45 +19,27 @@
   justify-content: flex-start
   align-items: flex-start
   z-index: 1
+  width: 100%
+  height: 4px
   position: relative
   margin: $marginSibling 0
   border-radius: 2px
   background-color: transparentize($secondaryColor, 0.75)
 
-.slider-container-horizontal
-  width: 100%
-  height: 4px
-
-.slider-container-vertical
-  width: 4px
-  height: 65px
-
 .slider-placeholder
   @extend %flexbox-flex-start-col
   border-radius: 2px
   background-color: $primaryDarkColor
-
-.slider-placeholder-horizontal
   height: 100%
   width: 0
-
-.slider-placeholder-vertical
-  height: 0
-  width: 100%
 
 .thumb
   z-index: 2
   position: absolute
   left: 0
-  width: 12px
-  height: 12px
-  border-radius: 6px
+  width: 10px
+  height: 10px
+  border-radius: 5px
   background-color: $primaryDarkColor
-
-.thumb-horizontal
   top: 0
-  transform: translate(0, -6px)
-
-.thumb-vertical
-  top: 0
-  transform: translate(-4px, 0)
+  transform: translate(0, -3px)

@@ -1,45 +1,84 @@
-let currentTime, timeOffset;
+class AudioPlayback {
+    constructor() {
+        this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-let audioPlayback = (destination) => {
-    let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        this.offsetTime = undefined;
+        this.gainNode = this.audioCtx.createGain();
+    }
 
-    currentTime = Date.now();
+    initialize = (callback, destination) => {
+        this.currentTime = Date.now();
 
-    audioCtx.decodeAudioData(destination)
-        .then((audioBuffer) => {
-            console.log("Successfully created AudioBuffer");
-            playAudio(audioCtx, audioBuffer);
-        })
-        .catch((console.error));
-};
+        this.audioCtx.decodeAudioData(destination)
+            .then((audioBuffer) => {
+                console.log("Successfully created AudioBuffer");
 
+                this.audioBuffer = audioBuffer;
+                this.playAudio(this.audioCtx, audioBuffer);
 
-let playAudio = (audioCtx, audioBuffer) => {
-    timeOffset = (Date.now() - currentTime) / 1000;
+                callback();
+            })
+            .catch((console.error));
+    };
 
-    // Get an AudioBufferSourceNode.
-    // This is the AudioNode to use when we want to play an AudioBuffer
-    let source = audioCtx.createBufferSource();
-    // set the buffer in the AudioBufferSourceNode
-    source.buffer = audioBuffer;
-    // connect the AudioBufferSourceNode to the
-    // destination so we can hear the sound
-    source.connect(audioCtx.destination);
-    // start the source playing
-    source.start();
+    getTotalTime = () => {
+        return this.audioBuffer.duration;
+    };
 
+    setVolumeLevel = (value) => {
+        this.gainNode.gain.setValueAtTime(value, this.audioCtx.currentTime);
+    };
 
-    // setInterval(() => {
-    //     console.log(Math.round(audioCtx.currentTime - timeOffset));
-    // }, 1000);
+    playAudio = (audioCtx, audioBuffer) => {
+        this.timeOffset = (Date.now() - this.currentTime) / 1000;
 
-    setTimeout(() => {
-        source.disconnect();
-        source = audioCtx.createBufferSource();
-        source.buffer = audioBuffer;
-        source.connect(audioCtx.destination);
-        source.start(0, 40);
-    }, 4 * 1000);
-};
+        // Get an AudioBufferSourceNode.
+        // This is the AudioNode to use when we want to play an AudioBuffer
+        this.source = audioCtx.createBufferSource();
+        // set the buffer in the AudioBufferSourceNode
+        this.source.buffer = audioBuffer;
+        // connect the AudioBufferSourceNode to the
+        // destination so we can hear the sound
+        this.source.connect(this.gainNode);
+        this.gainNode.connect(audioCtx.destination);
+        // start the source playing
+        this.source.start();
+    };
 
-export default audioPlayback;
+    getCurrentTime = () => {
+        if(this.offsetTime === undefined)
+            return Math.round(this.audioCtx.currentTime - this.timeOffset);
+        else {
+            return Math.round(this.audioCtx.currentTime - this.timeOffset + this.offsetTime);
+        }
+    };
+
+    jumpTrack = (offsetTime) => {
+        this.offsetTime = offsetTime;
+        this.timeOffset = this.audioCtx.currentTime;
+
+        this.source.disconnect();
+        this.source = this.audioCtx.createBufferSource();
+        this.source.buffer = this.audioBuffer;
+
+        this.source.connect(this.gainNode);
+        this.gainNode.connect(this.audioCtx.destination);
+        this.source.start(0, offsetTime);
+    };
+
+    resumeTrack = () => {
+        this.audioCtx.resume();
+    };
+
+    pauseTrack = () => {
+        this.audioCtx.suspend();
+    };
+
+    getAudioTick = () => {
+        return () => {
+            return this.getCurrentTime();
+        };
+    }
+}
+
+export default AudioPlayback;
