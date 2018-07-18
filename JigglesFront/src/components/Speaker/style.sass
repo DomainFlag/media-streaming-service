@@ -3,7 +3,7 @@
 /* Welcome Layout */
 .speaker
   @extend %flexbox-centered-col
-  height: 100%
+  flex: 1
   width: 100%
   overflow: hidden
 
@@ -43,11 +43,20 @@
 
 .music-player-container
   @extend %flexbox-centered-col
+  align-items: center
+  justify-content: flex-end
+  position: relative
   margin: $marginRelative 0
 
 .music-thumbnail
   width: 400px
   height: 400px
+
+.music-visualizer
+  position: absolute
+  z-index: 1
+  width: 200px
+  height: 125px
 
 .music-player-playback
   @extend %flexbox-centered-col
@@ -82,6 +91,7 @@
   height: auto
 
 .music-player-title
+  text-align: center
   margin: $marginSibling 0
   font-family: $fontFamilySansSerif
   font-size: $subheaderTextSize

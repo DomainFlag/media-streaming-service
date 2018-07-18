@@ -89,6 +89,10 @@ class MusicPlayer extends Component {
 
     componentDidMount = () => {
         this.props.AudioPlayback.setVolumeLevel(this.state.volume / 100);
+        this.ctx = this.canvas.getContext("2d");
+
+        this.props.AudioPlayback.visualizer.initialize(this.canvas, this.ctx);
+        requestAnimationFrame(this.props.AudioPlayback.visualizer.visualize);
     };
 
     onToggleState = () => {
@@ -147,6 +151,7 @@ class MusicPlayer extends Component {
                 <div className="music-player-stuff-container">
                     <div className="music-player-container">
                         <img className="music-thumbnail" src="https://soundblabcontent.s3.amazonaws.com/2292a6e11e75e53d368e2de938308800d5f3fe5e.jpg?1452043904.jpg"/>
+                        <canvas className="music-visualizer" width={200} height={125} ref={(canvas) => this.canvas = canvas}/>
                     </div>
 
                     <div className="music-player-playback">
