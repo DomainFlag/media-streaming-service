@@ -1,10 +1,53 @@
+class Setup {
+    constructor(audioCtx, callback) {
+        this.audioCtx = audioCtx;
+        this.equalizer = {};
+        this.callback = callback;
+
+        this.init();
+    }
+
+    init = () => {
+        for(let g = 5; g < 15; g++)
+            this.equalizer[Math.pow(2, g)] = 0;
+    };
+
+    onChangeValue = (key) => (value) => {
+        if(this.equalizer[key] !== value) {
+            this.equalizer[key] = value;
+
+            this.callback();
+        }
+    };
+
+    inputEqualizerNode = (node) => {
+        let prov = node;
+
+        Object.keys(this.equalizer).forEach((type) => {
+            let nodeBiquadFilter = this.audioCtx.createBiquadFilter();
+
+            nodeBiquadFilter.type = "peaking";
+            nodeBiquadFilter.frequency.value = Number(type);
+            nodeBiquadFilter.gain.value = this.equalizer[type];
+
+            prov.connect(nodeBiquadFilter);
+
+            prov = nodeBiquadFilter;
+        });
+
+        return prov;
+    };
+}
+
 class AudioPlayback {
     constructor() {
         this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
         this.offsetTime = undefined;
         this.gainNode = this.audioCtx.createGain();
-        this.visualizer = new Visualizer(this.audioCtx, this.gainNode);
+
+        this.setup = new Setup(this.audioCtx, this.jumpTrack);
+        this.visualizer = new Visualizer(this.audioCtx);
     }
 
     initialize = (callback, destination) => {
@@ -31,6 +74,7 @@ class AudioPlayback {
     };
 
     playAudio = (audioCtx, audioBuffer) => {
+        console.log("fsafsafa");
         this.timeOffset = (Date.now() - this.currentTime) / 1000;
 
         // Get an AudioBufferSourceNode.
@@ -43,9 +87,9 @@ class AudioPlayback {
         this.source.connect(this.gainNode);
 
         let audioNode = this.visualizer.inputNode(this.gainNode);
-        // let nodeNode = this.visualizer.inputNoteNode(audioNode);
+        let nodeNode = this.setup.inputEqualizerNode(audioNode);
 
-        audioNode.connect(this.audioCtx.destination);
+        nodeNode.connect(this.audioCtx.destination);
         // start the source playing
         this.source.start();
     };
@@ -59,7 +103,10 @@ class AudioPlayback {
     };
 
     jumpTrack = (offsetTime) => {
-        this.offsetTime = offsetTime;
+        console.log(typeof offsetTime);
+        if(offsetTime === undefined)
+            offsetTime = this.getCurrentTime();
+        else this.offsetTime = offsetTime;
         this.timeOffset = this.audioCtx.currentTime;
 
         this.source.disconnect();
@@ -68,9 +115,11 @@ class AudioPlayback {
 
         this.source.connect(this.gainNode);
         let audioNode = this.visualizer.inputNode(this.gainNode);
-        audioNode.connect(this.audioCtx.destination);
+        let nodeNode = this.setup.inputEqualizerNode(audioNode);
 
-        this.source.start(0, offsetTime);
+        nodeNode.connect(this.audioCtx.destination);
+
+        this.source.start(offsetTime);
     };
 
     resumeTrack = () => {
@@ -89,30 +138,17 @@ class AudioPlayback {
 }
 
 class Visualizer {
+
     constructor(audioCtx) {
         this.audioCtx = audioCtx;
-        this.analyser = audioCtx.createAnalyser();
+        this.analyser = this.audioCtx.createAnalyser();
 
-        this.analyser.fftSize = 512;
+        this.gathering = false;
+        this.data = [];
+
+        this.analyser.fftSize = 64;
         this.bufferLength = this.analyser.frequencyBinCount;
     }
-
-    inputNode = (node) => {
-        node.connect(this.analyser);
-
-        return this.analyser;
-    };
-
-    inputNoteNode = (node) => {
-        this.biquadFilter = this.audioCtx.createBiquadFilter();
-        this.biquadFilter.type = "lowshelf";
-        this.biquadFilter.frequency.value = 125;
-        this.biquadFilter.gain.value = 5;
-
-        node.connect(this.biquadFilter);
-
-        return this.biquadFilter;
-    };
 
     initialize = (canvas, ctx) => {
         this.canvas = canvas;
@@ -124,12 +160,41 @@ class Visualizer {
         this.width = canvas.width;
     };
 
+    inputNode = (node) => {
+        node.connect(this.analyser);
+
+        return this.analyser;
+    };
+
+
+    gatherData = (timeSeconds) => {
+        this.gathering = true;
+
+        return new Promise((resolve, reject) => {
+            this.data.length = 0;
+
+            setTimeout(() => {
+                this.gathering = false;
+
+                if(this.data.length === 0) {
+                    reject("no data");
+                } else resolve(this.data);
+
+            }, timeSeconds);
+        });
+    };
+
     visualize = () => {
         let dataArray = new Float32Array(this.bufferLength);
-        this.analyser.getFloatTimeDomainData(dataArray);
+        // this.analyser.getFloatTimeDomainData(dataArray);
+        this.analyser.getFloatFrequencyData(dataArray);
+
+        if(this.gathering) {
+            let arr = Array.from(dataArray);
+            arr.forEach((el) => this.data.push(el));
+        }
 
         this.partition = this.width / dataArray.length;
-
         this.ctx.clearRect(0, 0, this.width, this.height);
 
         this.ctx.strokeStyle = "#ffffff";

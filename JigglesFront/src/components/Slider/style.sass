@@ -2,9 +2,17 @@
 
 .slider
   @extend %flexbox-centered-col
-  margin: $marginSibling 0
+  margin: $marginSibling
+
+.slider-horizontal
+  max-width: 100%
   width: 100%
   height: auto
+
+.slider-vertical
+  max-height: 100%
+  height: 240px
+  width: auto
 
 .slider-value
   margin: $marginSibling 0
@@ -15,31 +23,62 @@
   color: $primaryTextColor
 
 .slider-container
-  display: flex
-  justify-content: flex-start
-  align-items: flex-start
-  z-index: 1
-  width: 100%
-  height: 4px
   position: relative
+  z-index: 1
   margin: $marginSibling 0
   border-radius: 2px
   background-color: transparentize($secondaryColor, 0.75)
 
+.slider-container-horizontal
+  @extend %flexbox-flex-start-row
+  width: 100%
+  height: 4px
+
+.slider-container-vertical
+  @extend %flexbox-flex-start-col
+  align-items: flex-end
+  justify-content: flex-end
+  width: 4px
+  height: 100%
+
 .slider-placeholder
   @extend %flexbox-flex-start-col
   border-radius: 2px
-  background-color: $primaryDarkColor
+  background-color: $primaryColor
+
+.slider-placeholder-horizontal
   height: 100%
   width: 0
+
+.slider-placeholder-vertical
+  height: 0
+  width: 100%
 
 .thumb
   z-index: 2
   position: absolute
   left: 0
+  top: 100%
   width: 10px
   height: 10px
   border-radius: 5px
-  background-color: $primaryDarkColor
-  top: 0
-  transform: translate(0, -3px)
+  background-color: $primaryTextColor
+
+.thumb-horizontal
+  transform: translate(0, -7px)
+
+.thumb-vertical
+  transform: translate(-2.5px, 0)
+
+.slider-label
+  @extend %flexbox-flex-start-col
+  position: relative
+
+.slider-label-value
+  position: absolute
+  font-family: $fontFamilySansSerif
+  font-size: $subspanTextSize
+  font-weight: 600
+  letter-spacing: 1.65px
+  color: $primaryTextColor
+  transform: translate(-50%, 100%)

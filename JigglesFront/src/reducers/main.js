@@ -1,5 +1,5 @@
 import REDUCER_VALIDATOR from "./reducer-validator"
-import UriBuilder from "./../utils/uri-builder";
+import UriBuilder from "../utils/UriBuilder";
 const SEARCH_QUERY = "SEARCH_QUERY";
 
 export const ACTIONS = {

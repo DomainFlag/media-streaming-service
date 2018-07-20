@@ -1,0 +1,72 @@
+@import "../../resources"
+
+.settings
+  @extend %flexbox-flex-start-col
+  flex: 4
+  height: 100%
+  background-color: $iconsTextColor
+
+.settings-container
+  @extend %flexbox-flex-start-col
+  width: 100%
+  flex: 1
+  padding: $marginComponent
+
+.settings-header
+  @extend %flexbox-centered-row
+  width: 100%
+  height: auto
+  padding: $marginComponent
+
+.settings-header-container
+  @extend %flexbox-centered-row
+  flex: 1
+  height: auto
+
+  &:first-of-type
+    justify-content: flex-start
+
+
+.settings-back-icon
+  width: 14px
+  height: auto
+
+.settings-header-title
+  margin: 0 $marginSection
+  font-family: $fontFamilySansSerif
+  font-size: $subheaderTextSize
+  font-weight: 400
+
+.settings-body
+  @extend %flexbox-centered-row
+  width: 100%
+  flex: 1
+  padding: $marginComponent
+
+.settings-utils
+  @extend %flexbox-flex-start-col
+  justify-content: flex-start
+  flex: 1
+  height: 100%
+  min-height: 100%
+
+.settings-util
+  font-family: $fontFamilySansSerif
+  font-size: $paragraphTextSize
+  font-weight: 400
+  margin: $marginComponent 0
+
+.util-active
+  border-bottom: 2px solid lighten($accentColor, 30%)
+
+.settings-divider
+  width: 2px
+  height: 80%
+  margin: 0 $marginComponent
+  background-color: transparentize($motionPrimaryLightColor, 0.95)
+
+.settings-interaction
+  @extend %flexbox-flex-start-col
+  flex: 5
+  height: 100%
+

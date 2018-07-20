@@ -7,9 +7,9 @@ import Button from "../Button/Button";
 import Input from "../Input/Input";
 import Checkbox from "../Checkbox/Checkbox";
 
-import auth_google from "./../../resources/icons/auth-google.svg"
-import auth_facebook from "./../../resources/icons/auth_facebook.svg"
-import auth_twitter from "./../../resources/icons/auth-twitter.svg"
+import auth_google from "../../resources/icons/social/auth-google.svg"
+import auth_facebook from "../../resources/icons/social/auth_facebook.svg"
+import auth_twitter from "../../resources/icons/social/auth-twitter.svg"
 
 export default class Form extends Component {
     constructor(props) {

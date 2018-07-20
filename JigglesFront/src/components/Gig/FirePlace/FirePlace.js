@@ -1,8 +1,8 @@
 import React from "react"
 import {Component} from "react"
 
-import constrantizer from "./../../../utils/text-image-contrastizer"
-import queryTree from "./../../../utils/comment-parser"
+import constrantizer from "../../../utils/TextImageContrastizer"
+import queryTree from "../../../utils/CommentParser"
 import like from "./../../../resources/icons/like.svg"
 import like_blue from "./../../../resources/icons/like-blue.svg"
 import like_dark from "./../../../resources/icons/like-dark.svg"

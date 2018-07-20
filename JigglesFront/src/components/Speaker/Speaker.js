@@ -4,9 +4,9 @@ import {Component} from "react"
 import "./style.sass"
 
 import Slider from "./../Slider/Slider"
+import { Constants } from "./../Slider/Slider";
 
 import shareFile from "./../../resources/icons/share-file.svg"
-import AudioPlayback from "../../utils/audio_playback";
 
 let req = require.context("../../resources/icons/media/", false, /.*\.svg$/);
 let playbackIcons = {};
@@ -30,7 +30,7 @@ class MusicSharing extends Component {
     }
 
     noisePlayback = (result) => {
-        this.props.AudioPlayback.initialize(this.props.toggleInteraction, result);
+        this.props.audioPlayback.initialize(this.props.toggleInteraction, result);
     };
 
 
@@ -88,22 +88,22 @@ class MusicPlayer extends Component {
     }
 
     componentDidMount = () => {
-        this.props.AudioPlayback.setVolumeLevel(this.state.volume / 100);
+        this.props.audioPlayback.setVolumeLevel(this.state.volume / 100);
         this.ctx = this.canvas.getContext("2d");
 
-        this.props.AudioPlayback.visualizer.initialize(this.canvas, this.ctx);
-        requestAnimationFrame(this.props.AudioPlayback.visualizer.visualize);
+        this.props.audioPlayback.visualizer.initialize(this.canvas, this.ctx);
+        requestAnimationFrame(this.props.audioPlayback.visualizer.visualize);
     };
 
     onToggleState = () => {
         this.setState((prevState) => {
             let state = {};
             if(prevState.state === "pause-button") {
-                this.props.AudioPlayback.pauseTrack();
+                this.props.audioPlayback.pauseTrack();
 
                 state["state"] = "play-button";
             } else {
-                this.props.AudioPlayback.resumeTrack();
+                this.props.audioPlayback.resumeTrack();
 
                 state["state"] = "pause-button";
             }
@@ -135,10 +135,11 @@ class MusicPlayer extends Component {
                 <div className="music-player-volume">
                     <img className="music-player-icon" src={volumes[this.getVolumeIcon()]} />
                     <Slider for="volume"
-                            sliderValue={this.state.volume}
+                            orientation={Constants.ORIENTATION_HORIZONTAL}
+                            value={this.state.volume}
                             trackMinBoundary={0}
                             trackMaxBoundary={101}
-                            changeVolumeLevel={this.props.AudioPlayback.setVolumeLevel}
+                            changeVolumeLevel={this.props.audioPlayback.setVolumeLevel}
                             changeVolume={this.changeVolume}/>
                 </div>
             </div>
@@ -156,10 +157,12 @@ class MusicPlayer extends Component {
 
                     <div className="music-player-playback">
                         <div className="music-player-playback-interaction">
-                            <Slider for="tracker" trackMinBoundary={0}
-                                    trackMaxBoundary={this.props.AudioPlayback.getTotalTime()}
-                                    getState={this.props.AudioPlayback.getAudioTick}
-                                    jumpTrack={this.props.AudioPlayback.jumpTrack}/>
+                            <Slider for="tracker"
+                                    orientation={Constants.ORIENTATION_HORIZONTAL}
+                                    trackMinBoundary={0}
+                                    trackMaxBoundary={this.props.audioPlayback.getTotalTime()}
+                                    getState={this.props.audioPlayback.getAudioTick}
+                                    jumpTrack={this.props.audioPlayback.jumpTrack}/>
                         </div>
                         <div className="music-player-playback-interaction">
                             <img className="music-player-icon" src={playbackIcons["shuffle-mode"]} />
@@ -182,8 +185,6 @@ export default class Speaker extends Component {
     constructor(props) {
         super(props);
 
-        this.AudioPlayback = new AudioPlayback();
-
         this.state = {
             interaction : false
         }
@@ -202,11 +203,15 @@ export default class Speaker extends Component {
             {
                 !this.state.interaction ? (
                     <div className="speaker-container">
-                        <MusicSharing ref={(MusicSharing => this.MusicSharing = MusicSharing )} toggleInteraction={this.toggleInteraction} AudioPlayback={this.AudioPlayback}/>
+                        <MusicSharing ref={(MusicSharing => this.MusicSharing = MusicSharing )}
+                                      toggleInteraction={this.toggleInteraction}
+                                      audioPlayback={this.props.audioPlayback}/>
                     </div>
                 ) : (
                     <div className="speaker-container">
-                        <MusicPlayer title={this.getTitle()} toggleInteraction={this.toggleInteraction} AudioPlayback={this.AudioPlayback}/>
+                        <MusicPlayer title={this.getTitle()}
+                                     toggleInteraction={this.toggleInteraction}
+                                     audioPlayback={this.props.audioPlayback}/>
                     </div>
                 )
             }

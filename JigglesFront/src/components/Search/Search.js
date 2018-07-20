@@ -5,7 +5,7 @@ import "./style.sass"
 
 import cancel from "./../../resources/icons/cancel.svg"
 import cancelFocused from "./../../resources/icons/cancel_focused.svg"
-import UriBuilder from "../../utils/uri-builder";
+import UriBuilder from "../../utils/UriBuilder";
 
 const SEARCH_TYPES = [
     "artist",

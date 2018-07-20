@@ -8,8 +8,7 @@ import logger from "redux-logger"
 import rootReducer from "./reducers/root-reducer"
 
 import './style.sass';
-import Speaker from "./components/Speaker/Speaker";
-import Slider from "./components/Slider/Slider";
+import Studio from "./components/Studio/Studio";
 
 let app = {};
 
@@ -20,7 +19,7 @@ let store = createStore(rootReducer, app, applyMiddleware(
 
 render(
     <Provider store={store}>
-        <Speaker />
+        <Studio />
     </Provider>,
     document.getElementById("root")
 );

@@ -3,21 +3,44 @@ import {Component} from "react";
 
 import "./style.sass"
 
+const ORIENTATION_VERTICAL = "vertical";
+const ORIENTATION_HORIZONTAL = "horizontal";
+
+const SLIDER_PLACEHOLDER = 1;
+const SLIDER_THUMB = 0;
+
+const styleMaker = (type, orientation, value) => {
+    if(orientation === ORIENTATION_VERTICAL) {
+        if(type === SLIDER_PLACEHOLDER) return { height: (100-value) + "%" };
+        else return { top: value + "%" };
+    } else {
+        if(type === SLIDER_PLACEHOLDER) return { width: value + "%"};
+        else return { left: value + "%" };
+    }
+};
+
+export const Constants = {
+    ORIENTATION_VERTICAL,
+    ORIENTATION_HORIZONTAL,
+
+    SLIDER_PLACEHOLDER,
+    SLIDER_THUMB
+};
+
 export default class Slider extends Component {
     constructor(props) {
         super(props);
 
-        this.state = Object.assign({}, this.changeOnEvent(this.props.sliderValue || 0));
+        this.state = Object.assign({}, this.changeOnEvent(this.props.value || 0));
     }
 
-
     changeOnEvent = (currentValue) => {
-        let valuePercentage = currentValue / (this.props.trackMaxBoundary - this.props.trackMinBoundary) * 100;
-        let value = Math.round(this.props.trackMinBoundary + (this.props.trackMaxBoundary - this.props.trackMinBoundary) * valuePercentage / 100);
-        
+        let percentage = (currentValue - this.props.trackMinBoundary) / (this.props.trackMaxBoundary - this.props.trackMinBoundary) * 100;
+        let value = Math.round(this.props.trackMinBoundary + (this.props.trackMaxBoundary - this.props.trackMinBoundary) * percentage / 100);
+
         return {
-            sliderValue: value,
-            sliderPercentage: valuePercentage + "%"
+            value: value,
+            percentage: percentage
         };
     };
 
@@ -35,8 +58,13 @@ export default class Slider extends Component {
     };
 
     componentDidMount = () => {
-        this.sliderDimen = this.slider.clientWidth;
-        this.sliderOffset = this.slider.offsetLeft;
+        if(this.props.orientation === ORIENTATION_VERTICAL) {
+            this.sliderDimen = this.slider.clientHeight;
+            this.sliderOffset = this.slider.offsetTop;
+        } else {
+            this.sliderDimen = this.slider.clientWidth;
+            this.sliderOffset = this.slider.offsetLeft;
+        }
 
         this.setAudioUpdater();
     };
@@ -62,26 +90,32 @@ export default class Slider extends Component {
     };
 
     mouseMove = (event) => {
-        let pageDimenOrient = event.pageX, valuePercentage;
+        let pageDimenOrient, percentage;
+
+        if(this.props.orientation === ORIENTATION_VERTICAL)
+            pageDimenOrient = event.pageY;
+        else pageDimenOrient = event.pageX;
 
         if(pageDimenOrient >= this.sliderOffset && pageDimenOrient <= this.sliderDimen + this.sliderOffset) {
-            valuePercentage = (pageDimenOrient - this.sliderOffset) / this.sliderDimen * 100;
+            percentage = (pageDimenOrient - this.sliderOffset) / this.sliderDimen * 100;
         } else if(pageDimenOrient < this.sliderOffset) {
-            valuePercentage = 0;
+            percentage = 0;
         } else {
-            valuePercentage = 100;
+            percentage = 100;
         }
 
-        let value = Math.round(this.props.trackMinBoundary + (this.props.trackMaxBoundary - this.props.trackMinBoundary) * valuePercentage / 100);
+        let value = Math.round(this.props.trackMinBoundary + (this.props.trackMaxBoundary - this.props.trackMinBoundary) * percentage / 100);
 
         this.setState({
-            sliderValue : value,
-            sliderPercentage : valuePercentage + "%"
+            value : value,
+            percentage : percentage
         });
 
-        if(this.props.for !== "tracker") {
-            this.props.changeVolume(valuePercentage);
-            this.props.changeVolumeLevel(valuePercentage / 100);
+        if(this.props.for === "volume") {
+            this.props.changeVolume(percentage);
+            this.props.changeVolumeLevel(percentage / 100);
+        } else if(this.props.for === "equalizer") {
+            this.props.changeValue(value);
         }
 
         event.stopPropagation();
@@ -96,41 +130,60 @@ export default class Slider extends Component {
         this.thumb.addEventListener("mousedown", this.mouseDown);
 
         if(this.props.for === "tracker") {
-            this.props.jumpTrack(this.state.sliderValue);
+            this.props.jumpTrack(this.state.value);
             this.setAudioUpdater();
         }
     };
 
     mousePlaceholderDown = (e) => {
-        if(this.props.for === "tracker")
+        if(this.props.for === "tracker") {
             clearInterval(this.audioTick);
 
-        if(this.props.for === "tracker") {
             this.props.jumpTrack(this.mouseMove(e));
             this.setAudioUpdater();
         }
     };
 
     getCurrentTrackTime = () => {
-        let seconds = this.state.sliderValue % 60;
-        let minutes = (this.state.sliderValue - seconds) / 60;
+        let seconds = this.state.value % 60;
+        let minutes = (this.state.value - seconds) / 60;
 
         return minutes + ":" +  ("" + seconds).padStart(2, '0');
     };
 
     render = () => (
-        <div className="slider">
+        <div className={"slider slider-" + this.props.orientation}>
             {
-                this.props.for === "tracker" && (
+                this.props.for === "tracker" ? (
                     <span className="slider-value">
                         { this.getCurrentTrackTime() }
                     </span>
+                ) : (this.props.for === "equalizer") ? (
+                    <span className="slider-value">
+                        { this.state.value }
+                    </span>
+                ) : null
+            }
+            <div className={"slider-container slider-container-" + this.props.orientation}
+                 ref={(slider) => this.slider = slider} onClick={this.mousePlaceholderDown}>
+
+                <div className={"slider-placeholder slider-placeholder-" + this.props.orientation}
+                     style={styleMaker(SLIDER_PLACEHOLDER, this.props.orientation, this.state.percentage)} />
+
+                <div className={"thumb thumb-" + this.props.orientation}
+                     style={styleMaker(SLIDER_THUMB, this.props.orientation, this.state.percentage)}
+                     ref={(thumb) => this.thumb = thumb} onMouseDown={this.mouseDown}/>
+
+            </div>
+            {
+                this.props.label && (
+                    <div className="slider-label">
+                        <p className="slider-label-value">
+                            { this.props.label }
+                        </p>
+                    </div>
                 )
             }
-            <div className="slider-container" ref={(slider) => this.slider = slider} onClick={this.mousePlaceholderDown}>
-                <div className="slider-placeholder" style={{ width : this.state.sliderPercentage}} />
-                <div className="thumb" style={{ left: this.state.sliderPercentage}} ref={(thumb) => this.thumb = thumb} onMouseDown={this.mouseDown}/>
-            </div>
         </div>
     )
 }
