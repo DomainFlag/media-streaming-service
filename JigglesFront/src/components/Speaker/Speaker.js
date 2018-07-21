@@ -7,6 +7,7 @@ import Slider from "./../Slider/Slider"
 import { Constants } from "./../Slider/Slider";
 
 import shareFile from "./../../resources/icons/share-file.svg"
+import spinner from "../../resources/icons/spinner-circle.svg"
 
 let req = require.context("../../resources/icons/media/", false, /.*\.svg$/);
 let playbackIcons = {};
@@ -20,54 +21,72 @@ req.keys().forEach(function(key){
     volumes.push(req(key));
 });
 
-class MusicSharing extends Component {
+class MusicLoader extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            title : null
+            dragOver : null
         }
     }
-
-    noisePlayback = (result) => {
-        this.props.audioPlayback.initialize(this.props.toggleInteraction, result);
-    };
-
 
     dropHandler = (e) => {
         e.preventDefault();
 
         let files = e.dataTransfer.files;
+
         if(files.length > 0) {
             let fileReader = new FileReader();
-            if(files[0].type === "audio/mp3") {
 
-                this.setState(({
-                    title: files[0].name.replace(/\..+$/, "")
-                }));
+            if(files[0].type === "audio/mp3") {
+                this.props.changeLoadingState(true);
+
+                this.props.setTitle(files[0].name.replace(/\..+$/, ""));
 
                 fileReader.readAsArrayBuffer(files[0]);
+                fileReader.addEventListener("progress", (e) => {
+                    // Do something latter
+                });
+
                 fileReader.addEventListener("loadend", () => {
                     if(fileReader.readyState === fileReader.DONE) {
-                        this.noisePlayback(fileReader.result);
+                        this.props.audioPlayback.initialize(this.props.toggleInteraction, fileReader.result, (resolution) => {
+                            this.props.changeLoadingState(!resolution);
+                        });
+                    } else {
+                        this.props.changeLoadingState(false);
                     }
                 });
             }
         }
     };
 
-    getTitle = () => this.state.title;
-
     dragOverHandler = (e) => {
         e.preventDefault();
+
+        this.setState({
+           dragOver : "speaker-interaction-zone-dropping"
+        });
+
         // Set the dropEffect to move
         e.dataTransfer.dropEffect = "move"
     };
 
+    dragLeaveHandler = (e) => {
+        e.preventDefault();
+
+        this.setState({
+            dragOver : null
+        });
+    };
 
     render = () => (
-        <div className="speaker-interaction" onDrop={this.dropHandler} onDragOver={this.dragOverHandler}>
-            <img className="speaker-upload" src={shareFile} />
+        <div className="speaker-interaction">
+            <div className={"speaker-interaction-zone " + this.state.dragOver} onDrop={this.dropHandler} onDragLeave={this.dragLeaveHandler} onDragOver={this.dragOverHandler}>
+                <img className="speaker-upload" src={shareFile} />
+
+                <p className="speaker-upload-text">Upload any Mp3 file</p>
+            </div>
         </div>
     );
 }
@@ -145,7 +164,9 @@ class MusicPlayer extends Component {
             </div>
 
             <div className="music-player-body">
-                <p className="music-player-title">{this.props.title}</p>
+                <p className="music-player-title">
+                    { this.props.title }
+                </p>
             </div>
 
             <div className="music-player-stuff">
@@ -186,9 +207,17 @@ export default class Speaker extends Component {
         super(props);
 
         this.state = {
-            interaction : false
+            interaction : false,
+            spinner : false,
+            title : null
         }
     }
+
+    changeLoadingState = (state) => {
+        this.setState(({
+            spinner : state
+        }))
+    };
 
     toggleInteraction = () => {
         this.setState((prevState) => ({
@@ -196,26 +225,34 @@ export default class Speaker extends Component {
         }));
     };
 
-    getTitle = () => this.MusicSharing.getTitle();
+    setTitle = (title) => {
+        this.setState({
+            title
+        })
+    };
 
     render = () => (
         <div className="speaker">
             {
-                !this.state.interaction ? (
+                (!this.state.interaction && !this.state.spinner) ? (
                     <div className="speaker-container">
-                        <MusicSharing ref={(MusicSharing => this.MusicSharing = MusicSharing )}
-                                      toggleInteraction={this.toggleInteraction}
-                                      audioPlayback={this.props.audioPlayback}/>
+                        <MusicLoader ref={(MusicLoader => this.MusicLoader = MusicLoader )}
+                                     toggleInteraction={this.toggleInteraction}
+                                     audioPlayback={this.props.audioPlayback}
+                                     changeLoadingState={this.changeLoadingState}
+                                     setTitle={this.setTitle}/>
                     </div>
-                ) : (
+                ) : (this.state.spinner) ? (
+                    <img className="speaker-spinner" src={spinner}/>
+                ) : (this.state.interaction) && (
                     <div className="speaker-container">
-                        <MusicPlayer title={this.getTitle()}
+                        <MusicPlayer title={this.state.title}
                                      toggleInteraction={this.toggleInteraction}
                                      audioPlayback={this.props.audioPlayback}/>
                     </div>
                 )
             }
         </div>
-    )
+    );
 }
 

@@ -10,7 +10,10 @@
   width: 100%
 
 .equalizer-type
+  user-select: none
+  cursor: pointer
   margin: 0 $marginRelative
+  padding: $marginRelative
   font-family: $fontFamilySansSerif
   font-size: $subparagraphTextSize
   font-weight: 600
@@ -18,7 +21,6 @@
   color: $primaryTextColor
 
 .equalizer-type-active
-  padding: $marginRelative
   background-color: transparentize($accentColor, 0.95)
 
 .equalizer-tweaking
@@ -30,6 +32,6 @@
 
 .equalizer-tweaker
   @extend %flexbox-centered-col
-  width: auto
+  flex: 1
   height: auto
 

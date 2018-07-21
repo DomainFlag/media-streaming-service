@@ -9,20 +9,20 @@ export default class Input extends Component {
 
         this.state = {
             label: props.label,
-            value: props.value || props.label.toLowerCase()
+            value: null
         }
     }
 
     onInputChange = (e) => {
-        this.setState((prevState) => ({
-            value: prevState.value + e.target.value
-        }));
+        this.setState({
+            value:  e.target.value
+        });
     };
 
     render = () => (
         <div className="form-input">
             <label className="form-input-label">{this.state.label}</label>
-            <input className="form-input-action" placeholder={this.state.value} onChange={this.onInputChange}/>
+            <input className="form-input-action" placeholder={this.props.placeholder} onChange={this.onInputChange}/>
         </div>
     );
 }

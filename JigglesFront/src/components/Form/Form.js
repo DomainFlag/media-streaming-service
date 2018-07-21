@@ -35,9 +35,9 @@ export default class Form extends Component {
                     </div>
                 </div>
                 <div className="form-content-container">
-                    <Input {...{label : "E-mail", value : "E-mail..."}}/>
-                    <Input {...{label : "Password", value : "Password..."}}/>
-                    <Input {...{label : "Repeat Password", value : "Repeat Password..."}}/>
+                    <Input {...{label : "E-mail", placeholder : "E-mail..."}}/>
+                    <Input {...{label : "Password", placeholder : "Password..."}}/>
+                    <Input {...{label : "Repeat Password", placeholder : "Repeat Password..."}}/>
                 </div>
             </div>
             <div className="form-action">

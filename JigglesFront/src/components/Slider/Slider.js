@@ -31,7 +31,12 @@ export default class Slider extends Component {
     constructor(props) {
         super(props);
 
-        this.state = Object.assign({}, this.changeOnEvent(this.props.value || 0));
+        this.state = this.changeOnEvent(this.props.value || 0);
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if(nextProps.for === "equalizer")
+            this.setState(this.changeOnEvent(nextProps.value || 0));
     }
 
     changeOnEvent = (currentValue) => {
@@ -40,7 +45,7 @@ export default class Slider extends Component {
 
         return {
             value: value,
-            percentage: percentage
+            percentage: (this.props.orientation === ORIENTATION_VERTICAL) ? 100-percentage : percentage
         };
     };
 
@@ -48,12 +53,11 @@ export default class Slider extends Component {
         if(this.props.getState === undefined)
             return;
 
-        let audioTicker = this.props.getState();
-
         this.audioTick = setInterval(() => {
+            let audioTicker = this.props.getState();
             this.setState(
-                    this.changeOnEvent(audioTicker())
-                );
+                this.changeOnEvent(audioTicker)
+            );
         }, 1000);
     };
 
@@ -66,7 +70,8 @@ export default class Slider extends Component {
             this.sliderOffset = this.slider.offsetLeft;
         }
 
-        this.setAudioUpdater();
+        if(this.props.for === "tracker")
+            this.setAudioUpdater();
     };
 
     componentWillUnmount = () => {
@@ -104,19 +109,21 @@ export default class Slider extends Component {
             percentage = 100;
         }
 
+        percentage = (this.props.orientation === ORIENTATION_VERTICAL) ? 100-percentage : percentage;
         let value = Math.round(this.props.trackMinBoundary + (this.props.trackMaxBoundary - this.props.trackMinBoundary) * percentage / 100);
 
         this.setState({
             value : value,
-            percentage : percentage
+            percentage : (this.props.orientation === ORIENTATION_VERTICAL) ? 100-percentage : percentage
         });
 
         if(this.props.for === "volume") {
             this.props.changeVolume(percentage);
             this.props.changeVolumeLevel(percentage / 100);
-        } else if(this.props.for === "equalizer") {
+        } else if(this.props.for === "equalizer")
             this.props.changeValue(value);
-        }
+        else if(this.props.for === "equalizer")
+            this.props.onChangeParams(value);
 
         event.stopPropagation();
         event.preventDefault();
@@ -140,6 +147,11 @@ export default class Slider extends Component {
             clearInterval(this.audioTick);
 
             this.props.jumpTrack(this.mouseMove(e));
+        }
+    };
+
+    mousePlaceholderUp = (e) => {
+        if(this.props.for === "tracker") {
             this.setAudioUpdater();
         }
     };
@@ -156,19 +168,19 @@ export default class Slider extends Component {
             {
                 this.props.for === "tracker" ? (
                     <span className="slider-value">
-                        { this.getCurrentTrackTime() }
+                        {this.getCurrentTrackTime()}
                     </span>
                 ) : (this.props.for === "equalizer") ? (
                     <span className="slider-value">
-                        { this.state.value }
+                        {this.state.value}
                     </span>
                 ) : null
             }
             <div className={"slider-container slider-container-" + this.props.orientation}
-                 ref={(slider) => this.slider = slider} onClick={this.mousePlaceholderDown}>
+                 ref={(slider) => this.slider = slider} onMouseDown={this.mousePlaceholderDown} onMouseUp={this.mousePlaceholderUp}>
 
                 <div className={"slider-placeholder slider-placeholder-" + this.props.orientation}
-                     style={styleMaker(SLIDER_PLACEHOLDER, this.props.orientation, this.state.percentage)} />
+                     style={styleMaker(SLIDER_PLACEHOLDER, this.props.orientation, this.state.percentage)}/>
 
                 <div className={"thumb thumb-" + this.props.orientation}
                      style={styleMaker(SLIDER_THUMB, this.props.orientation, this.state.percentage)}
@@ -179,7 +191,7 @@ export default class Slider extends Component {
                 this.props.label && (
                     <div className="slider-label">
                         <p className="slider-label-value">
-                            { this.props.label }
+                            {this.props.label}
                         </p>
                     </div>
                 )

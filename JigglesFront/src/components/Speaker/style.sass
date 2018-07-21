@@ -6,6 +6,7 @@
   flex: 3
   height: 100%
   overflow: hidden
+  position: relative
 
 .speaker-container
   @extend %flexbox-centered-col
@@ -17,9 +18,26 @@
   flex: 1
   width: 100%
 
+.speaker-interaction-zone
+  @extend %flexbox-centered-col
+  border-radius: 6px
+  width: 30vw
+  height: 30vw
+  border: 2px dashed transparentize($accentColor, 0.8)
+
+.speaker-interaction-zone-dropping
+  border: 2px dashed $accentColor
+
 .speaker-upload
+  margin: $marginSection
   width: 60px
   height: auto
+
+.speaker-upload-text
+  margin: $marginSection
+  font-family: $fontFamilySansSerif
+  font-size: $subparagraphTextSize
+  color: $primaryTextColor
 
 .music-player
   display: flex
@@ -76,14 +94,17 @@
 
 .music-player-volume
   @extend %flexbox-centered-row
-  margin: $marginComponent
-  min-width: 150px
+  padding: $marginComponent
+  min-width: 175px
   width: auto
+  height: auto
 
 .music-player-icon
   margin: 0 $marginComponent
-  width: 16px
-  height: 16px
+  width: 14px
+  height: 14px
+  min-width: 14px
+  min-height: 14px
 
 .music-player-body
   @extend %flexbox-centered-row
@@ -94,7 +115,21 @@
   text-align: center
   margin: $marginSibling 0
   font-family: $fontFamilySansSerif
-  font-size: $subheaderTextSize
+  font-size: $paragraphTextSize
   font-weight: 600
   letter-spacing: 1.65px
   color: $primaryTextColor
+
+.speaker-spinner
+  position: absolute
+  left: 50%
+  top: 50%
+  width: 48px
+  height: auto
+  animation: spinning 1.5s linear infinite
+
+@keyframes spinning
+  0%
+    transform: translate(-50%, -50%) rotate(0deg)
+  100%
+    transform: translate(-50%, -50%) rotate(360deg)

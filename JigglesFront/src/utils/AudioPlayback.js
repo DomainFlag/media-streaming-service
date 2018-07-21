@@ -1,9 +1,8 @@
 class Setup {
-    constructor(audioCtx, callback) {
+    constructor(audioCtx) {
         this.audioCtx = audioCtx;
         this.equalizer = {};
-        this.callback = callback;
-
+        this.filters = {};
         this.init();
     }
 
@@ -12,23 +11,47 @@ class Setup {
             this.equalizer[Math.pow(2, g)] = 0;
     };
 
+    onChangeValues = (set) => {
+        Object.keys(set).forEach((key) => {
+           if(this.equalizer.hasOwnProperty(key)) {
+               this.equalizer[key] = set[key];
+
+
+               if(this.filters.hasOwnProperty(key)) {
+                   this.filters[key].gain.value = set[key] * 2;
+               }
+           }
+        });
+    };
+
     onChangeValue = (key) => (value) => {
         if(this.equalizer[key] !== value) {
             this.equalizer[key] = value;
 
-            this.callback();
+            if(this.filters.hasOwnProperty(key))
+                this.filters[key].gain.value = Number(value) * 2;
         }
     };
 
     inputEqualizerNode = (node) => {
         let prov = node;
 
+        Object.keys(this.filters).forEach((key) => {
+            this.filters[key].disconnect();
+
+            delete this.filters[key];
+        });
+
         Object.keys(this.equalizer).forEach((type) => {
             let nodeBiquadFilter = this.audioCtx.createBiquadFilter();
+            this.filters[type] = nodeBiquadFilter;
 
             nodeBiquadFilter.type = "peaking";
-            nodeBiquadFilter.frequency.value = Number(type);
+            // More punch
+            nodeBiquadFilter.frequency.value = Number(type) * 2;
             nodeBiquadFilter.gain.value = this.equalizer[type];
+            // Fidelity level, the higher the better distribution on frequency domain
+            nodeBiquadFilter.Q.value = 12.5;
 
             prov.connect(nodeBiquadFilter);
 
@@ -42,17 +65,17 @@ class Setup {
 class AudioPlayback {
     constructor() {
         this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        this.currentTime = Date.now();
 
-        this.offsetTime = undefined;
+        this.offsetTime = 0;
         this.gainNode = this.audioCtx.createGain();
+        this.volume = 0;
 
-        this.setup = new Setup(this.audioCtx, this.jumpTrack);
+        this.setup = new Setup(this.audioCtx);
         this.visualizer = new Visualizer(this.audioCtx);
     }
 
-    initialize = (callback, destination) => {
-        this.currentTime = Date.now();
-
+    initialize = (callback, destination, resolution) => {
         this.audioCtx.decodeAudioData(destination)
             .then((audioBuffer) => {
                 console.log("Successfully created AudioBuffer");
@@ -60,9 +83,13 @@ class AudioPlayback {
                 this.audioBuffer = audioBuffer;
                 this.playAudio(this.audioCtx, audioBuffer);
 
+                resolution(true);
                 callback();
             })
-            .catch((console.error));
+            .catch((data) => {
+                console.error(data);
+                resolution(false);
+            });
     };
 
     getTotalTime = () => {
@@ -70,11 +97,11 @@ class AudioPlayback {
     };
 
     setVolumeLevel = (value) => {
-        this.gainNode.gain.setValueAtTime(value, this.audioCtx.currentTime);
+        this.volume = value;
+        this.gainNode.gain.setValueAtTime(this.volume, this.audioCtx.currentTime);
     };
 
     playAudio = (audioCtx, audioBuffer) => {
-        console.log("fsafsafa");
         this.timeOffset = (Date.now() - this.currentTime) / 1000;
 
         // Get an AudioBufferSourceNode.
@@ -95,23 +122,23 @@ class AudioPlayback {
     };
 
     getCurrentTime = () => {
-        if(this.offsetTime === undefined)
+        if(this.offsetTime === 0)
             return Math.round(this.audioCtx.currentTime - this.timeOffset);
         else {
-            return Math.round(this.audioCtx.currentTime - this.timeOffset + this.offsetTime);
+            return Math.round(this.audioCtx.currentTime - this.offsetTime);
         }
     };
 
     jumpTrack = (offsetTime) => {
-        console.log(typeof offsetTime);
-        if(offsetTime === undefined)
-            offsetTime = this.getCurrentTime();
-        else this.offsetTime = offsetTime;
-        this.timeOffset = this.audioCtx.currentTime;
+        this.offsetTime = this.audioCtx.currentTime - offsetTime;
 
         this.source.disconnect();
         this.source = this.audioCtx.createBufferSource();
         this.source.buffer = this.audioBuffer;
+
+        this.gainNode.disconnect();
+        this.gainNode = this.audioCtx.createGain();
+        this.gainNode.gain.setValueAtTime(this.volume, this.audioCtx.currentTime);
 
         this.source.connect(this.gainNode);
         let audioNode = this.visualizer.inputNode(this.gainNode);
@@ -119,26 +146,21 @@ class AudioPlayback {
 
         nodeNode.connect(this.audioCtx.destination);
 
-        this.source.start(offsetTime);
+        this.source.start(0, offsetTime);
     };
 
     resumeTrack = () => {
-        this.audioCtx.resume();
+        return this.audioCtx.resume();
     };
 
     pauseTrack = () => {
-        this.audioCtx.suspend();
+        return this.audioCtx.suspend();
     };
 
-    getAudioTick = () => {
-        return () => {
-            return this.getCurrentTime();
-        };
-    };
+    getAudioTick = () => this.getCurrentTime();
 }
 
 class Visualizer {
-
     constructor(audioCtx) {
         this.audioCtx = audioCtx;
         this.analyser = this.audioCtx.createAnalyser();
@@ -146,7 +168,7 @@ class Visualizer {
         this.gathering = false;
         this.data = [];
 
-        this.analyser.fftSize = 64;
+        this.analyser.fftSize = 512;
         this.bufferLength = this.analyser.frequencyBinCount;
     }
 
@@ -161,11 +183,15 @@ class Visualizer {
     };
 
     inputNode = (node) => {
+        this.analyser.disconnect();
+        this.analyser = this.audioCtx.createAnalyser();
+        this.analyser.fftSize = 512;
+        this.bufferLength = this.analyser.frequencyBinCount;
+
         node.connect(this.analyser);
 
         return this.analyser;
     };
-
 
     gatherData = (timeSeconds) => {
         this.gathering = true;
@@ -186,8 +212,7 @@ class Visualizer {
 
     visualize = () => {
         let dataArray = new Float32Array(this.bufferLength);
-        // this.analyser.getFloatTimeDomainData(dataArray);
-        this.analyser.getFloatFrequencyData(dataArray);
+        this.analyser.getFloatTimeDomainData(dataArray);
 
         if(this.gathering) {
             let arr = Array.from(dataArray);
