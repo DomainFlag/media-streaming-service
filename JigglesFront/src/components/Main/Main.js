@@ -37,7 +37,7 @@ export class Main extends Component {
                 <iframe
                     src="https://open.spotify.com/embed?uri=spotify:track:11dFghVXANMlKmJXsNCbNl"
                     width="300" height="380" frameBorder="0" allowTransparency="true"
-                    allow="encrypted-media"></iframe>
+                    allow="encrypted-media"/>
             </div>
         </div>
     )

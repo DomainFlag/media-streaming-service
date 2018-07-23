@@ -2,7 +2,6 @@ import React from "react"
 import {Component} from "react"
 
 import "./style.sass"
-import ACTIONS from "../../reducers/main";
 
 export default class Button extends Component {
     constructor(props) {
@@ -15,7 +14,7 @@ export default class Button extends Component {
     }
 
     render = () => (
-        <button className={"button " + this.state.selectable} onClick={this.props.onClick}>
+        <button className={"button " + this.state.selectable} onClick={this.props.onParentClick}>
             {this.state.value}
         </button>
     )

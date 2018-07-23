@@ -1,8 +1,10 @@
 import React from "react"
 import {Component} from "react"
 
+import { BrowserRouter as Route, Link} from "react-router-dom"
 import logo from "../../resources/assets/logo.svg"
-import Form from "../Form/Form";
+import Form from "../Auth/Form/Form";
+import {Main} from "../Main/Main";
 
 export default class Welcome extends Component {
     constructor(props) {
@@ -28,6 +30,11 @@ export default class Welcome extends Component {
                 </div>
             </div>
             <div className="welcome-body">
+
+                <Link to="/main">
+                    Main
+                </Link>
+
             </div>
         </div>
     )

@@ -9,20 +9,30 @@ export default class Input extends Component {
 
         this.state = {
             label: props.label,
-            value: null
-        }
+            value: this.props.value || ""
+        };
+
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if(nextProps.cleanState)
+            this.setState({
+                value : ""
+            });
     }
 
     onInputChange = (e) => {
         this.setState({
             value:  e.target.value
         });
+
+        this.props.onParentChange(e);
     };
 
     render = () => (
         <div className="form-input">
             <label className="form-input-label">{this.state.label}</label>
-            <input className="form-input-action" placeholder={this.props.placeholder} onChange={this.onInputChange}/>
+            <input className="form-input-action" placeholder={this.props.placeholder} value={this.state.value} type={this.props.type} onChange={this.onInputChange}/>
         </div>
     );
 }

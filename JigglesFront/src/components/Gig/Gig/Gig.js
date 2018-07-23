@@ -24,7 +24,6 @@ class Settings extends Component {
     };
 
     render = () => (
-
         <div className="gig-profile-container">
             <img className="gig-profile" src={account} onClick={this.onToggleSettings} />
             {

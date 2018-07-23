@@ -8,8 +8,11 @@ import logger from "redux-logger"
 import rootReducer from "./reducers/root-reducer"
 
 import './style.sass';
-import news from "./dummy/news";
-import Entertainer from "./components/Entertainer/Entertainer";
+
+import { BrowserRouter as Router, Route, Switch} from "react-router-dom";
+import Auth from "./components/Auth/Auth/Auth";
+import {Main} from "./components/Main/Main";
+import Welcome from "./components/Welcome/Welcome";
 
 let app = {};
 
@@ -18,9 +21,15 @@ let store = createStore(rootReducer, app, applyMiddleware(
     logger
 ));
 
+// const history = syncHistoryWithStore(browserHistory, store);
+
 render(
     <Provider store={store}>
-        <Entertainer news={news}/>
+        <Router>
+            <Switch>
+                <Route path="/" component={Auth}/>
+            </Switch>
+        </Router>
     </Provider>,
     document.getElementById("root")
 );

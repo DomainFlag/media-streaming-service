@@ -31,8 +31,8 @@ class RequestifyCollector {
     }
 
     setCollectorAuth() {
-        const ClientID = "API&KEY";
-        const ClientServer = "API&KEY";
+        const ClientID = "YOUR&KEY";
+        const ClientServer = "YOUR&KEY";
 
         this.Authorization = Buffer.from(ClientID + ":" + ClientServer).toString('base64');
     };
@@ -72,7 +72,7 @@ class RequestifyCollector {
 
                 setTimeout(() => {
                     this.getToken();
-                }, response["expires_in"]);
+                }, response["expires_in"] * 1000);
             }
         }
     };
@@ -96,6 +96,7 @@ class RequestifyCollector {
             resolveWithFullResponse: true
         };
 
+        console.log(this.token);
         return requestPromise.get({...options})
             .then((response) => {
                 if(response.statusCode === 200) {
