@@ -1,5 +1,6 @@
 import React from "react"
 import {Component} from "react"
+import {connect} from "react-redux"
 
 import "./style.sass"
 import Search from "../Search/Search";
@@ -141,7 +142,7 @@ class News extends Component {
     );
 }
 
-export default class Entertainer extends Component {
+export class Entertainer extends Component {
     constructor(props) {
         super(props);
 
@@ -186,7 +187,6 @@ export default class Entertainer extends Component {
 
     render = () => (
         <div className="main">
-
             <div className="main-container" style={{ display: this.state.toggleSearch.second_container.display }}>
                 {
                     this.state.toggleSearch.trigger ? (
@@ -196,16 +196,13 @@ export default class Entertainer extends Component {
             </div>
 
             <div className="main-container" style={{opacity: this.state.toggleSearch.first_container.opacity}}>
-
                 <div className="main-header">
-
                     <img id="main-header-logo" src={logo}/>
 
                     <div className="main-header-authentication">
                         <p className="main-header-authentication-auth">SIGN UP</p>
                         <p className="main-header-authentication-auth">LOGIN</p>
                     </div>
-
                 </div>
 
                 <div className="main-searcher">
@@ -213,16 +210,13 @@ export default class Entertainer extends Component {
                 </div>
 
                 <div className="main-body">
-
                     <Release content={releases} label="Releases"/>
-
                     <Divider />
-
                     <News content={news} label="News"/>
-
                 </div>
             </div>
-
         </div>
     )
 }
+
+export default connect(null, )(Entertainer);

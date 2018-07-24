@@ -96,7 +96,6 @@ class RequestifyCollector {
             resolveWithFullResponse: true
         };
 
-        console.log(this.token);
         return requestPromise.get({...options})
             .then((response) => {
                 if(response.statusCode === 200) {

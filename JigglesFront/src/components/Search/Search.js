@@ -1,22 +1,15 @@
-import React from "react"
-import {Component} from "react"
-
-import "./style.sass"
+import React        from "react"
+import {Component}  from "react"
+import {ACTIONS}    from "../../reducers/entertainer"
+import {connect}    from "react-redux"
 
 import cancel from "./../../resources/icons/cancel.svg"
 import cancelFocused from "./../../resources/icons/cancel_focused.svg"
-import UriBuilder from "../../utils/UriBuilder";
 
-const SEARCH_TYPES = [
-    "artist",
-    "album",
-    "track"
-];
+import "./style.sass"
+import CONSTANTS from "../../utils/Constants";
 
-const SCHEME = "http";
-const AUTHORITY = "localhost:8080";
-
-export default class Search extends Component {
+export class Search extends Component {
     constructor(props) {
         super(props);
 
@@ -57,25 +50,10 @@ export default class Search extends Component {
 
     onSubmit = (e) => {
         if(e.which === 13) {
-            SEARCH_TYPES.forEach((type) => {
-                let query = {};
-                query[type] = this.state.value;
+            let fetchByType = this.props.fetchQuery(this.state.value);
 
-                let uri = new UriBuilder()
-                    .setScheme(SCHEME)
-                    .setAuthority(AUTHORITY)
-                    .appendPath(type)
-                    .appendQueryParameter(query)
-                    .build();
-
-                let headers = new Headers();
-                headers.append("Method", "GET");
-                headers.append("Content-Type", "application/json");
-
-                fetch(uri, { headers }).then((data) => data.json())
-                    .then(console.log)
-                    .catch(console.error);
-            });
+            CONSTANTS.TYPES
+                .forEach((type) => fetchByType(type));
         }
     };
 
@@ -85,7 +63,6 @@ export default class Search extends Component {
         });
 
         let percentage = e.target.value.length * this.state.size.characterSize / this.state.size.maxSize;
-        console.log(this.state.size.maxSize);
         this.border.style.width = Math.max(this.state.size.maxSize*percentage, this.state.size.characterSize) + "px";
     };
 
@@ -102,3 +79,10 @@ export default class Search extends Component {
         </div>
     )
 }
+
+
+const mapDispatchToProps = (dispatch) => ({
+    fetchQuery : (queryString) => (type) => dispatch(ACTIONS.ENTERTAINER_QUERY(type, queryString))
+});
+
+export default connect(null, mapDispatchToProps)(Search);

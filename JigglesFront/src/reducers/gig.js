@@ -19,54 +19,49 @@ export const ACTIONS = {
             };
         }
     },
-    /**
-     * @param type one of [ 'News', 'Reviews' ]
-     * @returns {function(*): Promise<Response>}
-     * @constructor
-     */
-    ENTERTAINER_CONTENT : (type) => {
+    GIG_CONTENT : (filterBy) => {
         return (dispatch) => {
             dispatch(ACTIONS.ENTERTAINER_STATE(CONSTANTS.PENDING));
 
             return fetch(new UriBuilder()
                 .setScheme(CONSTANTS.SCHEME)
                 .setAuthority(CONSTANTS.APP)
-                .appendPath(CONSTANTS.ENTERTAINER)
-                .appendPath(type)
+                .appendPath(CONSTANTS.GIG)
+                .appendPath(filterBy)
                 .build()
             )
                 .then((response) => response.json())
-                .then((body) => dispatch(ACTIONS.ENTERTAINER_STATE(CONSTANTS.SUCCESS, type, body)))
+                .then((body) => dispatch(ACTIONS.ENTERTAINER_STATE(CONSTANTS.SUCCESS, filterBy, body)))
                 .catch(() => dispatch(ACTIONS.ENTERTAINER_STATE(CONSTANTS.ERROR)));
         }
     },
-    /**
-     * @param type one of [ 'Artist', 'Album', 'Track' ]
-     * @param querySearch
-     * @returns {function(*): Promise<Response>}
-     * @constructor
-     */
-    ENTERTAINER_QUERY : (type, querySearch) => {
+    GIG_PUT_CONTENT : (payload) => {
         return (dispatch) => {
             dispatch(ACTIONS.ENTERTAINER_STATE(CONSTANTS.PENDING));
 
-            let uriBuilder = new UriBuilder()
+            let url = new UriBuilder()
                 .setScheme(CONSTANTS.SCHEME)
                 .setAuthority(CONSTANTS.APP)
-                .appendPath(type)
-                .appendQueryParameter({ type, querySearch})
+                .appendPath(CONSTANTS.GIG)
+                .appendPath(CONSTANTS.CREATE)
+                .appendPath(payload)
                 .build();
 
-            return fetch(uriBuilder)
+            let headers = new Headers();
+            headers.set("Content-Type", "application/json");
+
+            // TODO(0) do the image
+
+            return fetch(url, { method : "POST", }
+            )
                 .then((response) => response.json())
-                .then((body) => dispatch(ACTIONS.ENTERTAINER_STATE(CONSTANTS.SUCCESS, type, body)))
+                .then((body) => dispatch(ACTIONS.ENTERTAINER_STATE(CONSTANTS.SUCCESS, filterBy, body)))
                 .catch(() => dispatch(ACTIONS.ENTERTAINER_STATE(CONSTANTS.ERROR)));
         }
     }
 };
 
-
-const entertainer = (() => {
+const gig = (() => {
     const REDUCER_ACTIONS = {
         ENTERTAINER_STATE : (state, action) => {
             if(action.status === CONSTANTS.SUCCESS) {
@@ -78,4 +73,4 @@ const entertainer = (() => {
     return (state = [], action) => REDUCER_VALIDATOR(REDUCER_ACTIONS, state, action);
 })();
 
-export default entertainer;
+export default gig;

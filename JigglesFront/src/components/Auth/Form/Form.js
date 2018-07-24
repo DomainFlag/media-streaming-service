@@ -1,5 +1,6 @@
 import React from "react"
 import {Component} from "react"
+import { withRouter } from "react-router";
 
 import "./style.sass"
 import logo from "./../../../resources/assets/logo.svg"
@@ -11,7 +12,7 @@ import auth_google from "../../../resources/icons/social/auth-google.svg"
 import auth_facebook from "../../../resources/icons/social/auth_facebook.svg"
 import auth_twitter from "../../../resources/icons/social/auth-twitter.svg"
 
-export default class Form extends Component {
+class Form extends Component {
     constructor(props) {
         super(props);
 
@@ -63,13 +64,14 @@ export default class Form extends Component {
     };
 
     onSubmitUser = () => {
-        document.cookie = `email=${this.state.email.trim()}`;
+        if(this.state.rememberMe)
+            document.cookie = `email=${this.state.email.trim()}`;
+
         this.props.login({ email : this.state.email, password : this.state.password});
 
         this.setState((prevState) => ({
             submitted : !prevState.submitted
         }));
-
     };
 
     render = () => (
@@ -109,3 +111,5 @@ export default class Form extends Component {
         </div>
     )
 }
+
+export default withRouter(Form);

@@ -8,7 +8,7 @@ import "./style.sass"
 import AmusingAuth from "../AmusingAuth/PlayfullAuth";
 import {ACTIONS} from "../../../reducers/auth";
 
-export class Auth extends Component {
+class Auth extends Component {
     constructor(props) {
         super(props);
     }
@@ -26,8 +26,10 @@ export class Auth extends Component {
 }
 
 
-const mapDispatchToProps = (dispatch) => ({
-    login: (body) => dispatch(ACTIONS.USER_AUTH(body))
+const mapDispatchToProps = (dispatch, ownProps) => ({
+    login : (body) => {
+        dispatch(ACTIONS.USER_AUTH(ownProps.history, body));
+    }
 });
 
 export default connect(null, mapDispatchToProps)(Auth);

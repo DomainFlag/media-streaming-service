@@ -3,7 +3,6 @@ import {Component} from "react"
 import {connect} from "react-redux"
 
 import logo from "../../resources/assets/logo.svg"
-import {ACTIONS} from "../../reducers/main"
 
 import "./style.sass"
 import Button from "../Button/Button";
@@ -23,7 +22,7 @@ export class Main extends Component {
                         <p className="main-header-authentication-auth">Login</p>
                     </div>
                 </div>
-                <div className="divider" />
+                <div className="divider"/>
                 <div className="main-header-menu">
                     <div className="main-header-links">
                         <p className="main-header-links-item">Home</p>
@@ -33,7 +32,11 @@ export class Main extends Component {
                 </div>
             </div>
             <div className="main-body">
-                <Button {...{ value: "Fetch Token", selectable: null, onClick: this.props.fetch_token}}/>
+                <Button {...{
+                    value: "Fetch Token",
+                    selectable: null,
+                    onClick: this.props.fetch_token
+                }}/>
                 <iframe
                     src="https://open.spotify.com/embed?uri=spotify:track:11dFghVXANMlKmJXsNCbNl"
                     width="300" height="380" frameBorder="0" allowTransparency="true"
@@ -42,9 +45,3 @@ export class Main extends Component {
         </div>
     )
 }
-
-const mapDispatchToProps = (dispatch) => ({
-    fetch_token: () => dispatch(ACTIONS.FETCH_QUERY())
-});
-
-export default connect(null, mapDispatchToProps)(Main);
