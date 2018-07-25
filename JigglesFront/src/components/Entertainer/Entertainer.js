@@ -1,17 +1,18 @@
 import React from "react"
 import {Component} from "react"
+import ReactDOM from "react-dom"
 import {connect} from "react-redux"
+import {Link} from "react-router-dom"
 
-import "./style.sass"
 import Search from "../Search/Search";
-import logo from "./../../resources/assets/logo.svg"
-
-import impact from "./../../resources/icons/impact.svg"
-
 import releases from "../../dummy/releases"
 import news from "../../dummy/news";
 
-import Button from "../Button/Button";
+import logo from "./../../resources/assets/logo.svg"
+import impact from "./../../resources/icons/impact.svg"
+import Button from "../Components/Button/Button";
+
+import "./style.sass"
 
 class Release extends Component {
     constructor(props) {
@@ -47,8 +48,8 @@ class Release extends Component {
 
             <div className="entertainment-container">
                 {
-                    this.props.content.map((snippet) => (
-                        <div className="highlight">
+                    this.props.content.map((snippet, index) => (
+                        <div className="highlight" key={index}>
                             <div className="highlight-container">
 
                                 <div className="highlight-spotlight">
@@ -78,8 +79,8 @@ class Release extends Component {
                                     {
                                         snippet.reviews
                                             .sort(this.sortByScore)
-                                            .map((review) => (
-                                            <div className="highlight-review">
+                                            .map((review, index) => (
+                                            <div className="highlight-review" key={index}>
                                                 <div className="highlight-review-container">
                                                     <p className="highlight-review-score" style={{backgroundColor: this.measureScore(review.score)}}>{review.score}</p>
                                                 </div>
@@ -127,8 +128,8 @@ class News extends Component {
             </div>
             <div className="entertainment-container">
                 {
-                    this.props.content.map((content) => (
-                        <div className="news">
+                    this.props.content.map((content, index) => (
+                        <div className="news" key={index}>
                             <img className="news-image" src={content.url} />
 
                             <div className="news-content">
@@ -158,6 +159,10 @@ export class Entertainer extends Component {
             }
         }
     }
+
+    componentDidMount = () => {
+        ReactDOM.findDOMNode(this).parentNode.className = "extendable";
+    };
 
     onToggleSearch = () => {
         this.setState((prevState) =>
@@ -197,16 +202,53 @@ export class Entertainer extends Component {
 
             <div className="main-container" style={{opacity: this.state.toggleSearch.first_container.opacity}}>
                 <div className="main-header">
-                    <img id="main-header-logo" src={logo}/>
 
-                    <div className="main-header-authentication">
-                        <p className="main-header-authentication-auth">SIGN UP</p>
-                        <p className="main-header-authentication-auth">LOGIN</p>
+                    <div className="main-header-container">
+                        <img id="main-header-logo" src={logo}/>
+
+                        <Button value="Search" capsLocked={false} iconBased={true} selectable={null} backgroundColor="#148491" onClick={this.onToggleSearch}/>
+                    </div>
+
+                    <div className="main-header-miscellaneous">
+                        <div className="main-header-links">
+                            <Link to="/forum">
+                                <p className="main-header-link">Forum</p>
+                            </Link>
+                            <Link to="/studio">
+                                <p className="main-header-link">Playcollection</p>
+                            </Link>
+                        </div>
+
+                        <div className="main-header-authentication">
+                            <p className="main-header-authentication-auth">Sign up</p>
+                            <p className="main-header-authentication-auth">Login</p>
+                        </div>
                     </div>
                 </div>
 
-                <div className="main-searcher">
-                    <Button value="Some cool interaction here" onClick={this.onToggleSearch}/>
+                <div className="main-content">
+                    <div className="main-content-header">
+                        <p className="main-content-header-text">
+                            Currently recommended tracks
+                        </p>
+                    </div>
+
+                    <div className="main-content-body">
+                        <iframe
+                            className="main-content-widget" src="https://open.spotify.com/embed?uri=spotify:track:11dFghVXANMlKmJXsNCbNl"
+                            width="240" height="240" frameBorder="0" allowtransparency="true"
+                            allow="encrypted-media"/>
+
+                        <iframe
+                            className="main-content-widget" src="https://open.spotify.com/embed?uri=spotify:track:11dFghVXANMlKmJXsNCbNl"
+                            width="240" height="240" frameBorder="0" allowtransparency="true"
+                            allow="encrypted-media"/>
+
+                        <iframe
+                            className="main-content-widget" src="https://open.spotify.com/embed?uri=spotify:track:11dFghVXANMlKmJXsNCbNl"
+                            width="240" height="240" frameBorder="0" allowtransparency="true"
+                            allow="encrypted-media"/>
+                    </div>
                 </div>
 
                 <div className="main-body">

@@ -5,13 +5,12 @@ let authenticate = (req, res, next) => {
 
     User.findByToken(token).then((user) => {
         if(!user) {
-            return Promise.reject();
+            return Promise.reject("error");
         }
 
         req.user = user;
         req.token = token;
         next();
-
     }).catch((e) => {
         res.status(401).send();
     });

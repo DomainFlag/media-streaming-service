@@ -4,9 +4,12 @@ import {Component} from "react"
 import "./style.sass"
 
 import menu_icon from "./../../../resources/icons/social-menu.svg"
-import logo from "./../../../resources/assets/logo.svg"
+import logo from "./../../../resources/assets/logo-white.svg"
 import account from "./../../../resources/icons/account.svg"
 import Fireplace from "../FirePlace/FirePlace";
+import ReactDOM from "react-dom";
+
+import fireplaces from "../../../dummy/fireplaces"
 
 class Settings extends Component {
     constructor(props) {
@@ -45,6 +48,10 @@ export default class Gig extends Component {
         super(props);
     }
 
+    componentDidMount = () => {
+        ReactDOM.findDOMNode(this).parentNode.className = "extendable";
+    };
+
     render = () => (
         <div className="gig">
             <div className="gig-header">
@@ -82,7 +89,7 @@ export default class Gig extends Component {
                 <div className="gig-main-container">
                     <div className="gig-main-content">
                         {
-                            this.props.fireplaces.map((fireplace) => (
+                            fireplaces.map((fireplace) => (
                                 <Fireplace fireplace={fireplace}/>
                             ))
                         }

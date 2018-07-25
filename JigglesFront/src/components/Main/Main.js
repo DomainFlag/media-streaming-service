@@ -4,8 +4,7 @@ import {connect} from "react-redux"
 
 import logo from "../../resources/assets/logo.svg"
 
-import "./style.sass"
-import Button from "../Button/Button";
+import Button from "../Components/Button/Button";
 
 export class Main extends Component {
     constructor(props) {

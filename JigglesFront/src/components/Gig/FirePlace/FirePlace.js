@@ -68,6 +68,9 @@ class Fireplace extends Component {
     }
 
     saveTree = (depth) => {
+        if(!this.props.hasOwnProperty("comments"))
+            return [];
+
         let commentsProv = this.props.fireplace.comments.slice();
         return queryTree(commentsProv, depth);
     };
@@ -97,7 +100,10 @@ class Fireplace extends Component {
     render = () => (
         <div className="fireplace">
             <div className="fireplace-caption">
-                <img className="fireplace-caption-content" src={this.props.fireplace.caption} ref={(img) => this.img = img } onLoad={this.onLoadImage}/>
+                <img className="fireplace-caption-content"
+                     src={this.props.fireplace.caption}
+                     ref={(img) => this.img = img }
+                     onLoad={this.onLoadImage}/>
                 <div className="fireplace-utility" ref={(container) => this.container = container}>
                     <div className="fireplace-votes" style={{ color: this.state.color }}>
                         <img src={(
@@ -106,10 +112,10 @@ class Fireplace extends Component {
                         <p className="fireplace-votes-content">{this.props.fireplace.votes}</p>
                     </div>
                     <div className="fireplace-created_by" style={{ color: this.state.color }}>
-                        <p>{this.props.fireplace.created_by}</p>
+                        <p>{this.props.fireplace.created_by || "User"}</p>
                     </div>
                     <div className="fireplace-date_when" style={{ color: this.state.color }}>
-                        <p>{this.props.fireplace.created_when}</p>
+                        <p>{this.props.fireplace.created_when || (new Date()).toDateString()}</p>
                     </div>
                 </div>
             </div>
@@ -127,7 +133,8 @@ class Fireplace extends Component {
                     <div className="fireplace-extra">
                         <p className="fireplace-extra-more" onClick={this.extendSocial}>
                             {
-                                this.state.depth === 1 ? "More..." : "...Less"
+                                this.state.comments.length > 0 &&
+                                    (this.state.depth === 1 ? "More..." : "...Less")
                             }
                         </p>
                     </div>

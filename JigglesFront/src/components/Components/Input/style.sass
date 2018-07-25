@@ -1,24 +1,36 @@
-@import "./../../resources"
+@import "../../../resources"
 
-.form-textarea
+.form-input
+  width: 100%
   @extend %flexbox-flex-start-col
-  width: auto
-  height: auto
 
   > *
     margin: $marginRelative 0
 
-.form-textarea-label
+.form-input-label
   display: flex
   font-family: $fontFamilySansSerif
   font-size: $paragraphTextSize
   font-weight: 600
   color: $primaryDarkColor
 
-.form-textarea-action
-  min-width: 30vw
-  max-width: 30vw
-  width: 30vw
+.form-input-validation
+  @extend %flexbox-flex-start-col
+  position: relative
+
+.form-input-info
+  @extend %flexbox-flex-start-col
+  position: absolute
+  left: 0
+  padding: 0 $marginRelative
+  transform: translate(-100%, 0)
+
+.form-input-warning
+  font-size: $spanTextSize
+  font-family: $fontFamilySansSerif
+  font-weight: 600
+
+.form-input-action
   font-size: $subparagraphTextSize
   font-family: $fontFamilySansSerif
   font-weight: 600
@@ -28,6 +40,7 @@
   border-radius: 2px
   color: $primaryTextColor
   height: 44px
+  width: 320px
 
   &:focus
     border: 2px solid rgba($accentColor, 0.4)

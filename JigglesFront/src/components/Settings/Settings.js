@@ -3,7 +3,7 @@ import {Component} from "react"
 
 import "./style.sass"
 
-import Equalizer from "./../Toys/Equalizer/Equalizer";
+import Equalizer from "../Studio/Toys/Equalizer/Equalizer";
 
 import backArrow from "../../resources/icons/back-arrow.svg"
 

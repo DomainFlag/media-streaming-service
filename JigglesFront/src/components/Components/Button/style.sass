@@ -1,6 +1,7 @@
-@import "./../../resources"
+@import "../../../resources"
 
 .button
+  cursor: pointer
   outline: none
   border-radius: 6px
   border: none
@@ -28,4 +29,24 @@
 
   &:active
     box-shadow: 1.5px 1.5px 6px 1px rgba($secondaryColor, 0.2)
+
+.button-icon
+  @extend %flexbox-centered-row
+  cursor: pointer
+  min-width: 80px
+  min-height: 40px
+  padding: 0 12px
+
+  > *
+    margin: 0 $marginRelative
+
+.button-icon-content
+  width: 18px
+  height: auto
+
+.button-icon-text
+  font-family: $fontFamilySansSerif
+  font-weight: 600
+  color: $primaryTextColor
+
 

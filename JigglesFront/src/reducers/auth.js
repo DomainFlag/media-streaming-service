@@ -10,7 +10,7 @@ export const ACTIONS = {
         status,
         response
     }),
-    USER_AUTH : (redirect, body = null) => {
+    USER_AUTH : (redirect, type, body = null) => {
         return (dispatch) => {
             dispatch(ACTIONS.USER_AUTH_STATE(CONSTANTS.PENDING));
 
@@ -18,18 +18,24 @@ export const ACTIONS = {
             headers.set("Content-Type", "application/json");
             headers.set("Access-Control-Expose-Headers", "X-Auth");
 
-            return fetch(new UriBuilder()
-                    .setScheme("https")
-                    .setAuthority(CONSTANTS.APP)
-                    .appendPath("users")
-                    .build(), { method : "POST", body : JSON.stringify(body), headers })
+            let uriBuilder = new UriBuilder()
+                .setScheme(CONSTANTS.SCHEME)
+                .setAuthority(CONSTANTS.APP)
+                .appendPath(CONSTANTS.USERS);
+
+            if(type === CONSTANTS.LOGIN)
+                uriBuilder.appendPath(CONSTANTS.LOGIN);
+
+            let url = uriBuilder.build();
+
+            return fetch(url, { method : "POST", body : JSON.stringify(body), headers })
                 .then((response) => {
                     if(response.status >= 200 && response.status < 400) {
                         if(response.headers.get("X-Auth") !== null) {
                             dispatch(ACTIONS.USER_AUTH_STATE(CONSTANTS.SUCCESS, response.headers.get("X-Auth")));
 
                             // Redirection
-                            redirect.push("/entertainer");
+                            redirect.push("/main");
                         } else Promise.reject();
                     } else Promise.reject();
                 })
@@ -45,7 +51,7 @@ const auth = (() => {
         USER_AUTH_STATE : (state, action) => {
             if(action.status === "success")
                 // Token added to keep user logged in
-                document.cookie = "token=" + action.response;
+                document.cookie = "token=" + action.response + "; path=/";
 
             return state;
         }

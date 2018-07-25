@@ -4,14 +4,26 @@
   margin: 0
   padding: 0
   box-sizing: border-box
+  text-decoration: none
 
 html, body
   width: 100%
   height: 100%
 
-#root, .welcome
+.welcome
   width: 100%
   height: 100%
+
+.extendable
+  width: 100%
+  min-height: 100%
+  height: 100%
+  overflow: hidden
+
+.non-extendable
+  width: 100%
+  height: 100%
+  overflow: hidden
 
 #root
   display: flex
@@ -22,20 +34,19 @@ html, body
 
 /* Welcome Layout */
 .welcome
-  position: relative
-  display: flex
+  @extend %flexbox-flex-start-col
   justify-content: flex-start
-  align-items: flex-start
-  flex-direction: column
+  position: relative
 
 .welcome-header
   position: absolute
+  z-index: 1
   width: 100%
   display: flex
   justify-content: space-between
   align-items: center
   flex-direction: row
-  margin: $marginSection 0
+  padding: $marginSection 0
 
 /* Welcome Layout - Logo */
 .welcome-header-logo
@@ -46,7 +57,7 @@ html, body
   flex-direction: row
 
 #welcome-header-logo
-  height: 54px
+  height: 42px
   width: auto
 
 .welcome-header-menu
@@ -63,39 +74,72 @@ html, body
   align-items: center
   flex-direction: row
   font-weight: 600
-  margin: 0 $marginComponent
+  margin: 0 $ogreTextSize
 
 .welcome-header-links-item
   display: flex
-  font-size: $subheaderTextSize
+  font-size: $linkTextSize
   font-family: $fontFamilySansSerif
-  margin: 0 $marginRelative
-  color: $primaryDarkColor
+  margin: 0 $marginParent
+  color: $iconsTextColor
+  cursor: pointer
+
+  &:hover
+    color: $primaryDarkColor
 
 /* Welcome Layout - Auth */
 .welcome-header-authentication
   display: flex
   justify-content: center
-  font-size: $subheaderTextSize
-  font-family: $fontFamilySansSerif
-  margin: 0 $marginComponent
+  margin: 0 $ogreTextSize
 
 .welcome-header-authentication-auth
   display: flex
   font-weight: 600
-  font-size: $subheaderTextSize
+  font-size: $linkTextSize
   font-family: $fontFamilySansSerif
-  margin: 0 $marginRelative
-  color: $primaryDarkColor
+  margin: 0 $marginParent
+  color: $iconsTextColor
+  cursor: pointer
+
+  &:hover
+    color: $primaryDarkColor
 
 .welcome-body
-  width: 100%
-  display: flex
+  @extend %flexbox-centered-row
   flex: 1
-  justify-content: center
-  align-items: center
-  flex-direction: row
-  background-color: $backgroundColor
+  position: absolute
+  top: 0
+  left: 0
+  width: 100%
+  height: 100%
+
+.welcome-body-col
+  @extend %flexbox-centered-col
+  flex: 1
+
+.welcome-body-interaction
+  @extend %flexbox-flex-start-col
+
+.welcome-body-header
+  font-weight: 900
+  font-size: $ogreTextSize
+  font-family: $fontFamilySansSerif
+  margin: $marginRelative 0
+  color: $iconsTextColor
+
+.welcome-body-subheader
+  font-weight: 900
+  white-space: pre
+  font-size: $headerTextSize
+  font-family: $fontFamilySansSerif
+  margin: $marginRelative 0
+  color: $iconsTextColor
+
+.welcome-background
+  z-index: 0
+  width: 100%
+  height: 100%
 
 .divider
   margin: $marginComponent 0

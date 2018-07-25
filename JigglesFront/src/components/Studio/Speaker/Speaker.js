@@ -3,20 +3,20 @@ import {Component} from "react"
 
 import "./style.sass"
 
-import Slider from "./../Slider/Slider"
-import { Constants } from "./../Slider/Slider";
+import Slider from "./../../Components/Slider/Slider"
+import { Constants } from "./../../Components/Slider/Slider";
 
-import shareFile from "./../../resources/icons/share-file.svg"
-import spinner from "../../resources/icons/spinner-circle.svg"
+import shareFile from "./../../../resources/icons/share-file.svg"
+import spinner from "../../../resources/icons/spinner-circle.svg"
 
-let req = require.context("../../resources/icons/media/", false, /.*\.svg$/);
+let req = require.context("../../../resources/icons/media/", false, /.*\.svg$/);
 let playbackIcons = {};
 req.keys().forEach(function(key){
     playbackIcons[key.slice(2, key.length-4)] = req(key);
 });
 
 let volumes = [];
-req = require.context("../../resources/icons/media/volume", false, /.*\.svg$/);
+req = require.context("../../../resources/icons/media/volume", false, /.*\.svg$/);
 req.keys().forEach(function(key){
     volumes.push(req(key));
 });

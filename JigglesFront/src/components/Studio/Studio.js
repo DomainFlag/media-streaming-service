@@ -4,10 +4,11 @@ import {Component} from "react"
 import "./style.sass"
 
 import AudioPlayback from "../../utils/AudioPlayback";
-import Speaker from "../Speaker/Speaker";
+import Speaker from "./Speaker/Speaker";
 import Settings from "../Settings/Settings";
 
 import settingsMenu from "../../resources/icons/chat-menu.svg"
+import ReactDOM from "react-dom";
 
 export default class Studio extends Component {
     constructor(props) {
@@ -19,6 +20,10 @@ export default class Studio extends Component {
             settingsToggle : false
         }
     }
+
+    componentDidMount = () => {
+        ReactDOM.findDOMNode(this).parentNode.className = "non-extendable";
+    };
 
     onToggleSettings = () => {
         this.setState((prevState) => ({

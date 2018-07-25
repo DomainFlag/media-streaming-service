@@ -2,8 +2,8 @@ import React from "react"
 import {Component} from "react"
 
 import "./style.sass"
-import Slider from "../../Slider/Slider";
-import { Constants } from "../../Slider/Slider"
+import Slider from "../../../Components/Slider/Slider";
+import { Constants } from "../../../Components/Slider/Slider"
 
 export default class Settings extends Component {
     constructor(props) {

@@ -5,6 +5,7 @@ import "./style.sass"
 import social_profile from "./../../../resources/icons/account.svg"
 import cancel from "./../../../resources/icons/cancel.svg"
 import chat_menu from "./../../../resources/icons/chat-menu.svg"
+import ReactDOM from "react-dom";
 
 class Profile extends Component {
     constructor(props) {
@@ -121,6 +122,10 @@ export default class Social extends Component {
             toggleContainer: null
         }
     }
+
+    componentDidMount = () => {
+        ReactDOM.findDOMNode(this).parentNode.className = "non-extendable";
+    };
 
     onToggleContainer = (friend) => {
         this.setState((prevState) => {

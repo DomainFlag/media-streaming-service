@@ -4,9 +4,9 @@ import { withRouter } from "react-router";
 
 import "./style.sass"
 import logo from "./../../../resources/assets/logo.svg"
-import Button from "../../Button/Button";
-import Input from "../../Input/Input";
-import Checkbox from "../../Checkbox/Checkbox";
+import Button from "../../Components/Button/Button";
+import Input from "../../Components/Input/Input";
+import Checkbox from "../../Components/Checkbox/Checkbox";
 
 import auth_google from "../../../resources/icons/social/auth-google.svg"
 import auth_facebook from "../../../resources/icons/social/auth_facebook.svg"
@@ -18,7 +18,7 @@ class Form extends Component {
 
         this.state = {
             password : null,
-            validated: false,
+            validated: null,
             email : this.getRememberedMyContent(),
             rememberMe : false,
             submitted : false
@@ -42,19 +42,9 @@ class Form extends Component {
     };
 
     onParentChangeValidatePassword = (e) => {
-        if(this.state.password !== e.target.value) {
-            console.log("Not the same password");
-
-            this.setState({
-                validated : false
-            });
-        } else {
-            console.log("Password validated");
-
-            this.setState({
-                validated : false
-            });
-        }
+        this.setState({
+            validated : (e.target.value.length === 0) ? null : this.state.password === e.target.value
+        });
     };
 
     onParentToggle = (state) => {
@@ -67,7 +57,7 @@ class Form extends Component {
         if(this.state.rememberMe)
             document.cookie = `email=${this.state.email.trim()}`;
 
-        this.props.login({ email : this.state.email, password : this.state.password});
+        this.props.auth(this.props.type, { email : this.state.email, password : this.state.password});
 
         this.setState((prevState) => ({
             submitted : !prevState.submitted
@@ -88,7 +78,9 @@ class Form extends Component {
                     </div>
                     <div className="form-content-auth-header">
                         <p className="form-content-auth-header-text">
-                            Social Login with any of...
+                            {
+                                `Social ${this.props.type} with any of...`
+                            }
                         </p>
                     </div>
                 </div>
@@ -99,14 +91,21 @@ class Form extends Component {
                     <Input {...{label : "Password", placeholder : "Password...", type : "password"}}
                            cleanState={this.state.submitted}
                            onParentChange={this.onParentChangePassword} />
-                    <Input {...{label : "Repeat Password", placeholder : "Repeat Password...", type : "password"}}
-                           cleanState={this.state.submitted}
-                           onParentChange={this.onParentChangeValidatePassword}/>
+                    {
+                        this.props.type === "signup" && (
+                            <Input {...{label : "Repeat Password", placeholder : "Repeat Password...", type : "password"}}
+                                   cleanState={this.state.submitted}
+                                   onParentChange={this.onParentChangeValidatePassword}
+                                   validation={this.state.validated}/>
+                        )
+                    }
                 </div>
             </div>
             <div className="form-action">
                 <Checkbox {...{label : "Remember Me"}} onParentToggle={this.onParentToggle}/>
-                <Button value="submit" selectable={null} onParentClick={this.onSubmitUser}/>
+                <Button value={
+                    this.props.type === "signup" ? "Sign up" : "Login"
+                } selectable={null} onClick={this.onSubmitUser}/>
             </div>
         </div>
     )

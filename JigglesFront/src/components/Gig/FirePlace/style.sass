@@ -8,7 +8,7 @@
   margin: $marginComponent
 
 .fireplace-caption
-  display: flex
+  display: inline-flex
   position: relative
   overflow: hidden
   width: auto
@@ -17,6 +17,8 @@
 .fireplace-caption-content
   max-width: 360px
   max-height: 220px
+  min-width: 280px
+  min-height: 160px
   width: auto
   height: auto
 
@@ -89,6 +91,7 @@
   font-family: $fontFamilyReading
   font-weight: 600
   font-size: $subparagraphTextSize
+  word-break: break-word
 
 /* Fireplace Social */
 .fireplace-social

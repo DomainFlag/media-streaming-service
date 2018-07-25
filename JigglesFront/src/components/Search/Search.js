@@ -49,12 +49,14 @@ export class Search extends Component {
     };
 
     onSubmit = (e) => {
+        // Enter key
         if(e.which === 13) {
             let fetchByType = this.props.fetchQuery(this.state.value);
 
             CONSTANTS.TYPES
                 .forEach((type) => fetchByType(type));
-        }
+            // Esc key
+        } else if(e.which === 27) this.props.onToggleSearch();
     };
 
     onChange = (e) => {

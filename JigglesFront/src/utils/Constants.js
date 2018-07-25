@@ -5,6 +5,9 @@ const CONSTANTS = {
 
     APP : "YOUR&APP",
     SCHEME : "https",
+    USERS : "users",
+    LOGIN : "login",
+    SIGNUP : "signup",
 
     ENTERTAINER : "entertainer",
     NEWS : "news",

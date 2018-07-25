@@ -5,7 +5,7 @@ import CONSTANTS from "../utils/Constants";
 const ENTERTAINER_STATE = "ENTERTAINER_STATE";
 
 export const ACTIONS = {
-    ENTERTAINER_STATE : (type, status, typeQuery = null, response = null) => {
+    ENTERTAINER_STATE : (status, typeQuery = null, response = null) => {
         if(typeQuery === null)
             return {type : ENTERTAINER_STATE, status};
         else {
@@ -50,14 +50,20 @@ export const ACTIONS = {
         return (dispatch) => {
             dispatch(ACTIONS.ENTERTAINER_STATE(CONSTANTS.PENDING));
 
+            let headers = new Headers();
+            headers.set("X-Auth", document.cookie.replace(/(?:(?:^|.*;\s*)token\s*=\s*([^;]*).*$)|^.*$/, "$1"));
+
+            let queryParameter = {};
+            queryParameter[type] = querySearch;
+
             let uriBuilder = new UriBuilder()
                 .setScheme(CONSTANTS.SCHEME)
                 .setAuthority(CONSTANTS.APP)
                 .appendPath(type)
-                .appendQueryParameter({ type, querySearch})
+                .appendQueryParameter(queryParameter)
                 .build();
 
-            return fetch(uriBuilder)
+            return fetch(uriBuilder, { headers })
                 .then((response) => response.json())
                 .then((body) => dispatch(ACTIONS.ENTERTAINER_STATE(CONSTANTS.SUCCESS, type, body)))
                 .catch(() => dispatch(ACTIONS.ENTERTAINER_STATE(CONSTANTS.ERROR)));

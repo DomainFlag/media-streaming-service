@@ -23,28 +23,38 @@ function rgbToHsl(r, g, b) {
 }
 
 /* Do on the server only once, instead of doing on client */
-/* Recognize where to put text? */
-const constrastizer = (image, child, precision = 10) => {
-    let posChild = image.getBoundingClientRect();
-    let posParent = child.getBoundingClientRect();
+const constrastizer = (image, content, precision = 10) => {
+    let dimenCanvas = image.getBoundingClientRect();
+    let dimenContent = content.getBoundingClientRect();
 
-    let posRelativeTop = posParent.top - posChild.top;
-    let posRelativeLeft = posParent.left - posChild.left;
+    let ratioX = dimenCanvas.width / image.naturalWidth;
+    let ratioY = dimenCanvas.height / image.naturalHeight;
 
-    let widthChild = posChild.width;
-    let heightChild = posChild.height;
+    let relativeXContent = dimenCanvas.width - dimenContent.width - (dimenCanvas.right - dimenContent.right);
+    let relativeYContent = dimenCanvas.height - dimenContent.height - (dimenCanvas.bottom - dimenContent.bottom);
+
+    let relativeWidth = dimenContent.width;
+    let relativeHeight = dimenContent.height;
 
     let canvas = document.createElement("canvas");
     let ctx = canvas.getContext("2d");
-    ctx.width = widthChild;
-    ctx.height = heightChild;
+    ctx.width = relativeWidth;
+    ctx.height = relativeHeight;
 
-    ctx.drawImage(image, posRelativeLeft, posRelativeTop, widthChild, heightChild, 0, 0, widthChild, heightChild);
+    ctx.drawImage(image, relativeXContent / ratioX,
+        relativeYContent / ratioY,
+        relativeWidth / ratioX,
+        relativeHeight / ratioY, 0, 0, relativeWidth, relativeHeight);
 
-    let data = ctx.getImageData(5, 5, 1, 1).data;
+    let sum = 0;
+    for(let g = 0; g < precision; g++) {
+        let colorInput = ctx.getImageData(Math.floor(Math.random()*relativeWidth),
+            Math.floor(Math.random()*relativeHeight), 1, 1);
 
-    let luminosity = rgbToHsl(data[0], data[1], data[2]);
-    if(luminosity < 0.5)
+        sum += rgbToHsl(...colorInput.data);
+    }
+
+    if(sum / precision < 0.5)
         return "#FFFFFF";
     else return "#000000";
 };

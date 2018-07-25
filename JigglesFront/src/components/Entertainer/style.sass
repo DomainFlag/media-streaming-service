@@ -4,11 +4,12 @@
 .main
   @extend %flexbox-centered-col
   width: 100%
-  height: 100%
-  position: relative
+  height: auto
+  background-color: $iconsTextColor
 
 .main-container
-  @extend %flexbox-centered-col
+  @extend %flexbox-flex-start-col
+  justify-content: flex-start
   width: 100%
   height: 100%
 
@@ -26,34 +27,80 @@
   @extend %flexbox-flex-start-row
   width: 100%
   justify-content: space-between
-  align-items: flex-start
+  align-items: center
   padding: $marginSection
+  background-color: $iconsTextColor
+
+.main-header-container
+  @extend %flexbox-centered-row
+  height: auto
+
+  > *
+    margin: 0 $marginSection
 
 #main-header-logo
-  height: 48px
+  margin-right: $marginSection
+  height: 42px
   width: auto
-  margin: $marginRelative
 
-/* Welcome Layout - Auth */
-.main-header-authentication
+.main-header-miscellaneous
   @extend %flexbox-flex-start-row
-  margin: $marginRelative
 
-.main-header-authentication-auth
+.main-header-links
+  @extend %flexbox-flex-start-row
+  margin: 0 $marginSection
+
+.main-header-link
   font-weight: bold
   font-size: $paragraphTextSize
-  font-family: "Brandon Grotesque Black"
+  font-family: $fontFamilySansSerif
+  margin: 0 $marginComponent
+  color: $primaryTextColor
+
+.main-header-authentication
+  @extend %flexbox-flex-start-row
+  margin: 0 $marginSection
+
+.main-header-authentication-auth
+  cursor: pointer
+  font-weight: bold
+  font-size: $paragraphTextSize
+  font-family: $fontFamilySansSerif
   margin: 0 $marginComponent
   color: $primaryDarkColor
 
-.main-searcher
+/* Main Container */
+.main-content
   @extend %flexbox-centered-col
-  height: 175px
+  margin: $marginSection
+  width: 100%
 
+.main-content-header
+  @extend %flexbox-centered-col
+  margin: $marginRelative
+
+.main-content-header-text
+  font-weight: bold
+  font-size: $linkTextSize
+  font-family: $fontFamilySansSerif
+  color: $primaryDarkColor
+
+.main-content-body
+  @extend %flexbox-centered-row
+  margin: $marginSection
+  width: 100%
+
+.main-content-widget
+  margin: $marginSection
+  opacity: 0.8
+
+  &:hover
+    opacity: 1.0
+
+/* Body Container */
 .main-body
   @extend %flexbox-centered-col
   width: 100%
-  position: relative
   flex: 1
   background-color: $primaryTextColor
 

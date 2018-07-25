@@ -3,7 +3,7 @@ import {Component} from "react"
 
 import "./style.sass"
 
-import CheckboxIcon from "./../../resources/icons/checked.svg"
+import CheckboxIcon from "./../../../resources/icons/checked.svg"
 
 export default class Checkbox extends Component {
     constructor(props) {
