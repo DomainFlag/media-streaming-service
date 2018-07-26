@@ -76,6 +76,7 @@ const entertainer = (() => {
     const REDUCER_ACTIONS = {
         ENTERTAINER_STATE : (state, action) => {
             if(action.status === CONSTANTS.SUCCESS) {
+                console.log(JSON.stringify(action.response));
                 return Object.assign({}, state, action.response);
             } else return state;
         }

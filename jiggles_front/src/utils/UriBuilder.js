@@ -14,20 +14,20 @@ class UriBuilder {
     };
 
     setAuthority = (authority) => {
-        this.authority = authority;
+        this.authority = authority.trim();
 
         return this;
     };
 
     setScheme = (scheme) => {
-        this.scheme = scheme;
+        this.scheme = scheme.trim();
 
         return this;
     };
 
     appendPath = (newSegment) => {
         if(newSegment !== null)
-            this.path.push(newSegment);
+            this.path.push(newSegment.trim());
 
         return this;
     };

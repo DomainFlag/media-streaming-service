@@ -1,13 +1,15 @@
-const CONSTANTS = {
-    SUCCESS : "success",
-    PENDING : "pending",
-    ERROR : "ERROR",
+const {APP} = require("./../app_config");
 
-    APP : "YOUR&APP",
+const CONSTANTS = {
+    APP,
     SCHEME : "https",
     USERS : "users",
     LOGIN : "login",
     SIGNUP : "signup",
+
+    SUCCESS : "success",
+    PENDING : "pending",
+    ERROR : "ERROR",
 
     ENTERTAINER : "entertainer",
     NEWS : "news",

@@ -2,27 +2,8 @@ const request = require("request");
 const requestPromise = require("request-promise");
 const querystring = require('querystring');
 
-const UriBuilder = require("./uri-builder");
-
-const SCHEME = "https";
-
-const AUTHORITY = "accounts.spotify.com";
-const AUTHORITY_DEV = "api.spotify.com";
-
-const API_SECURITY = "api";
-const TOKEN = "token";
-const API_ACCESS = "v1";
-const SEARCH = "search";
-const grant_type = "client_credentials";
-const COUNTRY = "US";
-
-const ARTIST = "artist";
-const ALBUM = "album";
-const TRACK = "track";
-
-const ARTISTS = "artists";
-const TRACKS = "tracks";
-const ALBUMS = "albums";
+const CONSTANTS = require("./Constants");
+const UriBuilder = require("./UriBuilder");
 
 class RequestifyCollector {
     constructor() {
@@ -39,10 +20,10 @@ class RequestifyCollector {
 
     getToken() {
         let url = new UriBuilder()
-            .setScheme(SCHEME)
-            .setAuthority(AUTHORITY)
-            .appendPath(API_SECURITY)
-            .appendPath(TOKEN)
+            .setScheme(CONSTANTS.SCHEME)
+            .setAuthority(CONSTANTS.AUTHORITY)
+            .appendPath(CONSTANTS.API_SECURITY)
+            .appendPath(CONSTANTS.TOKEN)
             .build();
 
         let options = {
@@ -79,10 +60,10 @@ class RequestifyCollector {
 
     querySearch(query, type) {
         let url = new UriBuilder()
-            .setScheme(SCHEME)
-            .setAuthority(AUTHORITY_DEV)
-            .appendPath(API_ACCESS)
-            .appendPath(SEARCH)
+            .setScheme(CONSTANTS.SCHEME)
+            .setAuthority(CONSTANTS.AUTHORITY_DEV)
+            .appendPath(CONSTANTS.API_ACCESS)
+            .appendPath(CONSTANTS.SEARCH)
             .appendQueryParameter({"q" : query})
             .appendQueryParameter({"type" : type})
             .build();
@@ -107,13 +88,13 @@ class RequestifyCollector {
 
     queryFetch(type, id, cake = null) {
         let url = new UriBuilder()
-            .setScheme(SCHEME)
-            .setAuthority(AUTHORITY_DEV)
-            .appendPath(API_ACCESS)
+            .setScheme(CONSTANTS.SCHEME)
+            .setAuthority(CONSTANTS.AUTHORITY_DEV)
+            .appendPath(CONSTANTS.API_ACCESS)
             .appendPath(type)
             .appendPath(id)
             .appendPath(cake)
-            .appendQueryParameter({"country" : COUNTRY})
+            .appendQueryParameter({"country" : CONSTANTS.COUNTRY})
             .build();
 
         let options = {
@@ -135,6 +116,4 @@ class RequestifyCollector {
     };
 }
 
-module.exports = (function() {
-    return new RequestifyCollector();
-})();
+module.exports = (() => new RequestifyCollector())();

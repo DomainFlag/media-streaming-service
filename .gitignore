@@ -1,5 +1,7 @@
 .git/
 .idea/
-node_modules/
 
-Playground/
+node_modules/
+playground/
+
+**/app_config.js

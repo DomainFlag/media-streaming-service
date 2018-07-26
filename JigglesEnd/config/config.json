@@ -1,6 +1,0 @@
-{
-  "development": {
-    "MONGODB_URI": "YOUR&DB",
-    "JWT_SECRET": "YOUR&SECRET"
-  }
-}
