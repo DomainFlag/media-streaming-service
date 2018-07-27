@@ -23,14 +23,12 @@ let UserSchema = new mongoose.Schema({
     },
     type: {
         type: String,
-        required: true,
         trim: true,
         minlength: 1,
         default: "listener"
     },
     path: {
         type: String,
-        required: true,
         default: "/resources/default/account_1.svg"
     },
     password: {
@@ -38,12 +36,12 @@ let UserSchema = new mongoose.Schema({
         require: true,
         minlength: 6
     },
-    collection: {
+    friends: [mongoose.Schema.Types.ObjectId],
+    content: {
         tracks: [TrackSchema],
         albums: [AlbumSchema],
         artists: [ArtistSchema]
     },
-    friends: [this],
     tokens: [{
         access: {
             type: String,
@@ -55,6 +53,7 @@ let UserSchema = new mongoose.Schema({
         }
     }]
 });
+
 
 UserSchema.methods.toJSON = function () {
     let user = this;

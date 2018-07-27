@@ -68,7 +68,7 @@ class Fireplace extends Component {
     }
 
     saveTree = (depth) => {
-        if(!this.props.hasOwnProperty("comments"))
+        if(!this.props.fireplace.hasOwnProperty("comments"))
             return [];
 
         let commentsProv = this.props.fireplace.comments.slice();

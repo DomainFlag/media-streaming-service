@@ -4,6 +4,7 @@ import ReactDOM from "react-dom"
 import {connect} from "react-redux"
 import {Link} from "react-router-dom"
 
+import Settings from "../Settings/Settings"
 import Search from "../Search/Search";
 import releases from "../../dummy/releases"
 import news from "../../dummy/news";
@@ -219,10 +220,7 @@ export class Entertainer extends Component {
                             </Link>
                         </div>
 
-                        <div className="main-header-authentication">
-                            <p className="main-header-authentication-auth">Sign up</p>
-                            <p className="main-header-authentication-auth">Login</p>
-                        </div>
+                        <Settings/>
                     </div>
                 </div>
 

@@ -37,6 +37,8 @@ class Auth extends Component {
 const mapDispatchToProps = (dispatch, ownProps) => ({
     auth : (type, body) => {
         dispatch(ACTIONS.USER_AUTH(ownProps.history, type, body));
+
+        ownProps.history.push("/main");
     }
 });
 

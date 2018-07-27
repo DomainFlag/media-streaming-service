@@ -157,6 +157,10 @@ class AudioPlayback {
         return this.audioCtx.suspend();
     };
 
+    disconnect = () => {
+        return this.audioCtx.close();
+    };
+
     getAudioTick = () => this.getCurrentTime();
 }
 

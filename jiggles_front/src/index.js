@@ -16,12 +16,22 @@ import Auth from "./components/Auth/Auth/Auth";
 import Gig from "./components/Gig/Gig/Gig";
 import Studio from "./components/Studio/Studio";
 
-let app = {};
+let app = {
+    auth : localStorage.getItem("token") || null
+};
 
 let store = createStore(rootReducer, app, applyMiddleware(
     ThunkMiddleware,
     logger
 ));
+
+store.subscribe(() => {
+    let state = store.getState();
+
+    if(state.auth != null && state.hasOwnProperty("auth") && state.auth.hasOwnProperty("token")) {
+        localStorage.setItem("token", state.auth.token);
+    }
+});
 
 render(
     <Provider store={store}>

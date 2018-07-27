@@ -51,7 +51,7 @@ export const ACTIONS = {
             dispatch(ACTIONS.ENTERTAINER_STATE(CONSTANTS.PENDING));
 
             let headers = new Headers();
-            headers.set("X-Auth", document.cookie.replace(/(?:(?:^|.*;\s*)token\s*=\s*([^;]*).*$)|^.*$/, "$1"));
+            headers.set("X-Auth", localStorage.getItem("token"));
 
             let queryParameter = {};
             queryParameter[type] = querySearch;

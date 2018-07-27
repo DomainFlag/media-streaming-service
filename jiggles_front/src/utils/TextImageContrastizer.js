@@ -22,7 +22,7 @@ function rgbToHsl(r, g, b) {
     return l;
 }
 
-/* Do on the server only once, instead of doing on client */
+/* Do on the SERVER only once, instead of doing on client */
 const constrastizer = (image, content, precision = 10) => {
     let dimenCanvas = image.getBoundingClientRect();
     let dimenContent = content.getBoundingClientRect();

@@ -2,6 +2,8 @@ const request = require("request");
 const requestPromise = require("request-promise");
 const querystring = require('querystring');
 
+const {SPOTIFY} = require("./../config/app_config");
+
 const CONSTANTS = require("./Constants");
 const UriBuilder = require("./UriBuilder");
 
@@ -12,10 +14,7 @@ class RequestifyCollector {
     }
 
     setCollectorAuth() {
-        const ClientID = "YOUR&KEY";
-        const ClientServer = "YOUR&KEY";
-
-        this.Authorization = Buffer.from(ClientID + ":" + ClientServer).toString('base64');
+        this.Authorization = Buffer.from(SPOTIFY.CLIENT_ID + ":" + SPOTIFY.CLIENT_SECRET).toString('base64');
     };
 
     getToken() {

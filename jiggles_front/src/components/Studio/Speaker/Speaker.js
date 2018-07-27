@@ -106,6 +106,10 @@ class MusicPlayer extends Component {
         };
     }
 
+    componentWillUnmount = () => {
+        this.props.audioPlayback.disconnect();
+    };
+
     componentDidMount = () => {
         this.props.audioPlayback.setVolumeLevel(this.state.volume / 100);
         this.ctx = this.canvas.getContext("2d");

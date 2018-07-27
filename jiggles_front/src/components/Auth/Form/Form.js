@@ -62,6 +62,8 @@ class Form extends Component {
         this.setState((prevState) => ({
             submitted : !prevState.submitted
         }));
+
+        this.props.history.push("/main");
     };
 
     render = () => (

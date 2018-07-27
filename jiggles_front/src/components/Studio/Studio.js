@@ -5,7 +5,7 @@ import "./style.sass"
 
 import AudioPlayback from "../../utils/AudioPlayback";
 import Speaker from "./Speaker/Speaker";
-import Settings from "../Settings/Settings";
+import Settings from "./Settings/Settings";
 
 import settingsMenu from "../../resources/icons/chat-menu.svg"
 import ReactDOM from "react-dom";

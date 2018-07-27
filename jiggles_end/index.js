@@ -3,6 +3,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 require('./config/config');
+require('./db/mongoose');
 
 let RequestifyCollector = require("./utils/RequestifyCollector");
 let {authenticate} = require('./middleware/authenticate');
@@ -190,19 +191,27 @@ app.post(/\/user\/create\/fireplace/, (req, res) => {
 });
 
 app.get('/users/me', (req, res) => {
-  res.send(req.user);
+    res.send(req.user);
 });
 
 app.delete('/users/me/token', (req, res) => {
-  req.user.removeToken(req.token).then(() => {
-    res.status(200).send();
-  }, () => {
-    res.status(400).send();
-  });
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    req.user.removeToken(req.token).then(() => {
+        res.status(200).send();
+    }, () => {
+        console.log("nope");
+        res.status(401).send();
+    });
 });
 
-app.listen(process.env.PORT || 3000, () => {
-  console.log(`Started up at port ${process.env.PORT}`);
+app.use(function(req, res) {
+    res.status(401).send("No resource found");
+});
+
+app.listen(process.env.PORT || 8000, () => {
+    console.log(`Started up at port ${process.env.PORT}`);
+}).on('error', function(err) {
+    console.log(err);
 });
 
 module.exports = {app};

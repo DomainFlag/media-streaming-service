@@ -1,82 +1,66 @@
 import React from "react"
-import {Component} from "react"
+import {Component} from "react";
+
+import {ACTIONS} from "./../../reducers/settings"
+
+import account from "./../../resources/icons/account.svg"
 
 import "./style.sass"
+import {connect} from "react-redux";
+import {withRouter} from "react-router";
 
-import Equalizer from "../Studio/Toys/Equalizer/Equalizer";
-
-import backArrow from "../../resources/icons/back-arrow.svg"
-
-export default class Settings extends Component {
+export class Settings extends Component {
     constructor(props) {
         super(props);
 
-        this.components = [
+        this.options = [
             {
-                type : "Equalizer",
-                component : <Equalizer setup={this.props.audioPlayback.setup}/>
+                optionName : "Account",
+                callback : () => {}
             }, {
-                type : "Matcher",
-                component : null
+                optionName : "Feedback",
+                callback : () => {}
             }, {
-                type : "Beater",
-                component : null
+                optionName : "About",
+                callback : () => {}
             }, {
-                type : "Tweaking",
-                component : null
+                optionName: "Log out",
+                callback: this.props.logout
             }
         ];
 
         this.state = {
-            activeState : 0
+            toggled: false
         }
     }
 
-    onToggleComponent = (index) => {
-        this.setState(({
-            activeState : index
+    onToggleSettings = () => {
+        this.setState((prevState) => ({
+            toggled: !prevState.toggled
         }))
     };
 
     render = () => (
-        <div className="settings">
-            <div className="settings-container">
-
-                <div className="settings-header">
-
-                    <div className="settings-header-container">
-                        <img className="settings-back-icon" src={backArrow} onClick={this.props.onToggleSettings}/>
-
-                        <p className="settings-header-title">
-                            Settings
-                        </p>
-                    </div>
-
-                    <div className="settings-header-container">
-                    </div>
-
-                </div>
-
-                <div className="settings-body">
-                    <div className="settings-utils">
+        <div className="gig-profile-container">
+            <img className="gig-profile" src={account} onClick={this.onToggleSettings} />
+            {
+                this.state.toggled && (
+                    <div className="settings-profile">
+                        <div className="settings-arrow"/>
                         {
-                            this.components.map((settingsComponent, index) => (
-                                <p className={"settings-util " + ((this.state.activeState === index) && "util-active") }
-                                   onClick={this.onToggleComponent.bind(this, index)} key={index}>
-                                    { settingsComponent.type }
-                                </p>
+                            this.options.map((option) => (
+                                <p className="settings-option" onClick={option.callback}>{option.optionName}</p>
                             ))
                         }
                     </div>
-
-                    <div className="settings-divider"/>
-
-                    <div className="settings-interaction">
-                        { this.components[this.state.activeState].component }
-                    </div>
-                </div>
-
-            </div>
+                )
+            }
         </div>
     )
 }
+
+const mapDispatchToProps = (dispatch, ownProps) => ({
+    logout : () => dispatch(ACTIONS.USER_LOG_OUT(ownProps.history))
+});
+
+export default connect(null, mapDispatchToProps)(withRouter(Settings));

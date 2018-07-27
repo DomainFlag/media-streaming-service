@@ -1,5 +1,9 @@
-let { database } = require('./app_config');
+let { DATABASE, SERVER } = require('./app_config');
 
-Object.keys(database).forEach((key) => {
-    process.env[key] = database[key];
+Object.keys(DATABASE).forEach((key) => {
+    process.env[key] = DATABASE[key];
+});
+
+Object.keys(SERVER).forEach((key) => {
+    process.env[key] = SERVER[key];
 });

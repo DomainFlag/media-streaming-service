@@ -2,10 +2,12 @@ const {APP} = require("./../app_config");
 
 const CONSTANTS = {
     APP,
-    SCHEME : "https",
+    SCHEME : "http",
     USERS : "users",
     LOGIN : "login",
     SIGNUP : "signup",
+    ME : "me",
+    TOKEN : "token",
 
     SUCCESS : "success",
     PENDING : "pending",

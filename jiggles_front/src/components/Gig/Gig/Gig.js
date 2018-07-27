@@ -3,45 +3,13 @@ import {Component} from "react"
 
 import "./style.sass"
 
+import Settings from "../../Settings/Settings"
 import menu_icon from "./../../../resources/icons/social-menu.svg"
 import logo from "./../../../resources/assets/logo-white.svg"
-import account from "./../../../resources/icons/account.svg"
 import Fireplace from "../FirePlace/FirePlace";
 import ReactDOM from "react-dom";
 
 import fireplaces from "../../../dummy/fireplaces"
-
-class Settings extends Component {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            toggled: false
-        }
-    }
-
-    onToggleSettings = () => {
-        this.setState((prevState) => ({
-            toggled: !prevState.toggled
-        }))
-    };
-
-    render = () => (
-        <div className="gig-profile-container">
-            <img className="gig-profile" src={account} onClick={this.onToggleSettings} />
-            {
-                this.state.toggled && (
-                    <div className="settings-profile">
-                        <div className="settings-arrow"/>
-                        <p className="settings-option">Account</p>
-                        <p className="settings-option">Feedback</p>
-                        <p className="settings-option">About</p>
-                    </div>
-                )
-            }
-        </div>
-    )
-}
 
 export default class Gig extends Component {
     constructor(props) {

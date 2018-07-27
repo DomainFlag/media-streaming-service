@@ -1,73 +1,39 @@
 @import "../../resources"
 
-.settings
+/* Settings */
+.settings-profile
   @extend %flexbox-flex-start-col
-  flex: 4
-  height: 100%
-  background-color: $iconsTextColor
-
-.settings-container
-  @extend %flexbox-flex-start-col
-  width: 100%
-  flex: 1
-  padding: $marginComponent
-
-.settings-header
-  @extend %flexbox-centered-row
-  width: 100%
-  height: auto
-  padding: $marginComponent
-
-.settings-header-container
-  @extend %flexbox-centered-row
-  flex: 1
-  height: auto
-
-  &:first-of-type
-    justify-content: flex-start
-
-.settings-back-icon
-  width: 16px
-  height: auto
-
-.settings-header-title
-  margin: 0 $marginSection
-  font-family: $fontFamilySansSerif
-  font-size: $subheaderTextSize
-  font-weight: 400
-
-.settings-body
-  @extend %flexbox-centered-row
-  width: 100%
-  flex: 1
-  padding: $marginComponent
-
-.settings-utils
-  @extend %flexbox-flex-start-col
+  z-index: 1
   justify-content: flex-start
-  flex: 1
-  height: 100%
-  min-height: 100%
+  position: absolute
+  top: 0
+  left: 0
+  transform: translate(calc(-100% + 40px), 32px+$marginRelative+6px)
+  background-color: darken($pleasureColor, 10%)
+  height: auto
+  width: 180px
+  border-radius: 4px
+  padding: $marginComponent
 
-.settings-util
-  user-select: none
+.settings-arrow
+  position: absolute
+  left: 100%
+  top: 0
+  width: 0
+  height: 0
+  transform: translate(calc(-100% - 11.5px), calc(-100% + 1px))
+  border-left: 12px solid transparent
+  border-right: 12px solid transparent
+  border-bottom: 12px solid darken($pleasureColor, 10%)
+
+.settings-option
   cursor: pointer
+  margin: $marginDivider $marginComponent
+  color: $iconsTextColor
+  font-size: $subparagraphTextSize
+  font-weight: 600
   font-family: $fontFamilySansSerif
-  font-size: $paragraphTextSize
-  font-weight: 400
-  margin: $marginComponent 0
+  opacity: 0.85
 
-.util-active
-  border-bottom: 2px solid lighten($accentColor, 30%)
-
-.settings-divider
-  width: 2px
-  height: 80%
-  margin: 0 $marginComponent
-  background-color: transparentize($motionPrimaryLightColor, 0.95)
-
-.settings-interaction
-  @extend %flexbox-flex-start-col
-  flex: 5
-  height: 100%
-
+  &:hover
+    opacity: 1.0

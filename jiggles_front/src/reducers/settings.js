@@ -10,30 +10,28 @@ export const ACTIONS = {
         status,
         response
     }),
-    USER_AUTH : (redirect, type, body = null) => {
+    USER_LOG_OUT : (redirect) => {
         return (dispatch) => {
             dispatch(ACTIONS.USER_AUTH_STATE(CONSTANTS.PENDING));
 
             let headers = new Headers();
-            headers.set("Content-Type", "application/json");
-            headers.set("Access-Control-Expose-Headers", "X-Auth");
+            headers.set("X-Auth", localStorage.getItem("token"));
 
-            let uriBuilder = new UriBuilder()
+            let url = new UriBuilder()
                 .setScheme(CONSTANTS.SCHEME)
                 .setAuthority(CONSTANTS.APP)
-                .appendPath(CONSTANTS.USERS);
+                .appendPath(CONSTANTS.USERS)
+                .appendPath(CONSTANTS.ME)
+                .appendPath(CONSTANTS.TOKEN)
+                .build();
 
-            if(type === CONSTANTS.LOGIN)
-                uriBuilder.appendPath(CONSTANTS.LOGIN);
-
-            let url = uriBuilder.build();
-
-            return fetch(url, { method : "POST", body : JSON.stringify(body), headers })
+            return fetch(url, { method : "DELETE", headers })
                 .then((response) => {
                     if(response.status >= 200 && response.status < 400) {
-                        if(response.headers.get("X-Auth") !== null) {
-                            dispatch(ACTIONS.USER_AUTH_STATE(CONSTANTS.SUCCESS, response.headers.get("X-Auth")));
-                        } else Promise.reject();
+                        dispatch(ACTIONS.USER_AUTH_STATE(CONSTANTS.SUCCESS, response));
+
+                        // Redirection
+                        redirect.push("/");
                     } else Promise.reject();
                 })
                 .catch(() => {
@@ -43,12 +41,11 @@ export const ACTIONS = {
     }
 };
 
-const auth = (() => {
+const settings = (() => {
     const REDUCER_ACTIONS = {
         USER_AUTH_STATE : (state, action) => {
-            // Token added to keep user logged in
             if(action.status === "success")
-                return {...state, token: action.response};
+                localStorage.removeItem("token");
 
             return state;
         }
@@ -57,4 +54,4 @@ const auth = (() => {
     return (state = [], action) => REDUCER_VALIDATOR(REDUCER_ACTIONS, state, action);
 })();
 
-export default auth;
+export default settings;
