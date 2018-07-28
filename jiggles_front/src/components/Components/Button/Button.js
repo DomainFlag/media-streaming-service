@@ -15,6 +15,13 @@ export default class Button extends Component {
         };
     }
 
+    componentWillReceiveProps(nextProps) {
+        if(nextProps.value !== this.state.value)
+            this.setState({
+                value : nextProps.value
+            });
+    }
+
     render = () => {
         return this.props.iconBased ? (
             <div className={"button-icon " + this.state.selectable}

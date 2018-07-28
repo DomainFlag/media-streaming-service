@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 let ReviewSchema = new mongoose.Schema({
-    author: mongoose.Schema.Types.ObjectId,
+    author: mongoose.Schema.Types.Mixed,
     content: {
         type: String
     },
@@ -11,9 +11,8 @@ let ReviewSchema = new mongoose.Schema({
         min: 0,
         max: 100
     },
-    urlReference: {
-        type: String,
-        require: true
+    url: {
+        type: String
     }
 });
 

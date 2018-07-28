@@ -32,22 +32,6 @@ const releases = [
             }
         ]
     }, {
-        title: "Flower Boy",
-        artist: "Tyler, the Creator",
-        url: "https://upload.wikimedia.org/wikipedia/en/c/c3/Tyler%2C_the_Creator_-_Flower_Boy.png",
-        score: 65,
-        reviews: [
-            {
-                critic: "Paste Magazine",
-                content: "Mountain-moving sound, with Welch’s vocals the main source of power.",
-                score: 15
-            }, {
-                critic: "Pitchfork",
-                content: "How small, how beige, how disappointing.",
-                score: 84
-            }
-        ]
-    }, {
         title: "I'm all ears",
         artist: "Let's Eat Grandma",
         url: "https://media.pitchfork.com/photos/5ae0a4228bec5b23c213a2f5/1:1/w_320/Let%E2%80%99s%20Eat%20Grandma:%20I'm%20All%20Ears.jpg",
@@ -67,16 +51,18 @@ const releases = [
         title: "Oil of Every Pearl's Un-Insides",
         artist: "SOPHIE",
         url: "http://cdn.albumoftheyear.org/album/113120-oil-of-every-pearls-un-insides-1.jpg",
-        score: 79,
+        score: 86,
         reviews: [
             {
-                critic: "Paste Magazine",
-                content: "Mountain-moving sound, with Welch’s vocals the main source of power.",
-                score: 83
+                critic: "Tiny Mix Tapes",
+                content: "Fractured, inconsistent, broken, torn, OIL OF EVERY PEARL’S UN-INSIDES" +
+                " aims toward the stylistic grandness of High Pop, and in that inconsistence, it achieves it. ... It’s incredible.",
+                score: 100
             }, {
-                critic: "Pitchfork",
-                content: "How small, how beige, how disappointing.",
-                score: 57
+                critic: "Exclaim",
+                content: "This is the kind of music that, in 20 years, we may look back on as a" +
+                " pivotal point in changing the trajectory of the pop music sound.",
+                score: 90
             }
         ]
     }

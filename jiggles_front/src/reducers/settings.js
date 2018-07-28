@@ -29,9 +29,6 @@ export const ACTIONS = {
                 .then((response) => {
                     if(response.status >= 200 && response.status < 400) {
                         dispatch(ACTIONS.USER_AUTH_STATE(CONSTANTS.SUCCESS, response));
-
-                        // Redirection
-                        redirect.push("/");
                     } else Promise.reject();
                 })
                 .catch(() => {
@@ -45,7 +42,11 @@ const settings = (() => {
     const REDUCER_ACTIONS = {
         USER_AUTH_STATE : (state, action) => {
             if(action.status === "success")
-                localStorage.removeItem("token");
+                return {
+                    ...state,
+                    status: CONSTANTS.REMOVE_TOKEN,
+                    token: null
+                };
 
             return state;
         }

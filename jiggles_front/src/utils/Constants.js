@@ -9,27 +9,29 @@ const CONSTANTS = {
     ME : "me",
     TOKEN : "token",
 
+    ADD_TOKEN : "add_token",
+    REMOVE_TOKEN : "remove_token",
+
     SUCCESS : "success",
     PENDING : "pending",
     ERROR : "ERROR",
 
-    ENTERTAINER : "entertainer",
-    NEWS : "news",
-    REVIEWS : "reviews",
-
-    GIG : "GIG",
-
-    ARTIST : "artist",
-    ALBUM : "album",
-    TRACK : "track",
+    GIG : "gig",
 
     CREATE : "create",
 
-    TYPES : [
-        "artist",
-        "album",
-        "track"
-    ]
+    MAIN : "main",
+
+    ENTERTAINMENT_TYPES : {
+        NEWS : "news",
+        RELEASES : "releases"
+    },
+
+    CONTENT_TYPES : {
+        ARTIST : "artist",
+        ALBUM : "album",
+        TRACK : "track"
+    }
 };
 
 export default CONSTANTS;

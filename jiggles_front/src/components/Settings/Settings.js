@@ -1,13 +1,14 @@
 import React from "react"
 import {Component} from "react";
 
-import {ACTIONS} from "./../../reducers/settings"
+import {ACTIONS} from "./../../reducers/auth"
 
 import account from "./../../resources/icons/account.svg"
 
 import "./style.sass"
 import {connect} from "react-redux";
 import {withRouter} from "react-router";
+import CONSTANTS from "../../utils/Constants";
 
 export class Settings extends Component {
     constructor(props) {
@@ -34,6 +35,12 @@ export class Settings extends Component {
         }
     }
 
+    componentWillReceiveProps = (nextProps) => {
+        if(nextProps.authState.status !== null &&
+            nextProps.authState.state === CONSTANTS.REMOVE_TOKEN &&
+            nextProps.authState.status === CONSTANTS.SUCCESS) nextProps.history.push('/');
+    };
+
     onToggleSettings = () => {
         this.setState((prevState) => ({
             toggled: !prevState.toggled
@@ -59,8 +66,12 @@ export class Settings extends Component {
     )
 }
 
-const mapDispatchToProps = (dispatch, ownProps) => ({
-    logout : () => dispatch(ACTIONS.USER_LOG_OUT(ownProps.history))
+const mapDispatchToProps = (dispatch) => ({
+    logout : () => dispatch(ACTIONS.USER_AUTH_EXITING())
 });
 
-export default connect(null, mapDispatchToProps)(withRouter(Settings));
+const mapStateToProps = (state) => ({
+    authState : state.auth
+});
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Settings));

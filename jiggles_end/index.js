@@ -12,9 +12,18 @@ let {User} = require('./models/user');
 let {Album} = require("./models/album");
 let {Track} = require("./models/track");
 let {Artist} = require("./models/artist");
-let {News} = require("./models/news");
-let {Review} = require("./models/review");
 let {Fireplace} = require("./models/fireplace");
+
+const CONTENT_TYPE = {
+    news : {
+        resource : require("./models/news").News,
+        projection : "id author header caption"
+    },
+    releases  : {
+        resource : require("./models/release").Release,
+        projection : "id title artist url score reviews"
+    }
+};
 
 let app = express();
 
@@ -41,6 +50,8 @@ app.use(function(req, res, next) {
         next();
     }
 });
+
+/* Public & Non-protected Routes */
 
 app.post('/users', (req, res) => {
     let body = _.pick(req.body, ['email', 'password']);
@@ -81,11 +92,31 @@ app.post('/users/login', (req, res) => {
     });
 });
 
-app.get("/bad", function(req, res) {
-    res.send("Error 404: File not Found :(");
+app.get(/^\/main\/(news|releases)$/, function(req, res) {
+    let contentType = req.params[0];
+
+    if(CONTENT_TYPE.hasOwnProperty(contentType)) {
+        CONTENT_TYPE[contentType].resource.find({}, CONTENT_TYPE[contentType].projection)
+            .then((data) => {
+                res.set({
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+                });
+
+                res.send(JSON.stringify(data));
+            })
+            .catch(() => {
+                res.status(401).send();
+            });
+    } else {
+        res.status(401).send("Invalid request");
+    }
 });
 
+
 app.use(authenticate);
+
+/* Private & Protected Routes */
 
 app.get(/^\/(artist|track|album)$/, function(req, res) {
     let searchBy = req.params[0];

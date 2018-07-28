@@ -1,6 +1,6 @@
 import React        from "react"
 import {Component}  from "react"
-import {ACTIONS}    from "../../reducers/entertainer"
+import {ACTIONS}    from "../../reducers/main"
 import {connect}    from "react-redux"
 
 import cancel from "./../../resources/icons/cancel.svg"
@@ -51,10 +51,8 @@ export class Search extends Component {
     onSubmit = (e) => {
         // Enter key
         if(e.which === 13) {
-            let fetchByType = this.props.fetchQuery(this.state.value);
-
-            CONSTANTS.TYPES
-                .forEach((type) => fetchByType(type));
+            this.props.fetchQuery(this.state.value);
+            this.props.onToggleSearch();
             // Esc key
         } else if(e.which === 27) this.props.onToggleSearch();
     };
@@ -84,7 +82,7 @@ export class Search extends Component {
 
 
 const mapDispatchToProps = (dispatch) => ({
-    fetchQuery : (queryString) => (type) => dispatch(ACTIONS.ENTERTAINER_QUERY(type, queryString))
+    fetchQuery : (queryString) => dispatch(ACTIONS.ENTERTAINER_QUERY(queryString))
 });
 
 export default connect(null, mapDispatchToProps)(Search);

@@ -9,12 +9,11 @@ import "./style.sass"
 import AmusingAuth from "../AmusingAuth/PlayfullAuth";
 import {ACTIONS} from "../../../reducers/auth";
 import ReactDOM from "react-dom";
+import CONSTANTS from "./../../../utils/Constants";
 
 class Auth extends Component {
     constructor(props) {
         super(props);
-
-        this.type = props.location.pathname.replace(/(.*)\/(\w+)$/, "$2");
     }
 
     componentDidMount = () => {
@@ -27,19 +26,15 @@ class Auth extends Component {
                 <AmusingAuth />
             </div>
             <div className="authentication-container">
-                <Form auth={this.props.auth} type={this.type}/>
+                <Form auth={this.props.auth}/>
             </div>
         </div>
     )
 }
 
 
-const mapDispatchToProps = (dispatch, ownProps) => ({
-    auth : (type, body) => {
-        dispatch(ACTIONS.USER_AUTH(ownProps.history, type, body));
-
-        ownProps.history.push("/main");
-    }
+const mapDispatchToProps = (dispatch) => ({
+    auth : (type, body) => dispatch(ACTIONS.USER_AUTH_LOGGING(type, body))
 });
 
-export default connect(null, mapDispatchToProps)(withRouter(Auth));
+export default withRouter(connect(null, mapDispatchToProps)(Auth));

@@ -1,0 +1,28 @@
+@import "./../../../resources"
+
+/* News */
+.news
+  @extend %flexbox-flex-start-col
+  align-items: flex-start
+  margin: $marginComponent
+  height: 400px
+  width: 420px
+  background-color: $iconsTextColor
+
+.news-image
+  @extend %flexbox-flex-start-row
+  width: 100%
+  height: 270px
+
+.news-content
+  @extend %flexbox-flex-start-row
+  align-items: flex-start
+  padding: $marginSection
+  flex: 1
+  width: 100%
+
+.news-content-title
+  font-size: $subparagraphTextSize
+  font-family: $fontFamilySansSerif
+  font-weight: bold
+  color: $primaryTextColor

@@ -20,4 +20,4 @@ const CONSTANTS = {
     ALBUMS : "albums"
 };
 
-module.export = CONSTANTS;
+module.exports = CONSTANTS;
