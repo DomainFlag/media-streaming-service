@@ -2,6 +2,7 @@ import React from "react"
 import {Component} from "react"
 import {withRouter} from "react-router"
 import {Link} from "react-router-dom"
+import {connect} from "react-redux"
 
 import logo from "../../resources/assets/logo-white.svg"
 import background from "../../resources/background.jpg"
@@ -17,8 +18,11 @@ export class Welcome extends Component {
         ReactDOM.findDOMNode(this).parentNode.className = "non-extendable";
     };
 
-    onClickRedirect = () => {
-        this.props.history.push("/auth/signup");
+    onRedirectMain = () => {
+        console.log(this.props.isLogged);
+        if(this.props.isLogged)
+            this.props.history.push("/main");
+        else this.props.history.push("/auth/signup");
     };
 
     render = () => (
@@ -52,9 +56,7 @@ export class Welcome extends Component {
                     <div className="welcome-body-interaction">
                         <p className="welcome-body-header">More then just a music collection.</p>
                         <p className="welcome-body-subheader">Listen.  Connect.  Jiggle.</p>
-                        <Link to="/auth/signup">
-                            <Button value="Get started"/>
-                        </Link>
+                        <Button value="Get started" onClick={this.onRedirectMain}/>
                     </div>
                 </div>
                 <div className="welcome-body-col">
@@ -64,4 +66,8 @@ export class Welcome extends Component {
     )
 }
 
-export default withRouter(Welcome);
+const mapStateToProps = (state) => ({
+   isLogged : state.auth.token !== null
+});
+
+export default withRouter(connect(mapStateToProps, null)(Welcome));

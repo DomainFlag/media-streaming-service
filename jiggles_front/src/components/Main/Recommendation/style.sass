@@ -1,0 +1,61 @@
+@import "./../../../resources"
+
+.main-dynamic
+  @extend %flexbox-flex-start-col
+  padding: $marginSection
+  background-color: #9D7AA5
+  width: 100%
+  word-break: break-word
+
+.main-dynamic-toolbar
+  @extend %flexbox-flex-start-row
+  width: 100%
+  padding: $marginRelative $marginSection
+
+.toolbar-header
+  @extend %flexbox-flex-start-row
+  font-weight: bold
+  font-size: $paragraphTextSize
+  font-family: $fontFamilySansSerif
+  color: $tertiaryColor
+  user-select: none
+
+.toolbar-divider
+  @extend %flexbox-flex-start-row
+  height: $subparagraphTextSize
+  width: 1.25px
+  background-color: transparentize($iconsTextColor, 0.1)
+  margin: 0 $marginComponent
+  user-select: none
+
+.toolbar-actions
+  @extend %flexbox-flex-start-row
+
+.main-dynamic-toolbar-action
+  cursor: pointer
+  font-weight: bold
+  font-size: $paragraphTextSize
+  font-family: $fontFamilySansSerif
+  color: $iconsTextColor
+  user-select: none
+  opacity: 0.8
+
+  &:not(:first-child):not(:last-child)
+    margin: 0 $marginSection
+
+.toolbar-active
+  opacity: 1.0
+  border-bottom: 2px solid transparentize($iconsTextColor, 0.1)
+
+.main-dynamic-viewpager
+  @extend %flexbox-flex-start-row
+  width: 100%
+  flex-wrap: wrap
+  padding: $marginRelative 0
+
+.main-content-widget
+  margin: $marginSection
+  opacity: 0.8
+
+  &:hover
+    opacity: 1.0

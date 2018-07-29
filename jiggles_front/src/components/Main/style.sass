@@ -55,6 +55,10 @@
   margin: 0 $marginComponent
   color: $primaryTextColor
 
+  &:hover
+    color: $primaryDarkColor
+
+
 .main-header-authentication
   @extend %flexbox-flex-start-row
   margin: 0 $marginSection
@@ -66,40 +70,6 @@
   font-family: $fontFamilySansSerif
   margin: 0 $marginComponent
   color: $primaryDarkColor
-
-/* Main Container */
-.main-dynamic
-  @extend %flexbox-centered-col
-  padding: $marginSection 0
-  background-color: #9D7AA5
-  width: 100%
-
-.main-dynamic-content
-  @extend %flexbox-flex-start-col
-  padding: $marginSection 0
-  width: 80%
-
-.main-dynamic-label
-  @extend %flexbox-flex-start-row
-  margin: $marginSection
-
-.main-dynamic-label-value
-  font-weight: bold
-  font-size: $linkTextSize
-  font-family: $fontFamilySansSerif
-  color: $iconsTextColor
-
-.main-dynamic-container
-  @extend %flexbox-flex-start-row
-  width: 100%
-  flex-wrap: wrap
-
-.main-content-widget
-  margin: $marginSection
-  opacity: 0.8
-
-  &:hover
-    opacity: 1.0
 
 /* Body Container */
 .main-body

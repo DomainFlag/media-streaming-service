@@ -5,6 +5,8 @@ import {connect} from "react-redux"
 import {Link} from "react-router-dom"
 import {ACTIONS} from "../../reducers/main"
 
+import Query from "./Query/Query";
+import Recommendation from "./Recommendation/Recommendation";
 import Release from "./Release/Release";
 import News from "./News/News";
 import Settings from "../Settings/Settings"
@@ -16,51 +18,6 @@ import logo from "./../../resources/assets/logo.svg";
 import Button from "../Components/Button/Button";
 
 import "./style.sass"
-
-class CarouselChangeling extends Component {
-    constructor(props) {
-        super(props);
-
-        this.state.changelings = this.props.changelings;
-    }
-
-    render = () => (
-        <div className="main-dynamic-content">
-            {
-                this.state.changelings.map((changeling) => (
-                    <div className="main-dynamic-label">
-                        <p className="main-dynamic-label-value">
-                            { `Currently recommended ${this.props.type}`}
-                        </p>
-
-                        <div className="main-dynamic-container">
-                            {
-                                changeling.map((recommendation) => (
-                                    <iframe
-                                        className="main-content-widget"
-                                        src={recommendation}
-                                        width="240" height="240" frameBorder="0"
-                                        allowTransparency="true"
-                                        allow="encrypted-media"/>
-                                ))
-                            }
-                        </div>
-                    </div>
-                ))
-            }
-        </div>
-    )
-}
-
-class Divider extends Component {
-    constructor(props) {
-        super(props);
-    }
-
-    render = () => (
-        <div className="main-divider"/>
-    )
-}
 
 export class Main extends Component {
     constructor(props) {
@@ -156,18 +113,17 @@ export class Main extends Component {
 
                 {
                     this.props.search ? (
-                        <div className="main-dynamic">
-                        </div>
+                        <Query search={this.props.search}/>
                     ) : (
-                        <div className="main-dynamic">
-                            <CarouselChangeling/>
-                        </div>
+                        <Recommendation recommendations={recommendations}/>
                     )
                 }
 
                 <div className="main-body">
                     <Release content={this.props.releases} label="Releases"/>
-                    <Divider/>
+
+                    <div className="main-divider"/>
+
                     <News content={this.props.news} label="News"/>
                 </div>
             </div>

@@ -1,0 +1,56 @@
+@import "./../../../resources"
+
+.main-query
+  @extend %flexbox-flex-start-col
+  justify-content: flex-start
+  width: 100%
+  padding: $marginRelative $marginSection
+  background-color: $motionPrimaryDarkColor
+
+.main-query-row
+  @extend %flexbox-flex-start-row
+  padding: $marginSection 0
+  width: 100%
+  justify-content: flex-start
+
+.main-query-container
+  @extend %flexbox-flex-start-col
+  padding: $marginRelative $marginComponent
+  align-items: flex-start
+
+  &:last-child
+    flex: 1
+
+/* Header */
+.main-search-header
+  @extend %flexbox-flex-start-col
+  width: 100%
+  padding: $marginRelative $marginRelative $marginSection $marginRelative
+
+.main-search-category
+  font-weight: bold
+  font-size: $subheaderTextSize
+  font-family: $fontFamilySansSerif
+  color: $iconsTextColor
+
+/* Contents */
+.main-search-contents
+  @extend %flexbox-flex-start-row
+  align-items: flex-start
+  width: 100%
+  flex-wrap: wrap
+
+.main-widget-artists
+  height: 250px
+  width: 250px
+  margin: 0 $marginRelative
+
+.main-widget-albums
+  height: 250px
+  width: 250px
+  margin: 0 $marginRelative
+
+.main-widget-tracks
+  height: 80px
+  width: 250px
+  margin: $marginSibling $marginRelative

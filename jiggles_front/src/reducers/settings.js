@@ -10,7 +10,7 @@ export const ACTIONS = {
         status,
         response
     }),
-    USER_LOG_OUT : (redirect) => {
+    USER_LOG_OUT : () => {
         return (dispatch) => {
             dispatch(ACTIONS.USER_AUTH_STATE(CONSTANTS.PENDING));
 

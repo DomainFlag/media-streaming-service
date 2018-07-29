@@ -6,7 +6,6 @@ const recommendations = {
     ],
     albums : [
         "https://open.spotify.com/embed?uri=spotify:track:11dFghVXANMlKmJXsNCbNl",
-        "https://open.spotify.com/embed?uri=spotify:track:11dFghVXANMlKmJXsNCbNl",
         "https://open.spotify.com/embed?uri=spotify:track:11dFghVXANMlKmJXsNCbNl"
     ],
     artists : [
