@@ -19,7 +19,6 @@ export class Welcome extends Component {
     };
 
     onRedirectMain = () => {
-        console.log(this.props.isLogged);
         if(this.props.isLogged)
             this.props.history.push("/main");
         else this.props.history.push("/auth/signup");

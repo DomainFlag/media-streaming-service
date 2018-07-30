@@ -34,8 +34,12 @@ export const ACTIONS = {
                 .then((response) => {
                     if(response.status < 200 || response.status >= 400 || response.headers.get("X-Auth") === null)
                         Promise.reject();
-                    else dispatch(ACTIONS.USER_AUTH_STATE(CONSTANTS.SUCCESS, USER_AUTH_LOGGING, response.headers.get("X-Auth")));
+                    else return response.json().then((json) => ({
+                        account : json,
+                        token : response.headers.get("X-Auth")
+                    })).catch(Promise.reject)
                 })
+                .then((data) => dispatch(ACTIONS.USER_AUTH_STATE(CONSTANTS.SUCCESS, USER_AUTH_LOGGING, data)))
                 .catch((e) => {
                     dispatch(ACTIONS.USER_AUTH_STATE(CONSTANTS.ERROR, null, e.toString() || `Couldn't ${type}, please try again.`));
                 });
@@ -88,14 +92,13 @@ const auth = (() => {
         USER_AUTH_LOGGING : (state, action) => {
             return (action.status === "success") ? ({
                 ...state,
+                ...action.response,
                 state : CONSTANTS.ADD_TOKEN,
-                status : action.status,
-                token : action.response
+                status : action.status
             }) : state;
         },
         USER_AUTH_EXITING : (state, action) => {
             return (action.status === "success") ? ({
-                ...state,
                 state : CONSTANTS.REMOVE_TOKEN,
                 status : action.status,
                 token : null

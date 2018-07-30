@@ -9,10 +9,16 @@ import "./style.sass"
 import {connect} from "react-redux";
 import {withRouter} from "react-router";
 import CONSTANTS from "../../utils/Constants";
+import UriBuilder from "../../utils/UriBuilder";
 
 export class Settings extends Component {
     constructor(props) {
         super(props);
+
+        this.path = new UriBuilder()
+            .setScheme(CONSTANTS.SCHEME)
+            .setAuthority(CONSTANTS.APP)
+            .build();
 
         this.options = [
             {
@@ -48,8 +54,12 @@ export class Settings extends Component {
     };
 
     render = () => (
-        <div className="gig-profile-container">
-            <img className="gig-profile" src={account} onClick={this.onToggleSettings} />
+        <div className="settings-profile-container">
+            {
+                this.props.authState.account && (
+                    <img className="settings-profile-icon" src={this.path + this.props.authState.account.caption} onClick={this.onToggleSettings} />
+                )
+            }
             {
                 this.state.toggled && (
                     <div className="settings-profile">

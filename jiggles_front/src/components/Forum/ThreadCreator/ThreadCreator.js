@@ -6,7 +6,7 @@ import shareFile from "../../../resources/icons/picture.svg"
 import "./style.sass"
 import sass from "../../../resources.sass"
 import Textarea from "../../Components/Textarea/Textarea";
-import Fireplace from "../FirePlace/FirePlace";
+import Thread from "../Thread/Thread";
 import Button from "../../Components/Button/Button";
 
 class ImageLoader extends Component {
@@ -87,7 +87,7 @@ class ImageLoader extends Component {
 }
 
 
-class FirePlaceCreator extends Component {
+class ThreadCreator extends Component {
     constructor(props) {
         super(props);
 
@@ -126,7 +126,7 @@ class FirePlaceCreator extends Component {
             </div>
             <div className="creator-body">
                 <div className="creator-container">
-                    <Fireplace fireplace={this.state.fireplace}/>
+                    <Thread fireplace={this.state.fireplace}/>
                 </div>
                 <div className="creator-container">
                     <div className="creator-filling">
@@ -149,4 +149,4 @@ class FirePlaceCreator extends Component {
     )
 }
 
-export default FirePlaceCreator;
+export default ThreadCreator;

@@ -1,13 +1,13 @@
-@import "./../../../resources"
+@import "../../resources"
 
-.gig
+.forum
   @extend %flexbox-flex-start-row
   align-items: flex-start
   height: 100%
   width: 100%
   overflow-x: hidden
 
-.gig-header
+.forum-header
   @extend %flexbox-centered-col
   position: relative
   width: 240px
@@ -19,18 +19,18 @@
     position: fixed
     background-color: $primaryTextColor
 
-.gig-container
+.forum-container
   @extend %flexbox-flex-start-col
   width: 100%
   flex: 1
   margin: $marginComponent
 
-.gig-menu
+.forum-menu
   margin: $marginComponent
   width: 28px
   height: auto
 
-.gig-container-extended
+.forum-container-extended
   @extend %flexbox-flex-start-col
   width: 100%
   justify-content: flex-start
@@ -40,25 +40,25 @@
   > *
     margin: $marginRelative $marginComponent
 
-.gig-label
+.forum-label
   font-family: $fontFamilySansSerif
   font-weight: 600
   font-size: $paragraphTextSize
   color: $iconsTextColor
 
-.gig-link
+.forum-link
   font-family: $fontFamilySansSerif
   font-weight: 600
   font-size: $subparagraphTextSize
   color: transparentize($iconsTextColor, 0.25)
 
-.gig-main
+.forum-main
   @extend %flexbox-flex-start-col
   width: 100%
   min-height: 100%
   height: 100%
 
-.gig-main-header
+.forum-main-header
   @extend %flexbox-flex-start-row
   justify-content: space-between
   width: 100%
@@ -66,7 +66,7 @@
   background-color: transparentize($primaryTextColor, 0.1)
   padding: $marginComponent
 
-.gig-finder
+.forum-finder
   border: none
   outline: none
   background-color: transparent
@@ -76,22 +76,7 @@
   color: $iconsTextColor
   font-size: $subheaderTextSize
 
-.gig-profile-container
-  @extend %flexbox-flex-start-row
-  position: relative
-  margin: $marginComponent
-
-.gig-profile
-  width: 32px
-  height: auto
-  border-radius: 16px
-
-  &:hover
-    filter: sepia(100%) hue-rotate(40deg) saturate(150%)
-    transform: scale(1.15)
-    box-shadow: 0 0 8px 4px transparentize($motionPrimaryLightColor, 0.8)
-
-.gig-main-container
+.forum-main-container
   display: flex
   width: 100%
   flex: 1
@@ -99,7 +84,7 @@
   justify-content: flex-start
   margin: $marginComponent
 
-.gig-main-content
+.forum-main-content
   display: flex
   width: 100%
   height: 100%
@@ -108,7 +93,7 @@
   flex-wrap: wrap
   padding: $marginSection
 
-.gig-main-logo-content
+.forum-main-logo-content
   padding: $marginComponent
   width: 96px
   height: auto

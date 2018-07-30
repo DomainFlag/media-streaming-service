@@ -79,6 +79,7 @@ export const ACTIONS = {
                     let uriBuilder = new UriBuilder()
                         .setScheme(CONSTANTS.SCHEME)
                         .setAuthority(CONSTANTS.APP)
+                        .appendPath(CONSTANTS.QUERY)
                         .appendPath(contentType)
                         .appendQueryParameter(queryParameter)
                         .build();

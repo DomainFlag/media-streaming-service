@@ -1,7 +1,9 @@
 const mongoose = require('mongoose');
+const {ObjectId} = mongoose.Schema.Types;
 const {ReviewSchema} = require("./review");
 
 let ReleaseSchema = new mongoose.Schema({
+    author: ObjectId,
     title: {
         type: String,
         require: true

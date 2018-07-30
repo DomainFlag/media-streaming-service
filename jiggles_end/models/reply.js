@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
+const {ObjectId} = mongoose.Schema.Types;
 
 let ReplySchema = new mongoose.Schema({
-    author: mongoose.Schema.Types.ObjectId,
+    author: ObjectId,
     body: {
         text: {
             type: String,

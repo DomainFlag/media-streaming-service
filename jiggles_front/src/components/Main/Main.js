@@ -112,7 +112,7 @@ export class Main extends Component {
                 </div>
 
                 {
-                    this.props.search ? (
+                    this.props.search && (this.props.search !== null) ? (
                         <Query search={this.props.search}/>
                     ) : (
                         <Recommendation recommendations={recommendations}/>

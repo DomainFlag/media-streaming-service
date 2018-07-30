@@ -93,44 +93,10 @@ let comments = [
     }
 ];
 
-const fireplaces = [
+const threads = [
     {
         id: 0,
-        caption: "./tests/interpol.jpg",
-        content: "Interpol concert on 21 July, book your tickets here.",
-        created_by: "John Doe",
-        votes: 25,
-        comments: comments,
-        created_when: "08/07/2018"
-    }, {
-        id: 1,
-        caption: "./tests/bloc_party.jpg",
-        content: "Bloc Party album reissue on 31 July, pre-order right now, go for it right now.",
-        created_by: "Jane Doe",
-        votes: 13,
-        comments: [],
-        created_when: "02/07/2017"
-    },
-    {
-        id: 0,
-        caption: "./tests/interpol.jpg",
-        content: "Interpol concert on 21 July, book your tickets here.",
-        created_by: "John Doe",
-        votes: 25,
-        comments: comments,
-        created_when: "08/07/2018"
-    }, {
-        id: 1,
-        caption: "./tests/bloc_party.jpg",
-        content: "Bloc Party album reissue on 31 July, pre-order right now, go for it right now.",
-        created_by: "Jane Doe",
-        votes: 13,
-        comments: [],
-        created_when: "02/07/2017"
-    },
-    {
-        id: 0,
-        caption: "./tests/interpol.jpg",
+        caption: "./tests/000.jpg",
         content: "Interpol concert on 21 July, book your tickets here.",
         created_by: "John Doe",
         votes: 25,
@@ -147,4 +113,4 @@ const fireplaces = [
     }
 ];
 
-export default fireplaces;
+export default threads;

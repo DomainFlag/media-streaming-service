@@ -15,6 +15,16 @@
   border-radius: 4px
   padding: $marginComponent
 
+.settings-profile-icon
+  width: 32px
+  height: auto
+  border-radius: 16px
+
+  &:hover
+    filter: sepia(100%) hue-rotate(40deg) saturate(150%)
+    transform: scale(1.15)
+    box-shadow: 0 0 8px 4px transparentize($motionPrimaryLightColor, 0.8)
+
 .settings-arrow
   position: absolute
   left: 100%
@@ -37,3 +47,8 @@
 
   &:hover
     opacity: 1.0
+
+.settings-profile-container
+  @extend %flexbox-flex-start-row
+  position: relative
+  margin: $marginComponent

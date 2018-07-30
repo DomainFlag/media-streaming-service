@@ -1,20 +1,20 @@
 @import "./../../../resources"
 
-.fireplace
+.thread
   @extend %flexbox-flex-start-col
   box-shadow: 2px 2px 8px 1px transparentize($motionPrimaryLightColor, 0.4)
   height: auto
   width: auto
   margin: $marginComponent
 
-.fireplace-caption
+.thread-caption
   display: inline-flex
   position: relative
   overflow: hidden
   width: auto
   height: auto
 
-.fireplace-caption-content
+.thread-caption-content
   max-width: 360px
   max-height: 220px
   min-width: 280px
@@ -22,7 +22,7 @@
   width: auto
   height: auto
 
-.fireplace-utility
+.thread-utility
   @extend %flexbox-flex-start-row
   position: absolute
   flex-wrap: wrap
@@ -34,39 +34,39 @@
     margin: 0 $marginComponent
     color: $iconsTextColor
 
-.fireplace-votes
+.thread-votes
   @extend %flexbox-flex-start-row
 
   > *
     margin: 0 $marginSibling
 
-.fireplace-votes-content
+.thread-votes-content
   font-family: $fontFamilySansSerif
   font-weight: 600
   font-size: $spanTextSize
 
-.fireplace-like
+.thread-like
   width: 14px
   height: auto
 
-.fireplace-created_by
+.thread-created_by
   font-family: $fontFamilySansSerif
   font-weight: 600
   font-size: $spanTextSize
 
-.fireplace-date_when
+.thread-date_when
   font-family: $fontFamilySansSerif
   font-weight: 600
   font-size: $spanTextSize
 
-.fireplace-extra
+.thread-extra
   @extend %flexbox-centered-row
   margin-bottom: $marginComponent
   justify-content: center
   align-items: center
   width: 100%
 
-.fireplace-extra-more
+.thread-extra-more
   letter-spacing: 2px
   font-family: $fontFamilySansSerif
   font-weight: 600
@@ -74,34 +74,34 @@
   color: transparentize($motionPrimaryLightColor, 0.2)
 
 
-/* Fireplace Social Content */
-.fireplace-content
+/* Thread Social Content */
+.thread-content
   @extend %flexbox-flex-start-col
   justify-content: flex-start
   background-color: $iconsTextColor
   max-width: 100%
   height: auto
 
-.fireplace-content-container
+.thread-content-container
   @extend %flexbox-flex-start-col
   width: 100%
 
-.fireplace-content-text
+.thread-content-text
   margin: $marginSection $marginSection 0 $marginSection
   font-family: $fontFamilyReading
   font-weight: 600
   font-size: $spanTextSize
   word-break: break-word
 
-/* Fireplace Social */
-.fireplace-social
+/* Thread Social */
+.thread-social
   @extend %flexbox-flex-start-col
   padding: $marginComponent
   justify-content: flex-start
   width: 100%
   height: auto
 
-/* Fireplace Social Implementation */
+/* Thread Social Implementation */
 .spark
   @extend %flexbox-flex-start-col
   margin-bottom: $marginSibling

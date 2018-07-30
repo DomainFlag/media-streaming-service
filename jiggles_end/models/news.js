@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
+const {ObjectId} = mongoose.Schema.Types;
 
 let NewsSchema = new mongoose.Schema({
-    author: mongoose.Schema.Types.ObjectId,
+    author: ObjectId,
     header: {
         type: String,
         require: true

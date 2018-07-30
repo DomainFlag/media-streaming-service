@@ -14,7 +14,7 @@ import CONSTANTS from "./utils/Constants";
 import Welcome from "./components/Welcome/Welcome";
 import Main from "./components/Main/Main";
 import Auth from "./components/Auth/Auth/Auth";
-import Gig from "./components/Gig/Gig/Gig";
+import Forum from "./components/Forum/Forum";
 import Studio from "./components/Studio/Studio";
 
 let app = {
@@ -29,6 +29,9 @@ let app = {
             releases : []
         },
         search : null
+    },
+    forum : {
+        threads : []
     }
 };
 
@@ -62,7 +65,7 @@ render(
                 <Route exact path="/auth/signup" component={Auth}/>
                 <Route exact path="/auth/login" component={Auth}/>
                 <Route exact path="/main" component={Main}/>
-                <Route exact path="/forum" component={Gig}/>
+                <Route exact path="/forum" component={Forum}/>
                 <Route exact path="/studio" component={Studio}/>
             </Switch>
         </BrowserRouter>

@@ -8,6 +8,7 @@ const CONSTANTS = {
     SIGNUP : "signup",
     ME : "me",
     TOKEN : "token",
+    RESOURCES : "resources",
 
     ADD_TOKEN : "add_token",
     REMOVE_TOKEN : "remove_token",
@@ -16,11 +17,12 @@ const CONSTANTS = {
     PENDING : "pending",
     ERROR : "ERROR",
 
-    GIG : "gig",
-
     CREATE : "create",
-
+    QUERY : "query",
     MAIN : "main",
+    FORUM : "forum",
+    THREAD : "thread",
+    COMMENT : "comment",
 
     ENTERTAINMENT_TYPES : {
         NEWS : "news",

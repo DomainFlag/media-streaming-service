@@ -1,5 +1,6 @@
 import React from "react"
 import {Component} from "react"
+import CONSTANTS from "./../../../utils/Constants";
 
 import constrantizer from "../../../utils/TextImageContrastizer"
 import queryTree from "../../../utils/CommentParser"
@@ -8,10 +9,17 @@ import like_blue from "./../../../resources/icons/like-blue.svg"
 import like_dark from "./../../../resources/icons/like-dark.svg"
 
 import "./style.sass"
+import UriBuilder from "../../../utils/UriBuilder";
 
 class Spark extends Component {
     constructor(props) {
         super(props);
+
+
+        this.path = new UriBuilder()
+            .setScheme(CONSTANTS.SCHEME)
+            .setAuthority(CONSTANTS.APP)
+            .build();
     }
 
     render = () => {
@@ -19,16 +27,12 @@ class Spark extends Component {
             <div className="spark-section">
                 <div className="spark-container">
                     <img className="spark-avatar"
-                         src={`${this.props.comment.comment.header.avatar}`}/>
+                         src={this.path + this.props.comment.comment.content.caption}/>
 
                     <div className="spark-miscellaneous-container">
-                        <p className="spark-author">
-                            {this.props.comment.comment.name}
-                        </p>
+                        <p className="spark-author">{this.props.comment.comment.name}</p>
 
-                        <p className="spark-date">
-                            {this.props.comment.comment.header.date}
-                            </p>
+                        {/*<p className="spark-date">{this.props.comment.comment.header.date}</p>*/}
                     </div>
                 </div>
                 <div className="spark-container">
@@ -54,9 +58,14 @@ class Spark extends Component {
     }
 }
 
-class Fireplace extends Component {
+class Thread extends Component {
     constructor(props) {
         super(props);
+
+        this.path = new UriBuilder()
+            .setScheme(CONSTANTS.SCHEME)
+            .setAuthority(CONSTANTS.APP)
+            .build();
 
         let depth = 1;
 
@@ -68,10 +77,10 @@ class Fireplace extends Component {
     }
 
     saveTree = (depth) => {
-        if(!this.props.fireplace.hasOwnProperty("comments"))
+        if(!this.props.thread.hasOwnProperty("comments"))
             return [];
 
-        let commentsProv = this.props.fireplace.comments.slice();
+        let commentsProv = this.props.thread.comments.slice();
         return queryTree(commentsProv, depth);
     };
 
@@ -80,7 +89,7 @@ class Fireplace extends Component {
             color: constrantizer(this.img, this.container)
         });
 
-        this.fireplace_content.style.width = (e.target.width + "px");
+        this.thread_content.style.width = (e.target.width + "px");
     };
 
     extendSocial = () => {
@@ -98,31 +107,30 @@ class Fireplace extends Component {
     };
 
     render = () => (
-        <div className="fireplace">
-            <div className="fireplace-caption">
-                <img className="fireplace-caption-content"
-                     src={this.props.fireplace.caption}
-                     ref={(img) => this.img = img }
-                     onLoad={this.onLoadImage}/>
-                <div className="fireplace-utility" ref={(container) => this.container = container}>
-                    <div className="fireplace-votes" style={{ color: this.state.color }}>
+        <div className="thread">
+            <div className="thread-caption">
+                <img className="thread-caption-content"
+                     src={this.path + this.props.thread.caption} />
+                
+                <div className="thread-utility" ref={(container) => this.container = container}>
+                    <div className="thread-votes" style={{ color: this.state.color }}>
                         <img src={(
                             this.state.color === "#FFFFFF" ? like : like_dark
-                        )} className="fireplace-like"/>
-                        <p className="fireplace-votes-content">{this.props.fireplace.votes}</p>
+                        )} className="thread-like"/>
+                        <p className="thread-votes-content">{this.props.thread.votes}</p>
                     </div>
-                    <div className="fireplace-created_by" style={{ color: this.state.color }}>
-                        <p>{this.props.fireplace.created_by || "User"}</p>
+                    <div className="thread-created_by" style={{ color: this.state.color }}>
+                        <p>{this.props.thread.created_by || "User"}</p>
                     </div>
-                    <div className="fireplace-date_when" style={{ color: this.state.color }}>
-                        <p>{this.props.fireplace.created_when || (new Date()).toDateString()}</p>
+                    <div className="thread-date_when" style={{ color: this.state.color }}>
+                        <p>{this.props.thread.created_when || (new Date()).toDateString()}</p>
                     </div>
                 </div>
             </div>
-            <div className="fireplace-content" ref={(fireplace_content) => this.fireplace_content = fireplace_content}>
-                <div className="fireplace-content-container">
-                    <p className="fireplace-content-text" >{this.props.fireplace.content}</p>
-                    <div className="fireplace-social">
+            <div className="thread-content" ref={(thread_content) => this.thread_content = thread_content}>
+                <div className="thread-content-container">
+                    <p className="thread-content-text" >{this.props.thread.content}</p>
+                    <div className="thread-social">
                         {
                             this.state.comments
                                 .map((comment) => (
@@ -130,8 +138,8 @@ class Fireplace extends Component {
                                 ))
                         }
                     </div>
-                    <div className="fireplace-extra">
-                        <p className="fireplace-extra-more" onClick={this.extendSocial}>
+                    <div className="thread-extra">
+                        <p className="thread-extra-more" onClick={this.extendSocial}>
                             {
                                 this.state.comments.length > 0 &&
                                     (this.state.depth === 1 ? "More..." : "...Less")
@@ -144,4 +152,4 @@ class Fireplace extends Component {
     )
 }
 
-export default Fireplace;
+export default Thread;
