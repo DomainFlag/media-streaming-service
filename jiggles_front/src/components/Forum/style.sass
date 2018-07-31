@@ -64,9 +64,9 @@
   width: 100%
   height: 100px
   background-color: transparentize($primaryTextColor, 0.1)
-  padding: $marginComponent
 
 .forum-finder
+  margin: 0 $marginComponent
   border: none
   outline: none
   background-color: transparent
@@ -75,6 +75,25 @@
   border-bottom: 2px solid white
   color: $iconsTextColor
   font-size: $subheaderTextSize
+
+.forum-tools
+  @extend %flexbox-flex-start-row
+  margin: 0 $marginComponent
+
+.forum-tools-items
+  @extend %flexbox-flex-start-row
+  margin: 0 $marginSection
+
+  > *
+    margin: 0 $marginSibling
+
+.forum-tools-item
+  cursor: pointer
+  width: 20px
+  height: auto
+
+  &:hover
+    transform: scale(1.15)
 
 .forum-main-container
   display: flex

@@ -11,7 +11,7 @@ export default class Button extends Component {
 
         this.state = {
             value: !props.capsLocked ? (props.value || "Click") : (props.value || "Click").toUpperCase(),
-            selectable: props.selectable
+            selectable: props.selectable || null
         };
     }
 

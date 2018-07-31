@@ -1,8 +1,8 @@
 const {APP} = require("./../app_config");
 
 const CONSTANTS = {
-    APP,
     SCHEME : "http",
+    AUTHORITY : APP,
     USERS : "users",
     LOGIN : "login",
     SIGNUP : "signup",

@@ -15,11 +15,6 @@ export class Settings extends Component {
     constructor(props) {
         super(props);
 
-        this.path = new UriBuilder()
-            .setScheme(CONSTANTS.SCHEME)
-            .setAuthority(CONSTANTS.APP)
-            .build();
-
         this.options = [
             {
                 optionName : "Account",
@@ -37,14 +32,27 @@ export class Settings extends Component {
         ];
 
         this.state = {
-            toggled: false
+            toggled : false,
+            caption : this.setCaption(props)
         }
     }
+
+    setCaption = (props) => (props.authState.account) ? new UriBuilder()
+        .setScheme(CONSTANTS.SCHEME)
+        .setAuthority(CONSTANTS.AUTHORITY)
+        .appendPath(props.authState.account.caption)
+        .build() : null;
 
     componentWillReceiveProps = (nextProps) => {
         if(nextProps.authState.status !== null &&
             nextProps.authState.state === CONSTANTS.REMOVE_TOKEN &&
-            nextProps.authState.status === CONSTANTS.SUCCESS) nextProps.history.push('/');
+            nextProps.authState.status === CONSTANTS.SUCCESS)
+            nextProps.history.push('/');
+
+
+        this.setState({
+            caption : this.setCaption(nextProps)
+        })
     };
 
     onToggleSettings = () => {
@@ -57,7 +65,7 @@ export class Settings extends Component {
         <div className="settings-profile-container">
             {
                 this.props.authState.account && (
-                    <img className="settings-profile-icon" src={this.path + this.props.authState.account.caption} onClick={this.onToggleSettings} />
+                    <img className="settings-profile-icon" src={this.state.caption} onClick={this.onToggleSettings} />
                 )
             }
             {

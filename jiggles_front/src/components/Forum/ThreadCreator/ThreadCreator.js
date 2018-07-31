@@ -1,19 +1,22 @@
 import React from "react"
 import {Component} from "react"
+import {connect} from "react-redux"
+import {withRouter} from "react-router"
 
 import shareFile from "../../../resources/icons/picture.svg"
-
-import "./style.sass"
-import sass from "../../../resources.sass"
+import {ACTIONS} from "../../../reducers/forum"
 import Textarea from "../../Components/Textarea/Textarea";
 import Thread from "../Thread/Thread";
 import Button from "../../Components/Button/Button";
+
+import "./style.sass"
 
 class ImageLoader extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
+            caption : null,
             dragOver : null,
             title : "",
             loadingState : false
@@ -41,9 +44,12 @@ class ImageLoader extends Component {
 
                 fileReader.addEventListener("load", () => {
                     if(fileReader.readyState === fileReader.DONE) {
-                        this.liveImage.src = fileReader.result;
+                        this.setState({
+                            caption : fileReader.result,
+                            dragOver : "creator-interaction-zone-dropped"
+                        });
 
-                        this.props.onFireplaceCaptionChange(fileReader.result);
+                        this.props.onThreadCaptionChange(fileReader.result);
                     } else {
                         this.setState({
                             loadingState : false
@@ -75,9 +81,12 @@ class ImageLoader extends Component {
 
     render = () => (
         <div className="creator-interaction">
-            <div className={"creator-interaction-zone " + this.state.dragOver} onDrop={this.dropHandler} onDragLeave={this.dragLeaveHandler} onDragOver={this.dragOverHandler}>
-                <input className="creator-input" type="file" onChange={this.dropHandler}/>
-                <img className="creator-live-input" ref={(liveImage) => this.liveImage = liveImage}/>
+            <div className={"creator-interaction-zone " + this.state.dragOver}
+                 onDrop={this.dropHandler}
+                 onDragLeave={this.dragLeaveHandler}
+                 onDragOver={this.dragOverHandler}>
+                <input className="creator-input" type="file" onChange={this.dropHandler} />
+                <img className="creator-live-input" src={this.state.caption} style={{ visibility: this.state.caption ? "visible" : "hidden" }}/>
                 <img className="creator-upload" src={shareFile} />
 
                 <p className="creator-upload-text">Upload any caption Image</p>
@@ -92,28 +101,25 @@ class ThreadCreator extends Component {
         super(props);
 
         this.state = {
-            fireplace : {
-                caption : null,
-                content : null
-            }
+            caption : null,
+            content : null
         }
     }
 
-    onFireplaceCaptionChange = (value) => {
+    onPostThread = () => {
+        if(this.state.caption && this.state.content)
+            this.props.createThread(Object.assign({}, this.state));
+    };
+
+    onThreadCaptionChange = (value) => {
         this.setState({
-            fireplace : {
-                ...this.state.fireplace,
-                caption : value
-            }
+            caption : value
         });
     };
 
-    onFireplaceContentChange = (value) => {
+    onThreadContentChange = (value) => {
         this.setState({
-            fireplace : {
-                ...this.state.fireplace,
-                content : value
-            }
+            content : value
         });
     };
 
@@ -121,25 +127,27 @@ class ThreadCreator extends Component {
         <div className="creator">
             <div className="creator-header">
                 <p className="creator-header-title">
-                    Fireplace Creator
+                    Thread Creator
                 </p>
             </div>
             <div className="creator-body">
                 <div className="creator-container">
-                    <Thread fireplace={this.state.fireplace}/>
+                    <Thread thread={this.state}/>
                 </div>
                 <div className="creator-container">
                     <div className="creator-filling">
-                        <ImageLoader onFireplaceCaptionChange={this.onFireplaceCaptionChange}/>
+                        <ImageLoader onThreadCaptionChange={this.onThreadCaptionChange}/>
+
                         <div className="creator-content">
-                            <Textarea {...{label : "Content", placeholder : "Content..."}} onParentChange={this.onFireplaceContentChange}/>
+                            <Textarea {...{label : "Content", placeholder : "Content..."}} onParentChange={this.onThreadContentChange}/>
                         </div>
+                        
                         <div className="creator-interaction">
                             <div className="creator-interaction-post">
-                                <Button value="Post" backgroundColor="#148491"/>
+                                <Button value="Post" backgroundColor="#148491" onClick={this.onPostThread}/>
                             </div>
                             <div className="creator-interaction-cancel">
-                                <Button value="Cancel" backgroundColor="#DB2E3B"/>
+                                <Button value="Cancel" backgroundColor="#DB2E3B" onClick={this.props.history.goBack}/>
                             </div>
                         </div>
                     </div>
@@ -149,4 +157,8 @@ class ThreadCreator extends Component {
     )
 }
 
-export default ThreadCreator;
+const mapDispatchToProps = (dispatch) => ({
+    createThread : (body) => dispatch(ACTIONS.HANDLE_THREAD("POST", body))
+});
+
+export default withRouter(connect(null, mapDispatchToProps)(ThreadCreator));

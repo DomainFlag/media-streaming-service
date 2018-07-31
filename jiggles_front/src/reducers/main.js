@@ -28,7 +28,7 @@ export const ACTIONS = {
 
                     let url = new UriBuilder()
                         .setScheme(CONSTANTS.SCHEME)
-                        .setAuthority(CONSTANTS.APP)
+                        .setAuthority(CONSTANTS.AUTHORITY)
                         .appendPath(CONSTANTS.MAIN)
                         .appendPath(entertainmentType)
                         .build();
@@ -78,7 +78,7 @@ export const ACTIONS = {
 
                     let uriBuilder = new UriBuilder()
                         .setScheme(CONSTANTS.SCHEME)
-                        .setAuthority(CONSTANTS.APP)
+                        .setAuthority(CONSTANTS.AUTHORITY)
                         .appendPath(CONSTANTS.QUERY)
                         .appendPath(contentType)
                         .appendQueryParameter(queryParameter)

@@ -6,7 +6,7 @@ let mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
 mongoose.connect(process.env.MONGODB_URI);
 
-NewsSeed();
-ReleaseSeed();
+// NewsSeed();
+// ReleaseSeed();
 
 module.exports = {mongoose};

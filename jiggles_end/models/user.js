@@ -34,7 +34,7 @@ let UserSchema = new mongoose.Schema({
     },
     caption: {
         type: String,
-        default: "/resources/users/default/000.svg"
+        default: "resources/users/default/000.svg"
     },
     password: {
         type: String,

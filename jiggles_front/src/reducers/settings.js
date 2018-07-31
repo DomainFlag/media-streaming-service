@@ -19,7 +19,7 @@ export const ACTIONS = {
 
             let url = new UriBuilder()
                 .setScheme(CONSTANTS.SCHEME)
-                .setAuthority(CONSTANTS.APP)
+                .setAuthority(CONSTANTS.AUTHORITY)
                 .appendPath(CONSTANTS.USERS)
                 .appendPath(CONSTANTS.ME)
                 .appendPath(CONSTANTS.TOKEN)

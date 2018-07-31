@@ -1,17 +1,17 @@
 import React from "react"
 import {Component} from "react"
 import {connect} from "react-redux"
+import {Link} from "react-router-dom"
 
 import "./style.sass"
 
 import {ACTIONS} from "../../reducers/forum";
 import Settings from "../Settings/Settings";
+import create from "./../../resources/icons/create.svg"
 import menu_icon from "./../../resources/icons/social-menu.svg"
 import logo from "./../../resources/assets/logo-white.svg"
 import Thread from "./Thread/Thread";
 import ReactDOM from "react-dom";
-
-import fireplaces from "../../dummy/threads";
 
 export class Forum extends Component {
     constructor(props) {
@@ -55,8 +55,15 @@ export class Forum extends Component {
                 <div className="forum-main-header">
                     <input className="forum-finder" type="text" placeholder="Search..."/>
 
-                    {/*{Settings Component}*/}
-                    <Settings/>
+                    <div className="forum-tools">
+                        <div className="forum-tools-items">
+                            <Link to="/forum/create">
+                                <img className="forum-tools-item" src={create}/>
+                            </Link>
+                        </div>
+
+                        <Settings/>
+                    </div>
                 </div>
                 <div className="forum-main-container">
                     <div className="forum-main-content">

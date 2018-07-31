@@ -11,11 +11,13 @@ import './style.sass';
 
 import { BrowserRouter, Route, Switch} from "react-router-dom";
 import CONSTANTS from "./utils/Constants";
+import {ACTIONS} from "./reducers/auth";
 import Welcome from "./components/Welcome/Welcome";
 import Main from "./components/Main/Main";
 import Auth from "./components/Auth/Auth/Auth";
 import Forum from "./components/Forum/Forum";
 import Studio from "./components/Studio/Studio";
+import ThreadCreator from "./components/Forum/ThreadCreator/ThreadCreator";
 
 let app = {
     auth : {
@@ -40,7 +42,8 @@ let store = createStore(rootReducer, app, applyMiddleware(
     logger
 ));
 
-store.getState();
+if(store.getState().auth.token !== null)
+    store.dispatch(ACTIONS.USER_ACCOUNT());
 
 store.subscribe(() => {
     let state = store.getState();
@@ -66,6 +69,7 @@ render(
                 <Route exact path="/auth/login" component={Auth}/>
                 <Route exact path="/main" component={Main}/>
                 <Route exact path="/forum" component={Forum}/>
+                <Route exact path="/forum/create" component={ThreadCreator}/>
                 <Route exact path="/studio" component={Studio}/>
             </Switch>
         </BrowserRouter>

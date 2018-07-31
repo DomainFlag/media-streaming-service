@@ -24,15 +24,24 @@ export const ACTIONS = {
 
             let headers = new Headers();
             headers.set("Content-Type", "application/json");
+            headers.set("X-Auth", localStorage.getItem("token"));
 
             let url = new UriBuilder()
                 .setScheme(CONSTANTS.SCHEME)
-                .setAuthority(CONSTANTS.APP)
+                .setAuthority(CONSTANTS.AUTHORITY)
                 .appendPath(CONSTANTS.FORUM)
                 .appendPath(CONSTANTS.THREAD)
                 .build();
 
-            return fetch(url, { method : type, headers, body })
+
+            let bodyInput = {};
+            if(body) {
+                bodyInput["body"] = JSON.stringify(body);
+            }
+
+            console.log({ method : type, headers, ...bodyInput });
+
+            return fetch(url, { method : type, headers, ...bodyInput })
                 .then((response) => response.json())
                 .then((body) => (type === "GET") ? dispatch(({
                     type : HANDLE_THREAD,
@@ -55,10 +64,11 @@ export const ACTIONS = {
 
             let headers = new Headers();
             headers.set("Content-Type", "application/json");
+            headers.set("X-Auth", localStorage.getItem("token"));
 
             let url = new UriBuilder()
                 .setScheme(CONSTANTS.SCHEME)
-                .setAuthority(CONSTANTS.APP)
+                .setAuthority(CONSTANTS.AUTHORITY)
                 .appendPath(CONSTANTS.FORUM)
                 .appendPath(CONSTANTS.THREAD)
                 .appendPath(CONSTANTS.COMMENT)

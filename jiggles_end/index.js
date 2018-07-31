@@ -45,7 +45,7 @@ let simpleResponseQuery = (res, status, message, type) => {
     res.status(status).send(response);
 };
 
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit : "10mb", extended : true }));
 
 app.use(function(req, res, next) {
     if(req.method === "OPTIONS") {
@@ -174,14 +174,21 @@ app.get(/^\/query\/(artists|tracks|albums)\/([0-9a-zA-Z]+)$/, function(req, res)
 app.post(/^\/forum\/thread/, function(req, res) {
     let body = _.pick(req.body, ['caption', 'content']);
 
-    Thread.create({...body, author : req.user._id}, (err, raw) => {
-        if(err) simpleResponseQuery(res, 401, "couldn't create thread");
-        else simpleResponseQuery(res, 200, raw, "application/json");
+    let type = "png";
+    let base64Data = body.caption.replace(/^data:image\/(png|jpeg|svg+xml);base64,/, function(val) {
+        type = arguments[1];
+        return "";
     });
+    let url = `resources/forum/threads/005.${type}`;
 
-    let thread = new Thread(body);
-    thread.save().then(simpleResponseQuery.bind(this, res)).catch(() => {
-        res.status(401).send("Couldn't create a thread");
+    fs.writeFile(__dirname + `/${url}`, base64Data, 'base64', (err) => {
+        if(err) simpleResponseQuery(res, 401, "couldn't create thread " + err.toString());
+        else {
+            Thread.create({ caption : url, content : body.content, author : req.user._id}, (err, raw) => {
+                if(err) simpleResponseQuery(res, 401, "couldn't create thread");
+                else simpleResponseQuery(res, 200, raw, "application/json");
+            });
+        }
     });
 });
 
@@ -391,7 +398,6 @@ app.get('/users/me', (req, res) => {
 });
 
 app.delete('/users/me/token', (req, res) => {
-    res.setHeader("Access-Control-Allow-Origin", "*");
     req.user.removeToken(req.token).then(() => {
         res.status(200).send();
     }, () => {
