@@ -13,11 +13,10 @@ export default class Textarea extends Component {
         };
 
     }
-
     componentWillReceiveProps(nextProps) {
-        if(nextProps.cleanState)
+        if(this.props.value !== nextProps.value)
             this.setState({
-                value : ""
+                value : nextProps.value || ""
             });
     }
 

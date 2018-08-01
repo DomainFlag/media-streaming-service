@@ -2,8 +2,8 @@ const mongoose = require('mongoose');
 const {ObjectId} = mongoose.Schema.Types;
 
 let CommentSchema = new mongoose.Schema({
-    author: ObjectId,
-    parent: ObjectId,
+    author: { type : ObjectId, ref : 'User' },
+    parent: { type : ObjectId, ref : 'User' },
     depth: {
         type: Number,
         default: 0,

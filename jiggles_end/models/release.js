@@ -121,7 +121,8 @@ let ReleaseSeed = () => {
             }
         ]
     }], function(err) {
-        console.log(err);
+        if(err)
+            console.error(err);
     });
 
 };

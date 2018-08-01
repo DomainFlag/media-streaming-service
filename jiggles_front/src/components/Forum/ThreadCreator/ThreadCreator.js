@@ -10,18 +10,28 @@ import Thread from "../Thread/Thread";
 import Button from "../../Components/Button/Button";
 
 import "./style.sass"
+import CONSTANTS from "../../../utils/Constants";
 
 class ImageLoader extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            caption : null,
-            dragOver : null,
+            caption : this.props.caption || null,
+            dragOver : this.props.caption ? "creator-interaction-zone-dropped" : null,
             title : "",
             loadingState : false
         };
     }
+
+    componentWillReceiveProps = (nextProps) => {
+        if(this.props.caption !== nextProps.caption) {
+            this.setState({
+                caption : nextProps.caption || null,
+                dragOver : nextProps.caption ? "creator-interaction-zone-dropped" : null
+            });
+        }
+    };
 
     dropHandler = (e) => {
         e.preventDefault();
@@ -101,14 +111,28 @@ class ThreadCreator extends Component {
         super(props);
 
         this.state = {
-            caption : null,
-            content : null
+            caption : props.thread ? props.thread.caption : null,
+            content : props.thread ? props.thread.content : null
         }
     }
 
+    componentWillReceiveProps = (nextProps) => {
+        if(this.props.thread !== nextProps.thread) {
+            this.setState({
+                caption : nextProps.thread ? nextProps.thread.caption : null,
+                content : nextProps.thread ? nextProps.thread.content : null
+            });
+        }
+    };
+
     onPostThread = () => {
-        if(this.state.caption && this.state.content)
-            this.props.createThread(Object.assign({}, this.state));
+        if(this.state.caption && this.state.content) {
+            if(this.props.thread.mode === CONSTANTS.UPDATE)
+                this.props.onDispatchThreadUpdate(Object.assign({}, this.state, { _id : this.props.thread._id}));
+            else this.props.onDispatchThreadCreate(Object.assign({}, this.state));
+
+            this.props.onToggleThreadCreator();
+        }
     };
 
     onThreadCaptionChange = (value) => {
@@ -132,14 +156,14 @@ class ThreadCreator extends Component {
             </div>
             <div className="creator-body">
                 <div className="creator-container">
-                    <Thread thread={this.state}/>
+                    <Thread type={CONSTANTS.THREAD_CREATOR} thread={this.state}/>
                 </div>
                 <div className="creator-container">
                     <div className="creator-filling">
-                        <ImageLoader onThreadCaptionChange={this.onThreadCaptionChange}/>
+                        <ImageLoader onThreadCaptionChange={this.onThreadCaptionChange} caption={this.state.caption}/>
 
                         <div className="creator-content">
-                            <Textarea {...{label : "Content", placeholder : "Content..."}} onParentChange={this.onThreadContentChange}/>
+                            <Textarea {...{label : "Content", placeholder : "Content...", value : this.state.content}} onParentChange={this.onThreadContentChange}/>
                         </div>
                         
                         <div className="creator-interaction">
@@ -158,7 +182,8 @@ class ThreadCreator extends Component {
 }
 
 const mapDispatchToProps = (dispatch) => ({
-    createThread : (body) => dispatch(ACTIONS.HANDLE_THREAD("POST", body))
+    onDispatchThreadCreate : (body) => dispatch(ACTIONS.HANDLE_THREAD("POST", body)),
+    onDispatchThreadUpdate : (body) => dispatch(ACTIONS.HANDLE_THREAD("PUT", body))
 });
 
 export default withRouter(connect(null, mapDispatchToProps)(ThreadCreator));

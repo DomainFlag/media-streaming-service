@@ -17,7 +17,7 @@ let UserSchema = new mongoose.Schema({
         minlength: 1,
         unique: true,
         validate: {
-            validator: validator.isEmail,
+            validator: value => validator.isEmail(value),
             message: '{VALUE} is not a valid email'
         }
     },
@@ -41,7 +41,7 @@ let UserSchema = new mongoose.Schema({
         require: true,
         minlength: 6
     },
-    friends: [mongoose.Schema.Types.ObjectId],
+    friends: [ { type : mongoose.Schema.Types.ObjectId, ref : 'User' } ],
     content: {
         tracks: [TrackSchema],
         albums: [AlbumSchema],
@@ -99,8 +99,6 @@ UserSchema.statics.findByToken = function (token) {
     } catch (e) {
         return Promise.reject();
     }
-
-    // ObjectID(decoded._id).getTimestamp();
 
     return User.findOne({
         '_id': decoded._id,

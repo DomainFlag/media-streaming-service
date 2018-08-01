@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const {ObjectId} = mongoose.Schema.Types;
 
 let NewsSchema = new mongoose.Schema({
-    author: ObjectId,
+    author: { type: ObjectId, ref : 'User' },
     header: {
         type: String,
         require: true
@@ -30,7 +30,8 @@ let NewsSeed = () => {
         header: "Rage Against the Machine send cease and desist to Farage Against the Machine podcast",
         caption: "https://consequenceofsound.files.wordpress.com/2018/07/rage-against-the-machine-versus-farage-against-the-machine.png?w=1614"
     }], function(err) {
-        console.error(err);
+        if(err)
+            console.error(err);
     });
 };
 

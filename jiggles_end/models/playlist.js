@@ -5,7 +5,7 @@ let PlaylistSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    sharedWith: [ mongoose.Schema.Types.ObjectId ],
+    sharedWith: [ { type : ObjectId, ref : 'User' } ],
     tracks: [
         {
             trackNumber : {

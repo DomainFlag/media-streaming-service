@@ -3,25 +3,57 @@ import {Component} from "react"
 import {connect} from "react-redux"
 import {Link} from "react-router-dom"
 
-import "./style.sass"
-
+import ReactDOM from "react-dom";
+import CONSTANTS from "../../utils/Constants";
 import {ACTIONS} from "../../reducers/forum";
+
+import arrow_back from "./../../resources/icons/back-arrow.svg";
+import ThreadCreator from "./ThreadCreator/ThreadCreator";
 import Settings from "../Settings/Settings";
 import create from "./../../resources/icons/create.svg"
 import menu_icon from "./../../resources/icons/social-menu.svg"
 import logo from "./../../resources/assets/logo-white.svg"
 import Thread from "./Thread/Thread";
-import ReactDOM from "react-dom";
+
+import "./style.sass"
 
 export class Forum extends Component {
     constructor(props) {
         super(props);
+
+        this.state = {
+            threadCreatorToggle : false,
+            thread : {
+                mode : CONSTANTS.NONE
+            }
+        };
 
         props.fetchThreads();
     }
 
     componentDidMount = () => {
         ReactDOM.findDOMNode(this).parentNode.className = "extendable";
+    };
+
+    onToggleThreadCreator = (mode, thread) => {
+        this.setState((prevState) => {
+            if(mode === null || !prevState.threadCreatorToggle) {
+                return {
+                    threadCreatorToggle: !prevState.threadCreatorToggle,
+                    thread: {
+                        mode,
+                        ...thread
+                    }
+                }
+            } else {
+                return {
+                    thread: {
+                        mode,
+                        ...thread
+                    }
+                }
+            }
+        });
     };
 
     render = () => (
@@ -57,19 +89,25 @@ export class Forum extends Component {
 
                     <div className="forum-tools">
                         <div className="forum-tools-items">
-                            <Link to="/forum/create">
-                                <img className="forum-tools-item" src={create}/>
-                            </Link>
+                            <img className="forum-tools-item" src={create} onClick={this.onToggleThreadCreator.bind(this, null, CONSTANTS.CREATE)}/>
                         </div>
 
                         <Settings/>
                     </div>
                 </div>
+                {
+                    this.state.threadCreatorToggle && (
+                        <div className="forum-main-creator">
+                            <img className="forum-main-back" src={arrow_back} onClick={this.onToggleThreadCreator.bind(this, null, CONSTANTS.NONE)}/>
+                            <ThreadCreator thread={this.state.thread} onToggleThreadCreator={this.onToggleThreadCreator.bind(this, null, CONSTANTS.NONE)}/>
+                        </div>
+                    )
+                }
                 <div className="forum-main-container">
                     <div className="forum-main-content">
                         {
                             this.props.forum.threads.map((thread) => (
-                                <Thread thread={thread}/>
+                                <Thread type={CONSTANTS.THREAD_VIEW} thread={thread} onToggleThreadCreator={this.onToggleThreadCreator}/>
                             ))
                         }
                     </div>

@@ -16,12 +16,65 @@
   height: auto
 
 .thread-caption-content
+  z-index: 0
   max-width: 360px
   max-height: 220px
   min-width: 280px
   min-height: 160px
   width: auto
   height: auto
+
+.thread-menu
+  @extend %flexbox-flex-start-row
+  z-index: 1
+  justify-content: flex-end
+  cursor: pointer
+  position: absolute
+  top: 0
+  left: 100%
+  transform: translate(calc(-50% - #{$marginComponent}), $marginComponent)
+
+.thread-menu-icon
+  width: 16px
+  height: 16px
+
+  &:hover
+    transform: scale(1.15)
+
+.thread-menu-container
+  z-index: 2
+  display: table
+  border-spacing: 12px
+  border-radius: 4px
+  position: absolute
+  background-color: $iconsTextColor
+  transform: translate(0, 75%)
+
+.thread-menu-option
+  display: table-row
+
+  &:hover
+    transform: scale(1.05)
+    > *
+      opacity: 1.0
+
+.thread-menu-option-icon
+  vertical-align: middle
+  display: table-cell
+  width: 12px
+  height: auto
+  margin-right: $marginSibling
+  opacity: 0.9
+
+.thread-menu-option-text
+  vertical-align: middle
+  display: table-cell
+  white-space: nowrap
+  font-family: $fontFamilySansSerif
+  font-weight: 400
+  font-size: $subspanTextSize
+  margin-left: $marginSibling
+  opacity: 0.9
 
 .thread-utility
   @extend %flexbox-flex-start-row

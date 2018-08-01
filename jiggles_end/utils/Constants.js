@@ -11,6 +11,9 @@ const CONSTANTS = {
     grant_type : "client_credentials",
     COUNTRY : "US",
 
+    FOLDER : "folder",
+    FILE : "file",
+
     ARTIST : "artist",
     ALBUM : "album",
     TRACK : "track",

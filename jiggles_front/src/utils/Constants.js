@@ -10,6 +10,9 @@ const CONSTANTS = {
     TOKEN : "token",
     RESOURCES : "resources",
 
+    THREAD_CREATOR : "thread_creator",
+    THREAD_VIEW : "thread_view",
+
     ADD_TOKEN : "add_token",
     REMOVE_TOKEN : "remove_token",
 
@@ -17,7 +20,14 @@ const CONSTANTS = {
     PENDING : "pending",
     ERROR : "ERROR",
 
+    GET : "GET",
+    POST : "POST",
+    PUT : "PUT",
+    DELETE : "DELETE",
+
     CREATE : "create",
+    NONE : "none",
+    UPDATE : "update",
     QUERY : "query",
     MAIN : "main",
     FORUM : "forum",

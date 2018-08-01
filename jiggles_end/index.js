@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const fs = require('fs');
+const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 
@@ -7,6 +8,7 @@ require('./config/config');
 require('./db/mongoose');
 
 let RequestifyCollector = require("./utils/RequestifyCollector");
+let ResourcesCollector = require("./utils/ResourcesCollector");
 let {authenticate} = require('./middleware/authenticate');
 
 let {User} = require('./models/user');
@@ -130,6 +132,7 @@ app.get(/^\/main\/(news|releases)$/, function(req, res) {
 
 app.get(/^\/forum\/thread/, function(req, res) {
     Thread.find({})
+        .populate('author')
         .then((documents) => {
             simpleResponseQuery(res, 200, documents, "application/json");
         })
@@ -175,10 +178,11 @@ app.post(/^\/forum\/thread/, function(req, res) {
     let body = _.pick(req.body, ['caption', 'content']);
 
     let type = "png";
-    let base64Data = body.caption.replace(/^data:image\/(png|jpeg|svg+xml);base64,/, function(val) {
-        type = arguments[1];
+    let base64Data = body.caption.replace(/^data:image\/(png|jpeg|svg\+xml|jpg);base64,/, function(val) {
+        type = arguments[1].replace(/(\+\w+)/, "");
         return "";
     });
+
     let url = `resources/forum/threads/005.${type}`;
 
     fs.writeFile(__dirname + `/${url}`, base64Data, 'base64', (err) => {
@@ -195,18 +199,63 @@ app.post(/^\/forum\/thread/, function(req, res) {
 app.put(/^\/forum\/thread/, function(req, res) {
     let body = _.pick(req.body, [ '_id', 'caption', 'content']);
 
-    Thread.update({ _id : body._id, author : req.user._id }, { caption: body.caption, content: body.content }, (err, raw) => {
-        if(err) simpleResponseQuery(res, 401, "couldn't delete message");
-        else simpleResponseQuery(res, 200, raw, "application/json");
+    let type, base64Data, url;
+    new Promise((resolve, reject) => {
+        if(body.caption) {
+            type = "png";
+            base64Data = body.caption.replace(/^data:image\/(png|jpeg|svg\+xml|jpg);base64,/, function(val) {
+                type = arguments[1].replace(/(\+\w+)/, "");
+                return "";
+            });
+
+            url = `resources/forum/threads/005.${type}`;
+
+            Thread.findOne({ _id : body._id, author : req.user._id}).then((thread) => {
+                if(body.caption.match(thread.caption))
+                    reject(thread);
+                else resolve(thread);
+            });
+        }
+    }).then((thread) => {
+        fs.unlink(`./${thread.caption}`, (err) => {
+            if(err) simpleResponseQuery(res, 401, "couldn't remove your old caption");
+            else {
+                fs.writeFile(`./${url}`, base64Data, 'base64', (err) => {
+                    if(err) simpleResponseQuery(res, 401, "couldn't create thread " + err.toString());
+                    else {
+                        thread.set({ caption : url, content : body.content});
+                        thread.save().then((raw) => {
+                            simpleResponseQuery(res, 200, thread, "application/json");
+                        }).catch((err) => {
+                            simpleResponseQuery(res, 401, "couldn't update the thread");
+                        });
+                    }
+                });
+            }
+        })
+    }).catch((thread) => {
+        thread.set({content : body.content});
+        thread.save().then((raw) => {
+            simpleResponseQuery(res, 200, thread, "application/json");
+        }).catch((err) => {
+            simpleResponseQuery(res, 401, "couldn't update the thread");
+        });
     });
 });
 
 app.delete(/^\/forum\/thread/, function(req, res) {
-    let body = _.pick(req.body, [ '_id', 'caption', 'content']);
+    let body = _.pick(req.body, [ '_id']);
 
-    Thread.remove({ _id : body._id, author : req.user._id }, (err) => {
-       if(err) simpleResponseQuery(res, 401, "couldn't delete message");
-       else simpleResponseQuery(res, 200, "successfully deleted the message");
+    Thread.findOne({ _id : body._id, author : req.user._id  }).then((thread) => {
+        fs.unlink(`./${thread.caption}`, (err) => {
+            if(err) simpleResponseQuery(res, 401, "couldn't remove your old caption");
+            else {
+                Thread.remove({ _id : body._id, author : req.user._id }, (err, doc) => {
+                    if(err) simpleResponseQuery(res, 401, "couldn't delete message");
+                    else simpleResponseQuery(res, 200, body, "application/json");
+                });
+            }
+        })
     });
 });
 

@@ -1,9 +1,13 @@
 const mongoose = require('mongoose');
+const {ObjectId} = mongoose.Schema.Types;
 const {ReplySchema} = require('./reply');
 
 let ChatSchema = new mongoose.Schema({
-    creator: mongoose.Schema.Types.ObjectId,
-    group: [mongoose.Schema.Types.ObjectId],
+    creator: {
+        type : ObjectId,
+        ref : 'User'
+    },
+    group: [ { type : ObjectId, ref : 'User' } ],
     history: [ReplySchema]
 });
 

@@ -1,12 +1,18 @@
-let {NewsSeed} = require("./../models/news");
-let {ReleaseSeed} = require("./../models/release");
-
-let mongoose = require('mongoose');
+const _ = require("lodash");
+const mongoose = require('mongoose');
 
 mongoose.Promise = global.Promise;
-mongoose.connect(process.env.MONGODB_URI);
+mongoose.connection.openUri(process.env.MONGODB_URI);
 
-// NewsSeed();
-// ReleaseSeed();
+["News", "Release", "Thread"].forEach((modelName) => {
+    let modelSeedName = modelName + "Seed";
+
+    let dbObj = _.pick(require("./../models/" + modelName.toLowerCase()), [ modelName, modelSeedName]);
+
+    dbObj[modelName].find({}).then((documents) => {
+        if(documents.length === 0)
+            dbObj[modelSeedName]();
+    })
+});
 
 module.exports = {mongoose};

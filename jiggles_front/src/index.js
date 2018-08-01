@@ -69,7 +69,6 @@ render(
                 <Route exact path="/auth/login" component={Auth}/>
                 <Route exact path="/main" component={Main}/>
                 <Route exact path="/forum" component={Forum}/>
-                <Route exact path="/forum/create" component={ThreadCreator}/>
                 <Route exact path="/studio" component={Studio}/>
             </Switch>
         </BrowserRouter>

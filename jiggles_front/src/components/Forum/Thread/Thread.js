@@ -1,12 +1,22 @@
 import React from "react"
 import {Component} from "react"
+import {connect} from "react-redux"
+import {withRouter} from "react-router-dom"
 import CONSTANTS from "./../../../utils/Constants";
+import {ACTIONS} from "./../../../reducers/forum";
+
 
 import constrantizer from "../../../utils/TextImageContrastizer"
 import queryTree from "../../../utils/CommentParser"
 import like from "./../../../resources/icons/like.svg"
 import like_blue from "./../../../resources/icons/like-blue.svg"
 import like_dark from "./../../../resources/icons/like-dark.svg"
+import menu_white from "./../../../resources/icons/thread-menu-white.svg"
+import menu_dark from "./../../../resources/icons/thread-menu-dark.svg"
+import delete_white from "./../../../resources/icons/rubbish-bin.svg"
+import delete_dark from "./../../../resources/icons/rubbish-bin-black.svg"
+import edit_white from "./../../../resources/icons/create.svg"
+import edit_dark from "./../../../resources/icons/create-black.svg"
 
 import "./style.sass"
 import UriBuilder from "../../../utils/UriBuilder";
@@ -65,37 +75,42 @@ class Thread extends Component {
     constructor(props) {
         super(props);
 
-        this.expression = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
-        this.regex = new RegExp(this.expression);
-
-        this.caption = (props.thread.caption) ?
-            (this.expression.test(props.thread.caption) ?
-                new UriBuilder()
-                    .setScheme(CONSTANTS.SCHEME)
-                    .setAuthority(CONSTANTS.AUTHORITY)
-                    .appendPath(props.thread.caption)
-                    .build() : props.thread.caption)
-            : null;
-
         let depth = 1;
 
         this.state = {
-            depth: depth,
-            color: "#000000",
-            comments: this.saveTree(depth)
+            threadMenuToggle : false,
+            caption : this.buildCaptionUri(props),
+            depth : depth,
+            utilityColor : "#000000",
+            menuColor : "#000000",
+            comments : this.saveTree(depth)
         };
     }
 
+    buildCaptionUri = (props) => {
+        if(props.type === CONSTANTS.THREAD_CREATOR)
+            return props.thread.caption;
+        else if(props.type === CONSTANTS.THREAD_VIEW) {
+            if(props.thread.caption) {
+                return new UriBuilder()
+                    .setScheme(CONSTANTS.SCHEME)
+                    .setAuthority(CONSTANTS.AUTHORITY)
+                    .appendPath(props.thread.caption)
+                    .build();
+            } else return null;
+        } else return null;
+    };
+
     componentWillReceiveProps = (nextProps) => {
-        if(this.caption !== nextProps.thread.caption)
-            this.caption = (nextProps.thread.caption) ?
-                (this.expression.test(nextProps.thread.caption) ?
-                    new UriBuilder()
-                        .setScheme(CONSTANTS.SCHEME)
-                        .setAuthority(CONSTANTS.AUTHORITY)
-                        .appendPath(nextProps.thread.caption)
-                        .build() : nextProps.thread.caption)
-                : null;
+        if(this.props.thread.caption !== nextProps.thread.caption) {
+            this.setState({
+                caption : this.buildCaptionUri(nextProps)
+            });
+        }
+    };
+
+    componentWillUnmount = () => {
+        document.removeEventListener("click", this.onDocumentThreadMenuToggle);
     };
 
     dateParser = function (objectId) {
@@ -115,7 +130,8 @@ class Thread extends Component {
 
     onLoadImage = (e) => {
         this.setState({
-            color: constrantizer(this.img, this.container)
+            utilityColor: constrantizer(this.img, this.container_utility),
+            menuColor : constrantizer(this.img, this.container_menu, 10,  this.canvas_menu)
         });
 
         this.thread_content.style.width = (e.target.width + "px");
@@ -135,25 +151,99 @@ class Thread extends Component {
         })
     };
 
+    contrastBackground = () => {
+        if(this.state.menuColor === "#FFFFFF")
+            return "#000000";
+        else return "#FFFFFF";
+    };
+
+    contrastImage = (image1, image2) => {
+        if(this.state.menuColor === "#FFFFFF")
+            return image2;
+        else return image1;
+    };
+
+    onDocumentThreadMenuToggle = (e) => {
+        document.removeEventListener("click", this.onDocumentThreadMenuToggle);
+
+        this.setState((prevState) => {
+            return {
+                threadMenuToggle : !prevState.threadMenuToggle
+            };
+        });
+    };
+
+    onThreadMenuToggle = (e) => {
+        if(!this.state.threadMenuToggle) {
+            this.setState((prevState) => {
+                document.addEventListener("click", this.onDocumentThreadMenuToggle);
+
+                return {
+                    threadMenuToggle : !prevState.threadMenuToggle
+                };
+            });
+        }
+    };
+
+    onThreadMenuProp = (e) => {
+        e.preventDefault();
+        e.nativeEvent.stopImmediatePropagation();
+
+    };
+
+    onThreadDelete = (thread) => {
+        this.props.onDispatchThreadDelete({...thread});
+    };
+
+    onThreadUpdate = (thread) => {
+        this.props.onToggleThreadCreator(CONSTANTS.UPDATE, {
+            ...thread,
+            caption : this.img.src
+        });
+    };
+
     render = () => (
         <div className="thread">
             {
-                this.caption && (
+                this.state.caption && (
                     <div className="thread-caption">
                         <img className="thread-caption-content" ref={(img) => this.img = img}
-                             crossOrigin="Anonymous" src={this.caption} onLoad={this.onLoadImage}/>
+                             crossorigin="Anonymous"
+                             src={this.state.caption}
+                             onLoad={this.onLoadImage}/>
 
-                        <div className="thread-utility" ref={(container) => this.container = container}>
-                            <div className="thread-votes" style={{ color: this.state.color }}>
+                        <div className="thread-menu" ref={(container_menu) => this.container_menu = container_menu}>
+                            <img className="thread-menu-icon"
+                                 src={this.state.menuColor === "#FFFFFF" ? menu_white : menu_dark}
+                                 onClick={this.onThreadMenuToggle}/>
+
+                            {
+                                this.state.threadMenuToggle && (
+                                    <div className="thread-menu-container" style={{ backgroundColor : this.state.menuColor }} onClick={this.onThreadMenuProp}>
+                                        <div className="thread-menu-option" style={{ color : this.contrastBackground() }} onClick={this.onThreadUpdate.bind(this, this.props.thread)}>
+                                            <img className="thread-menu-option-icon" src={this.contrastImage(edit_white, edit_dark)}/>
+                                            <p className="thread-menu-option-text">Edit thread</p>
+                                        </div>
+                                        <div className="thread-menu-option" style={{ color : this.contrastBackground() }} onClick={this.onThreadDelete.bind(this, this.props.thread)}>
+                                            <img className="thread-menu-option-icon" src={this.contrastImage(delete_white, delete_dark)}/>
+                                            <p className="thread-menu-option-text">Delete thread</p>
+                                        </div>
+                                    </div>
+                                )
+                            }
+                        </div>
+
+                        <div className="thread-utility" ref={(container_utility) => this.container_utility = container_utility}>
+                            <div className="thread-votes" style={{ utilityColor: this.state.utilityColor }}>
                                 <img src={(
-                                    this.state.color === "#FFFFFF" ? like : like_dark
+                                    this.state.utilityColor === "#FFFFFF" ? like : like_dark
                                 )} className="thread-like"/>
                                 <p className="thread-votes-content">{this.props.thread.votes}</p>
                             </div>
-                            <div className="thread-created_by" style={{ color: this.state.color }}>
-                                <p>{this.props.thread.created_by || "User"}</p>
+                            <div className="thread-created_by" style={{ utilityColor: this.state.utilityColor }}>
+                                <p>{ this.props.thread.author ? this.props.thread.author.name : "User"}</p>
                             </div>
-                            <div className="thread-date_when" style={{ color: this.state.color }}>
+                            <div className="thread-date_when" style={{ utilityColor: this.state.utilityColor }}>
                                 <p>{ this.dateParser(this.props.thread._id) }</p>
                             </div>
                         </div>
@@ -183,4 +273,8 @@ class Thread extends Component {
     )
 }
 
-export default Thread;
+const mapDispatchToProps = (dispatch) => ({
+    onDispatchThreadDelete : (body) => dispatch(ACTIONS.HANDLE_THREAD(CONSTANTS.DELETE, body))
+});
+
+export default withRouter(connect(null, mapDispatchToProps)(Thread));

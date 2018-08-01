@@ -1,12 +1,13 @@
 const mongoose = require('mongoose');
+const ObjectId = mongoose.Schema.Types.ObjectId;
 
 let QueueSchema = new mongoose.Schema({
     title: {
         type: String,
         required: false
     },
-    moderator: mongoose.Schema.Types.ObjectId,
-    friends: [mongoose.Schema.Types.ObjectId],
+    leader: { type : ObjectId, ref : 'User' },
+    friends: [ { type : ObjectId, ref : 'User' } ],
     position: {
         type: Number,
         default: 1
