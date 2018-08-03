@@ -9,20 +9,14 @@ let CommentSchema = new mongoose.Schema({
         default: 0,
         min: 0
     },
+    content: {
+        type: String
+    },
     likes: {
         type: Number,
         default: 0,
         min: 0
     },
-    content: {
-        text: {
-            type: String,
-            require: true
-        },
-        caption: {
-            type: String
-        }
-    }
 });
 
 let Comment = mongoose.model('Comment', CommentSchema);

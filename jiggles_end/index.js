@@ -8,7 +8,7 @@ require('./config/config');
 require('./db/mongoose');
 
 let RequestifyCollector = require("./utils/RequestifyCollector");
-let ResourcesCollector = require("./utils/ResourcesCollector");
+let resourcesCollector = require("./utils/resourcesCollector");
 let {authenticate} = require('./middleware/authenticate');
 
 let {User} = require('./models/user');
@@ -74,7 +74,7 @@ app.use('/resources', express.static(__dirname + '/resources'));
 /* Public & Non-protected Routes */
 
 app.post('/users', (req, res) => {
-    let body = _.pick(req.body, ['email', 'password']);
+    let body = _.pick(req.body, ['email', 'name', 'password']);
     let user = new User(body);
 
     user.save().then(() => {
@@ -133,6 +133,7 @@ app.get(/^\/main\/(news|releases)$/, function(req, res) {
 app.get(/^\/forum\/thread/, function(req, res) {
     Thread.find({})
         .populate('author')
+        .populate('comments.author')
         .then((documents) => {
             simpleResponseQuery(res, 200, documents, "application/json");
         })
@@ -173,6 +174,57 @@ app.get(/^\/query\/(artists|tracks|albums)\/([0-9a-zA-Z]+)$/, function(req, res)
         });
 });
 
+/* Thread Comments(POST, PUT, DELETE) */
+app.post(/^\/forum\/thread\/comment/, function(req, res) {
+    let thread_id = _.pick(req.body, ['_id']);
+
+    let body = _.pick(req.body, ['parent', 'depth', 'content']);
+    body['author'] = req.user._id;
+
+    Thread.findOneAndUpdate({ _id : thread_id._id }, {
+        $push : {
+            comments : body
+        }
+    }, { upsert : true, new: true })
+    .populate('author')
+    .populate('comments.author')
+    .exec((err, raw) => {
+        if(err) simpleResponseQuery(res, 401, "couldn't create new message" + err.toString());
+        else simpleResponseQuery(res, 200, raw, "application/json");
+    });
+});
+
+app.put(/^\/forum\/thread\/comment/, function(req, res) {
+    let thread_id = _.pick(req.body, ['_id']);
+
+    let body = _.pick(req.body, ['parent', 'depth', 'content']);
+
+    Thread.update({ _id : thread_id, "comments.author" : req.user._id },
+        body.reduce((acc, value) => {
+            let obj = {};
+            obj["comments.$." + value] = value;
+
+            return {...acc, ...obj };
+        }, {}), (err, raw) => {
+            if(err) simpleResponseQuery(res, 401, "couldn't update message");
+            else simpleResponseQuery(res, 200, raw, "application/json");
+        });
+});
+
+
+app.delete(/^\/forum\/thread\/comment/, function(req, res) {
+    let body = _.pick(req.body, ['threadID, commentID']);
+
+    Thread.update({ _id : body.threadID, "comments.author" : req.user._id }, {
+        $pull : {
+            "comments.$._id" : body.commentID
+        }
+    }, (err) => {
+        if(err) simpleResponseQuery(res, 401, "couldn't delete message");
+        else simpleResponseQuery(res, 200, raw, "application/json");
+    });
+});
+
 /* Thread (GET (public), POST, PUT, DELETE) */
 app.post(/^\/forum\/thread/, function(req, res) {
     let body = _.pick(req.body, ['caption', 'content']);
@@ -183,13 +235,15 @@ app.post(/^\/forum\/thread/, function(req, res) {
         return "";
     });
 
-    let url = `resources/forum/threads/005.${type}`;
+    let uri = resourcesCollector.reservePath() + `.${type}`;
 
-    fs.writeFile(__dirname + `/${url}`, base64Data, 'base64', (err) => {
+    fs.writeFile(__dirname + `/${uri}`, base64Data, 'base64', (err) => {
         if(err) simpleResponseQuery(res, 401, "couldn't create thread " + err.toString());
         else {
-            Thread.create({ caption : url, content : body.content, author : req.user._id}, (err, raw) => {
-                if(err) simpleResponseQuery(res, 401, "couldn't create thread");
+            Thread.create({ caption : uri, content : body.content, author : req.user._id}, (err, raw) => {
+                raw.author = req.user;
+
+                if(err) simpleResponseQuery(res, 401, "couldn't delete message");
                 else simpleResponseQuery(res, 200, raw, "application/json");
             });
         }
@@ -199,7 +253,7 @@ app.post(/^\/forum\/thread/, function(req, res) {
 app.put(/^\/forum\/thread/, function(req, res) {
     let body = _.pick(req.body, [ '_id', 'caption', 'content']);
 
-    let type, base64Data, url;
+    let type, base64Data;
     new Promise((resolve, reject) => {
         if(body.caption) {
             type = "png";
@@ -207,8 +261,6 @@ app.put(/^\/forum\/thread/, function(req, res) {
                 type = arguments[1].replace(/(\+\w+)/, "");
                 return "";
             });
-
-            url = `resources/forum/threads/005.${type}`;
 
             Thread.findOne({ _id : body._id, author : req.user._id}).then((thread) => {
                 if(body.caption.match(thread.caption))
@@ -220,10 +272,14 @@ app.put(/^\/forum\/thread/, function(req, res) {
         fs.unlink(`./${thread.caption}`, (err) => {
             if(err) simpleResponseQuery(res, 401, "couldn't remove your old caption");
             else {
-                fs.writeFile(`./${url}`, base64Data, 'base64', (err) => {
+                resourcesCollector.freePath(thread.caption);
+                let uri = `${resourcesCollector.reservePath()}.${type}`;
+
+                fs.writeFile(`/${uri}`, base64Data, 'base64', (err) => {
                     if(err) simpleResponseQuery(res, 401, "couldn't create thread " + err.toString());
                     else {
-                        thread.set({ caption : url, content : body.content});
+                        resourcesCollector.freePath(thread.caption);
+                        thread.set({ caption : uri, content : body.content});
                         thread.save().then((raw) => {
                             simpleResponseQuery(res, 200, thread, "application/json");
                         }).catch((err) => {
@@ -250,62 +306,14 @@ app.delete(/^\/forum\/thread/, function(req, res) {
         fs.unlink(`./${thread.caption}`, (err) => {
             if(err) simpleResponseQuery(res, 401, "couldn't remove your old caption");
             else {
+                resourcesCollector.freePath(thread.caption);
+
                 Thread.remove({ _id : body._id, author : req.user._id }, (err, doc) => {
                     if(err) simpleResponseQuery(res, 401, "couldn't delete message");
                     else simpleResponseQuery(res, 200, body, "application/json");
                 });
             }
         })
-    });
-});
-
-/* Thread Comments(POST, PUT, DELETE) */
-app.post(/^\/forum\/thread\/comment/, function(req, res) {
-    let threadId = _.pick(req.body, ['_id']);
-
-    let body = _.pick(req.body, ['parent', 'depth', 'content']);
-    body['author'] = req.user._id;
-
-    Thread.find({ _id : threadId._id }, {
-        $push : {
-            comments : {
-                body
-            }
-        }
-    }, (err) => {
-        if(err) simpleResponseQuery(res, 401, "couldn't create new message");
-        else simpleResponseQuery(res, 200, "successfully created new message");
-    });
-});
-
-app.put(/^\/forum\/thread\/comment/, function(req, res) {
-    let threadId = _.pick(req.body, ['_id']);
-
-    let body = _.pick(req.body, ['parent', 'depth', 'content']);
-
-    Thread.update({ _id : threadId, "comments.author" : req.user._id },
-        body.reduce((acc, value) => {
-            let obj = {};
-            obj["comments.$." + value] = value;
-
-            return {...acc, ...obj };
-        }, {}), (err, raw) => {
-            if(err) simpleResponseQuery(res, 401, "couldn't update message");
-            else simpleResponseQuery(res, 200, raw, "application/json");
-    });
-});
-
-
-app.delete(/^\/forum\/thread\/comment/, function(req, res) {
-    let body = _.pick(req.body, ['threadID, commentID']);
-
-    Thread.update({ _id : body.threadID, "comments.author" : req.user._id }, {
-        $pull : {
-            "comments.$._id" : body.commentID
-        }
-    }, (err) => {
-        if(err) simpleResponseQuery(res, 401, "couldn't delete message");
-        else simpleResponseQuery(res, 200, raw, "application/json");
     });
 });
 

@@ -42,7 +42,7 @@
     transform: scale(1.15)
 
 .thread-menu-container
-  z-index: 2
+  z-index: 1
   display: table
   border-spacing: 12px
   border-radius: 4px
@@ -85,14 +85,14 @@
   transform: translate($marginSibling, -150%)
 
   > *
-    margin: 0 $marginComponent
+    margin: 0 $marginRelative
     color: $iconsTextColor
 
 .thread-votes
   @extend %flexbox-flex-start-row
 
   > *
-    margin: 0 $marginSibling
+    padding: 0 $marginGnome
 
 .thread-votes-content
   font-family: $fontFamilySansSerif
@@ -100,8 +100,23 @@
   font-size: $spanTextSize
 
 .thread-like
-  width: 14px
-  height: auto
+  width: auto
+  height: 12px
+
+.thread-comment
+  @extend %flexbox-centered-row
+  cursor: pointer
+  > *
+    margin: 0 $marginGnome
+
+.thread-comment-icon
+  width: auto
+  height: 12px
+
+.thread-comment-text
+  font-family: $fontFamilySansSerif
+  font-weight: 600
+  font-size: $spanTextSize
 
 .thread-created_by
   font-family: $fontFamilySansSerif
@@ -136,6 +151,11 @@
   max-width: 100%
   height: auto
 
+.thread-main-comment
+  @extend %flexbox-flex-start-col
+  width: 100%
+  padding: $marginComponent $marginSection 0 $marginSection
+
 .thread-content-container
   @extend %flexbox-flex-start-col
   width: 100%
@@ -158,6 +178,7 @@
 /* Thread Social Implementation */
 .spark
   @extend %flexbox-flex-start-col
+  width: 100%
   margin-bottom: $marginSibling
 
 .spark-section
@@ -176,6 +197,8 @@
   width: 100%
   flex: 1
   margin: $marginSibling $marginComponent $marginSibling 0
+  > *
+    margin: 0 $marginSibling
 
 .spark-miscellaneous-container
   @extend %flexbox-flex-start-col
@@ -189,15 +212,35 @@
   @extend %flexbox-flex-start-row
   justify-content: center
   > *
-    margin-right: $marginRelative
+    margin-right: $marginSibling
 
 .spark-like
+  cursor: pointer
   width: 14px
   height: auto
   opacity: 0.8
 
   &:hover
     opacity: 1.0
+
+.spark-comment-container
+  @extend %flexbox-flex-start-row
+  cursor: pointer
+  opacity: 0.8
+  &:hover
+    opacity: 1.0
+  > *
+    margin-right: $marginSibling
+
+.spark-chat
+  width: 14px
+  height: auto
+
+.spark-comment-info
+  font-family: $fontFamilyReading
+  font-weight: 400
+  font-size: $subspanTextSize
+  color: $primaryTextColor
 
 .spark-content
   @extend %flexbox-flex-start-row
@@ -225,6 +268,12 @@
   font-weight: 500
   font-size: $subspanTextSize
   color: transparentize($primaryTextColor, 0.25)
+
+/* Comment */
+.spark-comment
+  @extend %flexbox-flex-start-col
+  width: 100%
+  align-items: flex-start
 
 .spark-inception
   @extend %flexbox-flex-start-col

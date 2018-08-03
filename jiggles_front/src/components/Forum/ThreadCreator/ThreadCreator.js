@@ -3,6 +3,7 @@ import {Component} from "react"
 import {connect} from "react-redux"
 import {withRouter} from "react-router"
 
+import cancel from "./../../../resources/icons/cancel-dark.svg";
 import shareFile from "../../../resources/icons/picture.svg"
 import {ACTIONS} from "../../../reducers/forum"
 import Textarea from "../../Components/Textarea/Textarea";
@@ -95,11 +96,12 @@ class ImageLoader extends Component {
                  onDrop={this.dropHandler}
                  onDragLeave={this.dragLeaveHandler}
                  onDragOver={this.dragOverHandler}>
+
                 <input className="creator-input" type="file" onChange={this.dropHandler} />
                 <img className="creator-live-input" src={this.state.caption} style={{ visibility: this.state.caption ? "visible" : "hidden" }}/>
                 <img className="creator-upload" src={shareFile} />
 
-                <p className="creator-upload-text">Upload any caption Image</p>
+                <p className="creator-upload-text">Upload any caption image</p>
             </div>
         </div>
     );
@@ -149,9 +151,10 @@ class ThreadCreator extends Component {
 
     render = () => (
         <div className="creator">
+            <img className="creator-back" src={cancel} onClick={this.props.onToggleThreadCreator.bind(this, CONSTANTS.NONE, null)}/>
             <div className="creator-header">
                 <p className="creator-header-title">
-                    Thread Creator
+                    { this.props.thread.mode === CONSTANTS.CREATE ? "Create Mode" : "Edit Mode" }
                 </p>
             </div>
             <div className="creator-body">

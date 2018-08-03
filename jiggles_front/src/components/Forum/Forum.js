@@ -7,7 +7,6 @@ import ReactDOM from "react-dom";
 import CONSTANTS from "../../utils/Constants";
 import {ACTIONS} from "../../reducers/forum";
 
-import arrow_back from "./../../resources/icons/back-arrow.svg";
 import ThreadCreator from "./ThreadCreator/ThreadCreator";
 import Settings from "../Settings/Settings";
 import create from "./../../resources/icons/create.svg"
@@ -37,7 +36,7 @@ export class Forum extends Component {
 
     onToggleThreadCreator = (mode, thread) => {
         this.setState((prevState) => {
-            if(mode === null || !prevState.threadCreatorToggle) {
+            if(mode === null || mode === CONSTANTS.NONE || !prevState.threadCreatorToggle) {
                 return {
                     threadCreatorToggle: !prevState.threadCreatorToggle,
                     thread: {
@@ -89,7 +88,7 @@ export class Forum extends Component {
 
                     <div className="forum-tools">
                         <div className="forum-tools-items">
-                            <img className="forum-tools-item" src={create} onClick={this.onToggleThreadCreator.bind(this, null, CONSTANTS.CREATE)}/>
+                            <img className="forum-tools-item" src={create} onClick={this.onToggleThreadCreator.bind(this, CONSTANTS.CREATE, null)}/>
                         </div>
 
                         <Settings/>
@@ -97,10 +96,7 @@ export class Forum extends Component {
                 </div>
                 {
                     this.state.threadCreatorToggle && (
-                        <div className="forum-main-creator">
-                            <img className="forum-main-back" src={arrow_back} onClick={this.onToggleThreadCreator.bind(this, null, CONSTANTS.NONE)}/>
-                            <ThreadCreator thread={this.state.thread} onToggleThreadCreator={this.onToggleThreadCreator.bind(this, null, CONSTANTS.NONE)}/>
-                        </div>
+                        <ThreadCreator thread={this.state.thread} onToggleThreadCreator={this.onToggleThreadCreator.bind(this, CONSTANTS.NONE, null)}/>
                     )
                 }
                 <div className="forum-main-container">

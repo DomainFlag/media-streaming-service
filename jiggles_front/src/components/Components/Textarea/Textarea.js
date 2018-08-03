@@ -1,6 +1,8 @@
 import React from "react"
 import {Component} from "react"
 
+import account from "./../../../resources/icons/account.svg"
+
 import "./style.sass"
 
 export default class Textarea extends Component {
@@ -8,17 +10,32 @@ export default class Textarea extends Component {
         super(props);
 
         this.state = {
-            label: props.label,
-            value: this.props.value || ""
+            value: this.props.value || null
         };
-
     }
+
+    componentDidMount = () => {
+        document.addEventListener("keydown", this.onSubmitComment);
+    };
+
+    componentWillUnmount = () => {
+        document.removeEventListener("keydown", this.onSubmitComment);
+    };
+
     componentWillReceiveProps(nextProps) {
         if(this.props.value !== nextProps.value)
             this.setState({
                 value : nextProps.value || ""
             });
     }
+
+    onSubmitComment = (e) => {
+        // Enter key
+        if(e.which === 13 && this.props.onSubmitComment) {
+            this.props.onSubmitComment();
+            e.preventDefault();
+        }
+    };
 
     onTextareaChange = (e) => {
         this.setState({
@@ -30,11 +47,24 @@ export default class Textarea extends Component {
 
     render = () => (
         <div className="form-textarea">
-            <label className="form-textarea-label">{this.state.label}</label>
-            <textarea className="form-textarea-action"
-                      placeholder={this.props.placeholder}
-                      value={this.state.value}
-                      onChange={this.onTextareaChange}/>
+            {
+                this.props.caption && (
+                    <div className="form-textarea-div" style={{ marginRight: "8px" }}>
+                        <img className="form-textarea-caption" src={this.props.caption}/>
+                    </div>
+                )
+            }
+            <div className="form-textarea-div" style={{ marginLeft : this.props.caption && "8px" }}>
+                {
+                    this.props.label && (
+                        <label className="form-textarea-label">{this.props.label}</label>
+                    )
+                }
+                <textarea className="form-textarea-action"
+                          placeholder={this.props.placeholder}
+                          value={this.state.value}
+                          onChange={this.onTextareaChange}/>
+            </div>
         </div>
     );
 }

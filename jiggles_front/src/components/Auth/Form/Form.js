@@ -22,6 +22,7 @@ class Form extends Component {
         this.state = {
             type : props.location.pathname.replace(/(.*)\/(\w+)$/, "$2"),
             password : null,
+            name : null,
             validated: null,
             email : this.getRememberedMyContent(),
             rememberMe : false,
@@ -57,6 +58,12 @@ class Form extends Component {
         })
     };
 
+    onParentChangeName = (e) => {
+        this.setState({
+            name : e.target.value
+        });
+    };
+
     onParentChangeValidatePassword = (e) => {
         this.setState({
             validated : (e.target.value.length === 0) ? null : this.state.password === e.target.value
@@ -73,7 +80,10 @@ class Form extends Component {
         if(this.state.rememberMe)
             document.cookie = `email=${this.state.email.trim()}`;
 
-        this.props.auth(this.state.type, { email : this.state.email, password : this.state.password});
+        this.props.auth(this.state.type, { email : this.state.email,
+            name : this.state.name, password :
+            this.state.password
+        });
     };
 
     render = () => (
@@ -106,15 +116,18 @@ class Form extends Component {
                 }
                 <div className="form-content-container">
                     <Input {...{label : "E-mail", placeholder : "E-mail...", type : "email", value : this.state.email}}
-                           cleanState={this.state.submitted}
                            onParentChange={this.onParentChangeEmail}/>
+                    {
+                        this.state.type === CONSTANTS.SIGNUP && (
+                            <Input {...{label : "Name", placeholder : "Your name...", type : "text"}}
+                                   onParentChange={this.onParentChangeName}/>
+                        )
+                    }
                     <Input {...{label : "Password", placeholder : "Password...", type : "password"}}
-                           cleanState={this.state.submitted}
                            onParentChange={this.onParentChangePassword} />
                     {
                         this.state.type === CONSTANTS.SIGNUP && (
                             <Input {...{label : "Repeat Password", placeholder : "Repeat Password...", type : "password"}}
-                                   cleanState={this.state.submitted}
                                    onParentChange={this.onParentChangeValidatePassword}
                                    validation={this.state.validated}/>
                         )

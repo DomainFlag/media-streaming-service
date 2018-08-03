@@ -4,10 +4,9 @@ import {ACTIONS}    from "../../reducers/main"
 import {connect}    from "react-redux"
 
 import cancel from "./../../resources/icons/cancel.svg"
-import cancelFocused from "./../../resources/icons/cancel_focused.svg"
+import cancelFocused from "./../../resources/icons/cancel-focused.svg"
 
 import "./style.sass"
-import CONSTANTS from "../../utils/Constants";
 
 export class Search extends Component {
     constructor(props) {

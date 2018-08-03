@@ -1,20 +1,31 @@
 @import "./../../../resources"
 
 .creator
-  @extend %flexbox-centered-col
-  height: auto
-  width: 100%
+  @extend %flexbox-flex-start-col
+  z-index: 2
+  position: absolute
+  top: 50%
+  left: 50%
+  transform: translate(-50%, -50%)
+  background-color: $iconsTextColor
+  box-shadow: 2px 2px 6px 1px transparentize($motionPrimaryColor, 0.55)
+  width: 650px
+  height: 550px
+  border-radius: 2px
+  padding: $marginSection
+  justify-content: center
+  align-items: center
 
 .creator-header
   @extend %flexbox-centered-col
   width: 100%
-  margin: $marginSection
+  margin: $marginSibling
 
 .creator-header-title
-  margin: $marginSection
+  margin: $marginSibling
   font-family: $fontFamilySansSerif
   font-size: $subheaderTextSize
-  color: $primaryDarkColor
+  color: $primaryTextColor
   font-weight: 600
 
 .creator-body
@@ -29,6 +40,8 @@
 
 .creator-filling
   display: inline-flex
+  justify-content: flex-start
+  align-items: flex-start
   flex-direction: column
 
 .creator-content
@@ -51,12 +64,12 @@
 .creator-interaction-zone
   @extend %flexbox-centered-col
   position: relative
-  width: 20vw
-  height: 15vw
-  border: 1.25px dashed transparentize($accentColor, 0.8)
+  width: 15vw
+  height: 10vw
+  border: 1.25px dashed transparentize($primaryTextColor, 0.8)
 
 .creator-interaction-zone-dropping
-  border: 2px dashed $accentColor
+  border: 2px dashed $primaryTextColor
 
 .creator-interaction-zone-dropped
   border: none
@@ -76,12 +89,25 @@
   visibility: hidden
 
 .creator-upload
-  margin: $marginSection
-  max-width: 60px
-  height: auto
+  margin: $marginSibling
+  width: 50px
+  height: 50px
 
 .creator-upload-text
-  margin: $marginSection
+  margin: $marginSibling
   font-family: $fontFamilySansSerif
   font-size: $subparagraphTextSize
   color: $primaryTextColor
+
+.creator-back
+  cursor: pointer
+  position: absolute
+  top: 0
+  left: 100%
+  width: 12px
+  height: auto
+  transform: translate(-250%, 150%)
+  transform-origin: center
+
+  &:hover
+    transform: translate(-250%, 150%) scale(1.1)

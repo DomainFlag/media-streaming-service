@@ -4,7 +4,7 @@ let depthQuery = (stack, comments, depth, count = 0) => {
     for(let it = 0; it < len; it++) {
         if(comments[it-count].depth === depth) {
             stack.push({
-                comment : comments[it-count],
+                ...comments[it-count],
                 children : []
             });
 
@@ -50,7 +50,7 @@ const queryTree = (comments, depth = -1) => {
         stack.stack.parent.forEach((parentNode) => {
             stack.stack.child.forEach((childNode) => {
 
-                if(parentNode.comment.id === childNode.comment.parent) {
+                if(parentNode._id === childNode.parent) {
                     parentNode.children.push(childNode);
                 }
             });

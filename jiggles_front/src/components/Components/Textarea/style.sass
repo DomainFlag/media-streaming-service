@@ -1,38 +1,53 @@
 @import "../../../resources"
 
 .form-textarea
-  @extend %flexbox-flex-start-col
+  @extend %flexbox-flex-start-row
+  align-items: stretch
   width: 100%
   height: 100%
+  margin: $marginRelative 0
 
-  > *
-    margin: $marginRelative 0
+.form-textarea-div
+  @extend %flexbox-flex-start-col
+
+  &:first-child
+    align-items: flex-start
+    min-height: 100%
+    height: 100%
+
+  &:last-child
+    flex-basis: 0
+    flex-grow: 1
+
+.form-textarea-caption
+  display: flex
+  width: 24px
+  height: auto
 
 .form-textarea-label
-  display: flex
+  margin: $marginComponent 0
   font-family: $fontFamilySansSerif
   font-size: $paragraphTextSize
   font-weight: 600
-  color: $primaryDarkColor
+  color: $primaryTextColor
 
 .form-textarea-action
+  display: flex
   max-width: 100%
   resize: vertical
   width: 100%
-  font-size: $subparagraphTextSize
+  font-size: $spanTextSize
   font-family: $fontFamilySansSerif
   font-weight: 600
   outline: none
-  border: 2px solid rgba($accentColor, 0.2)
-  padding: $marginRelative $marginComponent
-  border-radius: 2px
+  padding: $marginRelative $marginComponent - $marginSibling
+  border-radius: 12px
   color: $primaryTextColor
-  min-height: 65px
+  min-height: 55px
   max-height: 225px
-  height: auto
 
   &:focus
-    border: 2px solid rgba($accentColor, 0.4)
+    border: 1px solid rgba($pleasureColor, 0.15)
 
   &::placeholder
     font-size: $subparagraphTextSize

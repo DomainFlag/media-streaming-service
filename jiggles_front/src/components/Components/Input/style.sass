@@ -1,11 +1,8 @@
 @import "../../../resources"
 
 .form-input
-  width: 100%
   @extend %flexbox-flex-start-col
-
-  > *
-    margin: $marginRelative 0
+  width: 100%
 
 .form-input-label
   display: flex
@@ -13,9 +10,13 @@
   font-size: $paragraphTextSize
   font-weight: 600
   color: $primaryDarkColor
+  padding: $marginGnome 0
 
 .form-input-validation
   @extend %flexbox-flex-start-col
+  padding: $marginSibling 0
+  width: 100%
+  flex: 1
   position: relative
 
 .form-input-info
@@ -35,12 +36,13 @@
   font-family: $fontFamilySansSerif
   font-weight: 600
   outline: none
-  border: 2px solid rgba($accentColor, 0.2)
   padding: 0 $marginComponent
+  border: 2px solid rgba($accentColor, 0.2)
   border-radius: 2px
   color: $primaryTextColor
   height: 44px
   width: 320px
+  max-width: 100%
 
   &:focus
     border: 2px solid rgba($accentColor, 0.4)

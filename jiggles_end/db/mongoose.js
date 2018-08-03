@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
 mongoose.connection.openUri(process.env.MONGODB_URI);
 
-["News", "Release", "Thread"].forEach((modelName) => {
+["News", "Release"].forEach((modelName) => {
     let modelSeedName = modelName + "Seed";
 
     let dbObj = _.pick(require("./../models/" + modelName.toLowerCase()), [ modelName, modelSeedName]);
