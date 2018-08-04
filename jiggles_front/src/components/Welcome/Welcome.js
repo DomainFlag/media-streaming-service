@@ -10,28 +10,24 @@ import Button from "../Components/Button/Button";
 import ReactDOM from "react-dom";
 
 export class Welcome extends Component {
-    constructor(props) {
-        super(props);
-    }
-
     componentDidMount = () => {
         ReactDOM.findDOMNode(this).parentNode.className = "non-extendable";
     };
 
     onRedirectMain = () => {
-        if(this.props.isLogged)
+        if(this.props.token !== null)
             this.props.history.push("/main");
         else this.props.history.push("/auth/signup");
     };
 
     render = () => (
         <div className="welcome">
-            <img className="welcome-background" src={background}/>
+            <img className="welcome-background" alt="" src={background}/>
 
             <div className="welcome-header">
                 <div className="welcome-header-logo">
                     <Link to="\">
-                        <img id="welcome-header-logo" src={logo}/>
+                        <img id="welcome-header-logo" alt="logo" src={logo}/>
                     </Link>
                 </div>
                 <div className="welcome-header-menu">
@@ -66,7 +62,7 @@ export class Welcome extends Component {
 }
 
 const mapStateToProps = (state) => ({
-   isLogged : state.auth.token !== null
+   token : state.account.token
 });
 
 export default withRouter(connect(mapStateToProps, null)(Welcome));

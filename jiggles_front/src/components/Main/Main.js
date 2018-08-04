@@ -88,7 +88,7 @@ export class Main extends Component {
                 <div className="main-header">
 
                     <div className="main-header-container">
-                        <img id="main-header-logo" src={logo} onClick={this.refreshPage}/>
+                        <img id="main-header-logo" alt="logo" src={logo} onClick={this.refreshPage}/>
 
                         <Button value="Search" capsLocked={false} iconBased={true} selectable={null}
                                 backgroundColor="#148491" onClick={this.onToggleSearch}/>

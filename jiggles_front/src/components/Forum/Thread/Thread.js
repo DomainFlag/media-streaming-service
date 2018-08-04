@@ -60,7 +60,7 @@ class Spark extends Component {
         <div className="spark">
             <div className="spark-section">
                 <div className="spark-container">
-                    <img className="spark-avatar" src={this.caption}/>
+                    <img className="spark-avatar" alt="avatar" src={this.caption}/>
 
                     <div className="spark-miscellaneous-container">
                         <p className="spark-author">{this.props.comment.author.name}</p>
@@ -75,11 +75,11 @@ class Spark extends Component {
                 </div>
                 <div className="spark-container">
                     <div className="spark-like-container">
-                        <img src={like_blue} className="spark-like"/>
+                        <img src={like_blue} alt="like" className="spark-like"/>
                         <p className="spark-votes">{this.props.comment.likes}</p>
                     </div>
                     <div className="spark-comment-container" onClick={this.onToggleThreadComment}>
-                        <img src={chat} className="spark-chat"/>
+                        <img src={chat} alt="reply" className="spark-chat"/>
                         <p className="spark-comment-info">reply</p>
                     </div>
                 </div>
@@ -289,6 +289,7 @@ class Thread extends Component {
                     <div className="thread-caption">
                         <img className="thread-caption-content" ref={(img) => this.img = img}
                              crossorigin="Anonymous"
+                             alt="caption"
                              src={this.state.caption}
                              onLoad={this.onLoadImage}/>
 
@@ -296,6 +297,7 @@ class Thread extends Component {
                             this.props.type === CONSTANTS.THREAD_VIEW && (
                                 <div className="thread-menu" ref={(container_menu) => this.container_menu = container_menu}>
                                     <img className="thread-menu-icon"
+                                         alt="thread menu"
                                          src={this.state.menuColor === "#FFFFFF" ? menu_white : menu_dark}
                                          onClick={this.onThreadMenuToggle}/>
 
@@ -303,11 +305,11 @@ class Thread extends Component {
                                         this.state.threadMenuToggle && (
                                             <div className="thread-menu-container" style={{ backgroundColor : this.state.menuColor }} onClick={this.onThreadMenuProp}>
                                                 <div className="thread-menu-option" style={{ color : this.contrastBackground() }} onClick={this.onThreadUpdate.bind(this, this.props.thread)}>
-                                                    <img className="thread-menu-option-icon" src={this.contrastImage(edit_white, edit_dark)}/>
+                                                    <img className="thread-menu-option-icon" alt="edit" src={this.contrastImage(edit_white, edit_dark)}/>
                                                     <p className="thread-menu-option-text">Edit thread</p>
                                                 </div>
                                                 <div className="thread-menu-option" style={{ color : this.contrastBackground() }} onClick={this.onThreadDelete.bind(this, this.props.thread)}>
-                                                    <img className="thread-menu-option-icon" src={this.contrastImage(delete_white, delete_dark)}/>
+                                                    <img className="thread-menu-option-icon" alt="delete" src={this.contrastImage(delete_white, delete_dark)}/>
                                                     <p className="thread-menu-option-text">Delete thread</p>
                                                 </div>
                                             </div>
@@ -321,13 +323,13 @@ class Thread extends Component {
                             <div className="thread-votes" style={{ color: this.state.utilityColor }}>
                                 <img src={(
                                     this.state.utilityColor === "#FFFFFF" ? like : like_dark
-                                )} className="thread-like"/>
+                                )} alt="like" className="thread-like"/>
                                 <p className="thread-votes-content">{this.props.thread.votes}</p>
                             </div>
                             <div className="thread-comment" style={{ color : this.state.utilityColor }} onClick={this.onToggleComment}>
                                 <img className="thread-comment-icon" src={(
                                     this.state.utilityColor === "#FFFFFF" ? chat : chat_dark
-                                )}/>
+                                )} alt="comment" />
                                 <p className="thread-comment-text">Comment</p>
                             </div>
                             <div className="thread-created_by" style={{ color : this.state.utilityColor }}>

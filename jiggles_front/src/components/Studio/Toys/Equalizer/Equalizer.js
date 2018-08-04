@@ -44,15 +44,17 @@ export default class Settings extends Component {
     };
 
     onChangeParams = (key) => (value) => {
-        let obj = {};
-        obj[key] = value;
+        this.setState((prevState) => {
+            let obj = {};
+            obj[key] = value;
 
-        let values =  Object.assign({}, {...values}, obj);
+            let values =  Object.assign({}, {...prevState.values}, obj);
 
-        this.setState({
-            activeComponent : -1,
-            values,
-            customValues : values,
+            return {
+                activeComponent : -1,
+                values,
+                customValues : values,
+            }
         });
     };
 

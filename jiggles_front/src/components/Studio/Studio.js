@@ -38,7 +38,7 @@ export default class Studio extends Component {
                 this.state.settingsToggle ? (
                     <Settings audioPlayback={this.audioPlayback} onToggleSettings={this.onToggleSettings}/>
                 ) : (
-                    <img className="studio-settings-toggle-button" src={settingsMenu} onClick={this.onToggleSettings}/>
+                    <img className="studio-settings-toggle-button" alt="settings menu" src={settingsMenu} onClick={this.onToggleSettings}/>
                 )
             }
         </div>

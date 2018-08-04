@@ -1,0 +1,49 @@
+@import "./../../../resources"
+
+/* Widget Layout */
+.main-widget-container
+  @extend %flexbox-flex-start-row
+  position: relative
+
+.main-widget-container-artists
+  margin: $marginRelative $marginSection
+
+.main-widget-container-albums
+  margin: $marginRelative $marginSection
+
+.main-widget-container-tracks
+  margin: $marginRelative $marginSection
+
+.main-content-widget
+  opacity: 0.8
+
+  &:hover
+    opacity: 1.0
+
+.main-widget-save
+  @extend %flexbox-centered-col
+  cursor: pointer
+  position: absolute
+  top: 0
+  left: 0
+  transform: translate(-100%, 0)
+  background-color: $pleasureColor
+  width: 20px
+  height: 20px
+  border-radius: 10px 0 0 10px
+
+.main-widget-star
+  width: 12px
+  height: auto
+
+.main-widget-artists
+  height: 250px
+  width: 250px
+
+.main-widget-albums
+  height: 250px
+  width: 250px
+
+.main-widget-tracks
+  height: 80px
+  width: 250px

@@ -4,7 +4,7 @@ import {Component} from "react"
 import "./style.sass"
 
 import Equalizer from "../Toys/Equalizer/Equalizer";
-import backArrow from "../../../resources/icons/back-arrow.svg"
+import backArrow from "../../../resources/icons/back-arrow-dark.svg"
 
 export default class Settings extends Component {
     constructor(props) {
@@ -44,7 +44,7 @@ export default class Settings extends Component {
                 <div className="settings-header">
 
                     <div className="settings-header-container">
-                        <img className="settings-back-icon" src={backArrow} onClick={this.props.onToggleSettings}/>
+                        <img className="settings-back-icon" alt="back" src={backArrow} onClick={this.props.onToggleSettings}/>
 
                         <p className="settings-header-title">
                             Settings

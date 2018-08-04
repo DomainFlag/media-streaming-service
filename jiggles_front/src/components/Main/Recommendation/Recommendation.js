@@ -1,6 +1,8 @@
 import React from "react"
 import {Component} from "react"
 
+import Widget from "../Widget/Widget";
+
 import "./style.sass"
 import recommendations from "../../../dummy/recommandations";
 
@@ -34,8 +36,9 @@ export default class Recommendation extends Component {
 
                 <div className="toolbar-actions">
                     {
-                        Object.keys(this.props.recommendations).map((recommendationType) => (
+                        Object.keys(this.props.recommendations).map((recommendationType, index) => (
                             <p className={"main-dynamic-toolbar-action " + ((this.state.activeToolbar === recommendationType) && "toolbar-active")}
+                               key={index}
                                onClick={this.onToggleToolbar.bind(this, recommendationType)}>
                                 {this.capitalizeFirstLetter(recommendationType)}
                             </p>
@@ -46,13 +49,8 @@ export default class Recommendation extends Component {
 
             <div className="main-dynamic-viewpager">
                 {
-                    this.props.recommendations[this.state.activeToolbar].map((recommendation) => (
-                        <iframe
-                            className="main-content-widget"
-                            src={recommendation}
-                            width="240" height="240" frameBorder="0"
-                            allowTransparency="true"
-                            allow="encrypted-media"/>
+                    this.props.recommendations[this.state.activeToolbar].map((recommendation, index) => (
+                        <Widget content={recommendation} type="albums" key={index}/>
                     ))
                 }
             </div>

@@ -98,8 +98,8 @@ class ImageLoader extends Component {
                  onDragOver={this.dragOverHandler}>
 
                 <input className="creator-input" type="file" onChange={this.dropHandler} />
-                <img className="creator-live-input" src={this.state.caption} style={{ visibility: this.state.caption ? "visible" : "hidden" }}/>
-                <img className="creator-upload" src={shareFile} />
+                <img className="creator-live-input" alt="caption" src={this.state.caption} style={{ visibility: this.state.caption ? "visible" : "hidden" }}/>
+                <img className="creator-upload" alt="share file" src={shareFile} />
 
                 <p className="creator-upload-text">Upload any caption image</p>
             </div>
@@ -151,7 +151,7 @@ class ThreadCreator extends Component {
 
     render = () => (
         <div className="creator">
-            <img className="creator-back" src={cancel} onClick={this.props.onToggleThreadCreator.bind(this, CONSTANTS.NONE, null)}/>
+            <img className="creator-back" src={cancel} alt="cancel" onClick={this.props.onToggleThreadCreator.bind(this, CONSTANTS.NONE, null)}/>
             <div className="creator-header">
                 <p className="creator-header-title">
                     { this.props.thread.mode === CONSTANTS.CREATE ? "Create Mode" : "Edit Mode" }

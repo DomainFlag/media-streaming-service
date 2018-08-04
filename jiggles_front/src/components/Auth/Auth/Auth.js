@@ -6,16 +6,11 @@ import {withRouter} from "react-router"
 import Form from "../Form/Form";
 
 import "./style.sass"
-import AmusingAuth from "../AmusingAuth/PlayfullAuth";
-import {ACTIONS} from "../../../reducers/auth";
+import AmusingAuth from "../AmusingAuth/AmusingAuth";
+import {ACTIONS} from "../../../reducers/account";
 import ReactDOM from "react-dom";
-import CONSTANTS from "./../../../utils/Constants";
 
 class Auth extends Component {
-    constructor(props) {
-        super(props);
-    }
-
     componentDidMount = () => {
         ReactDOM.findDOMNode(this).parentNode.className = "non-extendable";
     };

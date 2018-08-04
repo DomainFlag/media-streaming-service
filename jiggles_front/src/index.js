@@ -11,18 +11,19 @@ import './style.sass';
 
 import { BrowserRouter, Route, Switch} from "react-router-dom";
 import CONSTANTS from "./utils/Constants";
-import {ACTIONS} from "./reducers/auth";
+import {ACTIONS} from "./reducers/account";
 import Welcome from "./components/Welcome/Welcome";
 import Main from "./components/Main/Main";
 import Auth from "./components/Auth/Auth/Auth";
 import Forum from "./components/Forum/Forum";
 import Studio from "./components/Studio/Studio";
-import ThreadCreator from "./components/Forum/ThreadCreator/ThreadCreator";
+import Account from "./components/Settings/Account/Account";
 
 let app = {
-    auth : {
+    account : {
         state : null,
         status : null,
+        user : {},
         token : localStorage.getItem("token") || null
     },
     main : {
@@ -42,21 +43,20 @@ let store = createStore(rootReducer, app, applyMiddleware(
     logger
 ));
 
-if(store.getState().auth.token !== null)
+
+if(store.getState().account.token !== null)
     store.dispatch(ACTIONS.USER_ACCOUNT());
 
 store.subscribe(() => {
     let state = store.getState();
 
-    if(state.auth === null || state.auth === undefined)
+    if(state.account.user === null || state.account.user === undefined || !(state.account.status === CONSTANTS.SUCCESS))
         return;
 
-    if(state.auth.status === CONSTANTS.SUCCESS) {
-        if(state.auth.state === CONSTANTS.ADD_TOKEN) {
-            localStorage.setItem("token", state.auth.token);
-        } else if(state.auth.state === CONSTANTS.REMOVE_TOKEN) {
-            localStorage.removeItem("token");
-        }
+    if(state.account.state === CONSTANTS.ADD_TOKEN) {
+        localStorage.setItem("token", state.account.token);
+    } else if(state.auth.state === CONSTANTS.REMOVE_TOKEN) {
+        localStorage.removeItem("token");
     }
 });
 
@@ -68,6 +68,7 @@ render(
                 <Route exact path="/auth/signup" component={Auth}/>
                 <Route exact path="/auth/login" component={Auth}/>
                 <Route exact path="/main" component={Main}/>
+                <Route exact path="/account" component={Account}/>
                 <Route exact path="/forum" component={Forum}/>
                 <Route exact path="/studio" component={Studio}/>
             </Switch>

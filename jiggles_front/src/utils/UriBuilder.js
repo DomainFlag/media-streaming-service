@@ -32,6 +32,12 @@ class UriBuilder {
         return this;
     };
 
+    appendOptPath = (newSegment, condition) => {
+        if(condition)
+            return this.appendPath(newSegment);
+        else return this;
+    };
+
     appendQueryParameter = (obj) => {
         if(obj !== null)
             this.queryParameters.push(obj);

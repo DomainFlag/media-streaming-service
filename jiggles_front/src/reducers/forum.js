@@ -130,7 +130,8 @@ const forum = (() => {
                 }) : state);
                 case CONSTANTS.DELETE : return ((action.status === CONSTANTS.SUCCESS) ? Object.assign({}, {
                     threads : state.threads.filter((thread) => thread._id !== action.response._id)
-                }) : state)
+                }) : state);
+                default : return state;
             }
         },
         HANDLE_REPLY : (state, action) => {
@@ -150,7 +151,8 @@ const forum = (() => {
                 }) : state);
                 case CONSTANTS.DELETE : return ((action.status === CONSTANTS.SUCCESS) ? Object.assign({}, {
                     threads : state.threads.filter((thread) => thread._id !== action.response._id)
-                }) : state)
+                }) : state);
+                default : return state;
             }
         }
     };

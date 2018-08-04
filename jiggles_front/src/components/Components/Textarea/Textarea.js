@@ -1,8 +1,6 @@
 import React from "react"
 import {Component} from "react"
 
-import account from "./../../../resources/icons/account.svg"
-
 import "./style.sass"
 
 export default class Textarea extends Component {
@@ -50,7 +48,7 @@ export default class Textarea extends Component {
             {
                 this.props.caption && (
                     <div className="form-textarea-div" style={{ marginRight: "8px" }}>
-                        <img className="form-textarea-caption" src={this.props.caption}/>
+                        <img className="form-textarea-caption" alt="caption" src={this.props.caption}/>
                     </div>
                 )
             }

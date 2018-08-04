@@ -6,10 +6,6 @@ import impact from "./../../../resources/icons/impact.svg"
 import "./style.sass"
 
 export default class Release extends Component {
-    constructor(props) {
-        super(props);
-    }
-
     measureScore = (score) => {
         if(score > 80)
             return "#29A369";
@@ -44,7 +40,7 @@ export default class Release extends Component {
                             <div className="highlight-container">
 
                                 <div className="highlight-spotlight">
-                                    <img className="highlight-poster" src={snippet.url} />
+                                    <img className="highlight-poster" alt="poster" src={snippet.url} />
 
                                     <div className="highlight-content">
                                         <h1 className="highlight-content-artist">{snippet.artist}</h1>
@@ -55,7 +51,7 @@ export default class Release extends Component {
                                 <div className="highlight-score">
                                     {
                                         (snippet.score > 80) && (
-                                            <img className="highlight-impact" src={impact} />
+                                            <img className="highlight-impact" alt="critical acclaim" src={impact} />
                                         )
                                     }
                                     <p className="highlight-score-value" style={{ color: snippet.score > 80 ? "#22895D" : "#15101C"}}>

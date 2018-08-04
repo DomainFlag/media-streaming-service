@@ -11,10 +11,6 @@ let TrackSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    releaseDate: {
-        type: Date,
-        required: true
-    },
     uri : {
         type: String,
         required: true

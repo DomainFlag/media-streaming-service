@@ -65,6 +65,7 @@ class RequestifyCollector {
             .appendPath(CONSTANTS.SEARCH)
             .appendQueryParameter({"q" : query})
             .appendQueryParameter({"type" : type})
+            .appendQueryParameter({"limit" : 8})
             .build();
 
         let options = {

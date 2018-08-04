@@ -1,11 +1,13 @@
 import {combineReducers} from "redux"
-import auth from "./auth"
+import account from "./account"
+import settings from "./settings"
 import main from "./main"
 import forum from "./forum"
-import { routerReducer } from 'react-router-redux'
+import {routerReducer} from 'react-router-redux'
 
 export default combineReducers({
-    auth,
+    account,
+    settings,
     main,
     forum,
     routing: routerReducer

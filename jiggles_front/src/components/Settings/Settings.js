@@ -1,9 +1,7 @@
 import React from "react"
 import {Component} from "react";
 
-import {ACTIONS} from "./../../reducers/auth"
-
-import account from "./../../resources/icons/account.svg"
+import {ACTIONS} from "./../../reducers/account"
 
 import "./style.sass"
 import {connect} from "react-redux";
@@ -18,13 +16,9 @@ export class Settings extends Component {
         this.options = [
             {
                 optionName : "Account",
-                callback : () => {}
-            }, {
-                optionName : "Feedback",
-                callback : () => {}
-            }, {
-                optionName : "About",
-                callback : () => {}
+                callback : () => {
+                    this.props.history.push('/account');
+                }
             }, {
                 optionName: "Log out",
                 callback: this.props.logout
@@ -37,16 +31,16 @@ export class Settings extends Component {
         }
     }
 
-    setCaption = (props) => (props.authState.account) ? new UriBuilder()
+    setCaption = (props) => (props.account.user && props.account.user.caption) ? new UriBuilder()
         .setScheme(CONSTANTS.SCHEME)
         .setAuthority(CONSTANTS.AUTHORITY)
-        .appendPath(props.authState.account.caption)
+        .appendPath(props.account.user.caption)
         .build() : null;
 
     componentWillReceiveProps = (nextProps) => {
-        if(nextProps.authState.status !== null &&
-            nextProps.authState.state === CONSTANTS.REMOVE_TOKEN &&
-            nextProps.authState.status === CONSTANTS.SUCCESS)
+        if(nextProps.account.status !== null &&
+            nextProps.account.state === CONSTANTS.REMOVE_TOKEN &&
+            nextProps.account.status === CONSTANTS.SUCCESS)
             nextProps.history.push('/');
 
 
@@ -64,8 +58,8 @@ export class Settings extends Component {
     render = () => (
         <div className="settings-profile-container">
             {
-                this.props.authState.account && (
-                    <img className="settings-profile-icon" src={this.state.caption} onClick={this.onToggleSettings} />
+                this.props.account.user && (
+                    <img className="settings-profile-icon" alt="profile icon" src={this.state.caption} onClick={this.onToggleSettings} />
                 )
             }
             {
@@ -89,7 +83,7 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 const mapStateToProps = (state) => ({
-    authState : state.auth
+    account : state.account
 });
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Settings));

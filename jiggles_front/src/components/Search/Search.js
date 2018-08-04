@@ -67,7 +67,7 @@ export class Search extends Component {
 
     render = () => (
         <div className="search" onKeyDown={this.onSubmit}>
-            <img className="search-cancel" src={this.state.cancel} onMouseOver={this.onHover} onMouseOut={this.onHoverOut} onClick={this.props.onToggleSearch}/>
+            <img className="search-cancel" alt="cancel" src={this.state.cancel} onMouseOver={this.onHover} onMouseOut={this.onHoverOut} onClick={this.props.onToggleSearch}/>
             <div className="search-container">
                 <div className="search-container-input" >
                     <div ref={(test) => { this.test = test; }} className="search-test">T</div>

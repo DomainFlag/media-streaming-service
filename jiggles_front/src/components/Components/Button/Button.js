@@ -26,7 +26,7 @@ export default class Button extends Component {
         return this.props.iconBased ? (
             <div className={"button-icon " + this.state.selectable}
                     onClick={this.props.onClick}>
-                <img className="button-icon-content" src={lens}/>
+                <img className="button-icon-content" alt="lens" src={lens}/>
                 <p className="button-icon-text">{this.state.value}</p>
             </div>
         ) : (

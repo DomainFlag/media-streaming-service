@@ -9,6 +9,9 @@ const CONSTANTS = {
     ME : "me",
     TOKEN : "token",
     RESOURCES : "resources",
+    ACCOUNT : "account",
+    IMAGES : "images",
+    COLLECTION : "collection",
 
     THREAD_CREATOR : "thread_creator",
     THREAD_VIEW : "thread_view",

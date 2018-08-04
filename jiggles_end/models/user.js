@@ -30,7 +30,7 @@ let UserSchema = new mongoose.Schema({
         type: String,
         trim: true,
         minlength: 1,
-        default: "listener"
+        default: "Listener"
     },
     caption: {
         type: String,
@@ -57,6 +57,8 @@ let UserSchema = new mongoose.Schema({
             required: true
         }
     }]
+}, {
+    usePushEach: true
 });
 
 

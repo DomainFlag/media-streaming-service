@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const fs = require('fs');
+const url = require('url');
 const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -19,8 +20,8 @@ let {Thread} = require("./models/thread");
 let {Social} = require("./models/social");
 
 const ENTERTAINMENT_TYPES = {
-    track : ['id', 'name', 'releaseDate', 'uri', 'trackNumber', 'type', 'images', 'artists'],
-    album : ['id', 'name', 'releaseDate', 'uri', 'type', 'images', 'artists'],
+    track : ['id', 'name', 'uri', 'track_number', 'type', 'images', 'artists'],
+    album : ['id', 'name', 'release_date', 'uri', 'type', 'images', 'artists'],
     artist : ['name', 'type', 'uri', 'id', 'genres']
 };
 
@@ -142,6 +143,19 @@ app.get(/^\/forum\/thread/, function(req, res) {
         });
 });
 
+app.get(/^\/account\/images/, function(req, res) {
+    fs.readdir('./resources/users/default', null, (err, files) => {
+        if(err) simpleResponseQuery(res, 401, "invalid request");
+        else simpleResponseQuery(res, 200, files.map((file) => {
+            return url.format({
+                protocol: req.protocol,
+                host: req.get('host'),
+                pathname: 'resources/users/default/' + file,
+            });
+        }), "application/json");
+    });
+});
+
 app.use(authenticate);
 
 /* Private & Protected Routes */
@@ -151,11 +165,18 @@ app.get(/^\/query\/(artist|track|album)$/, function(req, res) {
     if(req.query.hasOwnProperty(searchBy))
         RequestifyCollector.querySearch(req.query[searchBy], searchBy)
             .then((data) => {
-                res.set({
-                    'Content-Type': 'application/json'
+                Object.keys(data).forEach((type) => {
+                    data[type].items.forEach((item) => {
+                        item['favourite'] = false;
+
+                        req.user.content[type].forEach((itemColl) => {
+                            if(itemColl.id === item.id)
+                                item['favourite'] = true;
+                        })
+                    });
                 });
 
-                res.send(JSON.stringify(data));
+                simpleResponseQuery(res, 200, data, 'application/json');
             });
     else res.send(null);
 });
@@ -166,11 +187,7 @@ app.get(/^\/query\/(artists|tracks|albums)\/([0-9a-zA-Z]+)$/, function(req, res)
 
     RequestifyCollector.queryFetch(searchBy, searchId, "top-tracks")
         .then((data) => {
-            res.set({
-                'Content-Type': 'application/json'
-            });
-
-            res.send(JSON.stringify(data));
+            simpleResponseQuery(res, 200, data, 'application/json');
         });
 });
 
@@ -318,30 +335,30 @@ app.delete(/^\/forum\/thread/, function(req, res) {
 });
 
 /* Collection content(GET, POST, DELETE) */
-app.get(/\/user\/(track|album|artist)/, (req, res) => {
+app.get(/\/users\/collection/, (req, res) => {
     let contentType = req.params[0];
 
     simpleResponseQuery(res, 200, req.user.content[contentType], "application/json");
 });
 
-app.post(/\/user\/(track|album|artist)/, (req, res) => {
+app.post(/\/users\/collection\/(track|album|artist)/, (req, res) => {
     let contentType = req.params[0];
     let body = _.pick(req.body, ENTERTAINMENT_TYPES[contentType]);
 
-    req.user.content[contentType].push(body);
-    req.user.save().then(() => {
-        simpleResponseQuery(res, 200, "successfully saved");
-    }).catch(() => {
+    req.user.content[contentType+'s'].push(body);
+    req.user.save().then((result) => {
+        simpleResponseQuery(res, 200, { user : req.user }, "application/json");
+    }).catch((error) => {
         simpleResponseQuery(res, 401, "couldn't save content");
     });
 });
 
-app.delete(/\/user\/(track|album|artist)/, (req, res) => {
+app.delete(/\/users\/collection\/(track|album|artist)/, (req, res) => {
     let contentType = req.params[0];
     let body = _.pick(req.body, ENTERTAINMENT_TYPES[contentType]);
 
-    req.user.content[contentType] = req.user.content[contentType].filter((content) => {
-        return content._id !== body._id;
+    req.user.content[contentType + 's'] = req.user.content[contentType + 's'].filter((content) => {
+        return content.id !== body.id;
     });
 
     req.user.save().then(() => {
@@ -448,7 +465,6 @@ app.get('/users/me/social', (req, res) => {
     });
     res.send(req.user);
 });
-
 
 app.get('/users/me', (req, res) => {
     res.send(req.user);

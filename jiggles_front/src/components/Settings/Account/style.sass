@@ -1,0 +1,90 @@
+@import "../../../resources"
+
+/* Account */
+.account
+  @extend %flexbox-flex-start-col
+  justify-content: flex-start
+  width: 100%
+  flex: 1
+  background-color: $primaryTextColor
+  padding: $marginSection
+
+.account-header
+  @extend %flexbox-flex-start-row
+  margin: $marginSection
+
+  > *
+    margin: 0 $marginComponent
+
+.account-header-icon
+  cursor: pointer
+  width: 20px
+  height: auto
+
+.account-header-text
+  color: $iconsTextColor
+  font-size: $headerTextSize
+  font-weight: 600
+  font-family: $fontFamilySansSerif
+
+.account-options
+  @extend %flexbox-flex-start-row
+  margin: $marginSection
+
+  > *
+    margin: 0 $marginComponent
+
+.account-option
+  color: $iconsTextColor
+  font-size: $linkTextSize
+  font-weight: 600
+  font-family: $fontFamilySansSerif
+
+  &:hover
+    border-bottom: 2px solid $iconsTextColor
+
+.account-option-fired
+  border-bottom: 2px solid $iconsTextColor
+
+.account-feature
+  @extend %flexbox-flex-start-col
+  padding: $marginSection
+  width: 100%
+
+.account-feature-img
+  width: 32px
+  height: auto
+
+  &:first-child
+    margin-right: $marginComponent
+
+.account-feature-active
+  cursor: pointer
+  opacity: 0.4
+
+  &:hover
+    opacity: 1.0
+
+.account-feature-info
+  @extend %flexbox-flex-start-row
+  width: 100%
+  flex: 1
+  margin: $marginComponent $marginSection
+
+.account-feature-label
+  display: flex
+  margin: 0 $marginSection
+  flex: 1
+  color: $iconsTextColor
+  font-size: $subparagraphTextSize
+  font-weight: 600
+  font-family: $fontFamilySansSerif
+  letter-spacing: 0.9px
+
+.account-feature-captions, .account-feature-value
+  @extend %flexbox-flex-start-row
+  flex: 11
+  color: transparentize($iconsTextColor, 0.2)
+  font-size: $subparagraphTextSize
+  font-weight: 600
+  font-family: $fontFamilySansSerif

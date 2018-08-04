@@ -11,7 +11,7 @@ let AlbumSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    releaseDate: {
+    release_date: {
         type: Date,
         required: true
     },

@@ -1,7 +1,6 @@
 import React from "react"
 import {Component} from "react"
 import { withRouter } from "react-router";
-import { Link } from "react-router-dom";
 
 import "./style.sass"
 import logo from "./../../../resources/assets/logo.svg"
@@ -31,14 +30,14 @@ class Form extends Component {
     }
 
     componentWillReceiveProps = (nextProps) => {
-        if(nextProps.authState.status !== null &&
-            nextProps.authState.state === CONSTANTS.ADD_TOKEN &&
-            nextProps.authState.status === CONSTANTS.SUCCESS) nextProps.history.push('/main');
+        if(nextProps.account.status !== null &&
+            nextProps.account.state === CONSTANTS.ADD_TOKEN &&
+            nextProps.account.status === CONSTANTS.SUCCESS) nextProps.history.push('/main');
     };
 
-    onToggleAuth = (authState) => {
+    onToggleAuth = (account) => {
         this.setState({
-            type : authState
+            type : account
         })
     };
 
@@ -108,9 +107,9 @@ class Form extends Component {
                     </div>
                 </div>
                 {
-                    (this.props.authState.status === CONSTANTS.ERROR && this.props.authState.message) && (
+                    (this.props.account.status === CONSTANTS.ERROR && this.props.account.message) && (
                         <div className="form-error">
-                            <p className="form-error-message">{this.props.authState.message}</p>
+                            <p className="form-error-message">{this.props.account.message}</p>
                         </div>
                     )
                 }
@@ -162,7 +161,7 @@ class Form extends Component {
 }
 
 const mapStateToProps = (state) => ({
-    authState : state.auth
+    account : state.account
 });
 
 export default withRouter(connect(mapStateToProps, null)(Form));

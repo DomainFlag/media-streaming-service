@@ -1,7 +1,6 @@
 import React from "react"
 import {Component} from "react"
 import {connect} from "react-redux"
-import {Link} from "react-router-dom"
 
 import ReactDOM from "react-dom";
 import CONSTANTS from "../../utils/Constants";
@@ -59,25 +58,29 @@ export class Forum extends Component {
         <div className="forum">
             <div className="forum-header">
                 <div className="forum-container">
-                    <img className="forum-menu" src={menu_icon}/>
+                    <img className="forum-menu" alt="menu icon" src={menu_icon} onClick={this.props.history.goBack}/>
                 </div>
 
                 <div className="forum-container-extended">
                     <p className="forum-label">Compartments</p>
-                    <p className="forum-link">Community</p>
-                    <p className="forum-link">Discover</p>
-                    <p className="forum-link">Create</p>
+                    {
+                        ["Community", "Discover", "Create"].map((compartment, index) => (
+                            <p className="forum-link" key={index}>{compartment}</p>
+                        ))
+                    }
                 </div>
 
                 <div className="forum-container-extended">
                     <p className="forum-label">Filter By</p>
-                    <p className="forum-link">Song</p>
-                    <p className="forum-link">Album</p>
-                    <p className="forum-link">Artist</p>
+                    {
+                        ["Song", "Album", "Artist"].map((filterBy, index) => (
+                            <p className="forum-link" key={index}>{filterBy}</p>
+                        ))
+                    }
                 </div>
 
                 <div className="forum-container">
-                    <img className="forum-main-logo-content" src={logo} />
+                    <img className="forum-main-logo-content" alt="logo" src={logo} />
                 </div>
             </div>
             <div className="forum-header">
@@ -88,7 +91,7 @@ export class Forum extends Component {
 
                     <div className="forum-tools">
                         <div className="forum-tools-items">
-                            <img className="forum-tools-item" src={create} onClick={this.onToggleThreadCreator.bind(this, CONSTANTS.CREATE, null)}/>
+                            <img className="forum-tools-item" alt="create thread" src={create} onClick={this.onToggleThreadCreator.bind(this, CONSTANTS.CREATE, null)}/>
                         </div>
 
                         <Settings/>
@@ -103,7 +106,7 @@ export class Forum extends Component {
                     <div className="forum-main-content">
                         {
                             this.props.forum.threads.map((thread) => (
-                                <Thread type={CONSTANTS.THREAD_VIEW} thread={thread} onToggleThreadCreator={this.onToggleThreadCreator}/>
+                                <Thread type={CONSTANTS.THREAD_VIEW} key={thread._id} thread={thread} onToggleThreadCreator={this.onToggleThreadCreator}/>
                             ))
                         }
                     </div>

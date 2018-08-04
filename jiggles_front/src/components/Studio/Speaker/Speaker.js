@@ -83,7 +83,7 @@ class MusicLoader extends Component {
     render = () => (
         <div className="speaker-interaction">
             <div className={"speaker-interaction-zone " + this.state.dragOver} onDrop={this.dropHandler} onDragLeave={this.dragLeaveHandler} onDragOver={this.dragOverHandler}>
-                <img className="speaker-upload" src={shareFile} />
+                <img className="speaker-upload" alt="share file" src={shareFile} />
 
                 <p className="speaker-upload-text">Upload any Mp3 file</p>
             </div>
@@ -156,7 +156,7 @@ class MusicPlayer extends Component {
 
             <div className="music-player-header">
                 <div className="music-player-volume">
-                    <img className="music-player-icon" src={volumes[this.getVolumeIcon()]} />
+                    <img className="music-player-icon" alt="music player" src={volumes[this.getVolumeIcon()]} />
                     <Slider for="volume"
                             orientation={Constants.ORIENTATION_HORIZONTAL}
                             value={this.state.volume}
@@ -176,7 +176,7 @@ class MusicPlayer extends Component {
             <div className="music-player-stuff">
                 <div className="music-player-stuff-container">
                     <div className="music-player-container">
-                        <img className="music-thumbnail" src="https://soundblabcontent.s3.amazonaws.com/2292a6e11e75e53d368e2de938308800d5f3fe5e.jpg?1452043904.jpg"/>
+                        <img className="music-thumbnail" alt="thumbnail" src="https://soundblabcontent.s3.amazonaws.com/2292a6e11e75e53d368e2de938308800d5f3fe5e.jpg?1452043904.jpg"/>
                         <canvas className="music-visualizer" width={200} height={125} ref={(canvas) => this.canvas = canvas}/>
                     </div>
 
@@ -190,13 +190,13 @@ class MusicPlayer extends Component {
                                     jumpTrack={this.props.audioPlayback.jumpTrack}/>
                         </div>
                         <div className="music-player-playback-interaction">
-                            <img className="music-player-icon" src={playbackIcons["shuffle-mode"]} />
+                            <img className="music-player-icon" alt="shuffle" src={playbackIcons["shuffle-mode"]} />
 
-                            <img className="music-player-icon" src={playbackIcons["play-previous-button"]} />
-                            <img className="music-player-icon" src={playbackIcons[this.state.state]} onClick={this.onToggleState}/>
-                            <img className="music-player-icon" src={playbackIcons["play-next-button"]} />
+                            <img className="music-player-icon" alt="previous" src={playbackIcons["play-previous-button"]} />
+                            <img className="music-player-icon" alt="play/pause" src={playbackIcons[this.state.state]} onClick={this.onToggleState}/>
+                            <img className="music-player-icon" alt="next" src={playbackIcons["play-next-button"]} />
 
-                            <img className="music-player-icon" src={playbackIcons["refresh-button"]} />
+                            <img className="music-player-icon" alt="refresh" src={playbackIcons["refresh-button"]} />
                         </div>
                     </div>
                 </div>
@@ -247,7 +247,7 @@ export default class Speaker extends Component {
                                      setTitle={this.setTitle}/>
                     </div>
                 ) : (this.state.spinner) ? (
-                    <img className="speaker-spinner" src={spinner}/>
+                    <img className="speaker-spinner" alt="volume" src={spinner}/>
                 ) : (this.state.interaction) && (
                     <div className="speaker-container">
                         <MusicPlayer title={this.state.title}
