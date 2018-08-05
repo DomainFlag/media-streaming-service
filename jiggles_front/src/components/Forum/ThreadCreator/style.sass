@@ -39,10 +39,7 @@
   height: 100%
 
 .creator-filling
-  display: inline-flex
-  justify-content: flex-start
-  align-items: flex-start
-  flex-direction: column
+  display: inline-block
 
 .creator-content
   @extend %flexbox-centered-col
@@ -51,6 +48,7 @@
 
 .creator-interaction
   @extend %flexbox-flex-start-row
+  margin: $marginComponent 0
   height: auto
   width: auto
 

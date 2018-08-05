@@ -3,15 +3,15 @@ const {ArtistSchema} = require("./artist");
 const {ImageSchema} = require("./image");
 
 let AlbumSchema = new mongoose.Schema({
-    id: {
+    id : {
         type: String,
         required: true
     },
-    name: {
+    name : {
         type: String,
         required: true
     },
-    release_date: {
+    release_date : {
         type: Date,
         required: true
     },
@@ -19,9 +19,13 @@ let AlbumSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    type: {
+    type : {
         type: String,
         default: "album"
+    },
+    favourite : {
+        type : Boolean,
+        default : true
     },
     images: [ImageSchema],
     artists: [ArtistSchema]

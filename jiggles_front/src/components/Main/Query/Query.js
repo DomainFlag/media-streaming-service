@@ -1,5 +1,6 @@
 import React from "react"
 import {Component} from "react"
+import CONSTANTS from "./../../../utils/Constants";
 
 import Widget from "../Widget/Widget";
 
@@ -32,6 +33,7 @@ export default class Query extends Component {
         super(props);
 
         this.state = {
+            content : this.parseQuery(props),
             artists : {
                 max : 1,
                 extendable : false
@@ -47,26 +49,47 @@ export default class Query extends Component {
         }
     }
 
+    componentWillReceiveProps = (nextProps) => {
+        if(nextProps.content !== this.props.content ||
+            nextProps.type !== this.props.type) {
+            this.setState({
+                content : this.parseQuery(nextProps)
+            })
+        }
+    };
+
+    parseQuery = (props) => Object.keys(props.content).reduce((acc, type) => {
+        acc[type] = {};
+
+        if(props.type === type || props.type === CONSTANTS.ALL) {
+            if(props.content[type].hasOwnProperty("items"))
+                acc[type]["items"] = props.content[type].items;
+            else acc[type]["items"] = props.content[type];
+        } else acc[type]["items"] = [];
+
+        return acc;
+    }, {});
+
     render = () => (
         <div className="main-query">
             <div className="main-query-row">
                 {
-                    ["artists", "albums"].map((queryType) => this.props.search[queryType].items.length !== 0 && (
+                    ["artists", "albums"].map((queryType) => this.state.content[queryType].items.length !== 0 && (
                         <QueryContent
                             key={queryType}
-                            contents={this.props.search[queryType].items.slice(0, this.state[queryType].max)}
-                            type={queryType}
+                            contents={this.state.content[queryType].items.slice(0, this.state[queryType].max)}
+                            type={queryType.slice(0, queryType.length-1)}
                             direction="row"/>
                     ))
                 }
             </div>
             <div className="main-query-row">
                 {
-                    ["tracks"].map((queryType) => this.props.search[queryType].items.length !== 0 && (
+                    ["tracks"].map((queryType) => this.state.content[queryType].items.length !== 0 && (
                         <QueryContent
                             key={queryType}
-                            contents={this.props.search[queryType].items.slice(0, this.state[queryType].max)}
-                            type={queryType}
+                            contents={this.state.content[queryType].items.slice(0, this.state[queryType].max)}
+                            type={queryType.slice(0, queryType.length-1)}
                             direction="row"/>
                     ))
                 }

@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 
 let ArtistSchema = new mongoose.Schema({
+    id : {
+        type: String,
+        required: true
+    },
     name: {
         type: String,
         required: true
@@ -13,9 +17,9 @@ let ArtistSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    id : {
-        type: String,
-        required: true
+    favourite : {
+        type : Boolean,
+        default : true
     },
     genres: [String]
 });

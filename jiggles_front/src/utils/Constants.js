@@ -36,6 +36,7 @@ const CONSTANTS = {
     FORUM : "forum",
     THREAD : "thread",
     COMMENT : "comment",
+    ALL : "all",
 
     ENTERTAINMENT_TYPES : {
         NEWS : "news",

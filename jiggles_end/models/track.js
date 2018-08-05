@@ -24,6 +24,10 @@ let TrackSchema = new mongoose.Schema({
         type: String,
         default: "track"
     },
+    favourite : {
+        type: Boolean,
+        default: true
+    },
     images: [ImageSchema],
     artist: [ArtistSchema]
 });

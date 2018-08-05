@@ -12,13 +12,26 @@
   width: 100%
   padding: $marginRelative $marginSection
 
-.toolbar-header
+.toolbar-components
   @extend %flexbox-flex-start-row
+
+.toolbar-component
+  cursor: pointer
   font-weight: bold
   font-size: $paragraphTextSize
   font-family: $fontFamilySansSerif
   color: $tertiaryColor
   user-select: none
+  opacity: 0.8
+  margin: 0 $marginRelative
+
+.toolbar-component-active
+  opacity: 1.0
+  border-bottom: 2px solid transparentize($tertiaryColor, 0.2)
+
+.toolbar-component-closed
+  opacity: 1.0
+  color: #cec6c6
 
 .toolbar-divider
   @extend %flexbox-flex-start-row
@@ -32,6 +45,7 @@
   @extend %flexbox-flex-start-row
 
 .main-dynamic-toolbar-action
+  text-align: center
   cursor: pointer
   font-weight: bold
   font-size: $paragraphTextSize
@@ -39,9 +53,10 @@
   color: $iconsTextColor
   user-select: none
   opacity: 0.8
+  margin: 0 $marginComponent
 
-  &:not(:first-child):not(:last-child)
-    margin: 0 $marginSection
+  &:first-child
+    margin-left: 0
 
 .toolbar-active
   opacity: 1.0

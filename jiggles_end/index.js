@@ -349,6 +349,7 @@ app.post(/\/users\/collection\/(track|album|artist)/, (req, res) => {
     req.user.save().then((result) => {
         simpleResponseQuery(res, 200, { user : req.user }, "application/json");
     }).catch((error) => {
+        console.log(error);
         simpleResponseQuery(res, 401, "couldn't save content");
     });
 });

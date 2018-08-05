@@ -5,8 +5,7 @@ import {connect} from "react-redux"
 import {Link} from "react-router-dom"
 import {ACTIONS} from "../../reducers/main"
 
-import Query from "./Query/Query";
-import Recommendation from "./Recommendation/Recommendation";
+import Collection from "./Collection/Collection";
 import Release from "./Release/Release";
 import News from "./News/News";
 import Settings from "../Settings/Settings"
@@ -111,13 +110,7 @@ export class Main extends Component {
                     </div>
                 </div>
 
-                {
-                    this.props.search && (this.props.search !== null) ? (
-                        <Query search={this.props.search}/>
-                    ) : (
-                        <Recommendation recommendations={recommendations}/>
-                    )
-                }
+                <Collection recommendations={recommendations} search={this.props.search}/>
 
                 <div className="main-body">
                     <Release content={this.props.releases} label="Releases"/>

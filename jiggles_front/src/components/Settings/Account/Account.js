@@ -50,7 +50,7 @@ export class Account extends Component {
             </div>
             <div className="account-feature">
                 {
-                    (this.props.default && this.props.account.hasOwnProperty("caption")) && (
+                    (this.props.default && this.props.user.hasOwnProperty("caption")) && (
                         <div className="account-feature-info">
                             <p className="account-feature-label">
                                 Account icons:
@@ -58,7 +58,7 @@ export class Account extends Component {
                             <div className="account-feature-captions">
                                 {
                                     this.props.default.map((img) => (
-                                        <img className={"account-feature-img " + (!img.match(this.props.account.caption) && "account-feature-active")} alt="icon" src={img}/>
+                                        <img className={"account-feature-img " + (!img.match(this.props.user.caption) && "account-feature-active")} alt="icon" src={img}/>
                                     ))
                                 }
                             </div>
@@ -72,7 +72,7 @@ export class Account extends Component {
                                 {stat + ":"}
                             </p>
                             <p className="account-feature-value">
-                                {this.props.account.hasOwnProperty(stat.toLowerCase()) && this.props.account[stat.toLowerCase()]}
+                                {this.props.user.hasOwnProperty(stat.toLowerCase()) && this.props.user[stat.toLowerCase()]}
                             </p>
                         </div>
                     ))
@@ -87,7 +87,7 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 const mapStateToProps = (state) => ({
-    account : state.auth.account,
+    user : state.account.user,
     default : state.settings.default
 });
 

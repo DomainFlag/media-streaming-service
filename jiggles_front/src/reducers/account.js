@@ -189,7 +189,7 @@ const account = (() => {
                 ...state.user,
                 content : {
                     ...state.user.content,
-                    'artists' : state.user.content[action.response.type + 's'].filter((item) => item.id !== action.response.id)
+                    [action.response.type + 's'] : state.user.content[action.response.type + 's'].filter((item) => item.id !== action.response.id)
                 }
             }
         }) : state
