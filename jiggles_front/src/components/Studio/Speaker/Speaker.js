@@ -183,6 +183,7 @@ class MusicPlayer extends Component {
                     <div className="music-player-playback">
                         <div className="music-player-playback-interaction">
                             <Slider for="tracker"
+                                    toggle={this.props.toggle}
                                     orientation={Constants.ORIENTATION_HORIZONTAL}
                                     trackMinBoundary={0}
                                     trackMaxBoundary={this.props.audioPlayback.getTotalTime()}
@@ -251,6 +252,7 @@ export default class Speaker extends Component {
                 ) : (this.state.interaction) && (
                     <div className="speaker-container">
                         <MusicPlayer title={this.state.title}
+                                     toggle={this.props.toggle}
                                      toggleInteraction={this.toggleInteraction}
                                      audioPlayback={this.props.audioPlayback}/>
                     </div>

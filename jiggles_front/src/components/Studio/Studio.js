@@ -33,7 +33,7 @@ export default class Studio extends Component {
 
     render = () => (
         <div className="studio">
-            <Speaker audioPlayback={this.audioPlayback}/>
+            <Speaker audioPlayback={this.audioPlayback} toggle={this.state.settingsToggle}/>
             {
                 this.state.settingsToggle ? (
                     <Settings audioPlayback={this.audioPlayback} onToggleSettings={this.onToggleSettings}/>

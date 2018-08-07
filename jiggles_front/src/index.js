@@ -50,12 +50,12 @@ if(store.getState().account.token !== null)
 store.subscribe(() => {
     let state = store.getState();
 
-    if(state.account.user === null || state.account.user === undefined || !(state.account.status === CONSTANTS.SUCCESS))
+    if(state.account.state === null || state.account.status !== CONSTANTS.SUCCESS)
         return;
 
     if(state.account.state === CONSTANTS.ADD_TOKEN) {
         localStorage.setItem("token", state.account.token);
-    } else if(state.auth.state === CONSTANTS.REMOVE_TOKEN) {
+    } else if(state.account.state === CONSTANTS.REMOVE_TOKEN) {
         localStorage.removeItem("token");
     }
 });

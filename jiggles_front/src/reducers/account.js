@@ -36,13 +36,13 @@ export const ACTIONS = {
             return fetch(url, { headers })
                 .then((response) =>
                     (response.status < 200 || response.status >= 400) ?
-                        Promise.reject() : response.json()
+                        Promise.reject("Couldn't recognize account") : response.json()
                 )
                 .then((response) => ({ user : response }))
                 .then((response) => dispatch(
                     ACTIONS.ACCOUNT_STATE(CONSTANTS.SUCCESS, USER_ACCOUNT, response))
                 ).catch((error) => dispatch(
-                    ACTIONS.ACCOUNT_STATE(CONSTANTS.ERROR, null, error))
+                    ACTIONS.ACCOUNT_STATE(CONSTANTS.ERROR, ACCOUNT_STATE, error))
                 );
         }
     },
@@ -67,7 +67,7 @@ export const ACTIONS = {
             return fetch(url, { method : "POST", body : JSON.stringify(body), headers })
                 .then((response) =>
                     (response.status < 200 || response.status >= 400 || response.headers.get("X-Auth") === null) ?
-                        Promise.reject() : response.json().then((json) => ({
+                        Promise.reject(`Couldn't ${type}`) : response.json().then((json) => ({
                             user : json,
                             token : response.headers.get("X-Auth")
                         })).catch(Promise.reject)
@@ -75,7 +75,7 @@ export const ACTIONS = {
                 .then((response) => dispatch(
                     ACTIONS.ACCOUNT_STATE(CONSTANTS.SUCCESS, USER_AUTH_LOGGING, response))
                 ).catch((error) => dispatch(
-                    ACTIONS.ACCOUNT_STATE(CONSTANTS.ERROR, null, error))
+                    ACTIONS.ACCOUNT_STATE(CONSTANTS.ERROR, ACCOUNT_STATE, error))
                 );
         }
     },
@@ -103,7 +103,7 @@ export const ACTIONS = {
                 ).then((response) => dispatch(
                     ACTIONS.ACCOUNT_STATE(CONSTANTS.SUCCESS, USER_AUTH_EXITING, response))
                 ).catch((error) => {
-                    dispatch(ACTIONS.ACCOUNT_STATE(CONSTANTS.ERROR, null, error));
+                    dispatch(ACTIONS.ACCOUNT_STATE(CONSTANTS.ERROR, ACCOUNT_STATE, error));
                 });
         }
     },
@@ -144,7 +144,7 @@ export const ACTIONS = {
                             (type === CONSTANTS.POST) ? response.json() :
                                 Promise.reject(response))
                 .then((response) => dispatch(ACTIONS.ACCOUNT_STATE(CONSTANTS.SUCCESS, USER_COLLECTION, response, type)))
-                .catch((error) => dispatch(ACTIONS.ACCOUNT_STATE(CONSTANTS.ERROR, null, error)));
+                .catch((error) => dispatch(ACTIONS.ACCOUNT_STATE(CONSTANTS.ERROR, ACCOUNT_STATE, error)));
         }
     }
 };

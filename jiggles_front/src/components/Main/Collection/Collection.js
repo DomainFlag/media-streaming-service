@@ -122,7 +122,7 @@ export class Collection extends Component {
 }
 
 const mapStateToProps = (state) => ({
-    content : state.account.user.content
+    content : state.account.user !== undefined ? state.account.user.content : {}
 });
 
 export default connect(mapStateToProps, null)(Collection);

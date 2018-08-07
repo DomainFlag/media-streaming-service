@@ -29,16 +29,29 @@ class Spark extends Component {
         super(props);
 
         this.state = {
+            caption : this.parseCaption(props),
             comment : false,
             reply : null
         };
-
-        this.caption = new UriBuilder()
-            .setScheme(CONSTANTS.SCHEME)
-            .setAuthority(CONSTANTS.AUTHORITY)
-            .appendPath(props.comment.author.caption)
-            .build();
     }
+
+    componentWillReceiveProps = (nextProps) => {
+        if(nextProps.comment !== this.props) {
+            this.setState({
+                caption : this.parseCaption(nextProps)
+            })
+        }
+    };
+
+    parseCaption = (props) => {
+        if(props.comment !== null) {
+            return new UriBuilder()
+                .setScheme(CONSTANTS.SCHEME)
+                .setAuthority(CONSTANTS.AUTHORITY)
+                .appendPath(props.comment.author.caption)
+                .build();
+        }
+    };
 
     dateParser = function (objectId) {
         return (new Date(parseInt(objectId.substring(0, 8), 16) * 1000)).toDateString();
@@ -60,7 +73,7 @@ class Spark extends Component {
         <div className="spark">
             <div className="spark-section">
                 <div className="spark-container">
-                    <img className="spark-avatar" alt="avatar" src={this.caption}/>
+                    <img className="spark-avatar" alt="avatar" src={this.state.caption}/>
 
                     <div className="spark-miscellaneous-container">
                         <p className="spark-author">{this.props.comment.author.name}</p>

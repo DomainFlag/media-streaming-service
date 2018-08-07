@@ -62,6 +62,19 @@ export default class Slider extends Component {
     };
 
     componentDidMount = () => {
+        this.surroundingChange();
+
+        if(this.props.for === "tracker")
+            this.setAudioUpdater();
+    };
+
+    componentDidUpdate = (nextProps) => {
+        if(nextProps.toggle !== this.props.toggle) {
+            this.surroundingChange();
+        }
+    };
+
+    surroundingChange = () => {
         if(this.props.orientation === ORIENTATION_VERTICAL) {
             this.sliderDimen = this.slider.clientHeight;
             this.sliderOffset = this.slider.offsetTop;
@@ -69,9 +82,6 @@ export default class Slider extends Component {
             this.sliderDimen = this.slider.clientWidth;
             this.sliderOffset = this.slider.offsetLeft;
         }
-
-        if(this.props.for === "tracker")
-            this.setAudioUpdater();
     };
 
     componentWillUnmount = () => {
@@ -120,10 +130,10 @@ export default class Slider extends Component {
         if(this.props.for === "volume") {
             this.props.changeVolume(percentage);
             this.props.changeVolumeLevel(percentage / 100);
-        } else if(this.props.for === "equalizer")
+        } else if(this.props.for === "equalizer") {
             this.props.changeValue(value);
-        else if(this.props.for === "equalizer")
-            this.props.onChangeParams(value);
+            // this.props.onChangeParams(value);
+        }
 
         event.stopPropagation();
         event.preventDefault();
