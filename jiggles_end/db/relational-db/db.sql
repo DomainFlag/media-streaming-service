@@ -118,7 +118,7 @@ CREATE TABLE album(
 CREATE TABLE artist(
         id      int (11) Auto_increment  NOT NULL ,
         name    Varchar (255) NOT NULL ,
-        profile Varchar (255) NOT NULL ,
+        profile Varchar (255) NOT NULL,
         label   Varchar (255) NOT NULL ,
         PRIMARY KEY (id)
 )ENGINE=InnoDB;
