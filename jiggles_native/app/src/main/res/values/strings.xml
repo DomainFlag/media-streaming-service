@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Jiggles</string>
+
+    <string name="welcome_header_text">More then just a music collection.</string>
+    <string name="welcome_subheader_text">Listen.  Connect.  Jiggle.</string>
+    <string name="welcome_helper_text">Get Started</string>
+
+    <string name="welcome_sign_in">Log In</string>
+    <string name="welcome_sign_up">Sign Up</string>
+
+    <string name="auth_google_description">Google Authentication</string>
+    <string name="auth_facebook_description">Facebook Authentication</string>
+    <string name="auth_twitter_description">Twitter Authentication</string>
+
+    <string name="auth_social_header">Social %1$s with any of\.\.\.</string>
+</resources>

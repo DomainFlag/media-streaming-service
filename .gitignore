@@ -2,7 +2,6 @@
 .idea/
 
 node_modules/
-playground/
+jiggles_playground/
 
 **/app_config.js
-*.docx

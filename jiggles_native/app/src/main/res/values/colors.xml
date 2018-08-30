@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#29A369</color>
+    <color name="colorPrimaryDark">#22895D</color>
+    <color name="colorAccent">#DB2E3B</color>
+
+    <color name="primaryLightColor">#2FBC79</color>
+    <color name="backgroundColor">#fffcf9</color>
+
+    <color name="motionPrimaryDarkColor">#9D7AA5</color>
+    <color name="motionPrimaryColor">#A880B2</color>
+    <color name="motionPrimaryLightColor">#C193CC</color>
+
+    <color name="pleasureColor">#148491</color>
+    <color name="primaryTextColor">#15101C</color>
+    <color name="secondaryColor">#959997</color>
+    <color name="iconsTextColor">#FFFFFF</color>
+    <color name="tertiaryColor">#f9ef27</color>
+</resources>
