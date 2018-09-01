@@ -2,6 +2,7 @@
 <resources>
     <dimen name="activity_margin_section">24dp</dimen>
     <dimen name="activity_margin_component">16dp</dimen>
+    <dimen name="activity_margin_closer">12dp</dimen>
     <dimen name="activity_margin_relative">8dp</dimen>
     <dimen name="activity_margin_sibling">4dp</dimen>
     <dimen name="activity_margin_nano">2dp</dimen>
@@ -15,4 +16,6 @@
     <dimen name="activity_text_subspan">10sp</dimen>
 
     <dimen name="auth_social_icon">48dp</dimen>
+
+    <dimen name="button_elevation">4dp</dimen>
 </resources>

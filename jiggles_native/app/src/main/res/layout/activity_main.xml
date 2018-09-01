@@ -44,21 +44,26 @@
         android:textStyle="bold"
         android:textSize="@dimen/activity_text_subheader"
         android:textColor="@color/iconsTextColor"
-        app:layout_constraintBottom_toTopOf="@+id/button"
+        app:layout_constraintBottom_toTopOf="@+id/get_started"
         app:layout_constraintStart_toStartOf="parent"/>
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/get_started"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="36dp"
+        android:minWidth="64dp"
         android:layout_marginBottom="@dimen/activity_margin_section"
         android:layout_marginLeft="@dimen/activity_margin_section"
         android:layout_marginStart="@dimen/activity_margin_section"
-        android:backgroundTint="@color/colorAccent"
+        android:background="@drawable/button_background"
+        android:textSize="@dimen/activity_text_subparagraph"
         android:text="@string/welcome_helper_text"
         android:textColor="@color/iconsTextColor"
+        android:paddingLeft="@dimen/activity_margin_component"
+        android:paddingRight="@dimen/activity_margin_component"
         android:textStyle="bold"
-        android:onClick="onGetStartedClick"
+        android:onClick="onClickGetStarted"
+        android:elevation="@dimen/button_elevation"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
 
@@ -80,6 +85,7 @@
             android:textSize="@dimen/activity_text_subheader"
             android:textStyle="bold"
             android:textColor="@color/colorPrimaryDark"
+            android:onClick="onClickGetStarted"
             android:text="@string/welcome_sign_in"/>
 
         <TextView
@@ -90,6 +96,7 @@
             android:textSize="@dimen/activity_text_subheader"
             android:textStyle="bold"
             android:textColor="@color/colorPrimaryDark"
+            android:onClick="onClickGetStarted"
             android:text="@string/welcome_sign_up"/>
 
     </LinearLayout>

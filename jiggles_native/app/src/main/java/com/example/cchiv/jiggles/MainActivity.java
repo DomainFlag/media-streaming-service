@@ -3,6 +3,7 @@ package com.example.cchiv.jiggles;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -20,12 +21,32 @@ public class MainActivity extends AppCompatActivity {
                 .load(R.drawable.background)
                 .resize(600, 600)
                 .into(welcomeBackground);
-
-
     }
 
-    public void onGetStartedClick(View view) {
-        Intent intent = new Intent(this, AuthActivity.class);
-        startActivity(intent);
+    public void onClickGetStarted(View view) {
+        String authType = null;
+        switch(view.getId()) {
+            case R.id.get_started : {
+                authType = Constants.AUTH_SIGN_UP;
+                break;
+            }
+            case R.id.welcome_sign_in : {
+                authType = Constants.AUTH_SIGN_IN;
+                break;
+            }
+            case R.id.welcome_sign_up : {
+                authType = Constants.AUTH_SIGN_UP;
+                break;
+            }
+            default : {
+                Log.v("MainActivity", "Unknown command");
+            }
+        }
+
+        if(authType != null) {
+            Intent intent = new Intent(this, AuthActivity.class);
+            intent.putExtra(Constants.AUTH_TYPE_KEY, authType);
+            startActivity(intent);
+        }
     }
 }

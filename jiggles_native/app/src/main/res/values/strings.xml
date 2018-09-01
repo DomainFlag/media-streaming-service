@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Jiggles</string>
 
+    <!-- Welcome -->
     <string name="welcome_header_text">More then just a music collection.</string>
     <string name="welcome_subheader_text">Listen.  Connect.  Jiggle.</string>
     <string name="welcome_helper_text">Get Started</string>
@@ -8,9 +9,27 @@
     <string name="welcome_sign_in">Log In</string>
     <string name="welcome_sign_up">Sign Up</string>
 
+    <!-- Authentication -->
     <string name="auth_google_description">Google Authentication</string>
     <string name="auth_facebook_description">Facebook Authentication</string>
     <string name="auth_twitter_description">Twitter Authentication</string>
 
     <string name="auth_social_header">Social %1$s with any of\.\.\.</string>
+    <string name="auth_social_header_log_in">log in</string>
+    <string name="auth_social_header_sing_up">sign up</string>
+
+    <string name="auth_email_hint">E-Mail</string>
+    <string name="auth_name_hint">Name</string>
+    <string name="auth_password_hint">Password</string>
+    <string name="auth_password_repeat_hint">Repeat Password</string>
+
+    <string name="auth_action_remember_me">Remember Me</string>
+    <string name="auth_action_text">Log in</string>
+
+    <string name="auth_redirection_new_user">If you have no account</string>
+    <string name="auth_redirection_old_user">If you already registered</string>
+    <string name="auth_redirection_sign_up">Sign up here</string>
+    <string name="auth_redirection_log_in">Login in here</string>
+    <string name="auth_redirection_text">%1$s,\n%2$s</string>
+
 </resources>

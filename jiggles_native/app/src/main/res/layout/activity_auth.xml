@@ -1,89 +1,287 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
     tools:context=".AuthActivity">
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="144dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="32dp"
-        android:adjustViewBounds="true"
-        android:src="@drawable/ic_logo"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
-
-    <LinearLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView">
-
-        <ImageView
-            android:id="@+id/auth_facebook"
-            android:src="@drawable/ic_auth_facebook"
-            android:contentDescription="@string/auth_facebook_description"
-            style="@style/social_auth_icon_style"/>
-
-        <ImageView
-            android:id="@+id/auth_google"
-            android:src="@drawable/ic_auth_google"
-            android:contentDescription="@string/auth_google_description"
-            style="@style/social_auth_icon_style"/>
-
-        <ImageView
-            android:id="@+id/auth_twitter"
-            android:src="@drawable/ic_auth_twitter"
-            android:contentDescription="@string/auth_twitter_description"
-            style="@style/social_auth_icon_style"/>
-
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/auth_social_header"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/primaryTextColor"
-        android:textSize="@dimen/activity_text_paragraph"
-        android:layout_marginEnd="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
-        tools:text="@string/auth_social_header"/>
-
-    <LinearLayout
-        android:layout_width="wrap_content"
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <TextView
+        <android.support.constraint.ConstraintLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:descendantFocusability="beforeDescendants"
+            android:focusableInTouchMode="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="144dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="32dp"
+                android:adjustViewBounds="true"
+                android:src="@drawable/ic_logo"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
 
-    </LinearLayout>
+            <LinearLayout
+                android:id="@+id/linearLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/imageView"
+                >
 
-</android.support.constraint.ConstraintLayout>
+                <ImageView
+                    android:id="@+id/auth_facebook"
+                    style="@style/social_auth_icon_style"
+                    android:contentDescription="@string/auth_facebook_description"
+                    android:src="@drawable/ic_auth_facebook"/>
+
+                <ImageView
+                    android:id="@+id/auth_google"
+                    style="@style/social_auth_icon_style"
+                    android:contentDescription="@string/auth_google_description"
+                    android:src="@drawable/ic_auth_google"/>
+
+                <ImageView
+                    android:id="@+id/auth_twitter"
+                    style="@style/social_auth_icon_style"
+                    android:contentDescription="@string/auth_twitter_description"
+                    android:src="@drawable/ic_auth_twitter"/>
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/auth_social_header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:textColor="@color/colorPrimary"
+                android:textSize="@dimen/activity_text_subheader"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+                tools:text="@string/auth_social_header"/>
+
+            <LinearLayout
+                android:id="@+id/auth_input"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:orientation="vertical"
+                app:layout_constraintStart_toStartOf="@+id/auth_remember_me"
+                app:layout_constraintTop_toBottomOf="@+id/auth_social_header">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/activity_margin_relative"
+                    android:layout_marginTop="@dimen/activity_margin_relative"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/activity_margin_relative"
+                        android:text="@string/auth_email_hint"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="@dimen/activity_text_subheader"
+                        android:textStyle="bold"/>
+
+                    <EditText
+                        android:id="@+id/auth_email_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/border_view"
+                        android:hint="@string/auth_email_hint"
+                        android:inputType="textEmailAddress"
+                        android:maxWidth="280dp"
+                        android:minWidth="280dp"
+                        android:padding="@dimen/activity_margin_closer"
+                        android:textSize="@dimen/activity_text_paragraph"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/auth_name_container"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/activity_margin_relative"
+                    android:layout_marginTop="@dimen/activity_margin_relative"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/activity_margin_relative"
+                        android:text="@string/auth_name_hint"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="@dimen/activity_text_subheader"
+                        android:textStyle="bold"/>
+
+                    <EditText
+                        android:id="@+id/auth_name_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/border_view"
+                        android:hint="@string/auth_name_hint"
+                        android:inputType="text"
+                        android:maxWidth="280dp"
+                        android:minWidth="280dp"
+                        android:padding="@dimen/activity_margin_closer"
+                        android:textSize="@dimen/activity_text_paragraph"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/activity_margin_relative"
+                    android:layout_marginTop="@dimen/activity_margin_relative"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/activity_margin_relative"
+                        android:text="@string/auth_password_hint"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="@dimen/activity_text_subheader"
+                        android:textStyle="bold"/>
+
+                    <EditText
+                        android:id="@+id/auth_password_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/border_view"
+                        android:hint="@string/auth_password_hint"
+                        android:inputType="textPassword"
+                        android:maxWidth="280dp"
+                        android:minWidth="280dp"
+                        android:padding="@dimen/activity_margin_closer"
+                        android:textSize="@dimen/activity_text_paragraph"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/auth_password_repeat_container"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/activity_margin_relative"
+                    android:layout_marginTop="@dimen/activity_margin_relative"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/activity_margin_relative"
+                        android:text="@string/auth_password_repeat_hint"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="@dimen/activity_text_subheader"
+                        android:textStyle="bold"/>
+
+                    <EditText
+                        android:id="@+id/auth_password_repeat_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/border_view"
+                        android:hint="@string/auth_password_repeat_hint"
+                        android:inputType="textPassword"
+                        android:maxWidth="280dp"
+                        android:minWidth="280dp"
+                        android:padding="@dimen/activity_margin_closer"
+                        android:textSize="@dimen/activity_text_paragraph"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <CheckBox
+                android:id="@+id/auth_remember_me"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:backgroundTint="@color/colorAccent"
+                android:layoutDirection="rtl"
+                android:text="@string/auth_action_remember_me"
+                android:textColor="@color/colorAccent"
+                android:textSize="@dimen/activity_text_paragraph"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/auth_input"/>
+
+            <Button
+                android:id="@+id/auth_action"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/button_background"
+                android:elevation="@dimen/button_elevation"
+                android:paddingLeft="@dimen/activity_margin_component"
+                android:paddingRight="@dimen/activity_margin_component"
+                android:textColor="@color/iconsTextColor"
+                android:textSize="@dimen/activity_text_subparagraph"
+                app:layout_constraintBottom_toBottomOf="@+id/auth_remember_me"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toEndOf="@+id/auth_remember_me"
+                app:layout_constraintTop_toBottomOf="@+id/auth_input"
+                app:layout_constraintVertical_bias="1.0"
+                tools:text="@string/auth_action_text"/>
+
+            <TextView
+                android:id="@+id/auth_redirection"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="32dp"
+                android:layout_marginEnd="@dimen/activity_margin_relative"
+                android:layout_marginLeft="@dimen/activity_margin_relative"
+                android:layout_marginRight="@dimen/activity_margin_relative"
+                android:layout_marginStart="@dimen/activity_margin_relative"
+                android:layout_marginTop="@dimen/activity_margin_section"
+                android:onClick="onClickRedirect"
+                android:textAlignment="center"
+                android:textColor="@color/primaryTextColor"
+                android:textSize="@dimen/activity_text_subparagraph"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/auth_action"
+                tools:text="@string/auth_redirection_new_user"/>
+
+        </android.support.constraint.ConstraintLayout>
+
+    </android.support.constraint.ConstraintLayout>
+
+</ScrollView>
