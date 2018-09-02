@@ -1,6 +1,7 @@
-package com.example.cchiv.jiggles;
+package com.example.cchiv.jiggles.Activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
@@ -11,9 +12,16 @@ import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
-public class AuthActivity extends AppCompatActivity {
+import com.example.cchiv.jiggles.Constants;
+import com.example.cchiv.jiggles.R;
+import com.example.cchiv.jiggles.Utilities.NetworkUtilities;
+
+import okhttp3.Response;
+
+public class AuthActivity extends AppCompatActivity implements NetworkUtilities.OnPostNetworkCallback {
 
     private Typeface typeface;
 
@@ -25,6 +33,45 @@ public class AuthActivity extends AppCompatActivity {
         typeface = Typeface.createFromAsset(getAssets(), "fonts/Brandon_bld.otf");
 
         changeAuthState();
+    }
+
+    @Override
+    public void onPostNetworkCallback(Response response) {
+        String token = response.header("X-Auth");
+        if(token != null && !token.isEmpty()) {
+            SharedPreferences sharedPreferences = getSharedPreferences(Constants.AUTH_TOKEN, MODE_PRIVATE);
+            sharedPreferences.edit()
+                    .putString(Constants.TOKEN, token)
+                    .apply();
+
+            Intent intent = new Intent(this, HomeActivity.class);
+            startActivity(intent);
+        } else {
+            // Error message to show
+        }
+    }
+
+    public void onClickAction(View view) {
+        String email = getEditTextValue(R.id.auth_email_value);
+        String password = getEditTextValue(R.id.auth_password_value);
+
+        if(email != null && password != null) {
+            NetworkUtilities networkUtilities = new NetworkUtilities(this);
+            networkUtilities.userAuthLogging(email, password);
+        } else {
+            // Error message to show
+        }
+    }
+
+    public String getEditTextValue(int identifier) {
+        View view = findViewById(identifier);
+        if(view instanceof EditText) {
+            EditText editText = (EditText) view;
+
+            return editText.getEditableText().toString();
+        }
+
+        return null;
     }
 
     private void changeAuthState() {

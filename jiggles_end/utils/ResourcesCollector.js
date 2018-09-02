@@ -23,7 +23,7 @@ class ResourcesCollector {
     }
 
     init(resourcePath, collection, depth = 0) {
-        let records = fs.readdirSync(__dirname + `./../resources/${resourcePath}`);
+        let records = fs.readdirSync(__dirname + `/../resources/${resourcePath}`);
 
         let folder = {
             name : resourcePath,
@@ -34,7 +34,7 @@ class ResourcesCollector {
         records.forEach((record) => {
             let index = Number(record.replace(/[^0-9]*/g, ""));
 
-            let stats = fs.statSync(__dirname + `./../resources/${resourcePath}/${record}`);
+            let stats = fs.statSync(__dirname + `/../resources/${resourcePath}/${record}`);
 
             if(stats.isDirectory()) {
                 folder.folders.free.forEach((range) => {

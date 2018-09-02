@@ -4,4 +4,4 @@
 node_modules/
 jiggles_playground/
 
-**/app_config.js
+**/app_config.*

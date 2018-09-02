@@ -1,4 +1,4 @@
-package com.example.cchiv.jiggles;
+package com.example.cchiv.jiggles.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,6 +7,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.example.cchiv.jiggles.Constants;
+import com.example.cchiv.jiggles.R;
 import com.squareup.picasso.Picasso;
 
 public class MainActivity extends AppCompatActivity {
