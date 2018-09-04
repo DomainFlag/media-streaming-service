@@ -1,6 +1,7 @@
 package com.example.cchiv.jiggles.Activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -46,8 +47,16 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if(authType != null) {
-            Intent intent = new Intent(this, AuthActivity.class);
-            intent.putExtra(Constants.AUTH_TYPE_KEY, authType);
+            Intent intent;
+
+            SharedPreferences sharedPreferences = getSharedPreferences(Constants.AUTH_TOKEN, MODE_PRIVATE);
+            if(sharedPreferences.getString(Constants.TOKEN, null) != null)
+                intent = new Intent(this, HomeActivity.class);
+            else {
+                intent = new Intent(this, AuthActivity.class);
+                intent.putExtra(Constants.AUTH_TYPE_KEY, authType);
+            }
+
             startActivity(intent);
         }
     }

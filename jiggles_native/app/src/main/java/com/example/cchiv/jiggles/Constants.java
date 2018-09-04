@@ -5,8 +5,13 @@ public class Constants {
     public final static String AUTH_SIGN_UP = "AUTH_SIGN_UP";
     public final static String AUTH_SIGN_IN = "AUTH_SIGN_IN";
 
+    /* Preferences */
     public static final String AUTH_TOKEN = "AUTH_TOKEN";
+    public static final String OTHER_PREFERENCES = "OTHER_PREFERENCES";
 
+    public static final String PREFERENCE_EMAIL = "PREFERENCE_EMAIL";
+
+    /* Network */
     public static final String SCHEME = "https";
     public static final String AUTHORITY = app_config.APP;
     public static final String USERS = "users";

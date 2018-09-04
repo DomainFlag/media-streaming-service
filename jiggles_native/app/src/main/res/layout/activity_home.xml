@@ -9,9 +9,15 @@
 
     <TextView
         android:id="@+id/home_state"
+        android:visibility="invisible"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
         tools:text="@string/auth_redirection_new_user"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/home_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
 </android.support.constraint.ConstraintLayout>

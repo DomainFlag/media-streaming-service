@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Jiggles</string>
 
+    <string name="app_tools_placeholder">Random text</string>
+
     <!-- Welcome -->
     <string name="welcome_header_text">More then just a music collection.</string>
     <string name="welcome_subheader_text">Listen.  Connect.  Jiggle.</string>
@@ -32,4 +34,7 @@
     <string name="auth_redirection_log_in">Login in here</string>
     <string name="auth_redirection_text">%1$s,\n%2$s</string>
 
+    <!-- Home -->
+    <string name="home_release_caption">Release Caption</string>
+    <string name="home_release_impact">Release Impact</string>
 </resources>

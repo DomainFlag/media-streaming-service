@@ -1,5 +1,6 @@
 package com.example.cchiv.jiggles.Activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
@@ -12,6 +13,7 @@ import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -19,9 +21,11 @@ import com.example.cchiv.jiggles.Constants;
 import com.example.cchiv.jiggles.R;
 import com.example.cchiv.jiggles.Utilities.NetworkUtilities;
 
-import okhttp3.Response;
+public class AuthActivity extends AppCompatActivity {
 
-public class AuthActivity extends AppCompatActivity implements NetworkUtilities.OnPostNetworkCallback {
+    private static final String PREF_EMAIL_KEY = "PREF_EMAIL_KEY";
+    private static final String PREF_NAME_KEY = "PREF_NAME_KEY";
+    private static final String PREF_PASSWORD_KEY = "PREF_PASSWORD_KEY";
 
     private Typeface typeface;
 
@@ -30,34 +34,61 @@ public class AuthActivity extends AppCompatActivity implements NetworkUtilities.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth);
 
+        if(savedInstanceState != null) {
+            onRestoreOptConfig(savedInstanceState, R.id.auth_email_value, PREF_EMAIL_KEY);
+            onRestoreOptConfig(savedInstanceState, R.id.auth_name_value, PREF_NAME_KEY);
+            onRestoreOptConfig(savedInstanceState, R.id.auth_password_value, PREF_PASSWORD_KEY);
+        }
+
+        SharedPreferences sharedPreferences = getSharedPreferences(Constants.OTHER_PREFERENCES, MODE_PRIVATE);
+        String email = sharedPreferences.getString(Constants.PREFERENCE_EMAIL, null);
+        if(email != null) {
+            ((EditText) findViewById(R.id.auth_email_value)).setText(email);
+        }
+
         typeface = Typeface.createFromAsset(getAssets(), "fonts/Brandon_bld.otf");
 
         changeAuthState();
     }
 
-    @Override
-    public void onPostNetworkCallback(Response response) {
-        String token = response.header("X-Auth");
-        if(token != null && !token.isEmpty()) {
-            SharedPreferences sharedPreferences = getSharedPreferences(Constants.AUTH_TOKEN, MODE_PRIVATE);
-            sharedPreferences.edit()
-                    .putString(Constants.TOKEN, token)
-                    .apply();
-
-            Intent intent = new Intent(this, HomeActivity.class);
-            startActivity(intent);
-        } else {
-            // Error message to show
-        }
+    public void onRestoreOptConfig(Bundle savedInstanceState, int identifier, String prefKey) {
+        String value = savedInstanceState.getString(prefKey, null);
+        if(value != null)
+            ((EditText) findViewById(identifier)).setText(value);
     }
 
     public void onClickAction(View view) {
         String email = getEditTextValue(R.id.auth_email_value);
         String password = getEditTextValue(R.id.auth_password_value);
 
+        if(email != null && !email.isEmpty()) {
+            CheckBox rememberMe = findViewById(R.id.auth_remember_me);
+            if(rememberMe.isChecked()) {
+                SharedPreferences sharedPreferences = getSharedPreferences(Constants.OTHER_PREFERENCES, MODE_PRIVATE);
+                sharedPreferences.edit()
+                        .putString(Constants.PREFERENCE_EMAIL, email)
+                        .apply();
+            }
+        }
+
         if(email != null && password != null) {
-            NetworkUtilities networkUtilities = new NetworkUtilities(this);
-            networkUtilities.userAuthLogging(email, password);
+            NetworkUtilities networkUtilities = new NetworkUtilities();
+            networkUtilities.authLogging(this, email, password, new NetworkUtilities.AuthLogging.OnPostNetworkCallback() {
+                @Override
+                public void onPostNetworkCallback(Context context, String token) {
+                    if(token != null && !token.isEmpty()) {
+                        SharedPreferences sharedPreferences = getSharedPreferences(Constants.AUTH_TOKEN, MODE_PRIVATE);
+                        sharedPreferences.edit()
+                                .putString(Constants.TOKEN, token)
+                                .apply();
+
+                        Intent intent = new Intent(context, HomeActivity.class);
+                        startActivity(intent);
+                    } else {
+                        // Error message to show
+                    }
+                }
+            });
         } else {
             // Error message to show
         }
@@ -149,6 +180,21 @@ public class AuthActivity extends AppCompatActivity implements NetworkUtilities.
         else intent.putExtra(Constants.AUTH_TYPE_KEY, Constants.AUTH_SIGN_IN);
 
         recreate();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        onSaveOptConfig(outState, R.id.auth_email_value, PREF_EMAIL_KEY);
+        onSaveOptConfig(outState, R.id.auth_password_value, PREF_PASSWORD_KEY);
+    }
+
+    public void onSaveOptConfig(Bundle outState, int identifier, String prefKey) {
+        String value = getEditTextValue(identifier);
+        if(value != null) {
+            outState.putString(prefKey, value);
+        }
     }
 
     public class RedirectionText {
