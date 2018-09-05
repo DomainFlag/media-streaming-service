@@ -37,4 +37,15 @@
     <!-- Home -->
     <string name="home_release_caption">Release Caption</string>
     <string name="home_release_impact">Release Impact</string>
+
+    <string name="home_news_caption">News Caption</string>
+
+    <!-- Search -->
+    <string name="search_text">Search</string>
+
+    <string name="search_close_description">Search Close</string>
+
+    <string name="search_hint">Search Track, Album, Artist\.\.\.</string>
+    <string name="search_result">Search result</string>
+
 </resources>
