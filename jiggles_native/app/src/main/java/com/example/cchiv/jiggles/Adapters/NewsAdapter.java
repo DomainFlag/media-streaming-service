@@ -43,9 +43,11 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
 
         Picasso.get()
                 .load(news.getCaption())
+                .resize(320, 180)
+                .centerCrop()
                 .into(holder.caption);
 
-        holder.author.setText(news.getAuthor());
+        holder.author.setText(String.format(context.getString(R.string.home_news_author), news.getAuthor()));
         holder.header.setText(news.getHeader());
     }
 

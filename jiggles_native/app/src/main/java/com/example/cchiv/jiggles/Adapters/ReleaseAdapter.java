@@ -2,6 +2,7 @@ package com.example.cchiv.jiggles.Adapters;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,35 +45,47 @@ public class ReleaseAdapter extends RecyclerView.Adapter<ReleaseAdapter.ReleaseV
 
         Picasso.get()
                 .load(release.getUrl())
+                .resize(175, 175)
                 .into(holder.caption);
 
         holder.artist.setText(release.getArtist());
         holder.title.setText(release.getTitle());
 
         ArrayList<Review> reviews = release.getReviews();
-        float score = 0;
+        float total = 0;
         for(int it = 0; it < reviews.size(); it++) {
             Review review = reviews.get(it);
 
             View view = LayoutInflater.from(context)
                     .inflate(R.layout.review_layout, holder.reviews, false);
 
-            ((TextView) view.findViewById(R.id.review_score)).setText(String.valueOf(review.getScore()));
+            int score = review.getScore();
+            int color;
+            if(score < 60)
+                color = ContextCompat.getColor(context, R.color.colorScoreOther);
+            else if(score < 80)
+                color = ContextCompat.getColor(context, R.color.colorScorePossitive);
+            else color = ContextCompat.getColor(context, R.color.colorScoreAcclaim);
+
+            view.findViewById(R.id.review_score_indicator).setBackgroundColor(color);
+
+            ((TextView) view.findViewById(R.id.review_score)).setText(String.valueOf(score));
             ((TextView) view.findViewById(R.id.review_author)).setText(review.getAuthor());
             ((TextView) view.findViewById(R.id.review_content)).setText(review.getContent());
 
             holder.reviews.addView(view);
 
             /* Getting the mean score of all reviews */
-            score += review.getScore();
+            total += review.getScore();
         }
 
-        score /= reviews.size() * 10.0f;
+        total /= reviews.size() * 10.0f;
 
-        if(score < IMPACT_THRESHOLD)
+        if(total < IMPACT_THRESHOLD)
             holder.impact.setVisibility(View.GONE);
+        else holder.score.setTextColor(ContextCompat.getColor(context, R.color.colorPrimaryDark));
 
-        holder.score.setText(String.format(Locale.US, "%.1f", score));
+        holder.score.setText(String.format(Locale.US, "%.1f", total));
     }
 
     @Override

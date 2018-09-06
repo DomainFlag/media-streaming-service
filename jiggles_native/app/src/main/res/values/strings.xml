@@ -2,6 +2,7 @@
     <string name="app_name">Jiggles</string>
 
     <string name="app_tools_placeholder">Random text</string>
+    <string name="app_tools_placeholder_number">80</string>
 
     <!-- Welcome -->
     <string name="welcome_header_text">More then just a music collection.</string>
@@ -35,6 +36,11 @@
     <string name="auth_redirection_text">%1$s,\n%2$s</string>
 
     <!-- Home -->
+    <string name="home_releases_label">Releases</string>
+    <string name="home_news_label">News</string>
+
+    <string name="home_news_author">By %1$s</string>
+
     <string name="home_release_caption">Release Caption</string>
     <string name="home_release_impact">Release Impact</string>
 

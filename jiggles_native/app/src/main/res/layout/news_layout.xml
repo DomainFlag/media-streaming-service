@@ -1,42 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/iconsTextColor"
+    android:layout_margin="@dimen/activity_margin_section"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:elevation="4dp"
+    app:elevation="4dp">
 
     <ImageView
         android:id="@+id/news_caption"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
+        android:layout_width="320dp"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:scaleType="centerCrop"
         android:contentDescription="@string/home_news_caption"
         app:layout_constraintEnd_toEndOf="parent"
         tools:src="@drawable/ic_launcher_background"/>
 
     <TextView
-        android:id="@+id/news_header"
+        android:id="@+id/news_author"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginLeft="16dp"
+        android:layout_marginRight="8dp"
         android:layout_marginStart="16dp"
-        android:textSize="@dimen/activity_text_paragraph"
+        android:layout_marginTop="8dp"
         android:textColor="@color/iconsTextColor"
-        app:layout_constraintBottom_toTopOf="@+id/news_author"
-        app:layout_constraintStart_toStartOf="parent"
+        android:textSize="@dimen/activity_text_paragraph"
+        android:textStyle="bold"
+        android:layout_alignBottom="@id/news_caption"
         tools:text="@string/app_tools_placeholder"/>
 
     <TextView
-        android:id="@+id/news_author"
-        android:layout_width="200dp"
+        android:id="@+id/news_header"
+        android:layout_width="320dp"
         android:layout_height="100dp"
         android:textSize="@dimen/activity_text_paragraph"
         android:textColor="@color/primaryTextColor"
-        android:padding="@dimen/activity_margin_relative"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/news_caption"
+        android:padding="@dimen/activity_margin_component"
+        android:layout_below="@id/news_caption"
         tools:text="@string/app_tools_placeholder"/>
 
-</android.support.constraint.ConstraintLayout>
+</RelativeLayout>

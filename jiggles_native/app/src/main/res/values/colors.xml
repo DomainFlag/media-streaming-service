@@ -16,4 +16,10 @@
     <color name="secondaryColor">#959997</color>
     <color name="iconsTextColor">#FFFFFF</color>
     <color name="tertiaryColor">#f9ef27</color>
+
+
+    <color name="colorScoreAcclaim">#29A369</color>
+    <color name="colorScorePossitive">#F2E827</color>
+    <color name="colorScoreOther">#DB2E3B</color>
+
 </resources>

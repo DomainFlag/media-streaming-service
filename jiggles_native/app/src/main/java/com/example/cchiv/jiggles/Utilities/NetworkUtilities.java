@@ -6,9 +6,12 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.example.cchiv.jiggles.Constants;
+import com.example.cchiv.jiggles.Model.Collection;
 import com.example.cchiv.jiggles.Model.News;
 import com.example.cchiv.jiggles.Model.Release;
 import com.example.cchiv.jiggles.Model.Review;
+import com.example.cchiv.jiggles.Model.Track;
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -218,6 +221,96 @@ public class NetworkUtilities {
                     }
 
                     return releases;
+                } catch(JSONException e) {
+                    Log.v(TAG, e.toString());
+                }
+            } catch(IOException e) {
+                Log.v(TAG, e.toString());
+            }
+
+            return null;
+        }
+    }
+
+    /* Fetch Search Results */
+    public void fetchSearchResults(FetchSearchResults.OnPostNetworkCallback onPostNetworkCallback, String query, String token) {
+        new FetchSearchResults(onPostNetworkCallback, query, token);
+    }
+
+    public static class FetchSearchResults extends AsyncNetworkTask<Collection> {
+
+        public interface OnPostNetworkCallback {
+            void onPostNetworkCallback(Collection collection);
+        }
+
+        private OnPostNetworkCallback onPostNetworkCallback = null;
+
+        FetchSearchResults(OnPostNetworkCallback onPostNetworkCallback, String query, String token) {
+            this.onPostNetworkCallback = onPostNetworkCallback;
+
+            Uri uri = new Uri.Builder()
+                    .scheme(Constants.SCHEME)
+                    .authority(Constants.AUTHORITY)
+                    .appendPath(Constants.QUERY)
+                    .appendPath(Constants.TRACK)
+                    .appendQueryParameter(Constants.TRACK, query)
+                    .build();
+
+            Request request = new Request.Builder()
+                    .url(uri.toString())
+                    .addHeader("Content-Type", "application/json")
+                    .addHeader("X-Auth", token)
+                    .get()
+                    .build();
+
+            execute(request);
+        }
+
+        @Override
+        protected Collection doInBackground(Request... requests) {
+            try {
+                Response response = getClient().newCall(requests[0]).execute();
+                return onParseNetworkResponse(response);
+            } catch(IOException e) {
+                Log.v(TAG, e.toString());
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Collection collection) {
+            super.onPostExecute(collection);
+
+            if(this.onPostNetworkCallback != null)
+                this.onPostNetworkCallback.onPostNetworkCallback(collection);
+        }
+
+        private Collection onParseNetworkResponse(Response response) {
+            ResponseBody body = response.body();
+            if(body == null)
+                return null;
+
+            try {
+                String resString = body.string();
+                if(resString == null)
+                    return null;
+
+                Gson gson = new Gson();
+
+                try {
+                    ArrayList<Track> tracks = new ArrayList<>();
+
+                    JSONObject jsonObject = new JSONObject(resString);
+                    JSONObject jsonTracksObject = jsonObject.getJSONObject("tracks");
+                    JSONArray jsonItemsObject = jsonTracksObject.getJSONArray("items");
+                    for(int it = 0; it < jsonItemsObject.length(); it++) {
+                        JSONObject jsonItemObject = jsonItemsObject.getJSONObject(it);
+
+                        tracks.add(gson.fromJson(jsonItemObject.toString(), Track.class));
+                    }
+
+                    return new Collection(null, tracks, null);
                 } catch(JSONException e) {
                     Log.v(TAG, e.toString());
                 }

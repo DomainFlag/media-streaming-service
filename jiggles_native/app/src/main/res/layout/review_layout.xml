@@ -3,47 +3,68 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:padding="@dimen/activity_margin_relative"
     android:layout_width="match_parent"
-    android:layout_height="85dp"
+    android:layout_height="wrap_content"
     tools:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/review_score"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/activity_margin_relative"
-        android:layout_marginLeft="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+    <RelativeLayout
+        android:id="@+id/review_score_container"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        app:layout_constraintBottom_toBottomOf="@+id/review_content_container"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="@string/app_tools_placeholder"/>
+        app:layout_constraintTop_toTopOf="@+id/review_content_container">
 
-    <TextView
-        android:id="@+id/review_author"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/activity_margin_relative"
-        android:layout_marginLeft="12dp"
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintStart_toEndOf="@+id/review_score"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="@string/app_tools_placeholder"/>
+        <View
+            android:id="@+id/review_score_indicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/colorAccent"/>
 
-    <TextView
-        android:id="@+id/review_content"
-        android:layout_width="wrap_content"
+        <TextView
+            android:id="@+id/review_score"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textColor="@color/iconsTextColor"
+            android:textStyle="bold"
+            tools:text="@string/app_tools_placeholder_number"/>
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/review_content_container"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/activity_margin_relative"
-        android:layout_marginBottom="8dp"
-        android:layout_marginLeft="12dp"
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginLeft="@dimen/activity_margin_component"
+        android:layout_marginRight="8dp"
+        android:layout_marginStart="@dimen/activity_margin_component"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/review_score"
-        app:layout_constraintTop_toBottomOf="@+id/review_author"
-        app:layout_constraintVertical_bias="0.8"
-        tools:text="@string/app_tools_placeholder"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/review_score_container"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/review_author"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/activity_margin_sibling"
+            android:textColor="@color/primaryTextColor"
+            android:textSize="@dimen/activity_text_subparagraph"
+            android:textStyle="bold"
+            tools:text="@string/app_tools_placeholder"/>
+
+        <TextView
+            android:id="@+id/review_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/activity_margin_sibling"
+            android:textSize="@dimen/activity_text_span"
+            tools:text="@string/app_tools_placeholder"/>
+
+    </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

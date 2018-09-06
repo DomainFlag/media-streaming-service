@@ -161,7 +161,7 @@ app.get(/^\/account\/images/, function(req, res) {
 app.use(authenticate);
 
 /* Private & Protected Routes */
-app.get(/^\/query\/(artist|track|album)$/, function(req, res) {
+app.get(/^\/query\/(artist|track|album|all)$/, function(req, res) {
     let searchBy = req.params[0];
 
     if(req.query.hasOwnProperty(searchBy))
