@@ -32,10 +32,14 @@ public class HomeActivity extends AppCompatActivity {
         String token = sharedPreferences.getString(Constants.TOKEN, null);
         if(token != null) {
             // Do something
-
         } else {
             finish();
         }
+
+        findViewById(R.id.home_player).setOnClickListener(view -> {
+            Intent intent = new Intent(this, PlayerActivity.class);
+            startActivity(intent);
+        });
 
         networkUtilities = new NetworkUtilities();
 

@@ -36,6 +36,8 @@
     <string name="auth_redirection_text">%1$s,\n%2$s</string>
 
     <!-- Home -->
+    <string name="home_player">Player</string>
+
     <string name="home_releases_label">Releases</string>
     <string name="home_news_label">News</string>
 
@@ -53,5 +55,10 @@
 
     <string name="search_hint">Search Track, Album, Artist\.\.\.</string>
     <string name="search_result">Search result</string>
+
+    <!-- Player -->
+    <string name="player_play">Player Resume</string>
+    <string name="player_pause">Player Pause</string>
+    <string name="player_next">Player Next</string>
 
 </resources>
