@@ -15,7 +15,7 @@
         android:layout_height="match_parent"
         android:layout_weight="1"/>
 
-    <com.example.cchiv.jiggles.VisualizerView
+    <com.example.cchiv.jiggles.Utilities.VisualizerView
         android:id="@+id/player_visualizer"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

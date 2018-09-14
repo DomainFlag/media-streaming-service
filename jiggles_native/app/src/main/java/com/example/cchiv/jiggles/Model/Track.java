@@ -12,8 +12,6 @@ public class Track {
     private ArrayList<Artist> artists;
     public boolean favourite;
 
-    public Track() {}
-
     public Track(String id, String name, String type, String uri,
                  ArrayList<Image> images, ArrayList<Artist> artists, boolean favourite) {
         this.id = id;

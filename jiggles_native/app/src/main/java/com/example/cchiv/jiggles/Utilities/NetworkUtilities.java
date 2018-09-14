@@ -6,12 +6,16 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.example.cchiv.jiggles.Constants;
-import com.example.cchiv.jiggles.Model.Collection;
+import com.example.cchiv.jiggles.Model.Album;
+import com.example.cchiv.jiggles.Model.Artist;
+import com.example.cchiv.jiggles.Model.Content;
 import com.example.cchiv.jiggles.Model.News;
 import com.example.cchiv.jiggles.Model.Release;
 import com.example.cchiv.jiggles.Model.Review;
 import com.example.cchiv.jiggles.Model.Track;
+import com.example.cchiv.jiggles.Model.Thread;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -19,6 +23,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 import okhttp3.MediaType;
@@ -232,28 +237,107 @@ public class NetworkUtilities {
         }
     }
 
+    /* Fetch Threads */
+    public void fetchThreads(FetchThreads.OnPostNetworkCallback onPostNetworkCallback) {
+        new FetchThreads(onPostNetworkCallback);
+    }
+
+    public static class FetchThreads extends AsyncNetworkTask<ArrayList<Thread>> {
+
+        private Gson gson;
+
+        public interface OnPostNetworkCallback {
+            void onPostNetworkCallback(ArrayList<Thread> threads);
+        }
+
+        private OnPostNetworkCallback onPostNetworkCallback = null;
+
+        FetchThreads(OnPostNetworkCallback onPostNetworkCallback) {
+            this.onPostNetworkCallback = onPostNetworkCallback;
+            this.gson = new Gson();
+
+            Uri uri = new Uri.Builder()
+                    .scheme(Constants.SCHEME)
+                    .authority(Constants.AUTHORITY)
+                    .appendPath(Constants.FORUM)
+                    .appendPath(Constants.THREADS)
+                    .build();
+
+            Request request = new Request.Builder()
+                    .url(uri.toString())
+                    .addHeader("Content-Type", "application/json")
+                    .get()
+                    .build();
+
+            execute(request);
+        }
+
+        @Override
+        protected ArrayList<Thread> doInBackground(Request... requests) {
+            try {
+                Response response = getClient().newCall(requests[0]).execute();
+                return onParseNetworkResponse(response);
+            } catch(IOException e) {
+                Log.v(TAG, e.toString());
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<Thread> threads) {
+            super.onPostExecute(threads);
+
+            if(this.onPostNetworkCallback != null)
+                this.onPostNetworkCallback.onPostNetworkCallback(threads);
+        }
+
+        private ArrayList<Thread> onParseNetworkResponse(Response response) {
+            ResponseBody body = response.body();
+            if(body == null)
+                return null;
+
+            try {
+                String resString = body.string();
+                if(resString == null)
+                    return null;
+
+                Type type = new TypeToken<ArrayList<Thread>>() {}.getType();
+
+                return gson.fromJson(resString, type);
+            } catch(IOException e) {
+                Log.v(TAG, e.toString());
+            }
+
+            return null;
+        }
+    }
+
     /* Fetch Search Results */
     public void fetchSearchResults(FetchSearchResults.OnPostNetworkCallback onPostNetworkCallback, String query, String token) {
         new FetchSearchResults(onPostNetworkCallback, query, token);
     }
 
-    public static class FetchSearchResults extends AsyncNetworkTask<Collection> {
+    public static class FetchSearchResults extends AsyncNetworkTask<Content> {
+
+        private Gson gson;
 
         public interface OnPostNetworkCallback {
-            void onPostNetworkCallback(Collection collection);
+            void onPostNetworkCallback(Content content);
         }
 
         private OnPostNetworkCallback onPostNetworkCallback = null;
 
         FetchSearchResults(OnPostNetworkCallback onPostNetworkCallback, String query, String token) {
             this.onPostNetworkCallback = onPostNetworkCallback;
+            this.gson = new Gson();
 
             Uri uri = new Uri.Builder()
                     .scheme(Constants.SCHEME)
                     .authority(Constants.AUTHORITY)
                     .appendPath(Constants.QUERY)
-                    .appendPath(Constants.TRACK)
-                    .appendQueryParameter(Constants.TRACK, query)
+                    .appendPath(Constants.ALL)
+                    .appendQueryParameter(Constants.ALL, query)
                     .build();
 
             Request request = new Request.Builder()
@@ -267,7 +351,7 @@ public class NetworkUtilities {
         }
 
         @Override
-        protected Collection doInBackground(Request... requests) {
+        protected Content doInBackground(Request... requests) {
             try {
                 Response response = getClient().newCall(requests[0]).execute();
                 return onParseNetworkResponse(response);
@@ -279,14 +363,58 @@ public class NetworkUtilities {
         }
 
         @Override
-        protected void onPostExecute(Collection collection) {
-            super.onPostExecute(collection);
+        protected void onPostExecute(Content content) {
+            super.onPostExecute(content);
 
             if(this.onPostNetworkCallback != null)
-                this.onPostNetworkCallback.onPostNetworkCallback(collection);
+                this.onPostNetworkCallback.onPostNetworkCallback(content);
         }
 
-        private Collection onParseNetworkResponse(Response response) {
+        private ArrayList<Track> fetchTracks(JSONArray jsonArray) {
+            if(jsonArray == null)
+                return new ArrayList<>();
+
+            Type type = new TypeToken<ArrayList<Track>>() {}.getType();
+
+            return gson.fromJson(jsonArray.toString(), type);
+        }
+
+        private ArrayList<Artist> fetchArtists(JSONArray jsonArray) {
+            if(jsonArray == null)
+                return new ArrayList<>();
+
+
+            Type type = new TypeToken<ArrayList<Artist>>() {}.getType();
+
+            return gson.fromJson(jsonArray.toString(), type);
+        }
+
+        private ArrayList<Album> fetchAlbums(JSONArray jsonArray) {
+            if(jsonArray == null)
+                return new ArrayList<>();
+
+            Type type = new TypeToken<ArrayList<Album>>() {}.getType();
+
+            return gson.fromJson(jsonArray.toString(), type);
+        }
+
+        private JSONArray fetchList(JSONObject jsonObject, String contentType) {
+            contentType += "s";
+
+            if(!jsonObject.has(contentType))
+                return null;
+
+            try {
+                JSONObject jsonTracksObject = jsonObject.getJSONObject(contentType);
+                return jsonTracksObject.getJSONArray("items");
+            } catch(JSONException e) {
+                Log.v(TAG, e.toString());
+            }
+
+            return null;
+        }
+
+        private Content onParseNetworkResponse(Response response) {
             ResponseBody body = response.body();
             if(body == null)
                 return null;
@@ -296,21 +424,16 @@ public class NetworkUtilities {
                 if(resString == null)
                     return null;
 
-                Gson gson = new Gson();
-
                 try {
-                    ArrayList<Track> tracks = new ArrayList<>();
+                    Content content = new Content();
 
                     JSONObject jsonObject = new JSONObject(resString);
-                    JSONObject jsonTracksObject = jsonObject.getJSONObject("tracks");
-                    JSONArray jsonItemsObject = jsonTracksObject.getJSONArray("items");
-                    for(int it = 0; it < jsonItemsObject.length(); it++) {
-                        JSONObject jsonItemObject = jsonItemsObject.getJSONObject(it);
 
-                        tracks.add(gson.fromJson(jsonItemObject.toString(), Track.class));
-                    }
+                    content.setAlbums(fetchAlbums(fetchList(jsonObject, Constants.ALBUM)));
+                    content.setArtists(fetchArtists(fetchList(jsonObject, Constants.ARTIST)));
+                    content.setTracks(fetchTracks(fetchList(jsonObject, Constants.TRACK)));
 
-                    return new Collection(null, tracks, null);
+                    return content;
                 } catch(JSONException e) {
                     Log.v(TAG, e.toString());
                 }

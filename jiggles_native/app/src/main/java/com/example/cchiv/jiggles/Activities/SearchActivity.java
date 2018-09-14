@@ -7,9 +7,10 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -18,24 +19,35 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.example.cchiv.jiggles.Adapters.ContentAdapter;
 import com.example.cchiv.jiggles.Constants;
-import com.example.cchiv.jiggles.Model.Collection;
-import com.example.cchiv.jiggles.Model.Track;
+import com.example.cchiv.jiggles.Model.Content;
 import com.example.cchiv.jiggles.R;
 import com.example.cchiv.jiggles.Utilities.NetworkUtilities;
-
-import java.util.ArrayList;
 
 public class SearchActivity extends AppCompatActivity implements TextView.OnEditorActionListener {
 
     private final static String TAG = "SearchActivity";
 
+    private static final int SPAN_COLS = 2;
+
     private View editTextBorder;
+    private RecyclerView recyclerView;
+    private ContentAdapter contentAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
+
+        recyclerView = findViewById(R.id.search_result);
+        recyclerView.setNestedScrollingEnabled(true);
+
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, SPAN_COLS, GridLayoutManager.VERTICAL, false);
+        recyclerView.setLayoutManager(gridLayoutManager);
+
+        contentAdapter = new ContentAdapter(this, null);
+        recyclerView.setAdapter(contentAdapter);
 
         ImageButton imageButton = findViewById(R.id.search_close);
         imageButton.setOnClickListener(view -> finish());
@@ -82,16 +94,11 @@ public class SearchActivity extends AppCompatActivity implements TextView.OnEdit
 
         if(token != null) {
             NetworkUtilities networkUtilities = new NetworkUtilities();
-            networkUtilities.fetchSearchResults((Collection collection) -> {
+            networkUtilities.fetchSearchResults((Content content) -> {
                 // Do something with the collection
-                ArrayList<Track> tracks = collection.getTracks();
-                if(tracks.size() > 0) {
-                    Log.v(TAG, tracks.get(0).getName());
-                    Log.v(TAG, tracks.get(0).getUri());
-                } else {
-                    // No results
-                    Log.v(TAG, "No results");
-                }
+
+                contentAdapter.swapCollection(content);
+                contentAdapter.notifyDataSetChanged();
             }, query, token);
         } else finish();
     }

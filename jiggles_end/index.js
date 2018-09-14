@@ -1,3 +1,5 @@
+const CONSTANTS = require("./utils/Constants");
+
 const _ = require('lodash');
 const fs = require('fs');
 const url = require('url');
@@ -161,26 +163,54 @@ app.get(/^\/account\/images/, function(req, res) {
 app.use(authenticate);
 
 /* Private & Protected Routes */
+function returnQueryPromise(req, searchBy, searchType) {
+    return RequestifyCollector.querySearch(searchBy, searchType)
+        .then((data) => {
+            Object.keys(data).forEach((type) => {
+                data[type].items.forEach((item) => {
+                    item['favourite'] = false;
+
+                    req.user.content[type].forEach((itemColl) => {
+                        if(itemColl.id === item.id)
+                            item['favourite'] = true;
+                    })
+                });
+            });
+
+            return data;
+        })
+}
+
 app.get(/^\/query\/(artist|track|album|all)$/, function(req, res) {
     let searchBy = req.params[0];
 
-    if(req.query.hasOwnProperty(searchBy))
-        RequestifyCollector.querySearch(req.query[searchBy], searchBy)
-            .then((data) => {
-                Object.keys(data).forEach((type) => {
-                    data[type].items.forEach((item) => {
-                        item['favourite'] = false;
+    if(req.query.hasOwnProperty(searchBy)) {
+        if(searchBy === CONSTANTS.ALL) {
+            let promises = [];
 
-                        req.user.content[type].forEach((itemColl) => {
-                            if(itemColl.id === item.id)
-                                item['favourite'] = true;
-                        })
-                    });
-                });
+            Object.keys(CONSTANTS.CONTENT_TYPES).forEach((key) => {
+                let searchType = CONSTANTS.CONTENT_TYPES[key];
 
-                simpleResponseQuery(res, 200, data, 'application/json');
+                promises.push(returnQueryPromise(req, req.query[searchBy], searchType));
             });
-    else res.send(null);
+
+            Promise.all(promises).then((data) => {
+                return data.reduce((container, content) => {
+                    let contentType = Object.keys(content)[0];
+                    container[contentType] = content[contentType];
+
+                    return container;
+                }, {});
+            }).then((data) => {
+                simpleResponseQuery(res, 200, data, 'application/json');
+            })
+        } else {
+            returnQueryPromise(req, req.query[searchBy], searchBy)
+                .then((data) => {
+                    simpleResponseQuery(res, 200, data, 'application/json');
+                });
+        }
+    } else res.send(null);
 });
 
 app.get(/^\/query\/(artists|tracks|albums)\/([0-9a-zA-Z]+)$/, function(req, res) {
@@ -487,9 +517,7 @@ app.use(function(req, res) {
 });
 
 app.listen(process.env.PORT || SERVER.PORT, () => {
-    console.log(`Started up at port ${process.env.PORT}`);
+    console.log(`Started up at port ${process.env.PORT || SERVER.PORT}`);
 }).on('error', function(err) {
     console.log(err);
 });
-
-module.exports = {app};

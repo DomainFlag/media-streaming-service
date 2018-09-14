@@ -41,6 +41,11 @@ public class HomeActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        findViewById(R.id.home_forum).setOnClickListener(view -> {
+            Intent intent = new Intent(this, ForumActivity.class);
+            startActivity(intent);
+        });
+
         networkUtilities = new NetworkUtilities();
 
         fetchReleases();

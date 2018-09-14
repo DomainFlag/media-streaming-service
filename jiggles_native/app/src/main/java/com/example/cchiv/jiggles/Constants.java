@@ -1,5 +1,9 @@
 package com.example.cchiv.jiggles;
 
+import com.example.cchiv.jiggles.Model.Album;
+import com.example.cchiv.jiggles.Model.Artist;
+import com.example.cchiv.jiggles.Model.Track;
+
 public class Constants {
     public final static String AUTH_TYPE_KEY = "AUTH_TYPE_KEY";
     public final static String AUTH_SIGN_UP = "AUTH_SIGN_UP";
@@ -46,12 +50,13 @@ public class Constants {
     public static final String MAIN = "main";
     public static final String FORUM = "forum";
     public static final String THREAD = "thread";
+    public static final String THREADS = "threads";
     public static final String COMMENT = "comment";
-    public static final String ALL = "all";
 
     public static final String NEWS = "news";
     public static final String RELEASES = "releases";
 
+    public static final String ALL = "all";
     public static final String ARTIST = "artist";
     public static final String ALBUM = "album";
     public static final String TRACK = "track";
@@ -65,10 +70,13 @@ public class Constants {
     }
 
     public enum CONTENT_TYPES {
-        ARTIST(Constants.ARTIST),
-        ALBUM(Constants.ALBUM),
-        TRACK(Constants.TRACK);
+        ARTIST(Constants.ARTIST, Artist.class),
+        ALBUM(Constants.ALBUM, Album.class),
+        TRACK(Constants.TRACK, Track.class);
 
-        CONTENT_TYPES(String type) {}
+        public String type;
+        public Class classType;
+
+        CONTENT_TYPES(String type, Class classType) {}
     }
 }

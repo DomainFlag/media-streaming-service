@@ -23,14 +23,11 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".Activities.AuthActivity">
-        </activity>
-        <activity android:name=".Activities.HomeActivity">
-        </activity>
-        <activity android:name=".Activities.SearchActivity">
-        </activity>
-        <activity android:name=".Activities.PlayerActivity">
-        </activity>
+        <activity android:name=".Activities.AuthActivity"/>
+        <activity android:name=".Activities.HomeActivity"/>
+        <activity android:name=".Activities.SearchActivity"/>
+        <activity android:name=".Activities.PlayerActivity"/>
+        <activity android:name=".Activities.ForumActivity"/>
     </application>
 
 </manifest>

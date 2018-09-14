@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/artist_thumbnail"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:adjustViewBounds="true"
+        android:contentDescription="@string/search_artist_thumbnail"
+        tools:src="@drawable/thumbnail"/>
+
+    <TextView
+        android:id="@+id/artist_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@id/artist_thumbnail"
+        android:layout_alignEnd="@id/artist_thumbnail"
+        android:layout_alignBottom="@id/artist_thumbnail"
+        android:layout_margin="@dimen/activity_margin_relative"
+        android:textStyle="bold"
+        android:textColor="@color/iconsTextColor"
+        tools:text="@string/app_tools_placeholder"/>
+
+</RelativeLayout>

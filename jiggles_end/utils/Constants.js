@@ -20,7 +20,15 @@ const CONSTANTS = {
 
     ARTISTS : "artists",
     TRACKS : "tracks",
-    ALBUMS : "albums"
+    ALBUMS : "albums",
+
+    ALL : "all",
+
+    CONTENT_TYPES : {
+        ARTIST : "artist",
+        ALBUM : "album",
+        TRACK : "track"
+    }
 };
 
 module.exports = CONSTANTS;

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/thumbnail"
+        android:layout_width="350dp"
+        android:layout_height="350dp"
+        android:adjustViewBounds="true"
+        android:contentDescription="@string/social_thread_comment"
+        tools:src="@drawable/thumbnail"/>
+
+    <LinearLayout
+        android:id="@+id/utilities"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/thumbnail"
+        android:layout_alignEnd="@id/thumbnail"
+        android:layout_alignRight="@id/thumbnail"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/like"
+            android:drawableLeft="@drawable/ic_like"
+            android:drawableStart="@drawable/ic_like"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/activity_margin_relative"
+            android:layout_marginRight="@dimen/activity_margin_relative"
+            android:layout_marginStart="@dimen/activity_margin_relative"
+            android:layout_marginEnd="@dimen/activity_margin_relative"
+            android:drawablePadding="@dimen/activity_margin_relative"
+            android:textColor="@color/iconsTextColor"
+            android:textStyle="bold"
+            android:textSize="@dimen/activity_text_subparagraph"
+            android:padding="@dimen/activity_margin_relative"
+            tools:text="@string/app_tools_placeholder_number"/>
+
+        <TextView
+            android:id="@+id/comment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/activity_margin_relative"
+            android:layout_marginRight="@dimen/activity_margin_relative"
+            android:layout_marginStart="@dimen/activity_margin_relative"
+            android:layout_marginEnd="@dimen/activity_margin_relative"
+            android:drawableLeft="@drawable/ic_chat"
+            android:drawableStart="@drawable/ic_chat"
+            android:drawablePadding="@dimen/activity_margin_relative"
+            android:textSize="@dimen/activity_text_subparagraph"
+            android:textStyle="bold"
+            android:textColor="@color/iconsTextColor"
+            android:text="@string/social_thread_comment"/>
+
+        <TextView
+            android:id="@+id/author"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/activity_margin_relative"
+            android:layout_marginRight="@dimen/activity_margin_relative"
+            android:layout_marginStart="@dimen/activity_margin_relative"
+            android:layout_marginEnd="@dimen/activity_margin_relative"
+            android:textStyle="bold"
+            android:textColor="@color/iconsTextColor"
+            android:textSize="@dimen/activity_text_subparagraph"
+            tools:text="@string/app_tools_placeholder"/>
+
+        <TextView
+            android:id="@+id/date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/iconsTextColor"
+            android:textStyle="bold"
+            android:textSize="@dimen/activity_text_subparagraph"
+            tools:text="@string/app_tools_placeholder_date"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/comments"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/thumbnail"
+        android:orientation="vertical">
+
+    </LinearLayout>
+
+</RelativeLayout>
