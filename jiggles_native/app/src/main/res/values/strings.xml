@@ -67,9 +67,11 @@
     <string name="player_next">Player Next</string>
 
 
-    <!-- Social -->
-    <string name="social_thread_comment">Comment</string>
+    <!-- Forum -->
+    <string name="forum_thread_comment">Comment</string>
+    <string name="forum_thread_like">Like</string>
 
-    <string name="social_thread_thumbnail_description">Thread Thumbnail</string>
+    <string name="forum_thread_thumbnail_description">Thread Thumbnail</string>
+
 
 </resources>

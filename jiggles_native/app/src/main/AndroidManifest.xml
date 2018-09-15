@@ -24,10 +24,14 @@
             </intent-filter>
         </activity>
         <activity android:name=".Activities.AuthActivity"/>
-        <activity android:name=".Activities.HomeActivity"/>
-        <activity android:name=".Activities.SearchActivity"/>
-        <activity android:name=".Activities.PlayerActivity"/>
-        <activity android:name=".Activities.ForumActivity"/>
+        <activity android:name=".Activities.HomeActivity"
+            android:label="Home"/>
+        <activity android:name=".Activities.SearchActivity"
+            android:label="Search"/>
+        <activity android:name=".Activities.PlayerActivity"
+            android:label="Player"/>
+        <activity android:name=".Activities.ForumActivity"
+            android:label="Forum"/>
     </application>
 
 </manifest>
