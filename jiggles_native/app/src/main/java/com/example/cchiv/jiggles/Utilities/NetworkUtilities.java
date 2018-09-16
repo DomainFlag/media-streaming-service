@@ -12,8 +12,8 @@ import com.example.cchiv.jiggles.Model.Content;
 import com.example.cchiv.jiggles.Model.News;
 import com.example.cchiv.jiggles.Model.Release;
 import com.example.cchiv.jiggles.Model.Review;
-import com.example.cchiv.jiggles.Model.Track;
 import com.example.cchiv.jiggles.Model.Thread;
+import com.example.cchiv.jiggles.Model.Track;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -442,6 +442,61 @@ public class NetworkUtilities {
             }
 
             return null;
+        }
+    }
+
+    /* Resolve Thread Creation */
+    public void createThread(CreateThread.OnPostNetworkCallback onPostNetworkCallback, JSONObject jsonObject, String token) {
+        new CreateThread(onPostNetworkCallback, jsonObject, token);
+    }
+
+    public static class CreateThread extends AsyncNetworkTask<Response> {
+
+        public interface OnPostNetworkCallback {
+            void onPostNetworkCallback(Response response);
+        }
+
+        private OnPostNetworkCallback onPostNetworkCallback = null;
+
+        CreateThread(OnPostNetworkCallback onPostNetworkCallback, JSONObject jsonObject, String token) {
+            this.onPostNetworkCallback = onPostNetworkCallback;
+
+            Uri uri = new Uri.Builder()
+                    .scheme(Constants.SCHEME)
+                    .authority(Constants.AUTHORITY)
+                    .appendPath(Constants.FORUM)
+                    .appendPath(Constants.THREAD)
+                    .build();
+
+            RequestBody requestBody = RequestBody.create(JSON, jsonObject.toString());
+
+            Request request = new Request.Builder()
+                    .url(uri.toString())
+                    .addHeader("Content-Type", "application/json")
+                    .addHeader("X-Auth", token)
+                    .post(requestBody)
+                    .build();
+
+            execute(request);
+        }
+
+        @Override
+        protected Response doInBackground(Request... requests) {
+            try {
+                return getClient().newCall(requests[0]).execute();
+            } catch(IOException e) {
+                Log.v(TAG, e.toString());
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Response r) {
+            super.onPostExecute(r);
+
+            if(this.onPostNetworkCallback != null)
+                this.onPostNetworkCallback.onPostNetworkCallback(r);
         }
     }
 

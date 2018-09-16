@@ -2,6 +2,8 @@ package com.example.cchiv.jiggles.Activities;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,6 +13,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.example.cchiv.jiggles.Adapters.ThreadAdapter;
+import com.example.cchiv.jiggles.Fragments.ThreadCreatorFragment;
 import com.example.cchiv.jiggles.R;
 import com.example.cchiv.jiggles.Utilities.NetworkUtilities;
 
@@ -26,7 +29,16 @@ public class ForumActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forum);
 
-        recyclerView = findViewById(R.id.social_list);
+        findViewById(R.id.forum_thread_creator).setOnClickListener((view) -> {
+            Fragment fragment = new ThreadCreatorFragment();
+
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction()
+                    .add(R.id.forum_thread, fragment)
+                    .commit();
+        });
+
+        recyclerView = findViewById(R.id.forum_list);
         recyclerView.setNestedScrollingEnabled(true);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);

@@ -5,6 +5,7 @@
     <string name="app_tools_placeholder_number">21</string>
     <string name="app_tools_placeholder_date">Mon Aug 06 2018</string>
 
+
     <!-- Welcome -->
     <string name="welcome_header_text">More then just a music content.</string>
     <string name="welcome_subheader_text">Listen.  Connect.  Jiggle.</string>
@@ -12,6 +13,7 @@
 
     <string name="welcome_sign_in">Log In</string>
     <string name="welcome_sign_up">Sign Up</string>
+
 
     <!-- Authentication -->
     <string name="auth_google_description">Google Authentication</string>
@@ -36,6 +38,7 @@
     <string name="auth_redirection_log_in">Login in here</string>
     <string name="auth_redirection_text">%1$s,\n%2$s</string>
 
+
     <!-- Home -->
     <string name="home_player">Player</string>
     <string name="home_forum">Forum</string>
@@ -50,6 +53,7 @@
 
     <string name="home_news_caption">News Caption</string>
 
+
     <!-- Search -->
     <string name="search_text">Search</string>
 
@@ -60,6 +64,7 @@
 
     <string name="search_album_thumbnail">Album Thumbnail</string>
     <string name="search_artist_thumbnail">Artist Thumbnail</string>
+
 
     <!-- Player -->
     <string name="player_play">Player Resume</string>
@@ -72,6 +77,9 @@
     <string name="forum_thread_like">Like</string>
 
     <string name="forum_thread_thumbnail_description">Thread Thumbnail</string>
+
+    <string name="forum_thread_creator_content_hint">Content\.\.\.</string>
+    <string name="forum_thread_creator_create">Post</string>
 
 
 </resources>
