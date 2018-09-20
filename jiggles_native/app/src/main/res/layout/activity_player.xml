@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="horizontal"
     android:gravity="center"
-    tools:context=".Activities.PlayerActivity">
+    tools:context=".activities.PlayerActivity">
 
     <com.google.android.exoplayer2.ui.PlayerView
         android:id="@+id/player"
@@ -15,7 +15,7 @@
         android:layout_height="match_parent"
         android:layout_weight="1"/>
 
-    <com.example.cchiv.jiggles.Utilities.VisualizerView
+    <com.example.cchiv.jiggles.utilities.VisualizerView
         android:id="@+id/player_visualizer"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

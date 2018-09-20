@@ -1,4 +1,4 @@
-package com.example.cchiv.jiggles.Activities;
+package com.example.cchiv.jiggles.activities;
 
 import android.content.Context;
 import android.content.Intent;
@@ -19,9 +19,11 @@ import android.widget.TextView;
 
 import com.example.cchiv.jiggles.Constants;
 import com.example.cchiv.jiggles.R;
-import com.example.cchiv.jiggles.Utilities.NetworkUtilities;
+import com.example.cchiv.jiggles.utilities.NetworkUtilities;
 
 public class AuthActivity extends AppCompatActivity {
+
+    private static final String TAG = "AuthActivity";
 
     private static final String PREF_EMAIL_KEY = "PREF_EMAIL_KEY";
     private static final String PREF_NAME_KEY = "PREF_NAME_KEY";

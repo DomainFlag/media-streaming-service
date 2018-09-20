@@ -1,4 +1,4 @@
-package com.example.cchiv.jiggles.Utilities;
+package com.example.cchiv.jiggles.utilities;
 
 import android.content.Context;
 import android.net.Uri;
@@ -6,14 +6,14 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.example.cchiv.jiggles.Constants;
-import com.example.cchiv.jiggles.Model.Album;
-import com.example.cchiv.jiggles.Model.Artist;
-import com.example.cchiv.jiggles.Model.Content;
-import com.example.cchiv.jiggles.Model.News;
-import com.example.cchiv.jiggles.Model.Release;
-import com.example.cchiv.jiggles.Model.Review;
-import com.example.cchiv.jiggles.Model.Thread;
-import com.example.cchiv.jiggles.Model.Track;
+import com.example.cchiv.jiggles.model.Album;
+import com.example.cchiv.jiggles.model.Artist;
+import com.example.cchiv.jiggles.model.Content;
+import com.example.cchiv.jiggles.model.News;
+import com.example.cchiv.jiggles.model.Release;
+import com.example.cchiv.jiggles.model.Review;
+import com.example.cchiv.jiggles.model.Thread;
+import com.example.cchiv.jiggles.model.Track;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 

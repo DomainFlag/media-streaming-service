@@ -1,4 +1,4 @@
-package com.example.cchiv.jiggles.Activities;
+package com.example.cchiv.jiggles.activities;
 
 import android.content.res.AssetManager;
 import android.media.audiofx.Visualizer;
@@ -11,7 +11,7 @@ import android.util.Log;
 import android.view.Surface;
 
 import com.example.cchiv.jiggles.R;
-import com.example.cchiv.jiggles.Utilities.VisualizerView;
+import com.example.cchiv.jiggles.utilities.VisualizerView;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlaybackException;

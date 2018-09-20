@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    tools:context=".Activities.AuthActivity">
+    tools:context=".activities.AuthActivity">
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"

@@ -1,4 +1,4 @@
-package com.example.cchiv.jiggles.Activities;
+package com.example.cchiv.jiggles.activities;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -19,11 +19,11 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.example.cchiv.jiggles.Adapters.ContentAdapter;
+import com.example.cchiv.jiggles.adapters.ContentAdapter;
 import com.example.cchiv.jiggles.Constants;
-import com.example.cchiv.jiggles.Model.Content;
+import com.example.cchiv.jiggles.model.Content;
 import com.example.cchiv.jiggles.R;
-import com.example.cchiv.jiggles.Utilities.NetworkUtilities;
+import com.example.cchiv.jiggles.utilities.NetworkUtilities;
 
 public class SearchActivity extends AppCompatActivity implements TextView.OnEditorActionListener {
 

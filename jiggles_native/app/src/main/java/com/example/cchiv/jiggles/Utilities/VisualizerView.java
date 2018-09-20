@@ -1,4 +1,4 @@
-package com.example.cchiv.jiggles.Utilities;
+package com.example.cchiv.jiggles.utilities;
 
 import android.content.Context;
 import android.graphics.Canvas;

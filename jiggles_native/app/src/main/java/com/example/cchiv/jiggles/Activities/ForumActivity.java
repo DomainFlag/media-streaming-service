@@ -1,4 +1,4 @@
-package com.example.cchiv.jiggles.Activities;
+package com.example.cchiv.jiggles.activities;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -12,10 +12,10 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import com.example.cchiv.jiggles.Adapters.ThreadAdapter;
-import com.example.cchiv.jiggles.Fragments.ThreadCreatorFragment;
+import com.example.cchiv.jiggles.adapters.ThreadAdapter;
+import com.example.cchiv.jiggles.fragments.ThreadCreatorFragment;
 import com.example.cchiv.jiggles.R;
-import com.example.cchiv.jiggles.Utilities.NetworkUtilities;
+import com.example.cchiv.jiggles.utilities.NetworkUtilities;
 
 public class ForumActivity extends AppCompatActivity {
 

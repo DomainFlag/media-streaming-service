@@ -1,4 +1,4 @@
-package com.example.cchiv.jiggles.Adapters;
+package com.example.cchiv.jiggles.adapters;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -18,7 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.cchiv.jiggles.Constants;
-import com.example.cchiv.jiggles.Model.Thread;
+import com.example.cchiv.jiggles.model.Thread;
 import com.example.cchiv.jiggles.R;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;

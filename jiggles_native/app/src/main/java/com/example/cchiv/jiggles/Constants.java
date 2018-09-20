@@ -1,8 +1,8 @@
 package com.example.cchiv.jiggles;
 
-import com.example.cchiv.jiggles.Model.Album;
-import com.example.cchiv.jiggles.Model.Artist;
-import com.example.cchiv.jiggles.Model.Track;
+import com.example.cchiv.jiggles.model.Album;
+import com.example.cchiv.jiggles.model.Artist;
+import com.example.cchiv.jiggles.model.Track;
 
 public class Constants {
     public final static String AUTH_TYPE_KEY = "AUTH_TYPE_KEY";

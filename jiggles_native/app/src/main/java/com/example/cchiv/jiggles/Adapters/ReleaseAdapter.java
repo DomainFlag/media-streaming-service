@@ -1,4 +1,4 @@
-package com.example.cchiv.jiggles.Adapters;
+package com.example.cchiv.jiggles.adapters;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -11,8 +11,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.example.cchiv.jiggles.Model.Release;
-import com.example.cchiv.jiggles.Model.Review;
+import com.example.cchiv.jiggles.model.Release;
+import com.example.cchiv.jiggles.model.Review;
 import com.example.cchiv.jiggles.R;
 import com.squareup.picasso.Picasso;
 

@@ -1,4 +1,4 @@
-package com.example.cchiv.jiggles.Model;
+package com.example.cchiv.jiggles.model;
 
 public class Review {
 

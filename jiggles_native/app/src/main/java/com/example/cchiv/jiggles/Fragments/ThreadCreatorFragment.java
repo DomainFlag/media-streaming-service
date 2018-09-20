@@ -1,4 +1,4 @@
-package com.example.cchiv.jiggles.Fragments;
+package com.example.cchiv.jiggles.fragments;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -22,7 +22,7 @@ import android.widget.TextView;
 
 import com.example.cchiv.jiggles.Constants;
 import com.example.cchiv.jiggles.R;
-import com.example.cchiv.jiggles.Utilities.NetworkUtilities;
+import com.example.cchiv.jiggles.utilities.NetworkUtilities;
 
 import org.json.JSONException;
 import org.json.JSONObject;

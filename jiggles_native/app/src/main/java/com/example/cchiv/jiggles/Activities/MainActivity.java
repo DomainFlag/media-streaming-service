@@ -1,4 +1,4 @@
-package com.example.cchiv.jiggles.Activities;
+package com.example.cchiv.jiggles.activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
