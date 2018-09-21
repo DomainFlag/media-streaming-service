@@ -1,6 +1,7 @@
 package com.example.cchiv.jiggles.data;
 
 import android.content.ContentProvider;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
@@ -10,29 +11,41 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.example.cchiv.jiggles.data.ContentContract.NewsEntry;
+import com.example.cchiv.jiggles.data.ContentContract.ReleaseEntry;
+
 public class JigglesProvider extends ContentProvider {
 
     private static final String TAG = "JigglesProvider";
 
     private static final int ALBUM_SINGLE = 21;
-    private static final int ALBUM_MANY = 21;
+    private static final int ALBUM_MANY = 22;
 
-    private static final int TRACK_SINGLE = 23;
-    private static final int TRACK_MANY = 24;
+    private static final int TRACK_SINGLE = 24;
+    private static final int TRACK_MANY = 25;
 
-    private static final int ARTIST_SINGLE = 26;
-    private static final int ARTIST_MANY = 27;
+    private static final int ARTIST_SINGLE = 27;
+    private static final int ARTIST_MANY = 28;
 
-    private static final int THREAD_SINGLE = 29;
-    private static final int THREAD_MANY = 30;
+    private static final int THREAD_SINGLE = 30;
+    private static final int THREAD_MANY = 31;
 
-    private static final int NEWS_SINGLE = 32;
-    private static final int NEWS_MANY = 33;
+    private static final int NEWS_SINGLE = 33;
+    private static final int NEWS_MANY = 34;
 
-    private static final int RELEASE_SINGLE = 35;
-    private static final int RELEASE_MANY = 36;
+    private static final int RELEASE_SINGLE = 36;
+    private static final int RELEASE_MANY = 37;
 
     public static UriMatcher uriMatcher = buildUriMatcher();
+    public static UriMatcher uriTableMatcher = buildUriMatcher();
+
+    public enum Tables {
+        Table1(ContentContract.PATH_ALBUMS, ContentContract.AlbumEntry.TABLE_NAME),
+        Table2(ContentContract.PATH_TRACKS, ContentContract.TrackEntry.TABLE_NAME),
+        Table3(ContentContract.PATH_ARTISTS, ContentContract.ArtistEntry.TABLE_NAME);
+
+        Tables(String path, String table) {}
+    }
 
     public static UriMatcher buildUriMatcher() {
         uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
@@ -71,6 +84,9 @@ public class JigglesProvider extends ContentProvider {
 
         switch(uriMatcher.match(uri)) {
             case NEWS_MANY : {
+                String sql = "SELECT * FROM " + NewsEntry.TABLE_NAME;
+                Log.v(TAG, String.valueOf(sqLiteDatabase.rawQuery(sql, null).getCount()));
+
                 cursor = sqLiteDatabase.query(ContentContract.NewsEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, orderBy);
                 break;
             }
@@ -95,7 +111,17 @@ public class JigglesProvider extends ContentProvider {
     @Nullable
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues contentValues) {
-        return null;
+        SQLiteDatabase sqLiteDatabase = contentDbHelper.getWritableDatabase();
+
+        String path = uri.getPath();
+        String table = path.substring(path.indexOf("/")+1);
+
+        long nbRowsInserted = sqLiteDatabase.insert(ReleaseEntry.TABLE_NAME,null, contentValues);
+
+        if(getContext() != null)
+            getContext().getContentResolver().notifyChange(uri, null);
+
+        return ContentUris.withAppendedId(uri, nbRowsInserted);
     }
 
     @Override
@@ -108,22 +134,24 @@ public class JigglesProvider extends ContentProvider {
                 sqLiteDatabase.beginTransaction();
 
                 for(ContentValues value : values) {
-                    insertedRows += sqLiteDatabase.insert(ContentContract.NewsEntry.TABLE_NAME, null, value);
+                    insertedRows += sqLiteDatabase.insert(NewsEntry.TABLE_NAME, null, value);
                 }
 
+                sqLiteDatabase.setTransactionSuccessful();
+
                 sqLiteDatabase.endTransaction();
-                Log.v(TAG, "NEWS_MANY");
                 break;
             }
             case RELEASE_MANY : {
                 sqLiteDatabase.beginTransaction();
 
                 for(ContentValues value : values) {
-                    insertedRows += sqLiteDatabase.insert(ContentContract.ReleaseEntry.TABLE_NAME, null, value);
+                    insertedRows += sqLiteDatabase.insert(ReleaseEntry.TABLE_NAME, null, value);
                 }
 
+                sqLiteDatabase.setTransactionSuccessful();
+
                 sqLiteDatabase.endTransaction();
-                Log.v(TAG, "RELEASE MANY");
                 break;
             }
             default : {

@@ -1,6 +1,7 @@
 package com.example.cchiv.jiggles.adapters;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
@@ -11,24 +12,24 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.cchiv.jiggles.R;
+import com.example.cchiv.jiggles.data.ContentContract.ReleaseEntry;
 import com.example.cchiv.jiggles.model.Release;
 import com.example.cchiv.jiggles.model.Review;
-import com.example.cchiv.jiggles.R;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Locale;
 
-public class ReleaseAdapter extends RecyclerView.Adapter<ReleaseAdapter.ReleaseViewHolder> {
+public class ReleaseAdapter extends ModelAdapter<ReleaseAdapter.ReleaseViewHolder, Release> {
 
     private static final Float IMPACT_THRESHOLD = 8.0f;
 
     private Context context;
-    private ArrayList<Release> releases;
 
     public ReleaseAdapter(Context context, ArrayList<Release> releases) {
         this.context = context;
-        this.releases = releases;
+        this.data = releases;
     }
 
     @NonNull
@@ -41,17 +42,36 @@ public class ReleaseAdapter extends RecyclerView.Adapter<ReleaseAdapter.ReleaseV
 
     @Override
     public void onBindViewHolder(@NonNull ReleaseViewHolder holder, int position) {
-        Release release = releases.get(position);
+        if(getCursor() != null) {
+            Cursor cursor = getCursor();
 
+            cursor.moveToPosition(position);
+            int indexCursorReleaseArtist = cursor.getColumnIndexOrThrow(ReleaseEntry.COL_RELEASE_ARTIST);
+            int indexCursorReleaseUrl = cursor.getColumnIndexOrThrow(ReleaseEntry.COL_RELEASE_URL);
+            int indexCursorReleaseTitle = cursor.getColumnIndexOrThrow(ReleaseEntry.COL_RELEASE_TITLE);
+
+            onBindDataViewHolder(holder,
+                    cursor.getString(indexCursorReleaseUrl),
+                    cursor.getString(indexCursorReleaseArtist),
+                    cursor.getString(indexCursorReleaseTitle),
+                    new ArrayList<>());
+        } else {
+            Release release = data.get(position);
+            ArrayList<Review> reviews = release.getReviews();
+            onBindDataViewHolder(holder, release.getUrl(), release.getArtist(), release.getTitle(), reviews);
+        }
+    }
+
+
+    private void onBindDataViewHolder(@NonNull ReleaseViewHolder holder, String url, String artist, String title, ArrayList<Review> reviews) {
         Picasso.get()
-                .load(release.getUrl())
+                .load(url)
                 .resize(175, 175)
                 .into(holder.caption);
 
-        holder.artist.setText(release.getArtist());
-        holder.title.setText(release.getTitle());
+        holder.artist.setText(artist);
+        holder.title.setText(title);
 
-        ArrayList<Review> reviews = release.getReviews();
         float total = 0;
         for(int it = 0; it < reviews.size(); it++) {
             Review review = reviews.get(it);
@@ -86,11 +106,6 @@ public class ReleaseAdapter extends RecyclerView.Adapter<ReleaseAdapter.ReleaseV
         else holder.score.setTextColor(ContextCompat.getColor(context, R.color.colorPrimaryDark));
 
         holder.score.setText(String.format(Locale.US, "%.1f", total));
-    }
-
-    @Override
-    public int getItemCount() {
-        return releases.size();
     }
 
     public class ReleaseViewHolder extends RecyclerView.ViewHolder {

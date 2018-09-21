@@ -3,6 +3,7 @@ package com.example.cchiv.jiggles.activities;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -11,7 +12,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 
 import com.example.cchiv.jiggles.Constants;
@@ -25,15 +25,19 @@ import com.example.cchiv.jiggles.model.Release;
 import com.example.cchiv.jiggles.utilities.JigglesLoader;
 import com.example.cchiv.jiggles.utilities.NetworkUtilities;
 
+import java.util.ArrayList;
+
 public class HomeActivity extends AppCompatActivity {
 
     private static final String TAG = "HomeActivity";
 
-    private static final int HOME_LOADER_ID = 21;
-
-    private static final int GRID_COLS = 2;
+    private static final int HOME_NEWS_LOADER_ID = 21;
+    private static final int HOME_RELEASES_LOADER_ID = 22;
 
     private NetworkUtilities networkUtilities;
+
+    private NewsAdapter newsAdapter;
+    private ReleaseAdapter releaseAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,29 +62,48 @@ public class HomeActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        RecyclerView recyclerNewsView = findViewById(R.id.home_news_list);
+        newsAdapter = new NewsAdapter(this, new ArrayList<>());
+        setRecyclerView(recyclerNewsView, newsAdapter);
+
+        RecyclerView recyclerReleaseView = findViewById(R.id.home_release_list);
+        releaseAdapter = new ReleaseAdapter(this, new ArrayList<>());
+        setRecyclerView(recyclerReleaseView, releaseAdapter);
+
         networkUtilities = new NetworkUtilities();
 
-        if(checkInternetConnectivity()) {
-            fetchReleases();
-            fetchNews();
-        } else {
-            JigglesLoader jigglesLoader = new JigglesLoader(this, (cursor -> {
-                Log.v(TAG, String.valueOf(cursor.getCount()));
-            }));
+        if(checkInternetConnectivity())
+            fetchLiveContent();
+        else fetchCachedContent();
+    }
 
-            Bundle bundle = new Bundle();
-            bundle.putString(JigglesLoader.BUNDLE_URI_KEY, NewsEntry.CONTENT_URI.toString());
-            bundle.putStringArray(JigglesLoader.BUNDLE_PROJECTION_KEY, new String[] {
-                    NewsEntry._ID,
-                    NewsEntry.COL_NEWS_IDENTIFIER,
-                    NewsEntry.COL_NEWS_CAPTION,
-                    NewsEntry.COL_NEWS_HEADER,
-                    NewsEntry.COL_NEWS_AUTHOR
-            });
+    public void fetchCachedContent() {
+        LoaderManager loaderManager = getSupportLoaderManager();
 
-            LoaderManager loaderManager = getSupportLoaderManager();
-            loaderManager.initLoader(HOME_LOADER_ID, bundle, jigglesLoader).forceLoad();
-        }
+        JigglesLoader jigglesNewsLoader = new JigglesLoader(this, (this::updateLayoutNews));
+        loaderManager.initLoader(HOME_NEWS_LOADER_ID, News.bundleValues(), jigglesNewsLoader).forceLoad();
+
+        JigglesLoader jigglesReleasesLoader = new JigglesLoader(this, (this::updateLayoutReleases));
+        loaderManager.initLoader(HOME_RELEASES_LOADER_ID, Release.bundleValues(), jigglesReleasesLoader).forceLoad();
+    }
+
+    public void setRecyclerView(RecyclerView recyclerView, RecyclerView.Adapter adapter) {
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setNestedScrollingEnabled(true);
+
+        RecyclerView.LayoutManager layoutManager =
+                new GridLayoutManager(this,
+                        getResources().getInteger(R.integer.layout_grid_columns_count),
+                        LinearLayoutManager.VERTICAL,
+                        false);
+        recyclerView.setLayoutManager(layoutManager);
+
+        recyclerView.setAdapter(adapter);
+    }
+
+    public void onClickSearch(View view) {
+        Intent intent = new Intent(this, SearchActivity.class);
+        startActivity(intent);
     }
 
     private boolean checkInternetConnectivity() {
@@ -92,32 +115,13 @@ public class HomeActivity extends AppCompatActivity {
         return networkInfo != null && networkInfo.isConnected();
     }
 
-    public void onClickSearch(View view) {
-        Intent intent = new Intent(this, SearchActivity.class);
-        startActivity(intent);
-    }
-
-    public void fetchReleases() {
+    public void fetchLiveContent() {
         networkUtilities.fetchReleases(releases -> {
             // Do something with releases
             if(releases != null) {
-                // Do something with Releases
-                RecyclerView recyclerView = findViewById(R.id.home_release_list);
-                recyclerView.setHasFixedSize(true);
-                recyclerView.setNestedScrollingEnabled(true);
-
-                RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this,
-                        GRID_COLS,
-                        LinearLayoutManager.VERTICAL,
-                        false);
-                recyclerView.setLayoutManager(layoutManager);
-
-                ReleaseAdapter releaseAdapter = new ReleaseAdapter(this, releases);
-                recyclerView.setAdapter(releaseAdapter);
-
                 ContentValues[] contentValues = new ContentValues[releases.size()];
                 for(int it = 0; it < releases.size(); it++) {
-                    contentValues[it] = parseReleaseValues(releases.get(it));
+                    contentValues[it] = Release.parseValues(releases.get(it));
                 }
 
                 long insertedRows = getContentResolver().bulkInsert(
@@ -125,61 +129,44 @@ public class HomeActivity extends AppCompatActivity {
                         contentValues
                 );
 
-                Log.v(TAG, String.valueOf(insertedRows));
+                updateLayoutReleases(releases);
             }
         });
-    }
 
-    public ContentValues parseReleaseValues(Release release) {
-        ContentValues contentValues = new ContentValues();
-
-        contentValues.put(ReleaseEntry.COL_RELEASE_IDENTIFIER, release.get_id());
-        contentValues.put(ReleaseEntry.COL_RELEASE_ARTIST, release.getArtist());
-        contentValues.put(ReleaseEntry.COL_RELEASE_TITLE, release.getTitle());
-        contentValues.put(ReleaseEntry.COL_RELEASE_URL, release.getUrl());
-
-        return contentValues;
-    }
-
-    public void fetchNews() {
         networkUtilities.fetchNews(news -> {
             if(news != null) {
-                // Do something with News
-                RecyclerView recyclerView = findViewById(R.id.home_news_list);
-                recyclerView.setHasFixedSize(true);
-                recyclerView.setNestedScrollingEnabled(true);
-
-                RecyclerView.LayoutManager layoutManager =
-                        new GridLayoutManager(this,
-                                GRID_COLS,
-                                LinearLayoutManager.VERTICAL,
-                                false);
-                recyclerView.setLayoutManager(layoutManager);
-
-                NewsAdapter newsAdapter = new NewsAdapter(this, news);
-                recyclerView.setAdapter(newsAdapter);
-
                 ContentValues[] contentValues = new ContentValues[news.size()];
                 for(int it = 0; it < news.size(); it++) {
-                    contentValues[it] = parseNewsValues(news.get(it));
+                    contentValues[it] = News.parseValues(news.get(it));
                 }
 
                 getContentResolver().bulkInsert(
                         NewsEntry.CONTENT_URI,
                         contentValues
                 );
+
+                updateLayoutNews(news);
             }
         });
     }
 
-    public ContentValues parseNewsValues(News news) {
-        ContentValues contentValues = new ContentValues();
+    public void updateLayoutReleases(Cursor cursor) {
+        releaseAdapter.onSwapData(cursor);
+        releaseAdapter.notifyDataSetChanged();
+    }
 
-        contentValues.put(NewsEntry.COL_NEWS_IDENTIFIER, news.get_id());
-        contentValues.put(NewsEntry.COL_NEWS_AUTHOR, news.getAuthor());
-        contentValues.put(NewsEntry.COL_NEWS_CAPTION, news.getCaption());
-        contentValues.put(NewsEntry.COL_NEWS_HEADER, news.getHeader());
+    public void updateLayoutReleases(ArrayList<Release> releases) {
+        releaseAdapter.onSwapData(releases);
+        releaseAdapter.notifyDataSetChanged();
+    }
 
-        return contentValues;
+    public void updateLayoutNews(Cursor cursor) {
+        newsAdapter.onSwapData(cursor);
+        newsAdapter.notifyDataSetChanged();
+    }
+
+    public void updateLayoutNews(ArrayList<News> news) {
+        newsAdapter.onSwapData(news);
+        newsAdapter.notifyDataSetChanged();
     }
 }

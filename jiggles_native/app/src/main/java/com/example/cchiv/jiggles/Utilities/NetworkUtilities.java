@@ -111,7 +111,7 @@ public class NetworkUtilities {
                     for(int it = 0; it < jsonArray.length(); it++) {
                         JSONObject jsonObject = jsonArray.getJSONObject(it);
 
-                        int _id = jsonObject.optInt("_id");
+                        String _id = jsonObject.optString("_id");
                         String author = jsonObject.optString("author");
                         String header = jsonObject.optString("header");
                         String caption = jsonObject.optString("caption");

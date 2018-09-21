@@ -18,7 +18,7 @@
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/home_bar"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="56dp"
                 android:background="@color/iconsTextColor"
                 android:orientation="horizontal"
                 android:padding="@dimen/activity_margin_relative"
@@ -41,7 +41,7 @@
                     android:focusable="true"
                     android:gravity="center"
                     android:onClick="onClickSearch"
-                    android:padding="@dimen/activity_margin_component"
+                    android:padding="@dimen/activity_margin_relative"
                     android:text="@string/search_text"
                     android:textColor="@color/primaryTextColor"
                     android:textSize="@dimen/activity_text_subheader"
@@ -98,11 +98,12 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:gravity="center"
                     android:padding="@dimen/activity_margin_section"
                     android:orientation="vertical">
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textSize="@dimen/activity_text_header"
                         android:textStyle="bold"
@@ -113,7 +114,7 @@
 
                     <android.support.v7.widget.RecyclerView
                         android:id="@+id/home_release_list"
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/activity_margin_relative"
                         android:layout_marginBottom="@dimen/activity_margin_relative"/>
@@ -136,10 +137,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="@dimen/activity_margin_section"
+                    android:gravity="center"
                     android:orientation="vertical">
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textSize="@dimen/activity_text_header"
                         android:textStyle="bold"
@@ -150,7 +152,7 @@
 
                     <android.support.v7.widget.RecyclerView
                         android:id="@+id/home_news_list"
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/activity_margin_relative"
                         android:layout_marginBottom="@dimen/activity_margin_relative"/>
