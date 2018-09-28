@@ -18,4 +18,11 @@
         <item name="android:padding">@dimen/activity_margin_relative</item>
     </style>
 
+    <style name="thread_menu">
+        <item name="android:layout_margin">@dimen/activity_margin_relative</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:drawablePadding">@dimen/activity_margin_relative</item>
+        <item name="android:textColor">@color/iconsTextColor</item>
+    </style>
+
 </resources>

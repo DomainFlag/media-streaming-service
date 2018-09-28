@@ -27,14 +27,24 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".activities.AuthActivity"/>
-        <activity android:name=".activities.HomeActivity"
+        <activity
+            android:name=".activities.AuthActivity"/>
+
+        <activity
+            android:name=".activities.HomeActivity"
             android:label="Home"/>
-        <activity android:name=".activities.SearchActivity"
+
+        <activity
+            android:name=".activities.SearchActivity"
             android:label="Search"/>
-        <activity android:name=".activities.PlayerActivity"
+
+        <activity
+            android:name=".activities.PlayerActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:label="Player"/>
-        <activity android:name=".activities.ForumActivity"
+
+        <activity
+            android:name=".activities.ForumActivity"
             android:label="Forum"/>
 
         <provider

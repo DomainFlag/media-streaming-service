@@ -1,14 +1,23 @@
 package com.example.cchiv.jiggles.activities;
 
 import android.content.res.AssetManager;
+import android.content.res.ColorStateList;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.GradientDrawable;
 import android.media.audiofx.Visualizer;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.graphics.Palette;
 import android.util.Log;
 import android.view.Surface;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.example.cchiv.jiggles.R;
 import com.example.cchiv.jiggles.utilities.VisualizerView;
@@ -40,12 +49,67 @@ public class PlayerActivity extends AppCompatActivity {
     private final static String TAG = "PlayerActivity";
 
     private Visualizer visualizer = null;
+
+    private PlayerView playerView;
     private SimpleExoPlayer exoPlayer = null;
+
+    private ImageView menu;
+
+    private boolean utilitiesToggle = false;
+    private View utilities;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player);
+
+        findViewById(R.id.player_back).setOnClickListener((view) -> {
+            finish();
+        });
+
+        menu = findViewById(R.id.player_menu);
+        utilities = findViewById(R.id.player_utilities);
+        menu.setOnClickListener((view) -> {
+            if(utilitiesToggle) {
+                menu.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.pleasureColor)));
+                utilities.setVisibility(View.GONE);
+            } else {
+                menu.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.iconsTextColor)));
+                utilities.setVisibility(View.VISIBLE);
+            }
+
+            utilitiesToggle = !utilitiesToggle;
+        });
+
+        playerView = findViewById(R.id.player);
+        playerView.setControllerShowTimeoutMs(-1);
+
+        BitmapDrawable bitmapDrawable = (BitmapDrawable) ContextCompat.getDrawable(this, R.drawable.background);
+        Palette palette = Palette.from(bitmapDrawable.getBitmap())
+                .generate();
+
+        TextView textArtistView = (TextView) findViewById(R.id.player_artist);
+        textArtistView.setText("by The xx");
+
+        TextView textTrackView = (TextView) findViewById(R.id.player_track);
+        textTrackView.setText("Intro");
+
+        int defaultColor = ContextCompat.getColor(this, R.color.iconsTextColor);
+        int lightVibrantColor = palette.getDarkVibrantColor(defaultColor);
+        int color = ContextCompat.getColor(this, R.color.primaryTextColor);
+
+        GradientDrawable gradientDrawable = new GradientDrawable(
+                GradientDrawable.Orientation.TOP_BOTTOM,
+                new int[] {
+                        lightVibrantColor,
+                        color
+                }
+        );
+
+        View view = findViewById(R.id.player_background);
+        ViewCompat.setBackground(view, gradientDrawable);
+
+        playerView.setShutterBackgroundColor(ContextCompat.getColor(this, R.color.visualizerClearColor));
 
         scan();
     }
@@ -90,7 +154,6 @@ public class PlayerActivity extends AppCompatActivity {
                 Uri.parse("asset:///samples/" + fileName));
         exoPlayer.prepare(mediaSource);
 
-        PlayerView playerView = findViewById(R.id.player);
         playerView.setPlayer(exoPlayer);
 
         exoPlayer.setPlayWhenReady(true);
@@ -293,6 +356,7 @@ public class PlayerActivity extends AppCompatActivity {
         if(session != C.AUDIO_SESSION_ID_UNSET) {
             VisualizerView visualizerView = findViewById(R.id.player_visualizer);
 
+            Log.v(TAG, String.valueOf(session));
             visualizer = new Visualizer(session);
             visualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
 

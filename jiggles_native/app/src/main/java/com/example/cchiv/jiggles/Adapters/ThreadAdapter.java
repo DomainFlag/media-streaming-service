@@ -2,6 +2,7 @@ package com.example.cchiv.jiggles.adapters;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -35,9 +36,15 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ThreadView
     private ArrayList<Thread> threads;
     private Context context;
 
+    private Typeface typeface;
+
+    private boolean menuToggle = false;
+
     public ThreadAdapter(Context context, ArrayList<Thread> threads) {
         this.context = context;
         this.threads = threads;
+
+        typeface = Typeface.createFromAsset(context.getAssets(), "fonts/Brandon_bld.otf");
     }
 
     @NonNull
@@ -115,6 +122,14 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ThreadView
 
             Log.v(TAG, thread.getId());
         });
+
+        holder.menu_button.setOnClickListener((view) -> {
+            if(menuToggle)
+                holder.menu.setVisibility(View.GONE);
+            else holder.menu.setVisibility(View.VISIBLE);
+
+            menuToggle = !menuToggle;
+        });
     }
 
     public Uri buildUriResource(String path) {
@@ -145,6 +160,12 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ThreadView
         private TextView comment;
         private LinearLayout utilities;
 
+        private ImageView menu_button;
+
+        private LinearLayout menu;
+        private TextView edit;
+        private TextView delete;
+
         public ThreadViewHolder(View itemView) {
             super(itemView);
 
@@ -154,6 +175,17 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ThreadView
             date = itemView.findViewById(R.id.date);
             like = itemView.findViewById(R.id.like);
             utilities = itemView.findViewById(R.id.utilities);
+
+            menu = itemView.findViewById(R.id.menu);
+            menu_button = itemView.findViewById(R.id.menu_button);
+
+            edit = itemView.findViewById(R.id.edit);
+            delete = itemView.findViewById(R.id.delete);
+
+            like.setTypeface(typeface);
+            author.setTypeface(typeface);
+            date.setTypeface(typeface);
+            comment.setTypeface(typeface);
         }
     }
 }

@@ -7,14 +7,53 @@
               android:layout_gravity="bottom"
               android:orientation="vertical">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center">
+
+        <TextView
+            android:id="@id/exo_position"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:includeFontPadding="false"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp"
+            android:textColor="@color/iconsTextColor"
+            android:textSize="@dimen/activity_text_subparagraph"
+            android:textStyle="bold"
+            tools:text="0:00"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/iconsTextColor"
+            android:textSize="@dimen/activity_text_subheader"
+            android:textStyle="bold"
+            android:text="/"/>
+
+        <TextView
+            android:id="@id/exo_duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:includeFontPadding="false"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp"
+            android:textColor="@color/iconsTextColor"
+            android:textSize="@dimen/activity_text_subparagraph"
+            android:textStyle="bold"
+            tools:text="5:15"/>
+
+    </LinearLayout>
+
     <com.google.android.exoplayer2.ui.DefaultTimeBar
         android:id="@id/exo_progress"
         android:layout_width="match_parent"
         android:layout_height="24dp"
-        android:paddingLeft="@dimen/activity_margin_section"
-        android:paddingStart="@dimen/activity_margin_section"
-        android:paddingRight="@dimen/activity_margin_section"
-        android:paddingEnd="@dimen/activity_margin_section"
+        android:paddingLeft="@dimen/activity_margin_component"
+        android:paddingStart="@dimen/activity_margin_component"
+        android:paddingRight="@dimen/activity_margin_component"
+        android:paddingEnd="@dimen/activity_margin_component"
         android:padding="@dimen/activity_margin_relative"
         app:unplayed_color="@color/secondaryColor"
         app:played_color="@color/iconsTextColor"
@@ -31,9 +70,23 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:gravity="center_vertical"
+            android:gravity="center"
             android:orientation="horizontal"
             android:paddingTop="4dp">
+
+            <ImageButton
+                android:id="@id/exo_repeat_toggle"
+                android:layout_width="@dimen/exo_media_button_width"
+                android:layout_height="@dimen/exo_media_button_width"
+                android:background="?android:attr/selectableItemBackground"
+                android:tint="@color/iconsTextColor"
+                android:contentDescription="@string/player_shuffle"/>
+
+            <ImageButton
+                android:id="@id/exo_prev"
+                android:tint="@color/iconsTextColor"
+                android:contentDescription="@string/player_previous"
+                style="@style/ExoMediaButton.Previous"/>
 
             <ImageButton
                 android:id="@id/exo_play"
@@ -53,37 +106,11 @@
                 android:contentDescription="@string/player_next"
                 style="@style/ExoMediaButton.Next"/>
 
-            <TextView
-                android:id="@id/exo_position"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:includeFontPadding="false"
-                android:paddingLeft="4dp"
-                android:paddingRight="4dp"
-                android:textColor="@color/iconsTextColor"
-                android:textSize="@dimen/activity_text_subparagraph"
-                android:textStyle="bold"
-                tools:text="0:00"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/iconsTextColor"
-                android:textSize="@dimen/activity_text_subheader"
-                android:textStyle="bold"
-                android:text="/"/>
-
-            <TextView
-                android:id="@id/exo_duration"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:includeFontPadding="false"
-                android:paddingLeft="4dp"
-                android:paddingRight="4dp"
-                android:textColor="@color/iconsTextColor"
-                android:textSize="@dimen/activity_text_subparagraph"
-                android:textStyle="bold"
-                tools:text="5:15"/>
+            <ImageButton
+                android:id="@id/exo_shuffle"
+                android:tint="@color/iconsTextColor"
+                android:contentDescription="@string/player_shuffle"
+                style="@style/ExoMediaButton.Shuffle"/>
 
         </LinearLayout>
 

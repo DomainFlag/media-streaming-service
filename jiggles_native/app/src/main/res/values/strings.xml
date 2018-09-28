@@ -70,6 +70,14 @@
     <string name="player_play">Player Resume</string>
     <string name="player_pause">Player Pause</string>
     <string name="player_next">Player Next</string>
+    <string name="player_previous">Player Previous</string>
+    <string name="player_shuffle">Player Shuffle</string>
+
+    <string name="player_menu">Player Menu</string>
+    <string name="player_thumbnail">Player Thumbnail</string>
+    <string name="player_lyrics">Player Lyrics</string>
+
+    <string name="player_back">Player Back</string>
 
 
     <!-- Forum -->
@@ -80,6 +88,11 @@
 
     <string name="forum_thread_creator_content_hint">Content\.\.\.</string>
     <string name="forum_thread_creator_create">Post</string>
+
+    <string name="forum_menu">Thread More</string>
+
+    <string name="thread_edit">Edit thread</string>
+    <string name="thread_delete">Delete thread</string>
 
 
 </resources>

@@ -29,7 +29,7 @@ public class VisualizerView extends View {
 
         this.context = context;
 
-        clearColor = ContextCompat.getColor(context, R.color.primaryTextColor);
+        clearColor = ContextCompat.getColor(context, R.color.visualizerClearColor);
 
         paint.setColor(ContextCompat.getColor(context, R.color.iconsTextColor));
         paint.setStrokeWidth(1.0f);

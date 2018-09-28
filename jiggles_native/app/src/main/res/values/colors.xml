@@ -2,7 +2,7 @@
 <resources>
     <color name="colorPrimary">#8f1d21</color>
     <color name="colorPrimaryDark">#440d0f</color>
-    <color name="colorAccent">#45ef39</color>
+    <color name="colorAccent">#006442</color>
 
     <color name="primaryLightColor">#c6292f</color>
     <color name="backgroundColor">#fffcf9</color>
@@ -17,6 +17,7 @@
     <color name="iconsTextColor">#FFFFFF</color>
     <color name="tertiaryColor">#f9ef27</color>
 
+    <color name="visualizerClearColor">#00000000</color>
 
     <color name="colorScoreAcclaim">#29A369</color>
     <color name="colorScorePossitive">#F2E827</color>

@@ -14,11 +14,58 @@
 
         <ImageView
             android:id="@+id/thumbnail"
-            android:layout_width="350dp"
-            android:layout_height="350dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:adjustViewBounds="true"
             android:contentDescription="@string/forum_thread_comment"
             tools:src="@drawable/thumbnail"/>
+
+        <ImageView
+            android:id="@+id/menu_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/player_menu"
+            android:src="@drawable/ic_menu_simple_white"
+            android:padding="@dimen/activity_margin_component"
+            android:layout_alignRight="@+id/thumbnail"
+            android:layout_alignEnd="@id/thumbnail"
+            android:layout_alignTop="@id/thumbnail"/>
+
+        <LinearLayout
+            android:id="@+id/menu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:elevation="@dimen/button_elevation"
+            android:orientation="vertical"
+            android:layout_marginHorizontal="@dimen/activity_margin_section"
+            android:padding="@dimen/activity_margin_relative"
+            android:background="@drawable/border_round"
+            android:backgroundTint="@color/pleasureColor"
+            android:layout_below="@+id/menu_button"
+            android:layout_alignRight="@id/menu_button"
+            android:layout_alignEnd="@id/menu_button">
+
+            <TextView
+                android:id="@+id/edit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/ic_create"
+                android:drawableStart="@drawable/ic_create"
+                android:text="@string/thread_edit"
+                style="@style/thread_menu"/>
+
+            <TextView
+                android:id="@+id/delete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/activity_margin_relative"
+                android:drawableLeft="@drawable/ic_rubbish_bin"
+                android:drawableStart="@drawable/ic_rubbish_bin"
+                android:text="@string/thread_delete"
+                style="@style/thread_menu"/>
+
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/utilities"
