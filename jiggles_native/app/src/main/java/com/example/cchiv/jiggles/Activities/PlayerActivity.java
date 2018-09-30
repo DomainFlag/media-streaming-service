@@ -1,5 +1,11 @@
 package com.example.cchiv.jiggles.activities;
 
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.AssetManager;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.BitmapDrawable;
@@ -20,6 +26,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.cchiv.jiggles.R;
+import com.example.cchiv.jiggles.utilities.JigglesConnection;
+import com.example.cchiv.jiggles.utilities.JigglesLoader;
 import com.example.cchiv.jiggles.utilities.VisualizerView;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
@@ -43,6 +51,7 @@ import com.google.android.exoplayer2.util.Util;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Set;
 
 public class PlayerActivity extends AppCompatActivity {
 
@@ -58,10 +67,34 @@ public class PlayerActivity extends AppCompatActivity {
     private boolean utilitiesToggle = false;
     private View utilities;
 
+    private JigglesConnection jigglesConnection = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player);
+
+        findViewById(R.id.player_share).setOnClickListener((view) -> {
+            jigglesConnection = new JigglesConnection(this, (message, type, size, data) -> {
+                // Do something with the data regardless the reading or writing state
+                switch(type) {
+                    case JigglesConnection.MessageConstants.MESSAGE_READ : {
+                        break;
+                    }
+                    case JigglesConnection.MessageConstants.MESSAGE_WRITE : {
+                        break;
+                    }
+                    case JigglesConnection.MessageConstants.MESSAGE_TOAST : {
+                        Log.v(TAG, message);
+                        break;
+                    }
+                }
+            });
+        });
+
+        findViewById(R.id.player_lyrics).setOnClickListener((view) -> {
+            // Do something later with lyrics
+        });
 
         findViewById(R.id.player_back).setOnClickListener((view) -> {
             finish();
@@ -115,8 +148,18 @@ public class PlayerActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(jigglesConnection != null)
+            jigglesConnection.onSearchPairedDevices(requestCode, resultCode, data);
+
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
+
+        unregisterReceiver(JigglesConnection.getmReceiver());
 
         exoPlayer.release();
         visualizer.release();
