@@ -45,27 +45,50 @@ public class JigglesConnection implements OnSearchPairedDevices {
 
     private BluetoothAdapter mBluetoothAdapter;
 
-    private ConnectedThread connectedThread;
-
     private Context context;
 
-    private static final BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
+    private ConnectedThread connectedThread;
 
-            if(BluetoothDevice.ACTION_FOUND.equals(action)) {
-                // Discovery has found a device. Get the BluetoothDevice
-                // object and its info from the Intent.
-                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                String deviceName = device.getName();
-                String deviceHardwareAddress = device.getAddress(); // MAC address
-            }
+    private boolean receiverRegistered = false;
+
+    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+        String action = intent.getAction();
+
+        if(BluetoothDevice.ACTION_FOUND.equals(action)) {
+            // Discovery has found a device. Get the BluetoothDevice
+            // object and its info from the Intent.
+            BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+            String deviceName = device.getName();
+            String deviceHardwareAddress = device.getAddress(); // MAC address
+
+            printDevices(deviceName, deviceHardwareAddress);
+
+            ConnectThread connectThread = new ConnectThread(device);
+        }
         }
     };
 
     public JigglesConnection(Context context, OnManageStreamData onManageStreamData) {
         this.context = context;
         this.onManageStreamData = onManageStreamData;
+    }
+
+    public JigglesConnection(Context context, OnManageStreamData onManageStreamData, boolean server) {
+        this.context = context;
+        this.onManageStreamData = onManageStreamData;
+
+        if(server) {
+            AcceptThread acceptThread = new AcceptThread();
+        }
+    }
+
+    public void unregisterReceiver() {
+        if(receiverRegistered) {
+            Log.v(TAG, "Unregistered successfully");
+            context.unregisterReceiver(mReceiver);
+            receiverRegistered = false;
+        }
     }
 
     public void discover() {
@@ -77,11 +100,15 @@ public class JigglesConnection implements OnSearchPairedDevices {
 
     public void syncAudioData() {
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if(mBluetoothAdapter == null) {
-            if (!mBluetoothAdapter.isEnabled()) {
+        if(mBluetoothAdapter != null) {
+            if(!mBluetoothAdapter.isEnabled()) {
                 Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 ((Activity) context).startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+            } else {
+                Log.v(TAG, "The bluetooth is enabled");
             }
+        } else {
+            Log.v(TAG, "Couldn't get the bluetooth adapter");
         }
     }
 
@@ -92,22 +119,29 @@ public class JigglesConnection implements OnSearchPairedDevices {
 
             if(pairedDevices.size() > 0) {
                 // There are paired devices. Get the name and address of each paired device.
-                for (BluetoothDevice device : pairedDevices) {
+                for(BluetoothDevice device : pairedDevices) {
                     String deviceName = device.getName();
                     String deviceHardwareAddress = device.getAddress(); // MAC address
+
+                    printDevices(deviceName, deviceHardwareAddress);
                 }
             }
 
             IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+            receiverRegistered = true;
             context.registerReceiver(mReceiver, filter);
 
             mBluetoothAdapter.cancelDiscovery();
         }
-
     }
 
-    public static BroadcastReceiver getmReceiver() {
-        return mReceiver;
+    private static void printDevices(String deviceName, String deviceHardwareAddress) {
+        Log.v(TAG, deviceName);
+        Log.v(TAG, deviceHardwareAddress);
+    }
+
+    private void release() {
+        unregisterReceiver();
     }
 
     private class ConnectThread extends Thread {

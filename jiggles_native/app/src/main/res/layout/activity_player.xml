@@ -77,6 +77,7 @@
             android:id="@+id/player_utilities"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             android:orientation="vertical"
             android:layout_below="@id/player_menu"
             android:layout_alignRight="@id/player_thumbnail"
