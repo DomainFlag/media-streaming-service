@@ -5,6 +5,7 @@ import android.media.audiofx.Visualizer;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.Surface;
 
 import com.google.android.exoplayer2.C;
@@ -26,6 +27,8 @@ import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.ui.PlayerView;
+import com.google.android.exoplayer2.upstream.DataSource;
+import com.google.android.exoplayer2.upstream.DataSpec;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
@@ -45,6 +48,8 @@ public class PlayerUtilities {
 
     private SimpleExoPlayer exoPlayer;
 
+    private byte[] data = null;
+
     public PlayerUtilities(Context context) {
         this.context = context;
     }
@@ -52,6 +57,17 @@ public class PlayerUtilities {
     public PlayerUtilities(Context context, VisualizerView visualizerView) {
         this(context);
         this.visualizerView = visualizerView;
+    }
+
+    public void fillContainer(byte[] data) {
+        this.data = data;
+    };
+
+    public int sampleNewData(byte[] buffer) {
+        System.arraycopy(this.data, 0, buffer, 0, this.data.length);
+        this.data = null;
+
+        return buffer.length;
     }
 
     public void setUpPlayer(PlayerView playerView, String fileName) {
@@ -68,6 +84,35 @@ public class PlayerUtilities {
         MediaSource mediaSource = factory.createMediaSource(
                 Uri.parse("asset:///samples/" + fileName));
         exoPlayer.prepare(mediaSource);
+
+        try {
+            DataSource dataSource = new DataSource() {
+                @Override
+                public long open(DataSpec dataSpec) throws IOException {
+                    return 0;
+                }
+
+                @Override
+                public int read(byte[] buffer, int offset, int readLength) throws IOException {
+                    return sampleNewData(buffer);
+                }
+
+                @Nullable
+                @Override
+                public Uri getUri() {
+                    return null;
+                }
+
+                @Override
+                public void close() throws IOException {
+
+                }
+            };
+            DataSpec dataSpec = new DataSpec(null, DataSpec.FLAG_ALLOW_CACHING_UNKNOWN_LENGTH);
+            dataSource.open(dataSpec);
+        } catch(IOException e) {
+            Log.v(TAG, e.toString());
+        }
 
         exoPlayer.addAnalyticsListener(new AnalyticsListener() {
             @Override

@@ -1,7 +1,12 @@
 package com.example.cchiv.jiggles.activities;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.app.FragmentManager;
+import android.bluetooth.BluetoothDevice;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.AssetManager;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.GradientDrawable;
@@ -16,13 +21,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.cchiv.jiggles.R;
+import com.example.cchiv.jiggles.interfaces.OnUpdatePairedDevices;
 import com.example.cchiv.jiggles.utilities.JigglesConnection;
 import com.example.cchiv.jiggles.utilities.PlayerUtilities;
 import com.example.cchiv.jiggles.utilities.VisualizerView;
 import com.google.android.exoplayer2.ui.PlayerView;
 
-import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Set;
 
 public class PlayerActivity extends AppCompatActivity {
 
@@ -46,47 +51,69 @@ public class PlayerActivity extends AppCompatActivity {
         playerUtilities = new PlayerUtilities(this, visualizerView);
 
         updateUserInterface();
-        scan();
+        setBluetoothConnection();
     }
 
-    public void updateUserInterface(){
-        jigglesConnection = new JigglesConnection(this, (message, type, size, data) -> {
-            // Do something with the data regardless the reading or writing state
-            switch(type) {
-                case JigglesConnection.MessageConstants.MESSAGE_READ : {
-                    break;
-                }
-                case JigglesConnection.MessageConstants.MESSAGE_WRITE : {
-                    break;
-                }
-                case JigglesConnection.MessageConstants.MESSAGE_TOAST : {
-                    Log.v(TAG, message);
-                    break;
-                }
-            }
-        });
-
+    public void setBluetoothConnection() {
+        // Server - Client
         findViewById(R.id.player_share).setOnClickListener((view) -> {
+            AvailableDevicesDialog availableDevicesDialog = new AvailableDevicesDialog();
+            FragmentManager fragmentManager = getFragmentManager();
+            availableDevicesDialog.show(fragmentManager,  "availableDevicesDialog");
+
             jigglesConnection = new JigglesConnection(this, (message, type, size, data) -> {
                 // Do something with the data regardless the reading or writing state
-                switch(type) {
-                    case JigglesConnection.MessageConstants.MESSAGE_READ : {
+                switch (type) {
+                    case JigglesConnection.MessageConstants.MESSAGE_READ: {
+                        if(size > 0) {
+                            // Do something
+                        }
                         break;
                     }
-                    case JigglesConnection.MessageConstants.MESSAGE_WRITE : {
+                    case JigglesConnection.MessageConstants.MESSAGE_WRITE: {
+                        if(size > 0) {
+                            // Do something
+                        }
                         break;
                     }
-                    case JigglesConnection.MessageConstants.MESSAGE_TOAST : {
+                    case JigglesConnection.MessageConstants.MESSAGE_TOAST: {
                         Log.v(TAG, message);
                         break;
                     }
                 }
+            }, new OnUpdatePairedDevices() {
+                @Override
+                public void onUpdatePairedDevices(Set<BluetoothDevice> devices) {
+
+                }
+
+                @Override
+                public void onAddPairedDevice(BluetoothDevice device) {
+
+                }
             });
 
-            jigglesConnection.discover();
-            jigglesConnection.syncAudioData();
-        });
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        // Wait 15s
+                        Thread.sleep(25000);
 
+                        int len = 30;
+                        byte[] message = new byte[len];
+
+                        jigglesConnection.write(message, len);
+                    } catch(InterruptedException e) {
+                        Log.v(TAG, e.toString());
+                    }
+                }
+            });
+            thread.run();
+        });
+    }
+
+    public void updateUserInterface(){
         findViewById(R.id.player_lyrics).setOnClickListener((view) -> {
             // Do something later with lyrics
         });
@@ -155,11 +182,17 @@ public class PlayerActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
 
-        if(jigglesConnection != null)
-            jigglesConnection.unregisterReceiver();
+        if(jigglesConnection != null) {
+            jigglesConnection.release();
+        }
 
         if(playerUtilities != null)
             playerUtilities.release();
+    }
+
+    @Override
+    protected Dialog onCreateDialog(int id) {
+        return super.onCreateDialog(id);
     }
 
     @Override
@@ -181,17 +214,16 @@ public class PlayerActivity extends AppCompatActivity {
             playerUtilities.togglePlayback(playbackState);
     }
 
-    public ArrayList<String> scan() {
-        AssetManager assetManager = getAssets();
-        try {
-            String[] files = assetManager.list("samples");
-            for(String file : files) {
-                setPlayer(file);
-            }
-        } catch(IOException e) {
-            Log.v(TAG, e.toString());
-        }
+    public static class AvailableDevicesDialog extends DialogFragment {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Use the Builder class for convenient dialog construction
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
-        return null;
+            View inflatedView = getActivity().getLayoutInflater().inflate(R.layout.dialog_devices_layout, null);
+            builder.setView(inflatedView);
+
+            return builder.create();
+        }
     }
 }
