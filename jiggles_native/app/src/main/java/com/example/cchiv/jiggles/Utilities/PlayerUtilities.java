@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.Surface;
 
+import com.example.cchiv.jiggles.model.Track;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlaybackException;
@@ -70,7 +71,7 @@ public class PlayerUtilities {
         return buffer.length;
     }
 
-    public void setUpPlayer(PlayerView playerView, String fileName) {
+    public void setUpPlayer(PlayerView playerView, Track track) {
         DefaultRenderersFactory defaultRenderersFactory = new DefaultRenderersFactory(context);
         DefaultTrackSelector defaultTrackSelector = new DefaultTrackSelector();
 
@@ -82,7 +83,7 @@ public class PlayerUtilities {
 
         ExtractorMediaSource.Factory factory = new ExtractorMediaSource.Factory(defaultDataSourceFactory);
         MediaSource mediaSource = factory.createMediaSource(
-                Uri.parse("asset:///samples/" + fileName));
+                Uri.parse(track.getPath()));
         exoPlayer.prepare(mediaSource);
 
         try {

@@ -60,7 +60,7 @@
             android:adjustViewBounds="true"
             android:scaleType="fitXY"
             android:contentDescription="@string/player_thumbnail"
-            android:src="@drawable/thumbnail"/>
+            tools:src="@drawable/thumbnail"/>
 
         <ImageView
             android:id="@+id/player_menu"

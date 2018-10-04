@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:title="@string/collection_filter"
+        android:visible="true"
+        app:showAsAction="always|withText"
+        android:icon="@drawable/ic_filter_results">
+        <menu>
+            <group android:id="@+id/filter_options"
+                android:menuCategory="container"
+                android:visible="true">
+                <item
+                    android:id="@+id/filter_artist"
+                    android:title="@string/collection_filter_artist" />
+                <item
+                    android:id="@+id/filter_track"
+                    android:title="@string/collection_filter_track" />
+                <item
+                    android:id="@+id/filter_album"
+                    android:title="@string/collection_filter_album" />
+                <item
+                    android:id="@+id/filter_all"
+                    android:title="@string/collection_filter_all" />
+            </group>
+        </menu>
+    </item>
+
+</menu>

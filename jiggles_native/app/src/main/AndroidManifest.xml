@@ -9,6 +9,9 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
 
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -44,12 +47,16 @@
 
         <activity
             android:name=".activities.PlayerActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+            android:theme="@style/AppThemeNoBar"
             android:label="Player"/>
 
         <activity
             android:name=".activities.ForumActivity"
             android:label="Forum"/>
+
+        <activity
+            android:name=".activities.CollectionActivity"
+            android:theme="@style/AppThemeNoBar"/>
 
         <provider
             android:authorities="com.example.android.JigglesProvider"

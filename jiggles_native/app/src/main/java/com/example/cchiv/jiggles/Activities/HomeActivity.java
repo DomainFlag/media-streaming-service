@@ -53,7 +53,7 @@ public class HomeActivity extends AppCompatActivity {
         }
 
         findViewById(R.id.home_player).setOnClickListener(view -> {
-            Intent intent = new Intent(this, PlayerActivity.class);
+            Intent intent = new Intent(this, CollectionActivity.class);
             startActivity(intent);
         });
 
@@ -72,9 +72,9 @@ public class HomeActivity extends AppCompatActivity {
 
         networkUtilities = new NetworkUtilities();
 
-        if(checkInternetConnectivity())
-            fetchLiveContent();
-        else fetchCachedContent();
+        if(checkInternetConnectivity()){
+            // fetchLiveContent();
+        } else fetchCachedContent();
     }
 
     public void fetchCachedContent() {

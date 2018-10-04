@@ -21,7 +21,7 @@ import android.widget.TextView;
 
 import com.example.cchiv.jiggles.adapters.ContentAdapter;
 import com.example.cchiv.jiggles.Constants;
-import com.example.cchiv.jiggles.model.Content;
+import com.example.cchiv.jiggles.model.Collection;
 import com.example.cchiv.jiggles.R;
 import com.example.cchiv.jiggles.utilities.NetworkUtilities;
 
@@ -94,10 +94,10 @@ public class SearchActivity extends AppCompatActivity implements TextView.OnEdit
 
         if(token != null) {
             NetworkUtilities networkUtilities = new NetworkUtilities();
-            networkUtilities.fetchSearchResults((Content content) -> {
+            networkUtilities.fetchSearchResults((Collection collection) -> {
                 // Do something with the collection
 
-                contentAdapter.swapCollection(content);
+                contentAdapter.swapCollection(collection);
                 contentAdapter.notifyDataSetChanged();
             }, query, token);
         } else finish();

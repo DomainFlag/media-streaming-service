@@ -8,7 +8,7 @@ import android.util.Log;
 import com.example.cchiv.jiggles.Constants;
 import com.example.cchiv.jiggles.model.Album;
 import com.example.cchiv.jiggles.model.Artist;
-import com.example.cchiv.jiggles.model.Content;
+import com.example.cchiv.jiggles.model.Collection;
 import com.example.cchiv.jiggles.model.News;
 import com.example.cchiv.jiggles.model.Release;
 import com.example.cchiv.jiggles.model.Review;
@@ -318,12 +318,12 @@ public class NetworkUtilities {
         new FetchSearchResults(onPostNetworkCallback, query, token);
     }
 
-    public static class FetchSearchResults extends AsyncNetworkTask<Content> {
+    public static class FetchSearchResults extends AsyncNetworkTask<Collection> {
 
         private Gson gson;
 
         public interface OnPostNetworkCallback {
-            void onPostNetworkCallback(Content content);
+            void onPostNetworkCallback(Collection collection);
         }
 
         private OnPostNetworkCallback onPostNetworkCallback = null;
@@ -351,7 +351,7 @@ public class NetworkUtilities {
         }
 
         @Override
-        protected Content doInBackground(Request... requests) {
+        protected Collection doInBackground(Request... requests) {
             try {
                 Response response = getClient().newCall(requests[0]).execute();
                 return onParseNetworkResponse(response);
@@ -363,11 +363,11 @@ public class NetworkUtilities {
         }
 
         @Override
-        protected void onPostExecute(Content content) {
-            super.onPostExecute(content);
+        protected void onPostExecute(Collection collection) {
+            super.onPostExecute(collection);
 
             if(this.onPostNetworkCallback != null)
-                this.onPostNetworkCallback.onPostNetworkCallback(content);
+                this.onPostNetworkCallback.onPostNetworkCallback(collection);
         }
 
         private ArrayList<Track> fetchTracks(JSONArray jsonArray) {
@@ -414,7 +414,7 @@ public class NetworkUtilities {
             return null;
         }
 
-        private Content onParseNetworkResponse(Response response) {
+        private Collection onParseNetworkResponse(Response response) {
             ResponseBody body = response.body();
             if(body == null)
                 return null;
@@ -425,15 +425,15 @@ public class NetworkUtilities {
                     return null;
 
                 try {
-                    Content content = new Content();
+                    Collection collection = new Collection();
 
                     JSONObject jsonObject = new JSONObject(resString);
 
-                    content.setAlbums(fetchAlbums(fetchList(jsonObject, Constants.ALBUM)));
-                    content.setArtists(fetchArtists(fetchList(jsonObject, Constants.ARTIST)));
-                    content.setTracks(fetchTracks(fetchList(jsonObject, Constants.TRACK)));
+                    collection.setAlbums(fetchAlbums(fetchList(jsonObject, Constants.ALBUM)));
+                    collection.setArtists(fetchArtists(fetchList(jsonObject, Constants.ARTIST)));
+                    collection.setTracks(fetchTracks(fetchList(jsonObject, Constants.TRACK)));
 
-                    return content;
+                    return collection;
                 } catch(JSONException e) {
                     Log.v(TAG, e.toString());
                 }

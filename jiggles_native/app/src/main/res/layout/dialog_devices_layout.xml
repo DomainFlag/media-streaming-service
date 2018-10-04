@@ -2,12 +2,23 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/motionPrimaryDarkColor"
+    android:padding="@dimen/activity_margin_section"
+    android:orientation="vertical">
 
     <TextView
-        android:id="@+id/devices"
+        android:id="@+id/devices_label"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Devices here"/>
+        android:textStyle="bold"
+        android:textSize="@dimen/activity_text_paragraph"
+        android:textColor="@color/iconsTextColor"
+        android:text="@string/player_devices_label"/>
+
+    <ListView
+        android:id="@+id/devices_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 
 </LinearLayout>

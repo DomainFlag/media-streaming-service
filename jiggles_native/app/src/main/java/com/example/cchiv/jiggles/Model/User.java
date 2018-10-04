@@ -9,17 +9,17 @@ public class User {
     private String type;
     private String caption;
     private ArrayList<User> friends;
-    private Content content;
+    private Collection collection;
 
     public User() {}
 
-    public User(String email, String name, String type, String caption, ArrayList<User> friends, Content content) {
+    public User(String email, String name, String type, String caption, ArrayList<User> friends, Collection collection) {
         this.email = email;
         this.name = name;
         this.type = type;
         this.caption = caption;
         this.friends = friends;
-        this.content = content;
+        this.collection = collection;
     }
 
     public String getEmail() {
@@ -42,7 +42,7 @@ public class User {
         return friends;
     }
 
-    public Content getContent() {
-        return content;
+    public Collection getCollection() {
+        return collection;
     }
 }

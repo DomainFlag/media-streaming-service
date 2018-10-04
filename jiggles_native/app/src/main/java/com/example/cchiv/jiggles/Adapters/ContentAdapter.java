@@ -1,7 +1,12 @@
 package com.example.cchiv.jiggles.adapters;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewCompat;
+import android.support.v7.graphics.Palette;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,15 +14,16 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.cchiv.jiggles.Constants;
+import com.example.cchiv.jiggles.R;
 import com.example.cchiv.jiggles.model.Album;
 import com.example.cchiv.jiggles.model.Artist;
-import com.example.cchiv.jiggles.model.Content;
+import com.example.cchiv.jiggles.model.Collection;
 import com.example.cchiv.jiggles.model.Image;
 import com.example.cchiv.jiggles.model.Track;
-import com.example.cchiv.jiggles.R;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -32,16 +38,30 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         private final static int VIEW_DIVIDER = 20;
     }
 
+    public interface OnClickCallbackListener {
+        void onClickCallbackListener(int albumIndex, int trackIndex);
+    }
+
     private static final String TAG = "ContentAdapter";
+
+    private OnClickCallbackListener onClickCallbackListener;
 
     private Context context;
 
-    private Content content;
+    private Collection collection;
 
-    public ContentAdapter(Context context, Content content) {
+    private Album album = null;
+    private int albumIndex = 0;
+
+    public ContentAdapter(Context context, Collection collection) {
         this.context = context;
+        this.collection = collection;
+    }
 
-        this.content = content;
+    public ContentAdapter(Context context, OnClickCallbackListener onClickCallbackListener, Collection collection) {
+        this.context = context;
+        this.collection = collection;
+        this.onClickCallbackListener = onClickCallbackListener;
     }
 
     @NonNull
@@ -57,12 +77,12 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             case ViewType.VIEW_ALBUM : {
                 return new AlbumViewHolder(
                         layoutInflater
-                                .inflate(R.layout.content_album_layout, parent, false));
+                                .inflate(R.layout.content_track_layout, parent, false));
             }
             case ViewType.VIEW_TRACK : {
                 return new TrackViewHolder(
                         layoutInflater
-                                .inflate(R.layout.content_track_layout, parent, false));
+                                    .inflate(R.layout.content_track_layout, parent, false));
             }
             case ViewType.VIEW_DIVIDER : {
                 return new DividerViewHolder(
@@ -74,10 +94,16 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         return null;
     }
 
-    private void onBindArtistViewHolder(ArtistViewHolder holder, int position) {
-        Artist artist = content.getArtists().get(position);
+    public void onContentAction(Album album, int position) {
+        this.album = album;
+        this.albumIndex = position;
+        this.notifyDataSetChanged();
+    }
 
-        ArrayList<Image> images = artist.getImages();
+    private void onBindArtistViewHolder(ArtistViewHolder holder, int position) {
+        Artist artist = collection.getArtists().get(position);
+
+        List<Image> images = artist.getImages();
         if(images.size() > 0)
             Picasso.get()
                     .load(images.get(0).getUrl())
@@ -87,44 +113,128 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     private void onBindAlbumViewHolder(AlbumViewHolder holder, int position) {
-        Album album = content.getAlbums().get(position);
-
-        ArrayList<Image> images = album.getImages();
-        if(images.size() > 0)
-            Picasso.get()
-                    .load(images.get(0).getUrl())
-                    .into(holder.thumbnail);
+        Album album = collection.getAlbums().get(position);
 
         holder.name.setText(album.getName());
-        holder.artist.setText("By none");
+
+        int leftColor = ContextCompat.getColor(context, R.color.primaryTextColor);
+        int rightColor;
+
+        List<Image> images = album.getImages();
+        if(images != null && images.size() > 0) {
+            if(images.size() > 1) {
+                Bitmap secondaryBitmap = images.get(1).getBitmap();
+                holder.artSecondary.setImageBitmap(secondaryBitmap);
+
+                holder.artSecondary.setVisibility(View.VISIBLE);
+            } else holder.artSecondary.setVisibility(View.INVISIBLE);
+
+            Bitmap bitmap = images.get(0).getBitmap();
+            holder.art.setImageBitmap(bitmap);
+
+            rightColor = Palette.from(bitmap).generate().getDarkMutedColor(ContextCompat.getColor(context, R.color.iconsTextColor));
+        } else {
+            holder.art.setVisibility(View.GONE);
+
+            rightColor = ContextCompat.getColor(context, R.color.iconsTextColor);
+        }
+
+        GradientDrawable gradientDrawable = new GradientDrawable(
+                GradientDrawable.Orientation.TL_BR,
+                new int[] { leftColor, rightColor });
+
+        ViewCompat.setBackground(holder.itemView, gradientDrawable);
+
+        Artist artist = album.getArtist();
+        if(artist != null) {
+            String name = artist.getName();
+            if(name != null)
+                holder.artist.setText(name);
+
+            String genre = artist.getGenres();
+            if(genre != null)
+                holder.genres.setText(genre);
+        }
+
+        holder.itemView.setOnClickListener((view) -> {
+            this.onContentAction(album, position);
+        });
     }
 
     private void onBindTrackViewHolder(TrackViewHolder holder, int position) {
-        Track track = content.getTracks().get(position);
+        Track track;
+        if(this.album != null)
+            track = this.album.getTracks().get(position);
+        else track = collection.getTracks().get(position);
 
         holder.name.setText(track.getName());
-        holder.artist.setText("By none");
+
+        int leftColor = ContextCompat.getColor(context, R.color.primaryTextColor);
+        int rightColor;
+
+        Bitmap bitmap = track.getArt();
+        if(bitmap != null) {
+            holder.art.setImageBitmap(bitmap);
+
+            rightColor = Palette.from(bitmap).generate().getDarkMutedColor(ContextCompat.getColor(context, R.color.iconsTextColor));
+        } else {
+            holder.art.setVisibility(View.GONE);
+
+            rightColor = ContextCompat.getColor(context, R.color.iconsTextColor);
+        }
+
+        GradientDrawable gradientDrawable = new GradientDrawable(
+                GradientDrawable.Orientation.TL_BR,
+                new int[] { leftColor, rightColor });
+
+        ViewCompat.setBackground(holder.itemView, gradientDrawable);
+
+        Album album = track.getAlbum();
+        if(album != null) {
+            Artist artist = album.getArtist();
+            if(artist != null) {
+                String name = artist.getName();
+                if(name != null)
+                    holder.artist.setText(name);
+
+                String genre = artist.getGenres();
+                if(genre != null)
+                    holder.genres.setText(genre);
+            }
+        }
+
+        holder.itemView.setOnClickListener((view) -> {
+            onClickCallbackListener.onClickCallbackListener(albumIndex, position);
+        });
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        int currentPosition = getArtistPosition(position);
+        if(album != null) {
+            onBindTrackViewHolder((TrackViewHolder) holder, position);
+            return;
+        }
+
+        int currentPosition;
+
+        currentPosition = getArtistPosition(position);
         if(currentPosition != -1)
             onBindArtistViewHolder((ArtistViewHolder) holder, position);
 
-        position -= content.getArtists().size();
         currentPosition = getAlbumPosition(position);
         if(currentPosition != -1 && holder instanceof AlbumViewHolder)
             onBindAlbumViewHolder((AlbumViewHolder) holder, position);
 
-        position -= content.getAlbums().size();
         currentPosition = getTrackPosition(position);
         if(currentPosition != -1 && holder instanceof TrackViewHolder)
             onBindTrackViewHolder((TrackViewHolder) holder, position);
     }
 
     private int getArtistPosition(int position) {
-        ArrayList<Artist> artists = content.getArtists();
+        if(!collection.getFilterBy().equals(Constants.ARTIST))
+            return -1;
+
+        List<Artist> artists = collection.getArtists();
 
         if(position < artists.size()) {
             if(position == 0)
@@ -134,7 +244,10 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     private int getAlbumPosition(int position) {
-        ArrayList<Album> albums = content.getAlbums();
+        if(!collection.getFilterBy().equals(Constants.ALBUM))
+            return -1;
+
+        List<Album> albums = collection.getAlbums();
 
         if(position < albums.size()) {
             if(position == 0)
@@ -144,7 +257,10 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     private int getTrackPosition(int position) {
-        ArrayList<Track> tracks = content.getTracks();
+        if(!collection.getFilterBy().equals(Constants.TRACK))
+            return -1;
+
+        List<Track> tracks = collection.getTracks();
 
         if(position < tracks.size()) {
             if(position == 0)
@@ -155,16 +271,19 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public int getItemViewType(int position) {
+        if(album != null)
+            return ViewType.VIEW_TRACK;
+
         int currentPosition = getArtistPosition(position);
         if(currentPosition != -1)
             return currentPosition;
 
-        position -= content.getArtists().size();
+        position -= collection.getArtists().size();
         currentPosition = getAlbumPosition(position);
         if(currentPosition != -1)
             return currentPosition;
 
-        position -= content.getAlbums().size();
+        position -= collection.getAlbums().size();
         currentPosition = getTrackPosition(position);
         if(currentPosition != -1)
             return currentPosition;
@@ -172,14 +291,17 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         return -1;
     }
 
-    public void swapCollection(Content content) {
-        this.content = content;
+    public void swapCollection(Collection collection) {
+        this.collection = collection;
     }
 
     @Override
     public int getItemCount() {
-        if(content != null)
-            return content.getCount();
+        if(album != null)
+            return album.getTracks().size();
+
+        if(collection != null)
+            return collection.getCount();
         else return 0;
     }
 
@@ -187,27 +309,35 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         private TextView name;
         private TextView artist;
+        private TextView genres;
+        private ImageView art;
 
         public TrackViewHolder(View itemView) {
             super(itemView);
 
             name = itemView.findViewById(R.id.track_name);
             artist = itemView.findViewById(R.id.track_artist);
+            genres = itemView.findViewById(R.id.track_genres);
+            art = itemView.findViewById(R.id.track_art);
         }
     }
 
     public class AlbumViewHolder extends RecyclerView.ViewHolder {
 
-        private ImageView thumbnail;
         private TextView name;
         private TextView artist;
+        private TextView genres;
+        private ImageView art;
+        private ImageView artSecondary;
 
         public AlbumViewHolder(View itemView) {
             super(itemView);
 
-            name = itemView.findViewById(R.id.album_name);
-            thumbnail = itemView.findViewById(R.id.album_thumbnail);
-            artist = itemView.findViewById(R.id.album_artist);
+            name = itemView.findViewById(R.id.track_name);
+            artist = itemView.findViewById(R.id.track_artist);
+            genres = itemView.findViewById(R.id.track_genres);
+            art = itemView.findViewById(R.id.track_art);
+            artSecondary = itemView.findViewById(R.id.track_art_secondary);
         }
     }
 
