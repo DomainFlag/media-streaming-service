@@ -1,14 +1,14 @@
 package com.example.cchiv.jiggles.activities;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.app.FragmentManager;
 import android.bluetooth.BluetoothDevice;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
@@ -21,6 +21,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.cchiv.jiggles.R;
 import com.example.cchiv.jiggles.interfaces.OnUpdatePairedDevices;
@@ -34,7 +35,6 @@ import com.example.cchiv.jiggles.utilities.VisualizerView;
 import com.google.android.exoplayer2.ui.PlayerView;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 public class PlayerActivity extends AppCompatActivity {
@@ -76,22 +76,35 @@ public class PlayerActivity extends AppCompatActivity {
     public void setBluetoothConnection() {
         // Server - Client
         findViewById(R.id.player_share).setOnClickListener((view) -> {
-            AvailableDevicesDialog availableDevicesDialog = new AvailableDevicesDialog();
-            FragmentManager fragmentManager = getFragmentManager();
-            availableDevicesDialog.show(fragmentManager,  "availableDevicesDialog");
+            AvailableDevicesDialog availableDevicesDialog = new AvailableDevicesDialog(this, bluetoothDevice -> {
+                if(jigglesConnection != null) {
+                    jigglesConnection.onPairDevice(bluetoothDevice);
+                }
+            });
+            availableDevicesDialog.show(getFragmentManager(),  "availableDevicesDialog");
 
             jigglesConnection = new JigglesConnection(this, (message, type, size, data) -> {
                 // Do something with the data regardless the reading or writing state
                 switch (type) {
                     case JigglesConnection.MessageConstants.MESSAGE_READ: {
                         if(size > 0) {
-                            // Do something
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getBaseContext(), String.valueOf(size), Toast.LENGTH_LONG).show();
+                                }
+                            });
                         }
                         break;
                     }
                     case JigglesConnection.MessageConstants.MESSAGE_WRITE: {
                         if(size > 0) {
-                            // Do something
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getBaseContext(), String.valueOf(size), Toast.LENGTH_LONG).show();
+                                }
+                            });
                         }
                         break;
                     }
@@ -103,32 +116,14 @@ public class PlayerActivity extends AppCompatActivity {
             }, new OnUpdatePairedDevices() {
                 @Override
                 public void onUpdatePairedDevices(Set<BluetoothDevice> devices) {
-
+                    availableDevicesDialog.onUpdateDialog(devices);
                 }
 
                 @Override
                 public void onAddPairedDevice(BluetoothDevice device) {
-
+                    availableDevicesDialog.onUpdateDialog(device);
                 }
             });
-
-            Thread thread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        // Wait 15s
-                        Thread.sleep(25000);
-
-                        int len = 30;
-                        byte[] message = new byte[len];
-
-                        jigglesConnection.write(message, len);
-                    } catch(InterruptedException e) {
-                        Log.v(TAG, e.toString());
-                    }
-                }
-            });
-            thread.run();
         });
     }
 
@@ -155,22 +150,28 @@ public class PlayerActivity extends AppCompatActivity {
             utilitiesToggle = !utilitiesToggle;
         });
 
-        BitmapDrawable bitmapDrawable = (BitmapDrawable) ContextCompat.getDrawable(this, R.drawable.background);
-        Palette palette = Palette.from(bitmapDrawable.getBitmap())
-                .generate();
-
-        Album album = track.getAlbum();
-        Artist artist = album.getArtist();
-
-        TextView textArtistView = (TextView) findViewById(R.id.player_artist);
-        textArtistView.setText(artist.getName());
-
         TextView textTrackView = (TextView) findViewById(R.id.player_track);
         textTrackView.setText(track.getName());
 
-        Bitmap artwork = album.getArt();
-        if(artwork != null)
-            ((ImageView) findViewById(R.id.player_thumbnail)).setImageBitmap(artwork);
+        Album album = track.getAlbum();
+        if(album != null) {
+            Artist artist = album.getArtist();
+            if(artist != null) {
+                TextView textArtistView = (TextView) findViewById(R.id.player_artist);
+                textArtistView.setText(artist.getName());
+            }
+
+            Bitmap artwork = album.getArt();
+            if(artwork != null)
+                updateLayoutArtwork(artwork);
+        }
+    }
+
+    public void updateLayoutArtwork(Bitmap artwork) {
+        ((ImageView) findViewById(R.id.player_thumbnail)).setImageBitmap(artwork);
+
+        Palette palette = Palette.from(artwork)
+                .generate();
 
         int defaultColor = ContextCompat.getColor(this, R.color.iconsTextColor);
         int lightVibrantColor = palette.getDarkVibrantColor(defaultColor);
@@ -197,7 +198,6 @@ public class PlayerActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.v(TAG, String.valueOf(resultCode));
         if(jigglesConnection != null)
             jigglesConnection.onSearchPairedDevices(requestCode, resultCode, data);
 
@@ -242,8 +242,28 @@ public class PlayerActivity extends AppCompatActivity {
 
     public static class AvailableDevicesDialog extends DialogFragment {
 
-        private List<String> devices = new ArrayList<>();
-        private ListView listView;
+        public interface OnBluetoothDeviceSelect {
+            void onBluetoothDeviceSelect(BluetoothDevice bluetoothDevice);
+        }
+
+        private static final String TAG = "AvailableDevicesDialog";
+
+        private ArrayAdapter<String> arrayAdapter;
+
+        private OnBluetoothDeviceSelect onBluetoothDeviceSelect;
+
+        private ArrayList<BluetoothDevice> bluetoothDevices = new ArrayList<>();
+
+        public AvailableDevicesDialog() {
+            super();
+        }
+
+        public AvailableDevicesDialog(Context context, OnBluetoothDeviceSelect onBluetoothDeviceSelect) {
+            super();
+
+            this.onBluetoothDeviceSelect = onBluetoothDeviceSelect;
+            arrayAdapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, new ArrayList<>());
+        }
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -254,19 +274,33 @@ public class PlayerActivity extends AppCompatActivity {
             builder.setView(inflatedView);
 
             ListView listView = inflatedView.findViewById(R.id.devices_list);
-            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, devices);
             listView.setAdapter(arrayAdapter);
+
+            listView.setOnItemClickListener((adapterView, view, index, l) -> {
+                BluetoothDevice bluetoothDevice = bluetoothDevices.get(index);
+
+                onBluetoothDeviceSelect.onBluetoothDeviceSelect(bluetoothDevice);
+            });
+
+            builder.setNegativeButton("Cancel", (dialogInterface, i) -> getDialog().dismiss());
 
             return builder.create();
         }
 
         public void onUpdateDialog(Set<BluetoothDevice> devices) {
+            bluetoothDevices.addAll(devices);
+
             for(BluetoothDevice device : devices)
-                this.devices.add(device.getName());
+                arrayAdapter.add(device.getName());
+
+            arrayAdapter.notifyDataSetChanged();
         }
 
         public void onUpdateDialog(BluetoothDevice device) {
-            devices.add(device.getName());
+            bluetoothDevices.add(device);
+            arrayAdapter.add(device.getName());
+
+            arrayAdapter.notifyDataSetChanged();
         }
     }
 }

@@ -1,8 +1,11 @@
 package com.example.cchiv.jiggles.data;
 
 import android.content.ContentProvider;
+import android.content.ContentProviderOperation;
+import android.content.ContentProviderResult;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.OperationApplicationException;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -14,6 +17,8 @@ import android.util.Log;
 import com.example.cchiv.jiggles.data.ContentContract.NewsEntry;
 import com.example.cchiv.jiggles.data.ContentContract.ReleaseEntry;
 
+import java.util.ArrayList;
+
 public class JigglesProvider extends ContentProvider {
 
     private static final String TAG = "JigglesProvider";
@@ -21,39 +26,35 @@ public class JigglesProvider extends ContentProvider {
     private static final int ALBUM_SINGLE = 21;
     private static final int ALBUM_MANY = 22;
 
-    private static final int TRACK_SINGLE = 24;
-    private static final int TRACK_MANY = 25;
+    private static final int TRACK_SINGLE = 23;
+    private static final int TRACK_MANY = 24;
 
-    private static final int ARTIST_SINGLE = 27;
-    private static final int ARTIST_MANY = 28;
+    private static final int ARTIST_SINGLE = 25;
+    private static final int ARTIST_MANY = 26;
 
-    private static final int THREAD_SINGLE = 30;
-    private static final int THREAD_MANY = 31;
+    private static final int THREAD_SINGLE = 27;
+    private static final int THREAD_MANY = 28;
 
-    private static final int NEWS_SINGLE = 33;
-    private static final int NEWS_MANY = 34;
+    private static final int NEWS_SINGLE = 29;
+    private static final int NEWS_MANY = 30;
 
-    private static final int RELEASE_SINGLE = 36;
-    private static final int RELEASE_MANY = 37;
+    private static final int RELEASE_SINGLE = 31;
+    private static final int RELEASE_MANY = 32;
+
+    private static final int REVIEW_SINGLE = 33;
+    private static final int REVIEW_MANY = 34;
 
     public static UriMatcher uriMatcher = buildUriMatcher();
-    public static UriMatcher uriTableMatcher = buildUriMatcher();
-
-    public enum Tables {
-        Table1(ContentContract.PATH_ALBUMS, ContentContract.AlbumEntry.TABLE_NAME),
-        Table2(ContentContract.PATH_TRACKS, ContentContract.TrackEntry.TABLE_NAME),
-        Table3(ContentContract.PATH_ARTISTS, ContentContract.ArtistEntry.TABLE_NAME);
-
-        Tables(String path, String table) {}
-    }
 
     public static UriMatcher buildUriMatcher() {
         uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
         uriMatcher.addURI(ContentContract.AUTHORITY, ContentContract.PATH_ALBUMS, ALBUM_MANY);
         uriMatcher.addURI(ContentContract.AUTHORITY, ContentContract.PATH_ALBUMS + "/#", ALBUM_SINGLE);
+
         uriMatcher.addURI(ContentContract.AUTHORITY, ContentContract.PATH_ARTISTS, ARTIST_MANY);
         uriMatcher.addURI(ContentContract.AUTHORITY, ContentContract.PATH_ARTISTS + "/#", ARTIST_SINGLE);
+
         uriMatcher.addURI(ContentContract.AUTHORITY, ContentContract.PATH_TRACKS, TRACK_MANY);
         uriMatcher.addURI(ContentContract.AUTHORITY, ContentContract.PATH_TRACKS + "/#", TRACK_SINGLE);
 
@@ -62,6 +63,9 @@ public class JigglesProvider extends ContentProvider {
 
         uriMatcher.addURI(ContentContract.AUTHORITY, ContentContract.PATH_NEWS, NEWS_MANY);
         uriMatcher.addURI(ContentContract.AUTHORITY, ContentContract.PATH_NEWS + "/#", NEWS_SINGLE);
+
+        uriMatcher.addURI(ContentContract.AUTHORITY, ContentContract.PATH_REVIEWS, REVIEW_MANY);
+        uriMatcher.addURI(ContentContract.AUTHORITY, ContentContract.PATH_REVIEWS + "/#", REVIEW_SINGLE);
 
         return uriMatcher;
     };
@@ -84,9 +88,6 @@ public class JigglesProvider extends ContentProvider {
 
         switch(uriMatcher.match(uri)) {
             case NEWS_MANY : {
-                String sql = "SELECT * FROM " + NewsEntry.TABLE_NAME;
-                Log.v(TAG, String.valueOf(sqLiteDatabase.rawQuery(sql, null).getCount()));
-
                 cursor = sqLiteDatabase.query(ContentContract.NewsEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, orderBy);
                 break;
             }
@@ -113,9 +114,6 @@ public class JigglesProvider extends ContentProvider {
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues contentValues) {
         SQLiteDatabase sqLiteDatabase = contentDbHelper.getWritableDatabase();
 
-        String path = uri.getPath();
-        String table = path.substring(path.indexOf("/")+1);
-
         long nbRowsInserted = sqLiteDatabase.insert(ReleaseEntry.TABLE_NAME,null, contentValues);
 
         if(getContext() != null)
@@ -134,7 +132,9 @@ public class JigglesProvider extends ContentProvider {
                 sqLiteDatabase.beginTransaction();
 
                 for(ContentValues value : values) {
-                    insertedRows += sqLiteDatabase.insert(NewsEntry.TABLE_NAME, null, value);
+                    long rowId = sqLiteDatabase.insert(NewsEntry.TABLE_NAME, null, value);
+                    if(rowId != -1)
+                        insertedRows++;
                 }
 
                 sqLiteDatabase.setTransactionSuccessful();
@@ -146,7 +146,9 @@ public class JigglesProvider extends ContentProvider {
                 sqLiteDatabase.beginTransaction();
 
                 for(ContentValues value : values) {
-                    insertedRows += sqLiteDatabase.insert(ReleaseEntry.TABLE_NAME, null, value);
+                    long rowId = sqLiteDatabase.insert(ReleaseEntry.TABLE_NAME, null, value);
+                    if(rowId != -1)
+                        insertedRows++;
                 }
 
                 sqLiteDatabase.setTransactionSuccessful();
@@ -155,7 +157,35 @@ public class JigglesProvider extends ContentProvider {
                 break;
             }
             default : {
-                Log.v(TAG, "Unkown operation");
+                Log.v(TAG, "Unknown operation");
+            }
+        }
+
+        return insertedRows;
+    }
+
+    public int bulkInsert(@NonNull Uri uri, @NonNull ContentValues[] values, @Nullable String selection, @Nullable String[] selectionArgs) {
+        SQLiteDatabase sqLiteDatabase = contentDbHelper.getWritableDatabase();
+        int insertedRows = 0;
+
+        switch(uriMatcher.match(uri)) {
+            case RELEASE_MANY : {
+                sqLiteDatabase.beginTransaction();
+
+                for(ContentValues value : values) {
+
+                    long rowId = sqLiteDatabase.insert(NewsEntry.TABLE_NAME, null, value);
+                    if(rowId != -1)
+                        insertedRows++;
+                }
+
+                sqLiteDatabase.setTransactionSuccessful();
+
+                sqLiteDatabase.endTransaction();
+                break;
+            }
+            default : {
+                Log.v(TAG, "Unknown operation");
             }
         }
 
@@ -170,5 +200,23 @@ public class JigglesProvider extends ContentProvider {
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues contentValues, @Nullable String s, @Nullable String[] strings) {
         return 0;
+    }
+
+    @NonNull
+    @Override
+    public ContentProviderResult[] applyBatch(@NonNull ArrayList<ContentProviderOperation> operations) throws OperationApplicationException {
+        SQLiteDatabase sqLiteDatabase = contentDbHelper.getWritableDatabase();
+        sqLiteDatabase.beginTransaction();
+
+        ContentProviderResult[] results;
+        try {
+            results = super.applyBatch(operations);
+
+            sqLiteDatabase.setTransactionSuccessful();
+
+            return results;
+        } finally {
+            sqLiteDatabase.endTransaction();
+        }
     }
 }

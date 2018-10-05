@@ -85,7 +85,8 @@ public class ContentDbHelper extends SQLiteOpenHelper {
         String sqlReviewQuery = "CREATE TABLE " + ReviewEntry.TABLE_NAME + " (" +
                 ReviewEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 ReviewEntry.COL_REVIEW_AUTHOR + " TEXT NOT NULL, " +
-                ReviewEntry.COL_REVIEW_CAPTION + " TEXT NOT NULL, " +
+                ReviewEntry.COL_REVIEW_RELEASE + " INTEGER REFERENCES " +
+                    ReleaseEntry.TABLE_NAME + "(" + ReleaseEntry._ID + ")" + ", " +
                 ReviewEntry.COL_REVIEW_CONTENT + " TEXT NOT NULL, " +
                 ReviewEntry.COL_REVIEW_URL + " TEXT NOT NULL, " +
                 ReviewEntry.COL_REVIEW_SCORE + " INTEGER DEFAULT 0 " +
@@ -128,7 +129,7 @@ public class ContentDbHelper extends SQLiteOpenHelper {
                 CommentEntry.COL_COMMENT_THREAD + " INTEGER REFERENCES " +
                     ThreadEntry.TABLE_NAME + "(" + ThreadEntry._ID + ")" + ", " +
                 CommentEntry.COL_COMMENT_PARENT + " INTEGER REFERENCES " +
-                    CommentEntry._ID + "(" + CommentEntry._ID + ")" + ", " +
+                    CommentEntry.TABLE_NAME + "(" + CommentEntry._ID + ")" + ", " +
                 CommentEntry.COL_COMMENT_DEPTH + " INTEGER DEFAULT 0, " +
                 CommentEntry.COL_COMMENT_CONTENT + " TEXT NOT NULL, " +
                 CommentEntry.COL_COMMENT_LIKES + " INTEGER DEFAULT 0 " +

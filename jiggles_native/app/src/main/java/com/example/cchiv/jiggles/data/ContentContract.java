@@ -119,7 +119,7 @@ public class ContentContract {
 
         public static final String _ID = BaseColumns._ID;
         public static final String COL_REVIEW_AUTHOR = "author";
-        public static final String COL_REVIEW_CAPTION = "caption";
+        public static final String COL_REVIEW_RELEASE = "release";
         public static final String COL_REVIEW_CONTENT = "content";
         public static final String COL_REVIEW_URL = "url";
         public static final String COL_REVIEW_SCORE = "score";

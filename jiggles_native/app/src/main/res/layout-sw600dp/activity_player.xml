@@ -62,19 +62,11 @@
                 android:src="@drawable/ic_microphone"/>
 
             <ImageView
-                android:id="@+id/player_share_server"
+                android:id="@+id/player_share"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="@dimen/activity_margin_component"
-                android:contentDescription="@string/player_lyrics"
-                android:src="@drawable/ic_share"/>
-
-            <ImageView
-                android:id="@+id/player_share_client"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="@dimen/activity_margin_component"
-                android:contentDescription="@string/player_lyrics"
+                android:contentDescription="@string/player_share"
                 android:src="@drawable/ic_share"/>
 
         </LinearLayout>

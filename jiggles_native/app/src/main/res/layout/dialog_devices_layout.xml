@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/motionPrimaryDarkColor"
+    android:background="@color/iconsTextColor"
     android:padding="@dimen/activity_margin_section"
     android:orientation="vertical">
 
@@ -13,7 +13,7 @@
         android:layout_height="match_parent"
         android:textStyle="bold"
         android:textSize="@dimen/activity_text_paragraph"
-        android:textColor="@color/iconsTextColor"
+        android:textColor="@color/colorPrimaryDark"
         android:text="@string/player_devices_label"/>
 
     <ListView

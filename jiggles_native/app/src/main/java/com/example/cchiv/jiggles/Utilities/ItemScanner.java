@@ -145,7 +145,6 @@ public class ItemScanner {
                     genreList = Arrays.asList(genres.split(" "));
 
                 Track track = new Track(title, path);
-//                track.setArt(decodeBitmapArt());
 
                 collection.addItem(track, artistName, albumName, genreList);
 

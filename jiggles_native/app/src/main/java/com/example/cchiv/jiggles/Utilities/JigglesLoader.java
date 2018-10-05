@@ -46,9 +46,7 @@ public class JigglesLoader implements LoaderManager.LoaderCallbacks<Cursor> {
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-
-    }
+    public void onLoaderReset(Loader<Cursor> loader) {}
 
     public static class AsyncTaskContentLoader extends AsyncTaskLoader<Cursor> {
 

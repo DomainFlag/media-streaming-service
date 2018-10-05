@@ -15,13 +15,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <android.support.constraint.ConstraintLayout
+            <LinearLayout
                 android:id="@+id/home_bar"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:background="@color/iconsTextColor"
                 android:orientation="horizontal"
-                android:padding="@dimen/activity_margin_relative"
+                android:gravity="center"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
@@ -29,10 +29,6 @@
                     android:id="@+id/home_search"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:clickable="true"
                     android:drawableLeft="@drawable/ic_lens"
@@ -41,31 +37,25 @@
                     android:focusable="true"
                     android:gravity="center"
                     android:onClick="onClickSearch"
-                    android:padding="@dimen/activity_margin_relative"
+                    android:padding="@dimen/activity_margin_component"
                     android:text="@string/search_text"
                     android:textColor="@color/primaryTextColor"
-                    android:textSize="@dimen/activity_text_subheader"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"/>
+                    android:textSize="@dimen/activity_text_subheader"/>
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="end|center_vertical"
                     android:layout_marginLeft="8dp"
                     android:layout_marginStart="8dp"
-                    android:orientation="horizontal"
-                    app:layout_constraintBottom_toBottomOf="@+id/home_search"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="1.0"
-                    app:layout_constraintStart_toEndOf="@+id/home_search"
-                    app:layout_constraintTop_toTopOf="@+id/home_search">
+                    android:orientation="horizontal">
 
                     <TextView
                         android:id="@+id/home_forum"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/activity_margin_relative"
+                        android:padding="@dimen/activity_margin_component"
                         android:text="@string/home_forum"
                         android:textColor="@color/colorPrimaryDark"
                         android:textSize="@dimen/activity_text_subheader"
@@ -75,7 +65,7 @@
                         android:id="@+id/home_player"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/activity_margin_relative"
+                        android:padding="@dimen/activity_margin_component"
                         android:text="@string/home_player"
                         android:textColor="@color/colorPrimaryDark"
                         android:textSize="@dimen/activity_text_subheader"
@@ -83,7 +73,7 @@
 
                 </LinearLayout>
 
-            </android.support.constraint.ConstraintLayout>
+            </LinearLayout>
 
             <android.support.v7.widget.CardView
                 android:id="@+id/home_releases"

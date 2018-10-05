@@ -72,7 +72,7 @@ public class ThreadCreatorFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        rootView = inflater.inflate(R.layout.thread_creator_layout, container, false);
+        rootView = inflater.inflate(R.layout.fragment_thread_layout, container, false);
 
         rootView.findViewById(R.id.thread_thumbnail).setOnClickListener((view) -> {
             Intent intent = new Intent(Intent.ACTION_PICK);

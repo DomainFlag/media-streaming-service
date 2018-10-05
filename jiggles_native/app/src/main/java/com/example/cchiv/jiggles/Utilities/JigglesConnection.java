@@ -47,6 +47,8 @@ public class JigglesConnection implements OnSearchPairedDevices {
 
     private ConnectedThread connectedThread;
 
+    private RemoteThread remoteThread;
+
     private boolean receiverRegistered = false;
 
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
@@ -73,8 +75,33 @@ public class JigglesConnection implements OnSearchPairedDevices {
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
-        RemoteThread remoteThread = new RemoteThread();
+        searchPairedDevices();
+
+        remoteThread = new RemoteThread();
         remoteThread.start();
+
+    }
+
+    public void onPairDevice(BluetoothDevice bluetoothDevice) {
+        remoteThread.setRunning(false);
+
+        ClientThread clientThread = new ClientThread(bluetoothDevice);
+        clientThread.start();
+
+        Thread thread = new Thread(() -> {
+            try {
+                // Wait 15s
+                Thread.sleep(15000);
+
+                int len = 30;
+                byte[] message = new byte[len];
+
+                write(message, len);
+            } catch(InterruptedException e) {
+                Log.v(TAG, e.toString());
+            }
+        });
+        thread.start();
     }
 
     public void discover() {
@@ -197,6 +224,8 @@ public class JigglesConnection implements OnSearchPairedDevices {
     private class RemoteThread extends Thread {
         private final BluetoothServerSocket mmServerSocket;
 
+        private boolean running = true;
+
         private RemoteThread() {
             // Use a temporary object that is later assigned to mmServerSocket
             // because mmServerSocket is final.
@@ -216,12 +245,14 @@ public class JigglesConnection implements OnSearchPairedDevices {
         public void run() {
             BluetoothSocket socket = null;
             // Keep listening until exception occurs or a socket is returned.
-            while(true) {
+            while(running) {
                 try {
-                    socket = mmServerSocket.accept();
-                } catch (IOException e) {
-                    Log.e(TAG, "Socket's accept() method failed", e);
-                    break;
+                    socket = mmServerSocket.accept(50);
+                } catch(IOException e) {
+                    if(!running) {
+                        Log.e(TAG, "Socket's accept() method failed", e);
+                        break;
+                    }
                 }
 
                 try {
@@ -236,12 +267,16 @@ public class JigglesConnection implements OnSearchPairedDevices {
                         mmServerSocket.close();
                         break;
                     } else {
-                        Log.v(TAG, "Connection wasn't accepted");
+//                        Log.v(TAG, "Connection wasn't accepted");
                     }
                 } catch(IOException e) {
                     Log.v(TAG, e.toString());
                 }
             }
+        }
+
+        public void setRunning(boolean running) {
+            this.running = running;
         }
 
         // Closes the connect socket and causes the thread to finish.

@@ -1,8 +1,10 @@
 package com.example.cchiv.jiggles.model;
 
+import android.content.ContentProviderOperation;
 import android.content.ContentValues;
 import android.os.Bundle;
 
+import com.example.cchiv.jiggles.data.ContentContract.ReviewEntry;
 import com.example.cchiv.jiggles.data.ContentContract.ReleaseEntry;
 import com.example.cchiv.jiggles.utilities.JigglesLoader;
 
@@ -55,6 +57,33 @@ public class Release {
 
         return contentValues;
     }
+
+    public static ArrayList<ContentProviderOperation> batchOperations(ArrayList<Release> releases) {
+        ArrayList<ContentProviderOperation> operations = new ArrayList<>();
+
+        int previousResult = 0;
+        for(Release release : releases) {
+            ContentProviderOperation contentProviderReleaseOperation = ContentProviderOperation
+                    .newInsert(ReleaseEntry.CONTENT_URI)
+                    .withValues(parseValues(release))
+                    .build();
+
+            operations.add(contentProviderReleaseOperation);
+            for(Review review : release.getReviews()) {
+                ContentProviderOperation contentProviderReviewOperation = ContentProviderOperation
+                        .newInsert(ReviewEntry.CONTENT_URI)
+                        .withValueBackReference(ReviewEntry.COL_REVIEW_RELEASE, previousResult)
+                        .withValues(Review.parseValues(review))
+                        .build();
+
+                operations.add(contentProviderReviewOperation);
+            }
+
+            previousResult += (release.getReviews().size() + 1);
+        }
+
+        return operations;
+    };
 
     public static Bundle bundleValues() {
         Bundle bundle = new Bundle();

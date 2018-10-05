@@ -7,72 +7,28 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="@dimen/activity_margin_component"
-    tools:background="@color/primaryTextColor">
-
-    <com.example.cchiv.jiggles.VerticalTextView
-        android:id="@+id/track_genres"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="@dimen/activity_margin_relative"
-        android:layout_marginEnd="@dimen/activity_margin_relative"
-        android:layout_centerVertical="true"
-        android:textStyle="bold"
-        android:textColor="@color/secondaryColor"
-        android:textSize="@dimen/activity_text_span"
-        tools:text="@string/app_tools_placeholder"/>
-
-    <RelativeLayout
-        android:id="@+id/track_art_container"
-        android:layout_width="124dp"
-        android:layout_height="112dp"
-        android:layout_toRightOf="@id/track_genres"
-        android:layout_toEndOf="@id/track_genres">
-
-        <ImageView
-            android:id="@+id/track_art_secondary"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:adjustViewBounds="true"
-            android:scaleType="centerCrop"
-            android:contentDescription="@string/collection_art"
-            android:layout_marginRight="-18dp"
-            android:layout_marginEnd="-18dp"
-            android:layout_marginTop="18dp"
-            android:layout_alignRight="@id/track_art"
-            android:layout_alignEnd="@id/track_art"
-            tools:src="@drawable/ic_launcher_background"/>
-
-        <ImageView
-            android:id="@+id/track_art"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:adjustViewBounds="true"
-            android:scaleType="centerCrop"
-            android:layout_centerVertical="true"
-            android:contentDescription="@string/collection_art"
-            tools:src="@drawable/ic_launcher_background"/>
-
-    </RelativeLayout>
+    android:background="@color/primaryTextColor">
 
     <TextView
-        android:id="@+id/track_name"
+        android:id="@+id/album_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/activity_margin_component"
+        android:layout_margin="@dimen/activity_margin_sibling"
         android:textColor="@color/iconsTextColor"
-        android:layout_toRightOf="@id/track_art_container"
-        android:layout_toEndOf="@id/track_art_container"
+        android:textSize="@dimen/activity_text_paragraph"
+        android:layout_toRightOf="@id/album_art_container"
+        android:layout_toEndOf="@id/album_art_container"
         tools:text="@string/app_tools_placeholder"/>
 
     <TextView
-        android:id="@+id/track_artist"
+        android:id="@+id/album_artist"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/activity_margin_component"
+        android:layout_margin="@dimen/activity_margin_sibling"
         android:textColor="@color/secondaryColor"
-        android:layout_below="@id/track_name"
-        android:layout_toRightOf="@id/track_art_container"
-        android:layout_toEndOf="@id/track_art_container"
+        android:layout_below="@id/album_name"
+        android:layout_toRightOf="@id/album_art_container"
+        android:layout_toEndOf="@id/album_art_container"
         tools:text="@string/app_tools_placeholder"/>
 
 </RelativeLayout>

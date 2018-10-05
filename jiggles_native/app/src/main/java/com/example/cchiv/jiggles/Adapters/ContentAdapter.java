@@ -42,11 +42,16 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         void onClickCallbackListener(int albumIndex, int trackIndex);
     }
 
+    public interface OnClickAlbumListener {
+        void onClickAlbumListener(Album album, int position);
+    }
+
     private static final String TAG = "ContentAdapter";
 
     private OnClickCallbackListener onClickCallbackListener;
+    private OnClickAlbumListener onClickAlbumListener;
 
-    private Context context;
+    private Context context = null;
 
     private Collection collection;
 
@@ -58,10 +63,17 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         this.collection = collection;
     }
 
-    public ContentAdapter(Context context, OnClickCallbackListener onClickCallbackListener, Collection collection) {
+    public ContentAdapter(Context context, OnClickCallbackListener onClickCallbackListener, Album album, int albumIndex) {
+        this.context = context;
+        this.album = album;
+        this.albumIndex = albumIndex;
+        this.onClickCallbackListener = onClickCallbackListener;
+    }
+
+    public ContentAdapter(Context context, OnClickAlbumListener onClickAlbumListener, Collection collection) {
         this.context = context;
         this.collection = collection;
-        this.onClickCallbackListener = onClickCallbackListener;
+        this.onClickAlbumListener = onClickAlbumListener;
     }
 
     @NonNull
@@ -77,7 +89,7 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             case ViewType.VIEW_ALBUM : {
                 return new AlbumViewHolder(
                         layoutInflater
-                                .inflate(R.layout.content_track_layout, parent, false));
+                                .inflate(R.layout.content_album_layout, parent, false));
             }
             case ViewType.VIEW_TRACK : {
                 return new TrackViewHolder(
@@ -92,12 +104,6 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
 
         return null;
-    }
-
-    public void onContentAction(Album album, int position) {
-        this.album = album;
-        this.albumIndex = position;
-        this.notifyDataSetChanged();
     }
 
     private void onBindArtistViewHolder(ArtistViewHolder holder, int position) {
@@ -157,7 +163,7 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
 
         holder.itemView.setOnClickListener((view) -> {
-            this.onContentAction(album, position);
+            this.onClickAlbumListener.onClickAlbumListener(album, position);
         });
     }
 
@@ -169,39 +175,13 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         holder.name.setText(track.getName());
 
-        int leftColor = ContextCompat.getColor(context, R.color.primaryTextColor);
-        int rightColor;
-
-        Bitmap bitmap = track.getArt();
-        if(bitmap != null) {
-            holder.art.setImageBitmap(bitmap);
-
-            rightColor = Palette.from(bitmap).generate().getDarkMutedColor(ContextCompat.getColor(context, R.color.iconsTextColor));
-        } else {
-            holder.art.setVisibility(View.GONE);
-
-            rightColor = ContextCompat.getColor(context, R.color.iconsTextColor);
-        }
-
-        GradientDrawable gradientDrawable = new GradientDrawable(
-                GradientDrawable.Orientation.TL_BR,
-                new int[] { leftColor, rightColor });
-
-        ViewCompat.setBackground(holder.itemView, gradientDrawable);
-
         Album album = track.getAlbum();
         if(album != null) {
             Artist artist = album.getArtist();
             if(artist != null) {
-                String name = artist.getName();
-                if(name != null)
-                    holder.artist.setText(name);
-
-                String genre = artist.getGenres();
-                if(genre != null)
-                    holder.genres.setText(genre);
-            }
-        }
+                holder.artist.setText(artist.getName());
+            } else holder.artist.setText(track.getName());
+        } else holder.artist.setText(track.getName());
 
         holder.itemView.setOnClickListener((view) -> {
             onClickCallbackListener.onClickCallbackListener(albumIndex, position);
@@ -309,16 +289,12 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         private TextView name;
         private TextView artist;
-        private TextView genres;
-        private ImageView art;
 
         public TrackViewHolder(View itemView) {
             super(itemView);
 
-            name = itemView.findViewById(R.id.track_name);
-            artist = itemView.findViewById(R.id.track_artist);
-            genres = itemView.findViewById(R.id.track_genres);
-            art = itemView.findViewById(R.id.track_art);
+            name = itemView.findViewById(R.id.album_name);
+            artist = itemView.findViewById(R.id.album_artist);
         }
     }
 
@@ -333,11 +309,11 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         public AlbumViewHolder(View itemView) {
             super(itemView);
 
-            name = itemView.findViewById(R.id.track_name);
-            artist = itemView.findViewById(R.id.track_artist);
-            genres = itemView.findViewById(R.id.track_genres);
-            art = itemView.findViewById(R.id.track_art);
-            artSecondary = itemView.findViewById(R.id.track_art_secondary);
+            name = itemView.findViewById(R.id.album_name);
+            artist = itemView.findViewById(R.id.album_artist);
+            genres = itemView.findViewById(R.id.album_genres);
+            art = itemView.findViewById(R.id.album_art);
+            artSecondary = itemView.findViewById(R.id.album_art_secondary);
         }
     }
 

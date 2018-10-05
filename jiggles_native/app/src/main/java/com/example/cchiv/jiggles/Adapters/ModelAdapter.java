@@ -2,7 +2,6 @@ package com.example.cchiv.jiggles.adapters;
 
 import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -22,7 +21,6 @@ public abstract class ModelAdapter<T extends RecyclerView.ViewHolder, B> extends
         if(this.cursor != null)
             this.cursor.close();
 
-        Log.v(TAG, String.valueOf(cursor.getCount()));
         this.cursor = cursor;
     }
 
