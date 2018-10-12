@@ -7,7 +7,7 @@ public class Comm {
     private String parent;
     private int depth;
     private String content;
-    private int likes;
+    private int likes = 0;
 
     public Comm() {}
 

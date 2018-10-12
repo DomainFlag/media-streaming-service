@@ -203,7 +203,8 @@ public class JigglesConnection implements OnSearchPairedDevices {
                 return;
             }
 
-            Log.v(TAG, "Connection attempt succeeded");
+            onUpdatePairedDevices.onPairedDoneDevice("Paired with " + mmDevice.getName());
+
             // The connection attempt succeeded. Perform work associated with
             // the connection in a separate thread.
             connectedThread = new ConnectedThread(mmSocket);
@@ -259,7 +260,7 @@ public class JigglesConnection implements OnSearchPairedDevices {
                     if(socket != null) {
                         // A connection was accepted. Perform work associated with
                         // the connection in a separate thread.
-                        Log.v(TAG, "Connection was accepted");
+                        onUpdatePairedDevices.onPairedDoneDevice("Paired with " + socket.getRemoteDevice().getName());
 
                         connectedThread = new ConnectedThread(socket);
                         connectedThread.start();
@@ -267,7 +268,7 @@ public class JigglesConnection implements OnSearchPairedDevices {
                         mmServerSocket.close();
                         break;
                     } else {
-//                        Log.v(TAG, "Connection wasn't accepted");
+                        // Do something
                     }
                 } catch(IOException e) {
                     Log.v(TAG, e.toString());
@@ -296,7 +297,6 @@ public class JigglesConnection implements OnSearchPairedDevices {
         private byte[] mmBuffer; // mmBuffer store for the stream
 
         private ConnectedThread(BluetoothSocket socket) {
-            Log.v(TAG, "ConnectedThread instantiated");
             mmSocket = socket;
             InputStream tmpIn = null;
             OutputStream tmpOut = null;
@@ -323,7 +323,6 @@ public class JigglesConnection implements OnSearchPairedDevices {
             mmBuffer = new byte[1024];
             int numBytes; // bytes returned from read()
 
-            Log.v(TAG, "Running");
             // Keep listening to the InputStream until an exception occurs.
             while(true) {
                 try {

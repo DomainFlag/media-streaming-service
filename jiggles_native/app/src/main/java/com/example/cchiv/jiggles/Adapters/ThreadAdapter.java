@@ -6,9 +6,11 @@ import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.ImageViewCompat;
 import android.support.v7.graphics.Palette;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,15 +21,16 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.cchiv.jiggles.Constants;
-import com.example.cchiv.jiggles.model.Thread;
 import com.example.cchiv.jiggles.R;
+import com.example.cchiv.jiggles.model.Comm;
+import com.example.cchiv.jiggles.model.Thread;
+import com.example.cchiv.jiggles.utilities.Formatter;
+import com.example.cchiv.jiggles.utilities.TreeParser;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Locale;
+import java.util.List;
 
 public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ThreadViewHolder> {
 
@@ -56,13 +59,6 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ThreadView
                 layoutInflater
                         .inflate(R.layout.thread_layout, parent, false)
         );
-    }
-
-    private String parseDate(String objectId) {
-        Date date = new Date(Integer.parseInt(objectId.substring(0, 8), 16) * 1000);
-
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy:MM:dd hh:mm", Locale.US);
-        return simpleDateFormat.format(date);
     }
 
     private void viewContrastizer(View view, int color) {
@@ -114,8 +110,19 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ThreadView
                 });
 
         holder.author.setText(thread.getAuthor().getName());
-        holder.date.setText(parseDate(thread.getId()));
+        holder.date.setText(Formatter.parseDate(thread.getId()));
         holder.like.setText(String.valueOf(thread.getVotes()));
+        holder.content.setText(thread.getContent());
+
+        TreeParser treeParser = new TreeParser();
+        List<Comm> comments = treeParser.queryTree(thread.getComments());
+
+        CommentAdapter commentAdapter = new CommentAdapter(context, comments);
+        holder.comments.setAdapter(commentAdapter);
+        holder.comments.setNestedScrollingEnabled(true);
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
+        holder.comments.setLayoutManager(linearLayoutManager);
 
         holder.comment.setOnClickListener((view) -> {
             // Do the comment
@@ -158,7 +165,9 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ThreadView
         private TextView author;
         private TextView date;
         private TextView comment;
-        private LinearLayout utilities;
+        private TextView content;
+        private ConstraintLayout utilities;
+        private RecyclerView comments;
 
         private ImageView menu_button;
 
@@ -175,6 +184,8 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ThreadView
             date = itemView.findViewById(R.id.date);
             like = itemView.findViewById(R.id.like);
             utilities = itemView.findViewById(R.id.utilities);
+            content = itemView.findViewById(R.id.content);
+            comments = itemView.findViewById(R.id.comments);
 
             menu = itemView.findViewById(R.id.menu);
             menu_button = itemView.findViewById(R.id.menu_button);

@@ -111,6 +111,22 @@
 
     </RelativeLayout>
 
+    <TextView
+        android:id="@+id/player_devices"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:drawableLeft="@drawable/ic_wireless"
+        android:drawableStart="@drawable/ic_wireless"
+        android:drawableTint="@color/colorPrimaryDark"
+        android:drawablePadding="@dimen/activity_margin_relative"
+        android:layout_margin="@dimen/activity_margin_component"
+        android:textSize="@dimen/activity_text_subparagraph"
+        android:textStyle="bold"
+        android:textColor="@color/primaryTextColor"
+        tools:text="@string/forum_thread_thumbnail_description"/>
+
     <com.google.android.exoplayer2.ui.PlayerView
         android:id="@+id/player"
         android:layout_width="match_parent"

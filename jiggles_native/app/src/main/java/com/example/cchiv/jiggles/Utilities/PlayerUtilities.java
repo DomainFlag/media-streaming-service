@@ -41,6 +41,7 @@ public class PlayerUtilities {
 
     private Context context;
 
+    private JigglesConnection jigglesConnection = null;
     private VisualizerView visualizerView = null;
     private Visualizer visualizer = null;
 
@@ -69,6 +70,10 @@ public class PlayerUtilities {
         this.data = null;
 
         return buffer.length;
+    }
+
+    public void attachConnection(JigglesConnection jigglesConnection) {
+        this.jigglesConnection = jigglesConnection;
     }
 
     public void setUpPlayer(PlayerView playerView, Track track) {
@@ -338,6 +343,17 @@ public class PlayerUtilities {
                 // Don't change the state when ( resume state but pause state )
                 if(!playerPlaybackState || playerPlaybackAction)
                     playerPlaybackState = playWhenReady;
+
+                if(jigglesConnection != null) {
+                    byte[] action;
+                    if(playWhenReady) {
+                        action = JigglesProtocol.createResumeAction();
+                    } else {
+                        action = JigglesProtocol.createPauseAction();
+                    }
+
+                    jigglesConnection.write(action, action.length);
+                }
             }
 
             @Override
@@ -393,6 +409,9 @@ public class PlayerUtilities {
         }
     }
 
+    public void togglePlayer(boolean play) {
+        exoPlayer.setPlayWhenReady(play);
+    }
 
     public void togglePlayback(boolean play) {
         // Only change playback state when not in(pause state but resume action)

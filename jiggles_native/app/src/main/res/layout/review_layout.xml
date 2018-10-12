@@ -6,6 +6,7 @@
     android:padding="@dimen/activity_margin_relative"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:maxHeight="120dp"
     tools:layout_height="wrap_content">
 
     <RelativeLayout
@@ -63,6 +64,8 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/activity_margin_sibling"
             android:textSize="@dimen/activity_text_span"
+            android:ellipsize="marquee"
+            android:maxLines="3"
             tools:text="@string/app_tools_placeholder"/>
 
     </LinearLayout>

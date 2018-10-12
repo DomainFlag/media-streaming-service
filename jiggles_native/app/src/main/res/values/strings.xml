@@ -102,6 +102,9 @@
 
     <string name="forum_thread_thumbnail_description">Thread Thumbnail</string>
 
+    <string name="forum_thread_comment_reply">Reply</string>
+    <string name="forum_thread_reply_hint">Reply\.\.\.</string>
+
     <string name="forum_thread_creator_content_hint">Content\.\.\.</string>
     <string name="forum_thread_creator_create">Post</string>
 
@@ -109,6 +112,11 @@
 
     <string name="thread_edit">Edit thread</string>
     <string name="thread_delete">Delete thread</string>
+
+    <string name="comment_caption">Author caption</string>
+
+    <string name="thread_less">Less\.\.\.</string>
+    <string name="thread_more">More\.\.\.</string>
 
 
 </resources>

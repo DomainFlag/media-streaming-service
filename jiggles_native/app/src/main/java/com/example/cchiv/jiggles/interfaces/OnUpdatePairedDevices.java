@@ -7,4 +7,5 @@ import java.util.Set;
 public interface OnUpdatePairedDevices {
     void onUpdatePairedDevices(Set<BluetoothDevice> devices);
     void onAddPairedDevice(BluetoothDevice device);
+    void onPairedDoneDevice(String message);
 }

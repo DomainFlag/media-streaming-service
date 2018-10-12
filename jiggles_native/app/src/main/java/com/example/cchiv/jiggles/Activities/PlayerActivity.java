@@ -30,6 +30,7 @@ import com.example.cchiv.jiggles.model.Artist;
 import com.example.cchiv.jiggles.model.Track;
 import com.example.cchiv.jiggles.utilities.ItemScanner;
 import com.example.cchiv.jiggles.utilities.JigglesConnection;
+import com.example.cchiv.jiggles.utilities.JigglesProtocol;
 import com.example.cchiv.jiggles.utilities.PlayerUtilities;
 import com.example.cchiv.jiggles.utilities.VisualizerView;
 import com.google.android.exoplayer2.ui.PlayerView;
@@ -73,6 +74,19 @@ public class PlayerActivity extends AppCompatActivity {
         setBluetoothConnection();
     }
 
+    public void actOnAction(String action) {
+        runOnUiThread(() -> {
+            Log.v(TAG, action);
+            if(action.startsWith(JigglesProtocol.ACTION_PAUSE)) {
+                playerUtilities.togglePlayer(false);
+            } else if(action.startsWith(JigglesProtocol.ACTION_RESUME)) {
+                playerUtilities.togglePlayer(true);
+            } else {
+                Log.v(TAG, "Unknown operation");
+            }
+        });
+    }
+
     public void setBluetoothConnection() {
         // Server - Client
         findViewById(R.id.player_share).setOnClickListener((view) -> {
@@ -81,6 +95,7 @@ public class PlayerActivity extends AppCompatActivity {
                     jigglesConnection.onPairDevice(bluetoothDevice);
                 }
             });
+
             availableDevicesDialog.show(getFragmentManager(),  "availableDevicesDialog");
 
             jigglesConnection = new JigglesConnection(this, (message, type, size, data) -> {
@@ -88,24 +103,14 @@ public class PlayerActivity extends AppCompatActivity {
                 switch (type) {
                     case JigglesConnection.MessageConstants.MESSAGE_READ: {
                         if(size > 0) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(getBaseContext(), String.valueOf(size), Toast.LENGTH_LONG).show();
-                                }
-                            });
-                        }
+                            actOnAction(JigglesProtocol.decodeAction(data));
+                        } else Log.v(TAG, "No data");
                         break;
                     }
                     case JigglesConnection.MessageConstants.MESSAGE_WRITE: {
                         if(size > 0) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(getBaseContext(), String.valueOf(size), Toast.LENGTH_LONG).show();
-                                }
-                            });
-                        }
+                            actOnAction(JigglesProtocol.decodeAction(data));
+                        } else Log.v(TAG, "No data");
                         break;
                     }
                     case JigglesConnection.MessageConstants.MESSAGE_TOAST: {
@@ -123,7 +128,18 @@ public class PlayerActivity extends AppCompatActivity {
                 public void onAddPairedDevice(BluetoothDevice device) {
                     availableDevicesDialog.onUpdateDialog(device);
                 }
+
+                @Override
+                public void onPairedDoneDevice(String message) {
+                    availableDevicesDialog.dismiss();
+
+                    runOnUiThread(() -> {
+                        Toast.makeText(getBaseContext(), message, Toast.LENGTH_LONG).show();
+                    });
+                }
             });
+
+            attachListener(jigglesConnection);
         });
     }
 
@@ -194,6 +210,10 @@ public class PlayerActivity extends AppCompatActivity {
     public void setPlayer(Track track) {
         playerView.setControllerShowTimeoutMs(-1);
         playerUtilities.setUpPlayer(playerView, track);
+    }
+
+    public void attachListener(JigglesConnection jigglesConnection) {
+        playerUtilities.attachConnection(jigglesConnection);
     }
 
     @Override

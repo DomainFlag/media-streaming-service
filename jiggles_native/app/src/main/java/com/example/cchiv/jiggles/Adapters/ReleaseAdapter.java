@@ -5,7 +5,6 @@ import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -83,7 +82,6 @@ public class ReleaseAdapter extends ModelAdapter<ReleaseAdapter.ReleaseViewHolde
                     .inflate(R.layout.review_layout, holder.reviews, false);
 
             int score = review.getScore();
-            Log.v(TAG, String.valueOf(score));
             int color;
             if(score < 60)
                 color = ContextCompat.getColor(context, R.color.colorScoreOther);
