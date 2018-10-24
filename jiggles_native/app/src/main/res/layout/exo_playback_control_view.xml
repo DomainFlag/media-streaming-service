@@ -10,6 +10,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingHorizontal="@dimen/activity_margin_sibling"
+        android:orientation="horizontal"
         android:gravity="center">
 
         <TextView
@@ -20,17 +22,20 @@
             android:paddingLeft="4dp"
             android:paddingRight="4dp"
             android:textColor="@color/iconsTextColor"
-            android:textSize="@dimen/activity_text_subparagraph"
+            android:textSize="@dimen/activity_text_span"
             android:textStyle="bold"
             tools:text="0:00"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/iconsTextColor"
-            android:textSize="@dimen/activity_text_subheader"
-            android:textStyle="bold"
-            android:text="/"/>
+        <com.google.android.exoplayer2.ui.DefaultTimeBar
+            android:id="@id/exo_progress"
+            android:layout_width="0dp"
+            android:layout_height="24dp"
+            android:layout_weight="1"
+            android:paddingHorizontal="@dimen/activity_margin_sibling"
+            app:unplayed_color="@color/playedPlayerColor"
+            app:played_color="@color/colorAccent"
+            app:buffered_color="@color/secondaryColor"
+            app:scrubber_color="@color/colorAccent"/>
 
         <TextView
             android:id="@id/exo_duration"
@@ -40,25 +45,11 @@
             android:paddingLeft="4dp"
             android:paddingRight="4dp"
             android:textColor="@color/iconsTextColor"
-            android:textSize="@dimen/activity_text_subparagraph"
+            android:textSize="@dimen/activity_text_span"
             android:textStyle="bold"
             tools:text="5:15"/>
 
     </LinearLayout>
-
-    <com.google.android.exoplayer2.ui.DefaultTimeBar
-        android:id="@id/exo_progress"
-        android:layout_width="match_parent"
-        android:layout_height="24dp"
-        android:paddingLeft="@dimen/activity_margin_component"
-        android:paddingStart="@dimen/activity_margin_component"
-        android:paddingRight="@dimen/activity_margin_component"
-        android:paddingEnd="@dimen/activity_margin_component"
-        android:padding="@dimen/activity_margin_relative"
-        app:unplayed_color="@color/secondaryColor"
-        app:played_color="@color/iconsTextColor"
-        app:buffered_color="@color/secondaryColor"
-        app:ad_marker_color="@color/colorAccent"/>
 
     <LinearLayout
         android:layout_width="match_parent"

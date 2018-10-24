@@ -118,14 +118,12 @@
         android:layout_gravity="center"
         android:gravity="center"
         android:drawableLeft="@drawable/ic_wireless"
-        android:drawableStart="@drawable/ic_wireless"
-        android:drawableTint="@color/colorPrimaryDark"
+        android:drawableTint="@color/iconsTextColor"
         android:drawablePadding="@dimen/activity_margin_relative"
-        android:layout_margin="@dimen/activity_margin_component"
-        android:textSize="@dimen/activity_text_subparagraph"
+        android:textSize="@dimen/activity_text_span"
         android:textStyle="bold"
-        android:textColor="@color/primaryTextColor"
-        tools:text="@string/forum_thread_thumbnail_description"/>
+        android:textColor="@color/iconsTextColor"
+        android:text="@string/player_share_message"/>
 
     <com.google.android.exoplayer2.ui.PlayerView
         android:id="@+id/player"

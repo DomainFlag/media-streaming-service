@@ -30,10 +30,17 @@ import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DataSpec;
+import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.google.android.exoplayer2.upstream.TransferListener;
 import com.google.android.exoplayer2.util.Util;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 
 public class PlayerUtilities {
 
@@ -50,75 +57,28 @@ public class PlayerUtilities {
 
     private SimpleExoPlayer exoPlayer;
 
-    private byte[] data = null;
-
-    public PlayerUtilities(Context context) {
+    public PlayerUtilities(Context context, PlayerView playerView) {
         this.context = context;
+
+        setPlayer(playerView);
     }
 
-    public PlayerUtilities(Context context, VisualizerView visualizerView) {
-        this(context);
+    public PlayerUtilities(Context context, PlayerView playerView, VisualizerView visualizerView) {
+        this(context, playerView);
+
         this.visualizerView = visualizerView;
-    }
-
-    public void fillContainer(byte[] data) {
-        this.data = data;
-    };
-
-    public int sampleNewData(byte[] buffer) {
-        System.arraycopy(this.data, 0, buffer, 0, this.data.length);
-        this.data = null;
-
-        return buffer.length;
     }
 
     public void attachConnection(JigglesConnection jigglesConnection) {
         this.jigglesConnection = jigglesConnection;
     }
 
-    public void setUpPlayer(PlayerView playerView, Track track) {
+    public void setPlayer(PlayerView playerView) {
         DefaultRenderersFactory defaultRenderersFactory = new DefaultRenderersFactory(context);
         DefaultTrackSelector defaultTrackSelector = new DefaultTrackSelector();
 
         exoPlayer = ExoPlayerFactory.newSimpleInstance(defaultRenderersFactory, defaultTrackSelector);
         playerView.setPlayer(exoPlayer);
-
-        DefaultDataSourceFactory defaultDataSourceFactory = new DefaultDataSourceFactory(context,
-                Util.getUserAgent(context, context.getPackageName()));
-
-        ExtractorMediaSource.Factory factory = new ExtractorMediaSource.Factory(defaultDataSourceFactory);
-        MediaSource mediaSource = factory.createMediaSource(
-                Uri.parse(track.getPath()));
-        exoPlayer.prepare(mediaSource);
-
-        try {
-            DataSource dataSource = new DataSource() {
-                @Override
-                public long open(DataSpec dataSpec) throws IOException {
-                    return 0;
-                }
-
-                @Override
-                public int read(byte[] buffer, int offset, int readLength) throws IOException {
-                    return sampleNewData(buffer);
-                }
-
-                @Nullable
-                @Override
-                public Uri getUri() {
-                    return null;
-                }
-
-                @Override
-                public void close() throws IOException {
-
-                }
-            };
-            DataSpec dataSpec = new DataSpec(null, DataSpec.FLAG_ALLOW_CACHING_UNKNOWN_LENGTH);
-            dataSource.open(dataSpec);
-        } catch(IOException e) {
-            Log.v(TAG, e.toString());
-        }
 
         exoPlayer.addAnalyticsListener(new AnalyticsListener() {
             @Override
@@ -386,6 +346,36 @@ public class PlayerUtilities {
 
             }
         });
+    }
+
+    public void prepareExoPlayerFromByteArray(Track track) {
+        DataFetcher dataFetcher = new DataFetcher(track);
+        PipedInputStream pipedInputStream = dataFetcher.getPipedInputStream();
+        dataFetcher.start();
+
+        DefaultBandwidthMeter defaultBandwidthMeter = new DefaultBandwidthMeter();
+
+        CustomDataSourceFactory customDataSource = new CustomDataSourceFactory(defaultBandwidthMeter, pipedInputStream);
+
+        DataSpec dataSpec = new DataSpec(
+                Uri.parse("bytes:///data"), DataSpec.FLAG_ALLOW_CACHING_UNKNOWN_LENGTH
+        );
+
+        ExtractorMediaSource.Factory factory = new ExtractorMediaSource.Factory(customDataSource);
+        MediaSource source = factory.createMediaSource(dataSpec.uri);
+
+        exoPlayer.prepare(source);
+        exoPlayer.setPlayWhenReady(true);
+    }
+    
+    public void setSource(Track track) {
+        DefaultDataSourceFactory defaultDataSourceFactory = new DefaultDataSourceFactory(context,
+                Util.getUserAgent(context, context.getPackageName()));
+
+        ExtractorMediaSource.Factory factory = new ExtractorMediaSource.Factory(defaultDataSourceFactory);
+        MediaSource mediaSource = factory.createMediaSource(
+                Uri.parse(track.getPath()));
+        exoPlayer.prepare(mediaSource);
 
         exoPlayer.setPlayWhenReady(playerPlaybackState);
     }
@@ -430,5 +420,158 @@ public class PlayerUtilities {
 
         if(visualizer != null)
             visualizer.release();
+    }
+
+    public class CustomDataSource implements DataSource {
+
+        private final TransferListener<? super CustomDataSource> mTransferListener;
+        private PipedInputStream mInputStream;
+        private Uri mUri;
+        private long mBytesRemaining = -1;
+
+
+        public CustomDataSource(TransferListener<? super CustomDataSource> transferListener, PipedInputStream inputStream) {
+            mTransferListener = transferListener;
+            mInputStream = inputStream;
+        }
+
+        @Override
+        public long open(DataSpec dataSpec) {
+            mUri = dataSpec.uri;
+
+            if(mTransferListener != null) {
+                mTransferListener.onTransferStart(this, dataSpec);
+            }
+
+            return C.LENGTH_UNSET;
+        }
+
+        private void computeBytesRemaining() throws IOException {
+            mBytesRemaining = mInputStream.available();
+            if(mBytesRemaining == 0) {
+                mBytesRemaining = C.LENGTH_UNSET;
+            }
+        }
+
+        private int getBytesToRead(int readLength) {
+            if(mBytesRemaining == C.LENGTH_UNSET) {
+                return readLength;
+            }
+
+            return (int) Math.min(mBytesRemaining, readLength);
+        }
+
+        @Override
+        public int read(byte[] buffer, int offset, int readLength) throws IOException {
+            computeBytesRemaining();
+
+            if(readLength == 0) {
+                return 0;
+            } else if(mBytesRemaining == 0) {
+                return C.RESULT_END_OF_INPUT;
+            }
+
+            int bytesRead = -1, bytesToRead = getBytesToRead(readLength);
+            try {
+                bytesRead = mInputStream.read(buffer, offset, bytesToRead);
+            } catch(IOException e) {
+                Log.v(TAG, e.toString());
+            }
+
+            if(bytesRead == -1) {
+                return C.RESULT_END_OF_INPUT;
+            }
+
+            if(mTransferListener != null) {
+                mTransferListener.onBytesTransferred(this, bytesRead);
+            }
+
+            return bytesRead;
+        }
+
+        @Nullable
+        @Override
+        public Uri getUri() {
+            return mUri;
+        }
+
+        @Override
+        public void close() {
+            try {
+                if(mInputStream != null) {
+                    mInputStream.close();
+                }
+            } catch(IOException e) {
+                Log.v(TAG, e.toString());
+            } finally {
+                if(mTransferListener != null) {
+                    mTransferListener.onTransferEnd(this);
+                }
+            }
+        }
+    }
+
+    public class CustomDataSourceFactory implements DataSource.Factory {
+
+        private TransferListener<? super DataSource> mTransferListener;
+        private PipedInputStream mInputStream;
+
+        public CustomDataSourceFactory(TransferListener<? super DataSource> listener, PipedInputStream inputStream) {
+            mTransferListener = listener;
+            mInputStream = inputStream;
+        }
+
+        @Override
+        public CustomDataSource createDataSource() {
+            return new CustomDataSource(mTransferListener, mInputStream);
+        }
+    }
+
+    public class DataFetcher extends Thread {
+
+        private Track track;
+
+        private PipedInputStream pipedInputStream;
+        private PipedOutputStream pipedOutputStream;
+
+        public DataFetcher(Track track) {
+            this.pipedInputStream = new PipedInputStream();
+            this.pipedOutputStream = new PipedOutputStream();
+            this.track = track;
+
+            try {
+                this.pipedInputStream.connect(this.pipedOutputStream);
+            } catch(IOException e) {
+                Log.v(TAG, e.toString());
+            }
+        }
+
+        public PipedInputStream getPipedInputStream() {
+            return pipedInputStream;
+        }
+
+        @Override
+        public void run() {
+            File file = new File(track.getPath());
+
+            try {
+                FileInputStream fileInputStream = new FileInputStream(file);
+
+                byte[] data = new byte[1024];
+
+                int len = fileInputStream.read(data, 0, 1024);
+                while(len != -1) {
+                    pipedOutputStream.write(data, 0, len);
+
+                    len = fileInputStream.read(data, 0, 1024);
+                }
+
+                fileInputStream.close();
+            } catch(FileNotFoundException e) {
+                Log.v(TAG, e.toString());
+            } catch(IOException e) {
+                Log.v(TAG, e.toString());
+            }
+        }
     }
 }

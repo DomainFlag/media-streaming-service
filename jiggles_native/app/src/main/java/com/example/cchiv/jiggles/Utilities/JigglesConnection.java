@@ -185,6 +185,7 @@ public class JigglesConnection implements OnSearchPairedDevices {
             mmSocket = tmp;
         }
 
+        @Override
         public void run() {
             // Cancel discovery because it otherwise slows down the connection.
             mBluetoothAdapter.cancelDiscovery();
@@ -243,6 +244,7 @@ public class JigglesConnection implements OnSearchPairedDevices {
             mmServerSocket = tmp;
         }
 
+        @Override
         public void run() {
             BluetoothSocket socket = null;
             // Keep listening until exception occurs or a socket is returned.
@@ -319,6 +321,7 @@ public class JigglesConnection implements OnSearchPairedDevices {
             mmOutStream = tmpOut;
         }
 
+        @Override
         public void run() {
             mmBuffer = new byte[1024];
             int numBytes; // bytes returned from read()

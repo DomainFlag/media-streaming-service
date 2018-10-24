@@ -72,9 +72,9 @@ public class HomeActivity extends AppCompatActivity {
 
         networkUtilities = new NetworkUtilities();
 
-        if(checkInternetConnectivity()){
-             fetchLiveContent();
-        } else fetchCachedContent();
+//        if(checkInternetConnectivity()){
+//             fetchLiveContent();
+//        } else fetchCachedContent();
     }
 
     public void fetchCachedContent() {

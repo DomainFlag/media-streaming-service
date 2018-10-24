@@ -17,6 +17,8 @@
     <color name="iconsTextColor">#FFFFFF</color>
     <color name="tertiaryColor">#f9ef27</color>
 
+    <color name="playedPlayerColor">#EEEEEE</color>
+
     <color name="visualizerClearColor">#00000000</color>
 
     <color name="colorScoreAcclaim">#29A369</color>

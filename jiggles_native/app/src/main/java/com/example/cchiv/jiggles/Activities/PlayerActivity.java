@@ -64,9 +64,10 @@ public class PlayerActivity extends AppCompatActivity {
         Track track = ItemScanner.getTrack(this, albumIndex, trackIndex);
 
         playerView = findViewById(R.id.player);
+        playerView.setControllerShowTimeoutMs(-1);
 
         VisualizerView visualizerView = findViewById(R.id.player_visualizer);
-        playerUtilities = new PlayerUtilities(this, visualizerView);
+        playerUtilities = new PlayerUtilities(this, playerView, visualizerView);
 
         setPlayer(track);
 
@@ -208,8 +209,7 @@ public class PlayerActivity extends AppCompatActivity {
     }
 
     public void setPlayer(Track track) {
-        playerView.setControllerShowTimeoutMs(-1);
-        playerUtilities.setUpPlayer(playerView, track);
+        playerUtilities.prepareExoPlayerFromByteArray(track);
     }
 
     public void attachListener(JigglesConnection jigglesConnection) {

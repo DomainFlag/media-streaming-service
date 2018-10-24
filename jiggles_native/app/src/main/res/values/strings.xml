@@ -80,6 +80,8 @@
 
     <string name="player_back">Player Back</string>
 
+    <string name="player_share_message">Connected</string>
+
 
     <!-- Collection -->
     <string name="collection_art">Track art</string>
