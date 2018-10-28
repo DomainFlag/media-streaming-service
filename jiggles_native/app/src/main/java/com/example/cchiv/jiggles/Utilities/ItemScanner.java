@@ -1,15 +1,24 @@
 package com.example.cchiv.jiggles.utilities;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.OperationApplicationException;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.os.RemoteException;
 import android.provider.MediaStore;
+import android.support.v4.app.LoaderManager;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
+import com.example.cchiv.jiggles.data.ContentContract;
 import com.example.cchiv.jiggles.model.Album;
 import com.example.cchiv.jiggles.model.Collection;
 import com.example.cchiv.jiggles.model.Track;
@@ -17,11 +26,17 @@ import com.example.cchiv.jiggles.model.Track;
 import java.io.File;
 import java.io.FileDescriptor;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class ItemScanner {
+
+    private static final int IMAGE_SCALING_WIDTH_SIZE = 640;
+    private static final int IMAGE_SCALING_HEIGHT_SIZE = 640;
+
+    private static final int COLLECTION_LOADER_ID = 191;
 
     private static final String TAG = "ItemScanner";
 
@@ -40,29 +55,86 @@ public class ItemScanner {
                     || childName.endsWith(".gif")
                     || childName.endsWith(".bmp")
                     || childName.endsWith(".webp")) {
-                bitmaps.add(0, BitmapFactory.decodeFile(child.getAbsolutePath()));
+                Bitmap bitmap  = BitmapFactory.decodeFile(child.getAbsolutePath());
+
+                bitmaps.add(0, scaleBitmapResource(bitmap));
             }
         }
 
         return bitmaps;
     }
 
-    private static void decodeBitmapArt(MediaMetadataRetriever mediaMetadataRetriever, Album album, String path) {
-        if(mediaMetadataRetriever == null)
-            return;
-
-        byte[] rawArt;
-        BitmapFactory.Options options = new BitmapFactory.Options();
-
-        rawArt = mediaMetadataRetriever.getEmbeddedPicture();
-
-        // If rawArt is null then no cover art is embedded
-        if(rawArt != null)
-            album.setArt(BitmapFactory.decodeByteArray(rawArt, 0, rawArt.length, options));
-        else album.setArt(decodeSurroundedBitmapArt(path));
+    public static Bitmap scaleBitmapResource(Bitmap bitmap) {
+        if(bitmap.getHeight() != IMAGE_SCALING_HEIGHT_SIZE
+                && bitmap.getWidth() != IMAGE_SCALING_WIDTH_SIZE) {
+            return Bitmap.createScaledBitmap(bitmap,
+                    IMAGE_SCALING_WIDTH_SIZE,
+                    IMAGE_SCALING_HEIGHT_SIZE,
+                    false);
+        } else return bitmap;
     }
 
-    private static void extractMetaData(MediaMetadataRetriever mediaMetadataRetriever, Collection collection, String path) {
+    public static void cacheImageResource(Context context, Bitmap image, String title) {
+        MediaStore.Images.Media.insertImage(context.getContentResolver(), image, title, null);
+    }
+
+    private static List<Uri> getCachedBitmap(Context context, String title) {
+        List<Uri> arts = new ArrayList<>();
+
+        Cursor cursor = MediaStore.Images.Media.query(context.getContentResolver(),
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI, new String[] {
+                        MediaStore.Images.Media.DATA
+                },
+                MediaStore.Images.Media.TITLE + " LIKE ?",
+                new String[] {
+                        title + "%"
+                }, null);
+
+        int indexImageColumnData = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+
+        while(cursor.moveToNext()) {
+            String path = cursor.getString(indexImageColumnData);
+            Uri uriArt = Uri.parse("file:///" + path);
+
+            arts.add(uriArt);
+        }
+
+        return arts;
+    }
+
+    private static void decodeBitmapArt(Context context, MediaMetadataRetriever mediaMetadataRetriever, Album album, String path) {
+        List<Uri> arts = getCachedBitmap(context, album.getName());
+
+        if(arts.size() > 0) {
+            album.setArt(arts);
+        } else {
+            if(mediaMetadataRetriever == null)
+                return;
+
+            byte[] rawArt;
+            BitmapFactory.Options options = new BitmapFactory.Options();
+
+            rawArt = mediaMetadataRetriever.getEmbeddedPicture();
+            if(rawArt != null) {
+                Bitmap bitmap = scaleBitmapResource(BitmapFactory.decodeByteArray(rawArt, 0, rawArt.length, options));
+                album.setArt(bitmap);
+
+                cacheImageResource(context, bitmap, album.getName());
+            } else {
+                // No cover art is embedded, we look at locations relative to parent
+                List<Bitmap> bitmaps = decodeSurroundedBitmapArt(path);
+                for(int g = 0; g < arts.size(); g++) {
+                    Bitmap bitmap = bitmaps.get(g);
+
+                    cacheImageResource(context, bitmap, album.getName() + "_" + g);
+                }
+
+                album.setArt(arts);
+            }
+        }
+    }
+
+    private static void extractMetaData(Context context, MediaMetadataRetriever mediaMetadataRetriever, Collection collection, String path) {
         try {
             mediaMetadataRetriever.setDataSource(path);
 
@@ -79,22 +151,36 @@ public class ItemScanner {
 
                 Album album = collection.addItem(track, artistName, albumName, genreList);
                 if(album != null)
-                    decodeBitmapArt(mediaMetadataRetriever, album, path);
+                    decodeBitmapArt(context, mediaMetadataRetriever, album, path);
             }
         } catch(IllegalArgumentException e) {
             Log.v(TAG, path);
         }
     };
 
-    public static Collection media(Context context) {
+    private static void cacheLocalData(Context context, Collection collection) {
+        if(collection != null) {
+            try {
+                // Do something with ContentProviderResult[]
+                ((Activity) context).getContentResolver()
+                        .applyBatch(ContentContract.AUTHORITY, Collection.parseValues(collection));
+            } catch (RemoteException e) {
+                Log.v(TAG, e.toString());
+            } catch (OperationApplicationException e) {
+                Log.v(TAG, e.toString());
+            }
+        }
+    }
+
+    public static Collection resolveLocalMedia(Context context) {
         MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
+        Collection collection = null;
 
         Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 new String[] {
                     MediaStore.Audio.Media.DATA
                 }, null, null, null);
 
-        Collection collection = null;
         if(cursor != null) {
             collection = new Collection();
             while(cursor.moveToNext()) {
@@ -102,7 +188,7 @@ public class ItemScanner {
 
                 String path = cursor.getString(dataColumnIndex);
 
-                extractMetaData(mediaMetadataRetriever, collection, path);
+                extractMetaData(context, mediaMetadataRetriever, collection, path);
             }
 
             cursor.close();
@@ -110,11 +196,24 @@ public class ItemScanner {
 
         mediaMetadataRetriever.release();
 
+//        cacheLocalData(context, collection);
+
         return collection;
     }
 
+    public static void resolveCachedMedia(Context context, JigglesLoader.OnPostLoaderCallback onPostLoaderCallback) {
+        LoaderManager loaderManager = ((AppCompatActivity) context).getSupportLoaderManager();
+
+        JigglesLoader jigglesLoader = new JigglesLoader(context, onPostLoaderCallback);
+
+        Bundle args = new Bundle();
+        args.putString(JigglesLoader.BUNDLE_URI_KEY, ContentContract.CONTENT_COLLECTION_URI.toString());
+
+        loaderManager.initLoader(COLLECTION_LOADER_ID, args, jigglesLoader).forceLoad();
+    }
+
     public static Track getTrack(Context context, int albumIndex, int trackIndex) {
-        Collection collection = media(context);
+        Collection collection = resolveLocalMedia(context);
         Album album = collection.getAlbums().get(albumIndex);
 
         return album.getTracks().get(trackIndex);
@@ -161,8 +260,41 @@ public class ItemScanner {
         return null;
     }
 
-    public void check(String tag) {
-        if(tag != null)
-            Log.v(TAG, tag);
+    public void check(String message) {
+        if(message != null)
+            Log.v(TAG, message);
+    }
+
+    public static class AsyncItemScanner extends AsyncTask<Void, Void, Collection> {
+
+        public interface AsyncItemScannerListener {
+            void asyncItemScannerListener(Collection collection);
+        }
+
+        private WeakReference<Context> weakReference;
+        private AsyncItemScannerListener asyncItemScannerListener;
+
+        public AsyncItemScanner(Context context, AsyncItemScannerListener asyncItemScannerListener) {
+            this.weakReference = new WeakReference<>(context);
+            this.asyncItemScannerListener = asyncItemScannerListener;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Collection doInBackground(Void... voids) {
+            Context context = this.weakReference.get();
+            if(context != null)
+                return resolveLocalMedia(context);
+            else return null;
+        }
+
+        @Override
+        protected void onPostExecute(Collection collection) {
+            this.asyncItemScannerListener.asyncItemScannerListener(collection);
+        }
     }
 }

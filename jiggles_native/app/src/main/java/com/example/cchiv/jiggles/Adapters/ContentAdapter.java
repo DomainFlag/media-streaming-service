@@ -6,7 +6,6 @@ import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
-import android.support.v7.graphics.Palette;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -112,7 +111,7 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         List<Image> images = artist.getImages();
         if(images.size() > 0)
             Picasso.get()
-                    .load(images.get(0).getUrl())
+                    .load(images.get(0).getUri())
                     .into(holder.thumbnail);
 
         holder.name.setText(artist.getName());
@@ -124,26 +123,7 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         holder.name.setText(album.getName());
 
         int leftColor = ContextCompat.getColor(context, R.color.primaryTextColor);
-        int rightColor;
-
-        List<Image> images = album.getImages();
-        if(images != null && images.size() > 0) {
-            if(images.size() > 1) {
-                Bitmap secondaryBitmap = images.get(1).getBitmap();
-                holder.artSecondary.setImageBitmap(secondaryBitmap);
-
-                holder.artSecondary.setVisibility(View.VISIBLE);
-            } else holder.artSecondary.setVisibility(View.INVISIBLE);
-
-            Bitmap bitmap = images.get(0).getBitmap();
-            holder.art.setImageBitmap(bitmap);
-
-            rightColor = Palette.from(bitmap).generate().getDarkMutedColor(ContextCompat.getColor(context, R.color.iconsTextColor));
-        } else {
-            holder.art.setVisibility(View.GONE);
-
-            rightColor = ContextCompat.getColor(context, R.color.iconsTextColor);
-        }
+        int rightColor = onLoadAlbumArt(album, holder);
 
         GradientDrawable gradientDrawable = new GradientDrawable(
                 GradientDrawable.Orientation.TL_BR,
@@ -165,6 +145,38 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         holder.itemView.setOnClickListener((view) -> {
             this.onClickAlbumListener.onClickAlbumListener(album, position);
         });
+    }
+
+    private int onLoadAlbumArt(Album album, AlbumViewHolder holder) {
+        List<Image> images = album.getImages();
+        if(images != null && images.size() > 0) {
+            if(images.size() > 1) {
+                loadArtAlbum(images.get(1), holder.artSecondary);
+
+                holder.artSecondary.setVisibility(View.VISIBLE);
+            } else holder.artSecondary.setVisibility(View.INVISIBLE);
+
+            loadArtAlbum(images.get(0), holder.art);
+
+//            Palette.from(bitmap).generate().getDarkMutedColor(ContextCompat.getColor(context, R.color.iconsTextColor));
+
+            return ContextCompat.getColor(context, R.color.primaryTextColor);
+        } else {
+            holder.art.setVisibility(View.GONE);
+
+            return ContextCompat.getColor(context, R.color.iconsTextColor);
+        }
+    }
+
+    private void loadArtAlbum(Image image, ImageView imageView) {
+        Bitmap bitmap = image.getBitmap();
+        if(bitmap == null) {
+            Picasso.get()
+                    .load(image.getUri())
+                    .into(imageView);
+        } else {
+            imageView.setImageBitmap(bitmap);
+        }
     }
 
     private void onBindTrackViewHolder(TrackViewHolder holder, int position) {

@@ -31,31 +31,38 @@ public class ContentDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        String sqlAlbumQuery = "CREATE TABLE " + AlbumEntry.TABLE_NAME + " (" +
-                AlbumEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                AlbumEntry.COL_ALBUM_NAME + " TEXT NOT NULL, " +
-                AlbumEntry.COL_ALBUM_RELEASE_DATE + " TEXT NOT NULL, " +
-                AlbumEntry.COL_ALBUM_URI + " TEXT NOT NULL, " +
-                AlbumEntry.COL_ALBUM_TYPE + " TEXT DEFAULT 'album', " +
-                AlbumEntry.COL_ALBUM_FAVOURITE + " TEXT DEFAULT 1 " +
-                ")";
-
-        sqLiteDatabase.execSQL(sqlAlbumQuery);
-
         String sqlArtistQuery = "CREATE TABLE " + ArtistEntry.TABLE_NAME + " (" +
                 ArtistEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 ArtistEntry.COL_ARTIST_NAME + " TEXT NOT NULL, " +
-                ArtistEntry.COL_ARTIST_URI + " TEXT NOT NULL, " +
+                ArtistEntry.COL_ARTIST_URI + " TEXT, " +
+                ArtistEntry.COL_ARTIST_LOCAL + " INTEGER DEFAULT 0, " +
                 ArtistEntry.COL_ARTIST_TYPE + " TEXT DEFAULT 'album', " +
-                ArtistEntry.COL_ARTIST_FAVOURITE + " TEXT DEFAULT 1 " +
+                ArtistEntry.COL_ARTIST_FAVOURITE + " INTEGER DEFAULT 1 " +
                 ")";
 
         sqLiteDatabase.execSQL(sqlArtistQuery);
 
+        String sqlAlbumQuery = "CREATE TABLE " + AlbumEntry.TABLE_NAME + " (" +
+                AlbumEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                AlbumEntry.COL_ALBUM_ARTIST + " INTEGER REFERENCES " +
+                    ArtistEntry.TABLE_NAME + "(" + ArtistEntry._ID + ")" + ", " +
+                AlbumEntry.COL_ALBUM_NAME + " TEXT NOT NULL, " +
+                AlbumEntry.COL_ALBUM_RELEASE_DATE + " TEXT NOT NULL, " +
+                AlbumEntry.COL_ALBUM_URI + " TEXT, " +
+                AlbumEntry.COL_ALBUM_LOCAL + " INTEGER DEFAULT 0, " +
+                AlbumEntry.COL_ALBUM_TYPE + " TEXT DEFAULT 'album', " +
+                AlbumEntry.COL_ALBUM_FAVOURITE + " INTEGER DEFAULT 1 " +
+                ")";
+
+        sqLiteDatabase.execSQL(sqlAlbumQuery);
+
         String sqlTrackQuery = "CREATE TABLE " + TrackEntry.TABLE_NAME + " (" +
                 TrackEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                TrackEntry.COL_TRACK_ALBUM + " INTEGER REFERENCES " +
+                    AlbumEntry.TABLE_NAME + "(" + AlbumEntry._ID + ")" + ", " +
                 TrackEntry.COL_TRACK_NAME + " TEXT NOT NULL, " +
-                TrackEntry.COL_TRACK_URI + " TEXT NOT NULL, " +
+                TrackEntry.COL_TRACK_URI + " TEXT, " +
+                TrackEntry.COL_TRACK_LOCAL + " INTEGER DEFAULT 0, " +
                 TrackEntry.COL_TRACK_TYPE + " TEXT DEFAULT 'album', " +
                 TrackEntry.COL_TRACK_FAVOURITE + " TEXT DEFAULT 1 " +
                 ")";
@@ -71,6 +78,18 @@ public class ContentDbHelper extends SQLiteOpenHelper {
                 ")";
 
         sqLiteDatabase.execSQL(sqlUserQuery);
+
+        String sqlImageQuery = "CREATE TABLE " + ImageEntry.TABLE_NAME + " (" +
+                ImageEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                ImageEntry.COL_IMAGE_ALBUM + " INTEGER REFERENCES " +
+                    AlbumEntry.TABLE_NAME + "(" + AlbumEntry._ID + ")" + ", " +
+                ImageEntry.COL_IMAGE_WIDTH + " INTEGER, " +
+                ImageEntry.COL_IMAGE_HEIGHT + " INTEGER, " +
+                ImageEntry.COL_IMAGE_COLOR + " INTEGER, " +
+                ImageEntry.COL_IMAGE_URI + " TEXT NOT NULL " +
+                ")";
+
+        sqLiteDatabase.execSQL(sqlImageQuery);
 
         String sqlThreadQuery = "CREATE TABLE " + ThreadEntry.TABLE_NAME + " (" +
                 ThreadEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -114,15 +133,6 @@ public class ContentDbHelper extends SQLiteOpenHelper {
 
         sqLiteDatabase.execSQL(sqlNewsQuery);
 
-        String sqlImageQuery = "CREATE TABLE " + ImageEntry.TABLE_NAME + " (" +
-                ImageEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                ImageEntry.COL_IMAGE_WIDTH + " INTEGER, " +
-                ImageEntry.COL_IMAGE_HEIGHT + " INTEGER, " +
-                ImageEntry.COL_IMAGE_URL + " TEXT NOT NULL " +
-                ")";
-
-        sqLiteDatabase.execSQL(sqlImageQuery);
-
         String sqlCommentQuery = "CREATE TABLE " + CommentEntry.TABLE_NAME + " (" +
                 CommentEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 CommentEntry.COL_COMMENT_AUTHOR + " TEXT NOT NULL, " +
@@ -139,7 +149,5 @@ public class ContentDbHelper extends SQLiteOpenHelper {
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-
-    }
+    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {}
 }

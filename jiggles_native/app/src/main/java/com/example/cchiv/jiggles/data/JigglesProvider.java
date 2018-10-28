@@ -16,6 +16,9 @@ import android.util.Log;
 
 import com.example.cchiv.jiggles.data.ContentContract.NewsEntry;
 import com.example.cchiv.jiggles.data.ContentContract.ReleaseEntry;
+import com.example.cchiv.jiggles.data.ContentContract.ArtistEntry;
+import com.example.cchiv.jiggles.data.ContentContract.AlbumEntry;
+import com.example.cchiv.jiggles.data.ContentContract.TrackEntry;
 
 import java.util.ArrayList;
 
@@ -44,11 +47,14 @@ public class JigglesProvider extends ContentProvider {
     private static final int REVIEW_SINGLE = 33;
     private static final int REVIEW_MANY = 34;
 
+    private static final int COLLECTION = 101;
+
     public static UriMatcher uriMatcher = buildUriMatcher();
 
     public static UriMatcher buildUriMatcher() {
         uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
+        /* Independent uri matchers */
         uriMatcher.addURI(ContentContract.AUTHORITY, ContentContract.PATH_ALBUMS, ALBUM_MANY);
         uriMatcher.addURI(ContentContract.AUTHORITY, ContentContract.PATH_ALBUMS + "/#", ALBUM_SINGLE);
 
@@ -66,6 +72,9 @@ public class JigglesProvider extends ContentProvider {
 
         uriMatcher.addURI(ContentContract.AUTHORITY, ContentContract.PATH_REVIEWS, REVIEW_MANY);
         uriMatcher.addURI(ContentContract.AUTHORITY, ContentContract.PATH_REVIEWS + "/#", REVIEW_SINGLE);
+
+        /* Custom uri matchers */
+        uriMatcher.addURI(ContentContract.AUTHORITY, ContentContract.PATH_COLLECTION, COLLECTION);
 
         return uriMatcher;
     };
@@ -95,6 +104,10 @@ public class JigglesProvider extends ContentProvider {
                 cursor = sqLiteDatabase.query(ContentContract.ReleaseEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, orderBy);
                 break;
             }
+            case COLLECTION : {
+                cursor = sqLiteDatabase.query(ContentContract.Collection.TABLE_NAME, projection, selection, selectionArgs, null, null, orderBy);
+                break;
+            }
         }
 
         if(getContext() != null && cursor != null)
@@ -114,12 +127,30 @@ public class JigglesProvider extends ContentProvider {
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues contentValues) {
         SQLiteDatabase sqLiteDatabase = contentDbHelper.getWritableDatabase();
 
-        long nbRowsInserted = sqLiteDatabase.insert(ReleaseEntry.TABLE_NAME,null, contentValues);
+        long insertedRowId = -1;
+        switch(uriMatcher.match(uri)) {
+            case ARTIST_MANY : {
+                insertedRowId = sqLiteDatabase.insert(ArtistEntry.TABLE_NAME,null, contentValues);
+                break;
+            }
+            case ALBUM_MANY : {
+                insertedRowId = sqLiteDatabase.insert(AlbumEntry.TABLE_NAME,null, contentValues);
+                break;
+            }
+            case TRACK_MANY : {
+                insertedRowId = sqLiteDatabase.insert(TrackEntry.TABLE_NAME,null, contentValues);
+                break;
+            }
+            case RELEASE_MANY : {
+                insertedRowId = sqLiteDatabase.insert(ReleaseEntry.TABLE_NAME,null, contentValues);
+                break;
+            }
+        }
 
         if(getContext() != null)
             getContext().getContentResolver().notifyChange(uri, null);
 
-        return ContentUris.withAppendedId(uri, nbRowsInserted);
+        return ContentUris.withAppendedId(uri, insertedRowId);
     }
 
     @Override

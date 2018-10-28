@@ -367,7 +367,7 @@ public class PlayerUtilities {
         exoPlayer.prepare(source);
         exoPlayer.setPlayWhenReady(true);
     }
-    
+
     public void setSource(Track track) {
         DefaultDataSourceFactory defaultDataSourceFactory = new DefaultDataSourceFactory(context,
                 Util.getUserAgent(context, context.getPackageName()));
@@ -463,6 +463,7 @@ public class PlayerUtilities {
 
         @Override
         public int read(byte[] buffer, int offset, int readLength) throws IOException {
+            Log.v(TAG, String.valueOf(offset));
             computeBytesRemaining();
 
             if(readLength == 0) {

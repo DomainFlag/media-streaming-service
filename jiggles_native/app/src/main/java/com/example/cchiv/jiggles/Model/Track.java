@@ -1,6 +1,8 @@
 package com.example.cchiv.jiggles.model;
 
-import android.graphics.Bitmap;
+import android.content.ContentValues;
+
+import com.example.cchiv.jiggles.data.ContentContract.TrackEntry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,11 +14,11 @@ public class Track {
     private String type = "track";
     private String uri;
     private String path = null;
-    private Bitmap art = null;
+    public boolean favourite = false;
+    public boolean local = true;
     private Album album;
     private List<Image> images;
     private List<Artist> artists = new ArrayList<>();
-    public boolean favourite;
 
     public Track(String id, String name, String type, String uri,
                  List<Image> images, List<Artist> artists, boolean favourite) {
@@ -80,19 +82,23 @@ public class Track {
         return artists;
     }
 
-    public void setArt(Bitmap bitmap) {
-        this.art = bitmap;
-    }
-
-    public Bitmap getArt() {
-        return art;
-    }
-
     public void setPath(String path) {
         this.path = path;
     }
 
     public String getPath() {
         return path;
+    }
+
+    public static ContentValues parseValues(Track track) {
+        ContentValues contentValues = new ContentValues();
+
+        contentValues.put(TrackEntry.COL_TRACK_NAME, track.getName());
+        contentValues.put(TrackEntry.COL_TRACK_URI, track.getUri());
+        contentValues.put(TrackEntry.COL_TRACK_LOCAL, track.local);
+        contentValues.put(TrackEntry.COL_TRACK_TYPE, track.type);
+        contentValues.put(TrackEntry.COL_TRACK_FAVOURITE, track.favourite);
+
+        return contentValues;
     }
 }

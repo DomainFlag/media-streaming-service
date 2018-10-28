@@ -1,15 +1,18 @@
 package com.example.cchiv.jiggles.activities;
 
 import android.app.Fragment;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import com.example.cchiv.jiggles.R;
 import com.example.cchiv.jiggles.fragments.AlbumFragment;
 import com.example.cchiv.jiggles.fragments.CollectionFragment;
 import com.example.cchiv.jiggles.model.Collection;
 import com.example.cchiv.jiggles.utilities.ItemScanner;
+import com.example.cchiv.jiggles.utilities.JigglesLoader;
 
 public class CollectionActivity extends AppCompatActivity {
 
@@ -26,8 +29,6 @@ public class CollectionActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_collection);
 
-        Collection collection = ItemScanner.media(this);
-
         collectionFragment = new CollectionFragment();
         collectionFragment.onAttach(this);
         collectionFragment.onAttachOnClickAlbumListener(
@@ -41,6 +42,16 @@ public class CollectionActivity extends AppCompatActivity {
                             .commit();
                 }
         );
+
+        Collection collection = ItemScanner.resolveLocalMedia(this);
+        ItemScanner.resolveCachedMedia(this, new JigglesLoader.OnPostLoaderCallback() {
+            @Override
+            public void onPostLoaderCallback(Cursor cursor) {
+                Log.v(TAG, String.valueOf(cursor.getCount()));
+                Collection.parseCursor(cursor);
+            }
+        });
+
         collectionFragment.onAttachCollection(collection);
         getFragmentManager().beginTransaction()
                 .add(R.id.fragment_candy, collectionFragment, FRAGMENT_COLLECTION_KEY)

@@ -18,27 +18,33 @@ public class ContentContract {
     public static final String PATH_IMAGES = "images";
     public static final String PATH_COMMENTS = "comments";
 
-
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + AUTHORITY);
 
-    /**
-     * Table with images and artists
-     */
-    public static final class AlbumEntry implements BaseColumns {
-
-        public static final Uri CONTENT_URI =
-                BASE_CONTENT_URI.buildUpon().appendPath(PATH_ALBUMS).build();
-
-        public static final String TABLE_NAME = "album";
-
-        public static final String _ID = BaseColumns._ID;
-        public static final String COL_ALBUM_NAME = "name";
-        public static final String COL_ALBUM_RELEASE_DATE = "release_date";
-        public static final String COL_ALBUM_URI = "uri";
-        public static final String COL_ALBUM_TYPE = "type";
-        public static final String COL_ALBUM_FAVOURITE = "favourite";
+    public static String getColumnAliased(String tableName, String columnName) {
+        return tableName + "." + columnName;
     }
 
+    /* Custom authorities */
+    public static final String PATH_COLLECTION = "collection";
+
+    public static final Uri CONTENT_COLLECTION_URI =
+            BASE_CONTENT_URI.buildUpon().appendPath(PATH_COLLECTION).build();
+
+    //*************************************************************/
+    /**
+     * Custom queries
+     */
+    public static final class Collection {
+        public static final String TABLE_NAME = ArtistEntry.TABLE_NAME +
+                " AS " + ArtistEntry.TABLE_NAME + " INNER JOIN " + AlbumEntry.TABLE_NAME +
+                    " ON (" + getColumnAliased(ArtistEntry.TABLE_NAME, ArtistEntry._ID) + " = " + getColumnAliased(AlbumEntry.TABLE_NAME, AlbumEntry.COL_ALBUM_ARTIST) + ")" +
+                " INNER JOIN " + TrackEntry.TABLE_NAME +
+                    " ON (" + getColumnAliased(AlbumEntry.TABLE_NAME, AlbumEntry._ID) + " = " + getColumnAliased(TrackEntry.TABLE_NAME, TrackEntry.COL_TRACK_ALBUM) + ")" +
+                " LEFT OUTER JOIN " + ImageEntry.TABLE_NAME +
+                    " ON (" + getColumnAliased(AlbumEntry.TABLE_NAME, AlbumEntry._ID) + " = " + getColumnAliased(ImageEntry.TABLE_NAME, ImageEntry.COL_IMAGE_ALBUM) + ")";
+    }
+
+    //*************************************************************/
     /**
      * Table with genres and images
      */
@@ -53,7 +59,28 @@ public class ContentContract {
         public static final String COL_ARTIST_NAME = "name";
         public static final String COL_ARTIST_URI = "uri";
         public static final String COL_ARTIST_TYPE = "type";
+        public static final String COL_ARTIST_LOCAL = "local";
         public static final String COL_ARTIST_FAVOURITE = "favourite";
+    }
+
+    /**
+     * Table with images and artists
+     */
+    public static final class AlbumEntry implements BaseColumns {
+
+        public static final Uri CONTENT_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_ALBUMS).build();
+
+        public static final String TABLE_NAME = "album";
+
+        public static final String _ID = BaseColumns._ID;
+        public static final String COL_ALBUM_ARTIST = "artist";
+        public static final String COL_ALBUM_NAME = "name";
+        public static final String COL_ALBUM_RELEASE_DATE = "release_date";
+        public static final String COL_ALBUM_URI = "uri";
+        public static final String COL_ALBUM_LOCAL = "local";
+        public static final String COL_ALBUM_TYPE = "type";
+        public static final String COL_ALBUM_FAVOURITE = "favourite";
     }
 
     /**
@@ -67,8 +94,10 @@ public class ContentContract {
         public static final String TABLE_NAME = "track";
 
         public static final String _ID = BaseColumns._ID;
+        public static final String COL_TRACK_ALBUM = "album";
         public static final String COL_TRACK_NAME = "name";
         public static final String COL_TRACK_URI = "uri";
+        public static final String COL_TRACK_LOCAL = "local";
         public static final String COL_TRACK_TYPE = "type";
         public static final String COL_TRACK_FAVOURITE = "favourite";
     }
@@ -174,7 +203,9 @@ public class ContentContract {
         public static final String _ID = BaseColumns._ID;
         public static final String COL_IMAGE_WIDTH = "width";
         public static final String COL_IMAGE_HEIGHT = "height";
-        public static final String COL_IMAGE_URL = "url";
+        public static final String COL_IMAGE_COLOR = "color";
+        public static final String COL_IMAGE_URI = "uri";
+        public static final String COL_IMAGE_ALBUM = "album";
     }
 
     /**

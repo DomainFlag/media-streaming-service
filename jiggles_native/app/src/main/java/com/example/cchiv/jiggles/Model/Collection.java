@@ -1,6 +1,13 @@
 package com.example.cchiv.jiggles.model;
 
+import android.content.ContentProviderOperation;
+import android.database.Cursor;
+
 import com.example.cchiv.jiggles.Constants;
+import com.example.cchiv.jiggles.data.ContentContract.AlbumEntry;
+import com.example.cchiv.jiggles.data.ContentContract.ArtistEntry;
+import com.example.cchiv.jiggles.data.ContentContract.ImageEntry;
+import com.example.cchiv.jiggles.data.ContentContract.TrackEntry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -91,7 +98,7 @@ public class Collection {
         return artist.addItem(this, track, albumName);
     }
 
-    public int getCount() {
+    public int getCount(String filterBy) {
         switch(filterBy) {
             case Constants.ALBUM : return albums.size();
             case Constants.ARTIST : return artists.size();
@@ -99,5 +106,82 @@ public class Collection {
             case Constants.ALL : return artists.size() + albums.size() + tracks.size();
             default : return 0;
         }
+    }
+
+    public int getCount() {
+        return getCount(filterBy);
+    }
+
+    public static Collection parseCursor(Cursor cursor) {
+        while(cursor.moveToNext()) {
+            Artist artist = Artist.parseCursor(cursor);
+        }
+
+        return null;
+    }
+
+    public static ArrayList<ContentProviderOperation> parseValues(Collection collection) {
+        ArrayList<ContentProviderOperation> contentProviderOperations = new ArrayList<>();
+        List<Artist> artists = collection.getArtists();
+
+        int index = 0;
+        for(int g = 0; g < artists.size(); g++) {
+            Artist artist = artists.get(g);
+            int artistIndex = index;
+
+            contentProviderOperations.add(
+                    ContentProviderOperation
+                            .newInsert(ArtistEntry.CONTENT_URI)
+                            .withValues(Artist.parseValues(artist))
+                            .build());
+
+            index++;
+
+            List<Album> albums = artist.getAlbums();
+            for(int h = 0; h < albums.size(); h++) {
+                Album album = albums.get(h);
+
+                int albumIndex = index;
+
+                contentProviderOperations.add(
+                        ContentProviderOperation
+                                .newInsert(AlbumEntry.CONTENT_URI)
+                                .withValues(Album.parseValues(album))
+                                .withValueBackReference(AlbumEntry.COL_ALBUM_ARTIST, artistIndex)
+                                .build());
+
+                index++;
+
+                List<Image> images = album.getImages();
+                for(int i = 0; i < images.size(); i++) {
+                    Image image = images.get(i);
+
+                    contentProviderOperations.add(
+                            ContentProviderOperation
+                                    .newInsert(ImageEntry.CONTENT_URI)
+                                    .withValues(Image.parseValues(image))
+                                    .withValueBackReference(ImageEntry.COL_IMAGE_ALBUM, albumIndex)
+                                    .build());
+
+                    index++;
+                }
+
+                List<Track> tracks = album.getTracks();
+                for(int i = 0; i < tracks.size(); i++) {
+                    Track track = tracks.get(i);
+
+                    contentProviderOperations.add(
+                            ContentProviderOperation
+                                    .newInsert(TrackEntry.CONTENT_URI)
+                                    .withValues(Track.parseValues(track))
+                                    .withValueBackReference(TrackEntry.COL_TRACK_ALBUM, albumIndex)
+                                    .build());
+
+                    index++;
+                }
+            }
+        }
+
+        return contentProviderOperations;
     }
 }

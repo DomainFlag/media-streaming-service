@@ -1,17 +1,24 @@
 package com.example.cchiv.jiggles.model;
 
+import android.content.ContentValues;
+import android.database.Cursor;
 import android.text.TextUtils;
+
+import com.example.cchiv.jiggles.data.ContentContract.ArtistEntry;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Artist {
 
+    private static final String TAG = "Artist";
+
     private String id;
-    private String name = null;
+    private String name;
     private String type = "artist";
     private String uri;
     public boolean favourite = true;
+    public boolean local = true;
     private List<String> genres = null;
     private List<Image> images = new ArrayList<>();
     private List<Album> albums = new ArrayList<>();
@@ -24,6 +31,15 @@ public class Artist {
         this.favourite = favourite;
         this.genres = genres;
         this.images = images;
+    }
+
+    public Artist(String id, String name, String uri, boolean local, String type, boolean favourite) {
+        this.id = id;
+        this.name = name;
+        this.type = type;
+        this.uri = uri;
+        this.local = local;
+        this.favourite = favourite;
     }
 
     public Artist(String name, List<String> genres) {
@@ -98,5 +114,36 @@ public class Artist {
 
     public List<Image> getImages() {
         return images;
+    }
+
+    public static Artist parseCursor(Cursor cursor) {
+        int indexArtistId = cursor.getColumnIndex(ArtistEntry.TABLE_NAME + "." + ArtistEntry._ID);
+        int indexArtistName = cursor.getColumnIndex(ArtistEntry.TABLE_NAME + "." + ArtistEntry.COL_ARTIST_NAME);
+        int indexArtistUri = cursor.getColumnIndex(ArtistEntry.TABLE_NAME + "." + ArtistEntry.COL_ARTIST_URI);
+        int indexArtistType = cursor.getColumnIndex(ArtistEntry.TABLE_NAME + "." + ArtistEntry.COL_ARTIST_TYPE);
+        int indexArtistLocal = cursor.getColumnIndex(ArtistEntry.TABLE_NAME + "." + ArtistEntry.COL_ARTIST_LOCAL);
+        int indexArtistFavourite = cursor.getColumnIndex(ArtistEntry.TABLE_NAME + "." + ArtistEntry.COL_ARTIST_FAVOURITE);
+
+        int id = cursor.getInt(indexArtistId);
+        String artistName = cursor.getString(indexArtistName);
+        String artistUri = cursor.getString(indexArtistUri);
+        boolean artistLocal = cursor.getInt(indexArtistLocal) == 1;
+        String artistType = cursor.getString(indexArtistType);
+        boolean artistFavourite = cursor.getInt(indexArtistFavourite) == 1;
+
+
+        return new Artist(String.valueOf(id), artistName, artistUri, artistLocal, artistType, artistFavourite);
+    }
+
+    public static ContentValues parseValues(Artist artist) {
+        ContentValues contentValues = new ContentValues();
+
+        contentValues.put(ArtistEntry.COL_ARTIST_NAME, artist.getName());
+        contentValues.put(ArtistEntry.COL_ARTIST_URI, artist.getUri());
+        contentValues.put(ArtistEntry.COL_ARTIST_TYPE, artist.getType());
+        contentValues.put(ArtistEntry.COL_ARTIST_LOCAL, artist.local);
+        contentValues.put(ArtistEntry.COL_ARTIST_FAVOURITE, artist.favourite);
+
+        return contentValues;
     }
 }
