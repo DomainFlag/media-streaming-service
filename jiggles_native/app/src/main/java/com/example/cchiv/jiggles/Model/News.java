@@ -1,10 +1,13 @@
 package com.example.cchiv.jiggles.model;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.os.Bundle;
 
 import com.example.cchiv.jiggles.data.ContentContract.NewsEntry;
 import com.example.cchiv.jiggles.utilities.JigglesLoader;
+
+import java.util.ArrayList;
 
 public class News {
 
@@ -34,6 +37,30 @@ public class News {
 
     public String getCaption() {
         return caption;
+    }
+
+    public static ArrayList<News> parseValues(Cursor cursor) {
+        ArrayList<News> news = new ArrayList<>();
+
+        int indexNewsId = cursor.getColumnIndex(NewsEntry._ID);
+        int indexNewsIdentifier = cursor.getColumnIndex(NewsEntry.COL_NEWS_IDENTIFIER);
+        int indexNewsAuthor = cursor.getColumnIndexOrThrow(NewsEntry.COL_NEWS_AUTHOR);
+        int indexNewsCaption = cursor.getColumnIndexOrThrow(NewsEntry.COL_NEWS_CAPTION);
+        int indexNewsHeader = cursor.getColumnIndexOrThrow(NewsEntry.COL_NEWS_HEADER);
+
+        while(cursor.moveToNext()) {
+            int newsId = cursor.getInt(indexNewsId);
+            String newsIdentifier = cursor.getColumnName(indexNewsIdentifier);
+            String newsAuthor = cursor.getString(indexNewsAuthor);
+            String newsCaption = cursor.getString(indexNewsCaption);
+            String newsHeader = cursor.getString(indexNewsHeader);
+
+            news.add(
+                    new News(newsIdentifier, newsAuthor, newsHeader, newsCaption)
+            );
+        }
+
+        return news;
     }
 
     public static ContentValues parseValues(News news) {

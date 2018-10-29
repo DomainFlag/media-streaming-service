@@ -374,10 +374,10 @@ public class PlayerUtilities {
 
         ExtractorMediaSource.Factory factory = new ExtractorMediaSource.Factory(defaultDataSourceFactory);
         MediaSource mediaSource = factory.createMediaSource(
-                Uri.parse(track.getPath()));
-        exoPlayer.prepare(mediaSource);
+                Uri.parse(track.getUri()));
 
-        exoPlayer.setPlayWhenReady(playerPlaybackState);
+        exoPlayer.prepare(mediaSource);
+        exoPlayer.setPlayWhenReady(true);
     }
 
     private void setUpVisualizer(VisualizerView visualizerView, int audioSessionId) {
@@ -553,7 +553,7 @@ public class PlayerUtilities {
 
         @Override
         public void run() {
-            File file = new File(track.getPath());
+            File file = new File(track.getUri());
 
             try {
                 FileInputStream fileInputStream = new FileInputStream(file);

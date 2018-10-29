@@ -7,7 +7,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="@dimen/activity_margin_component"
-    android:background="@color/primaryTextColor">
+    android:background="@color/primaryTextColor"
+    android:foreground="?android:attr/selectableItemBackground"
+    tools:background="@color/primaryTextColor">
 
     <TextView
         android:id="@+id/album_name"

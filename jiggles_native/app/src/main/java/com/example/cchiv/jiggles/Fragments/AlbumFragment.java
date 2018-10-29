@@ -18,6 +18,8 @@ import com.example.cchiv.jiggles.activities.PlayerActivity;
 import com.example.cchiv.jiggles.adapters.ContentAdapter;
 import com.example.cchiv.jiggles.model.Album;
 import com.example.cchiv.jiggles.model.Artist;
+import com.example.cchiv.jiggles.model.Image;
+import com.squareup.picasso.Picasso;
 
 public class AlbumFragment extends Fragment {
 
@@ -49,10 +51,11 @@ public class AlbumFragment extends Fragment {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(linearLayoutManager);
 
-        ContentAdapter contentAdapter = new ContentAdapter(context, (album, track) -> {
+        ContentAdapter contentAdapter = new ContentAdapter(context, (trackId) -> {
             Intent intent = new Intent(context, PlayerActivity.class);
-            intent.putExtra("albumIndex", album);
-            intent.putExtra("trackIndex", track);
+
+            intent.putExtra("trackId", trackId);
+
             startActivity(intent);
         }, album, position);
         recyclerView.setAdapter(contentAdapter);
@@ -63,8 +66,12 @@ public class AlbumFragment extends Fragment {
     }
 
     private void updateLayout() {
-        ((ImageView) rootView.findViewById(R.id.album_thumbnail))
-                .setImageBitmap(album.getArt());
+        ImageView thumbnail = rootView.findViewById(R.id.album_thumbnail);
+        Image image = album.getArt();
+        Picasso
+                .get()
+                .load(image.getUri())
+                .into(thumbnail);
 
         Artist artist = album.getArtist();
         if(artist != null) {

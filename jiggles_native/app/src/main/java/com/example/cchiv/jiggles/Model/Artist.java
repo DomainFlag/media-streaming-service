@@ -116,13 +116,23 @@ public class Artist {
         return images;
     }
 
+    public static boolean isUnique(Artist artist, Cursor cursor) {
+        if(artist == null)
+            return false;
+
+        int indexArtistId = cursor.getColumnIndex(ArtistEntry._ID);
+        int id = cursor.getInt(indexArtistId);
+
+        return artist.getId().equals(String.valueOf(id));
+    }
+
     public static Artist parseCursor(Cursor cursor) {
-        int indexArtistId = cursor.getColumnIndex(ArtistEntry.TABLE_NAME + "." + ArtistEntry._ID);
-        int indexArtistName = cursor.getColumnIndex(ArtistEntry.TABLE_NAME + "." + ArtistEntry.COL_ARTIST_NAME);
-        int indexArtistUri = cursor.getColumnIndex(ArtistEntry.TABLE_NAME + "." + ArtistEntry.COL_ARTIST_URI);
-        int indexArtistType = cursor.getColumnIndex(ArtistEntry.TABLE_NAME + "." + ArtistEntry.COL_ARTIST_TYPE);
-        int indexArtistLocal = cursor.getColumnIndex(ArtistEntry.TABLE_NAME + "." + ArtistEntry.COL_ARTIST_LOCAL);
-        int indexArtistFavourite = cursor.getColumnIndex(ArtistEntry.TABLE_NAME + "." + ArtistEntry.COL_ARTIST_FAVOURITE);
+        int indexArtistId = cursor.getColumnIndex(ArtistEntry._ID);
+        int indexArtistName = cursor.getColumnIndex(ArtistEntry.COL_ARTIST_NAME);
+        int indexArtistUri = cursor.getColumnIndex(ArtistEntry.COL_ARTIST_URI);
+        int indexArtistType = cursor.getColumnIndex(ArtistEntry.COL_ARTIST_TYPE);
+        int indexArtistLocal = cursor.getColumnIndex(ArtistEntry.COL_ARTIST_LOCAL);
+        int indexArtistFavourite = cursor.getColumnIndex(ArtistEntry.COL_ARTIST_FAVOURITE);
 
         int id = cursor.getInt(indexArtistId);
         String artistName = cursor.getString(indexArtistName);

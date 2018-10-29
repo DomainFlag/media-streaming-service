@@ -3,11 +3,11 @@ package com.example.cchiv.jiggles.activities;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -34,7 +34,7 @@ public class HomeActivity extends AppCompatActivity {
     private static final int HOME_NEWS_LOADER_ID = 21;
     private static final int HOME_RELEASES_LOADER_ID = 22;
 
-    private NetworkUtilities networkUtilities;
+    private NetworkUtilities networkUtilities = new NetworkUtilities();;
 
     private NewsAdapter newsAdapter;
     private ReleaseAdapter releaseAdapter;
@@ -52,6 +52,12 @@ public class HomeActivity extends AppCompatActivity {
             finish();
         }
 
+        SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            if(checkInternetConnectivity())
+                fetchLiveContent();
+        });
+
         findViewById(R.id.home_player).setOnClickListener(view -> {
             Intent intent = new Intent(this, CollectionActivity.class);
             startActivity(intent);
@@ -62,28 +68,35 @@ public class HomeActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        RecyclerView recyclerNewsView = findViewById(R.id.home_news_list);
         newsAdapter = new NewsAdapter(this, new ArrayList<>());
-        setRecyclerView(recyclerNewsView, newsAdapter);
+        createListView(R.id.home_news_list, newsAdapter);
 
-        RecyclerView recyclerReleaseView = findViewById(R.id.home_release_list);
         releaseAdapter = new ReleaseAdapter(this, new ArrayList<>());
-        setRecyclerView(recyclerReleaseView, releaseAdapter);
+        createListView(R.id.home_release_list, releaseAdapter);
 
-        networkUtilities = new NetworkUtilities();
+        fetchCachedContent();
+    }
 
-//        if(checkInternetConnectivity()){
-//             fetchLiveContent();
-//        } else fetchCachedContent();
+    public void createListView(int resource, RecyclerView.Adapter adapter) {
+        RecyclerView recyclerView = findViewById(resource);
+        setRecyclerView(recyclerView, adapter);
     }
 
     public void fetchCachedContent() {
         LoaderManager loaderManager = getSupportLoaderManager();
 
-        JigglesLoader jigglesNewsLoader = new JigglesLoader(this, (this::updateLayoutNews));
+        JigglesLoader jigglesNewsLoader = new JigglesLoader<>(this,
+                (JigglesLoader.OnPostLoaderCallback<ArrayList<News>>) this::updateLayoutNews,
+                News::parseValues
+        );
+
         loaderManager.initLoader(HOME_NEWS_LOADER_ID, News.bundleValues(), jigglesNewsLoader).forceLoad();
 
-        JigglesLoader jigglesReleasesLoader = new JigglesLoader(this, (this::updateLayoutReleases));
+        JigglesLoader jigglesReleasesLoader = new JigglesLoader<>(this,
+                (JigglesLoader.OnPostLoaderCallback<ArrayList<Release>>) this::updateLayoutReleases,
+                Release::parseValues
+        );
+
         loaderManager.initLoader(HOME_RELEASES_LOADER_ID, Release.bundleValues(), jigglesReleasesLoader).forceLoad();
     }
 
@@ -150,19 +163,9 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
-    public void updateLayoutReleases(Cursor cursor) {
-        releaseAdapter.onSwapData(cursor);
-        releaseAdapter.notifyDataSetChanged();
-    }
-
     public void updateLayoutReleases(ArrayList<Release> releases) {
         releaseAdapter.onSwapData(releases);
         releaseAdapter.notifyDataSetChanged();
-    }
-
-    public void updateLayoutNews(Cursor cursor) {
-        newsAdapter.onSwapData(cursor);
-        newsAdapter.notifyDataSetChanged();
     }
 
     public void updateLayoutNews(ArrayList<News> news) {

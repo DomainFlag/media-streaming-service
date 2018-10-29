@@ -1,7 +1,6 @@
 package com.example.cchiv.jiggles.adapters;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
@@ -13,7 +12,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.cchiv.jiggles.R;
-import com.example.cchiv.jiggles.data.ContentContract.ReleaseEntry;
 import com.example.cchiv.jiggles.model.Release;
 import com.example.cchiv.jiggles.model.Review;
 import com.squareup.picasso.Picasso;
@@ -44,24 +42,9 @@ public class ReleaseAdapter extends ModelAdapter<ReleaseAdapter.ReleaseViewHolde
 
     @Override
     public void onBindViewHolder(@NonNull ReleaseViewHolder holder, int position) {
-        if(getCursor() != null) {
-            Cursor cursor = getCursor();
-
-            cursor.moveToPosition(position);
-            int indexCursorReleaseArtist = cursor.getColumnIndexOrThrow(ReleaseEntry.COL_RELEASE_ARTIST);
-            int indexCursorReleaseUrl = cursor.getColumnIndexOrThrow(ReleaseEntry.COL_RELEASE_URL);
-            int indexCursorReleaseTitle = cursor.getColumnIndexOrThrow(ReleaseEntry.COL_RELEASE_TITLE);
-
-            onBindDataViewHolder(holder,
-                    cursor.getString(indexCursorReleaseUrl),
-                    cursor.getString(indexCursorReleaseArtist),
-                    cursor.getString(indexCursorReleaseTitle),
-                    new ArrayList<>());
-        } else {
-            Release release = data.get(position);
-            ArrayList<Review> reviews = release.getReviews();
-            onBindDataViewHolder(holder, release.getUrl(), release.getArtist(), release.getTitle(), reviews);
-        }
+        Release release = data.get(position);
+        ArrayList<Review> reviews = release.getReviews();
+        onBindDataViewHolder(holder, release.getUrl(), release.getArtist(), release.getTitle(), reviews);
     }
 
 

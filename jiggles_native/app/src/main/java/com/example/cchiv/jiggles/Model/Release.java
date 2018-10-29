@@ -2,6 +2,7 @@ package com.example.cchiv.jiggles.model;
 
 import android.content.ContentProviderOperation;
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.os.Bundle;
 
 import com.example.cchiv.jiggles.data.ContentContract.ReviewEntry;
@@ -45,6 +46,29 @@ public class Release {
 
     public ArrayList<Review> getReviews() {
         return reviews;
+    }
+
+    public static ArrayList<Release> parseValues(Cursor cursor) {
+        ArrayList<Release> releases = new ArrayList<>();
+
+        int indexReleaseId = cursor.getColumnIndex(ReleaseEntry._ID);
+        int indexReleaseIdentifier = cursor.getColumnIndex(ReleaseEntry.COL_RELEASE_IDENTIFIER);
+        int indexReleaseArtist = cursor.getColumnIndexOrThrow(ReleaseEntry.COL_RELEASE_ARTIST);
+        int indexReleaseUrl = cursor.getColumnIndexOrThrow(ReleaseEntry.COL_RELEASE_URL);
+        int indexReleaseTitle = cursor.getColumnIndexOrThrow(ReleaseEntry.COL_RELEASE_TITLE);
+
+        while(cursor.moveToNext()) {
+            int releaseId = cursor.getInt(indexReleaseId);
+            String releaseIdentifier = cursor.getColumnName(indexReleaseIdentifier);
+            String releaseUrl = cursor.getString(indexReleaseUrl);
+            String releaseArtist = cursor.getString(indexReleaseArtist);
+            String releaseTitle = cursor.getString(indexReleaseTitle);
+
+            Release release = new Release(releaseIdentifier, releaseTitle, releaseUrl, releaseUrl, new ArrayList<>());
+            releases.add(release);
+        }
+
+        return releases;
     }
 
     public static ContentValues parseValues(Release release) {

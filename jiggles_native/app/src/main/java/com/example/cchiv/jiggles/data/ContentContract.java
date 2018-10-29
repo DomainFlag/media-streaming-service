@@ -36,7 +36,7 @@ public class ContentContract {
      */
     public static final class Collection {
         public static final String TABLE_NAME = ArtistEntry.TABLE_NAME +
-                " AS " + ArtistEntry.TABLE_NAME + " INNER JOIN " + AlbumEntry.TABLE_NAME +
+                " INNER JOIN " + AlbumEntry.TABLE_NAME +
                     " ON (" + getColumnAliased(ArtistEntry.TABLE_NAME, ArtistEntry._ID) + " = " + getColumnAliased(AlbumEntry.TABLE_NAME, AlbumEntry.COL_ALBUM_ARTIST) + ")" +
                 " INNER JOIN " + TrackEntry.TABLE_NAME +
                     " ON (" + getColumnAliased(AlbumEntry.TABLE_NAME, AlbumEntry._ID) + " = " + getColumnAliased(TrackEntry.TABLE_NAME, TrackEntry.COL_TRACK_ALBUM) + ")" +
@@ -55,12 +55,12 @@ public class ContentContract {
 
         public static final String TABLE_NAME = "artist";
 
-        public static final String _ID = BaseColumns._ID;
-        public static final String COL_ARTIST_NAME = "name";
-        public static final String COL_ARTIST_URI = "uri";
-        public static final String COL_ARTIST_TYPE = "type";
-        public static final String COL_ARTIST_LOCAL = "local";
-        public static final String COL_ARTIST_FAVOURITE = "favourite";
+        public static final String _ID = TABLE_NAME + BaseColumns._ID;
+        public static final String COL_ARTIST_NAME = "artist_name";
+        public static final String COL_ARTIST_URI = "artist_uri";
+        public static final String COL_ARTIST_TYPE = "artist_type";
+        public static final String COL_ARTIST_LOCAL = "artist_local";
+        public static final String COL_ARTIST_FAVOURITE = "artist_favourite";
     }
 
     /**
@@ -73,14 +73,14 @@ public class ContentContract {
 
         public static final String TABLE_NAME = "album";
 
-        public static final String _ID = BaseColumns._ID;
-        public static final String COL_ALBUM_ARTIST = "artist";
-        public static final String COL_ALBUM_NAME = "name";
-        public static final String COL_ALBUM_RELEASE_DATE = "release_date";
-        public static final String COL_ALBUM_URI = "uri";
-        public static final String COL_ALBUM_LOCAL = "local";
-        public static final String COL_ALBUM_TYPE = "type";
-        public static final String COL_ALBUM_FAVOURITE = "favourite";
+        public static final String _ID = TABLE_NAME + BaseColumns._ID;
+        public static final String COL_ALBUM_ARTIST = "album_artist";
+        public static final String COL_ALBUM_NAME = "album_name";
+        public static final String COL_ALBUM_RELEASE_DATE = "album_release_date";
+        public static final String COL_ALBUM_URI = "album_uri";
+        public static final String COL_ALBUM_LOCAL = "album_local";
+        public static final String COL_ALBUM_TYPE = "album_type";
+        public static final String COL_ALBUM_FAVOURITE = "album_favourite";
     }
 
     /**
@@ -93,13 +93,13 @@ public class ContentContract {
 
         public static final String TABLE_NAME = "track";
 
-        public static final String _ID = BaseColumns._ID;
-        public static final String COL_TRACK_ALBUM = "album";
-        public static final String COL_TRACK_NAME = "name";
-        public static final String COL_TRACK_URI = "uri";
-        public static final String COL_TRACK_LOCAL = "local";
-        public static final String COL_TRACK_TYPE = "type";
-        public static final String COL_TRACK_FAVOURITE = "favourite";
+        public static final String _ID = TABLE_NAME + BaseColumns._ID;
+        public static final String COL_TRACK_ALBUM = "track_album";
+        public static final String COL_TRACK_NAME = "track_name";
+        public static final String COL_TRACK_URI = "track_uri";
+        public static final String COL_TRACK_LOCAL = "track_local";
+        public static final String COL_TRACK_TYPE = "track_type";
+        public static final String COL_TRACK_FAVOURITE = "track_favourite";
     }
 
     /**
@@ -112,11 +112,11 @@ public class ContentContract {
 
         public static final String TABLE_NAME = "user";
 
-        public static final String _ID = BaseColumns._ID;
-        public static final String COL_USER_EMAIL = "email";
-        public static final String COL_USER_NAME = "name";
-        public static final String COL_USER_CAPTION = "caption";
-        public static final String COL_USER_TYPE = "type";
+        public static final String _ID = TABLE_NAME + BaseColumns._ID;
+        public static final String COL_USER_EMAIL = "user_email";
+        public static final String COL_USER_NAME = "user_name";
+        public static final String COL_USER_CAPTION = "user_caption";
+        public static final String COL_USER_TYPE = "user_type";
     }
 
     /**
@@ -129,11 +129,11 @@ public class ContentContract {
 
         public static final String TABLE_NAME = "thread";
 
-        public static final String _ID = BaseColumns._ID;
-        public static final String COL_THREAD_AUTHOR = "author";
-        public static final String COL_THREAD_CAPTION = "caption";
-        public static final String COL_THREAD_CONTENT = "content";
-        public static final String COL_THREAD_VOTES = "votes";
+        public static final String _ID = TABLE_NAME + BaseColumns._ID;
+        public static final String COL_THREAD_AUTHOR = "thread_author";
+        public static final String COL_THREAD_CAPTION = "thread_caption";
+        public static final String COL_THREAD_CONTENT = "thread_content";
+        public static final String COL_THREAD_VOTES = "thread_votes";
     }
 
     /**
@@ -146,12 +146,12 @@ public class ContentContract {
 
         public static final String TABLE_NAME = "review";
 
-        public static final String _ID = BaseColumns._ID;
-        public static final String COL_REVIEW_AUTHOR = "author";
-        public static final String COL_REVIEW_RELEASE = "release";
-        public static final String COL_REVIEW_CONTENT = "content";
-        public static final String COL_REVIEW_URL = "url";
-        public static final String COL_REVIEW_SCORE = "score";
+        public static final String _ID = TABLE_NAME + BaseColumns._ID;
+        public static final String COL_REVIEW_AUTHOR = "review_author";
+        public static final String COL_REVIEW_RELEASE = "review_release";
+        public static final String COL_REVIEW_CONTENT = "review_content";
+        public static final String COL_REVIEW_URL = "review_url";
+        public static final String COL_REVIEW_SCORE = "review_score";
     }
 
 
@@ -165,11 +165,11 @@ public class ContentContract {
 
         public static final String TABLE_NAME = "release";
 
-        public static final String _ID = BaseColumns._ID;
-        public static final String COL_RELEASE_IDENTIFIER = "identifier";
-        public static final String COL_RELEASE_TITLE = "title";
-        public static final String COL_RELEASE_ARTIST = "artist";
-        public static final String COL_RELEASE_URL = "url";
+        public static final String _ID = TABLE_NAME + BaseColumns._ID;
+        public static final String COL_RELEASE_IDENTIFIER = "release_identifier";
+        public static final String COL_RELEASE_TITLE = "release_title";
+        public static final String COL_RELEASE_ARTIST = "release_artist";
+        public static final String COL_RELEASE_URL = "release_url";
     }
 
 
@@ -183,11 +183,11 @@ public class ContentContract {
 
         public static final String TABLE_NAME = "news";
 
-        public static final String _ID = BaseColumns._ID;
-        public static final String COL_NEWS_IDENTIFIER = "identifier";
-        public static final String COL_NEWS_AUTHOR = "author";
-        public static final String COL_NEWS_HEADER = "header";
-        public static final String COL_NEWS_CAPTION = "caption";
+        public static final String _ID = TABLE_NAME + BaseColumns._ID;
+        public static final String COL_NEWS_IDENTIFIER = "news_identifier";
+        public static final String COL_NEWS_AUTHOR = "news_author";
+        public static final String COL_NEWS_HEADER = "news_header";
+        public static final String COL_NEWS_CAPTION = "news_caption";
     }
 
     /**
@@ -200,12 +200,12 @@ public class ContentContract {
 
         public static final String TABLE_NAME = "image";
 
-        public static final String _ID = BaseColumns._ID;
-        public static final String COL_IMAGE_WIDTH = "width";
-        public static final String COL_IMAGE_HEIGHT = "height";
-        public static final String COL_IMAGE_COLOR = "color";
-        public static final String COL_IMAGE_URI = "uri";
-        public static final String COL_IMAGE_ALBUM = "album";
+        public static final String _ID = TABLE_NAME + BaseColumns._ID;
+        public static final String COL_IMAGE_WIDTH = "image_width";
+        public static final String COL_IMAGE_HEIGHT = "image_height";
+        public static final String COL_IMAGE_COLOR = "image_color";
+        public static final String COL_IMAGE_URI = "image_uri";
+        public static final String COL_IMAGE_ALBUM = "image_album";
     }
 
     /**
@@ -218,12 +218,12 @@ public class ContentContract {
 
         public static final String TABLE_NAME = "comment";
 
-        public static final String _ID = BaseColumns._ID;
-        public static final String COL_COMMENT_AUTHOR = "author";
-        public static final String COL_COMMENT_THREAD = "thread";
-        public static final String COL_COMMENT_PARENT = "parent";
-        public static final String COL_COMMENT_DEPTH = "depth";
-        public static final String COL_COMMENT_CONTENT = "content";
-        public static final String COL_COMMENT_LIKES = "likes";
+        public static final String _ID = TABLE_NAME + BaseColumns._ID;
+        public static final String COL_COMMENT_AUTHOR = "comment_author";
+        public static final String COL_COMMENT_THREAD = "comment_thread";
+        public static final String COL_COMMENT_PARENT = "comment_parent";
+        public static final String COL_COMMENT_DEPTH = "comment_depth";
+        public static final String COL_COMMENT_CONTENT = "comment_content";
+        public static final String COL_COMMENT_LIKES = "comment_likes";
     }
 }

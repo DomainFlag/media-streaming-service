@@ -9,18 +9,18 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
-import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.os.RemoteException;
 import android.provider.MediaStore;
-import android.support.v4.app.LoaderManager;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.graphics.Palette;
 import android.util.Log;
 
+import com.example.cchiv.jiggles.R;
 import com.example.cchiv.jiggles.data.ContentContract;
 import com.example.cchiv.jiggles.model.Album;
 import com.example.cchiv.jiggles.model.Collection;
+import com.example.cchiv.jiggles.model.Image;
 import com.example.cchiv.jiggles.model.Track;
 
 import java.io.File;
@@ -35,8 +35,6 @@ public class ItemScanner {
 
     private static final int IMAGE_SCALING_WIDTH_SIZE = 640;
     private static final int IMAGE_SCALING_HEIGHT_SIZE = 640;
-
-    private static final int COLLECTION_LOADER_ID = 191;
 
     private static final String TAG = "ItemScanner";
 
@@ -74,12 +72,25 @@ public class ItemScanner {
         } else return bitmap;
     }
 
-    public static void cacheImageResource(Context context, Bitmap image, String title) {
-        MediaStore.Images.Media.insertImage(context.getContentResolver(), image, title, null);
+    public static String cacheImageResource(Context context, Bitmap image, String title) {
+        return MediaStore.Images.Media.insertImage(context.getContentResolver(), image, title, null);
     }
 
-    private static List<Uri> getCachedBitmap(Context context, String title) {
-        List<Uri> arts = new ArrayList<>();
+    private static int decodeArtColor(Context context, Bitmap bitmap) {
+        Palette palette = Palette.from(bitmap).generate();
+
+        return palette.getDarkVibrantColor(ContextCompat.getColor(context, R.color.iconsTextColor));
+    }
+
+    private static Image decodeArtImage(Context context, String title, Bitmap bitmap) {
+        String uri = cacheImageResource(context, bitmap, title);
+        int color = decodeArtColor(context, bitmap);
+
+        return new Image(uri, color, IMAGE_SCALING_HEIGHT_SIZE, IMAGE_SCALING_WIDTH_SIZE);
+    }
+
+    private static List<Image> getCachedBitmap(Context context, String title) {
+        List<Image> arts = new ArrayList<>();
 
         Cursor cursor = MediaStore.Images.Media.query(context.getContentResolver(),
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI, new String[] {
@@ -94,16 +105,22 @@ public class ItemScanner {
 
         while(cursor.moveToNext()) {
             String path = cursor.getString(indexImageColumnData);
-            Uri uriArt = Uri.parse("file:///" + path);
 
-            arts.add(uriArt);
+            Bitmap bitmap = BitmapFactory.decodeFile(path);
+            int color = decodeArtColor(context, bitmap);
+
+            Log.v(TAG, String.valueOf(color));
+
+            Image image = new Image("file:///" + path, color, IMAGE_SCALING_HEIGHT_SIZE, IMAGE_SCALING_WIDTH_SIZE);
+
+            arts.add(image);
         }
 
         return arts;
     }
 
     private static void decodeBitmapArt(Context context, MediaMetadataRetriever mediaMetadataRetriever, Album album, String path) {
-        List<Uri> arts = getCachedBitmap(context, album.getName());
+        List<Image> arts = getCachedBitmap(context, album.getName());
 
         if(arts.size() > 0) {
             album.setArt(arts);
@@ -117,16 +134,15 @@ public class ItemScanner {
             rawArt = mediaMetadataRetriever.getEmbeddedPicture();
             if(rawArt != null) {
                 Bitmap bitmap = scaleBitmapResource(BitmapFactory.decodeByteArray(rawArt, 0, rawArt.length, options));
-                album.setArt(bitmap);
 
-                cacheImageResource(context, bitmap, album.getName());
+                album.setArt(decodeArtImage(context, album.getName(), bitmap));
             } else {
                 // No cover art is embedded, we look at locations relative to parent
                 List<Bitmap> bitmaps = decodeSurroundedBitmapArt(path);
                 for(int g = 0; g < arts.size(); g++) {
                     Bitmap bitmap = bitmaps.get(g);
 
-                    cacheImageResource(context, bitmap, album.getName() + "_" + g);
+                    album.setArt(decodeArtImage(context, album.getName()  + "_" + g, bitmap));
                 }
 
                 album.setArt(arts);
@@ -196,27 +212,9 @@ public class ItemScanner {
 
         mediaMetadataRetriever.release();
 
-//        cacheLocalData(context, collection);
+        cacheLocalData(context, collection);
 
         return collection;
-    }
-
-    public static void resolveCachedMedia(Context context, JigglesLoader.OnPostLoaderCallback onPostLoaderCallback) {
-        LoaderManager loaderManager = ((AppCompatActivity) context).getSupportLoaderManager();
-
-        JigglesLoader jigglesLoader = new JigglesLoader(context, onPostLoaderCallback);
-
-        Bundle args = new Bundle();
-        args.putString(JigglesLoader.BUNDLE_URI_KEY, ContentContract.CONTENT_COLLECTION_URI.toString());
-
-        loaderManager.initLoader(COLLECTION_LOADER_ID, args, jigglesLoader).forceLoad();
-    }
-
-    public static Track getTrack(Context context, int albumIndex, int trackIndex) {
-        Collection collection = resolveLocalMedia(context);
-        Album album = collection.getAlbums().get(albumIndex);
-
-        return album.getTracks().get(trackIndex);
     }
 
     public static Collection scan(Context context) {

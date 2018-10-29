@@ -38,7 +38,7 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     public interface OnClickCallbackListener {
-        void onClickCallbackListener(int albumIndex, int trackIndex);
+        void onClickCallbackListener(String trackId);
     }
 
     public interface OnClickAlbumListener {
@@ -158,9 +158,7 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
             loadArtAlbum(images.get(0), holder.art);
 
-//            Palette.from(bitmap).generate().getDarkMutedColor(ContextCompat.getColor(context, R.color.iconsTextColor));
-
-            return ContextCompat.getColor(context, R.color.primaryTextColor);
+            return images.get(0).getColor();
         } else {
             holder.art.setVisibility(View.GONE);
 
@@ -196,7 +194,7 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         } else holder.artist.setText(track.getName());
 
         holder.itemView.setOnClickListener((view) -> {
-            onClickCallbackListener.onClickCallbackListener(albumIndex, position);
+            onClickCallbackListener.onClickCallbackListener(track.getId());
         });
     }
 

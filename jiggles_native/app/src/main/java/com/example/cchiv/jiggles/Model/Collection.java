@@ -113,11 +113,43 @@ public class Collection {
     }
 
     public static Collection parseCursor(Cursor cursor) {
+        Collection collection = new Collection();
+
+        Artist artist = null;
+        Album album = null;
+        Track track = null;
+        Image image = null;
         while(cursor.moveToNext()) {
-            Artist artist = Artist.parseCursor(cursor);
+            if(!Artist.isUnique(artist, cursor)) {
+                artist = Artist.parseCursor(cursor);
+
+                collection.artists.add(artist);
+            }
+
+            if(!Album.isUnique(album, cursor)) {
+                album = Album.parseCursor(cursor);
+                album.setArtist(artist);
+
+                artist.getAlbums().add(album);
+                collection.albums.add(album);
+            }
+
+            if(!Image.isUnique(image, cursor)) {
+                image = Image.parseCursor(cursor);
+
+                album.setArt(image);
+            }
+
+            if(!Track.isUnique(track, cursor)) {
+                track = Track.parseCursor(cursor);
+                track.setArtist(artist);
+
+                album.getTracks().add(track);
+                collection.tracks.add(track);
+            }
         }
 
-        return null;
+        return collection;
     }
 
     public static ArrayList<ContentProviderOperation> parseValues(Collection collection) {

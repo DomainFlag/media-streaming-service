@@ -1,6 +1,5 @@
 package com.example.cchiv.jiggles.activities;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -8,13 +7,13 @@ import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
-import android.graphics.Bitmap;
+import android.database.Cursor;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.graphics.Palette;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -24,16 +23,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.cchiv.jiggles.R;
+import com.example.cchiv.jiggles.data.ContentContract;
+import com.example.cchiv.jiggles.data.ContentContract.TrackEntry;
 import com.example.cchiv.jiggles.interfaces.OnUpdatePairedDevices;
 import com.example.cchiv.jiggles.model.Album;
 import com.example.cchiv.jiggles.model.Artist;
+import com.example.cchiv.jiggles.model.Image;
 import com.example.cchiv.jiggles.model.Track;
-import com.example.cchiv.jiggles.utilities.ItemScanner;
 import com.example.cchiv.jiggles.utilities.JigglesConnection;
+import com.example.cchiv.jiggles.utilities.JigglesLoader;
 import com.example.cchiv.jiggles.utilities.JigglesProtocol;
 import com.example.cchiv.jiggles.utilities.PlayerUtilities;
 import com.example.cchiv.jiggles.utilities.VisualizerView;
 import com.google.android.exoplayer2.ui.PlayerView;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -41,6 +44,8 @@ import java.util.Set;
 public class PlayerActivity extends AppCompatActivity {
 
     private final static String TAG = "PlayerActivity";
+
+    private static final int TRACK_LOADER_ID = 221;
 
     private boolean utilitiesToggle = false;
 
@@ -55,16 +60,35 @@ public class PlayerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_player);
 
         Intent intent = getIntent();
-        int albumIndex = intent.getIntExtra("albumIndex", -1);
-        int trackIndex = intent.getIntExtra("trackIndex", -1);
+        String trackId = intent.getStringExtra("trackId");
 
-        if(albumIndex == -1 || trackIndex == -1)
+        if(trackId == null)
             finish();
-
-        Track track = ItemScanner.getTrack(this, albumIndex, trackIndex);
 
         playerView = findViewById(R.id.player);
         playerView.setControllerShowTimeoutMs(-1);
+
+        LoaderManager loaderManager = getSupportLoaderManager();
+        JigglesLoader jigglesLoader = new JigglesLoader<>(this,
+                (JigglesLoader.OnPostLoaderCallback<Track>) this::setUpActivity,
+                cursor -> {
+                    if(cursor.moveToNext())
+                        return Track.parseCursor(cursor);
+                    else return null;
+                }
+        );
+
+        Bundle args = new Bundle();
+        args.putString(JigglesLoader.BUNDLE_URI_KEY, ContentContract.CONTENT_COLLECTION_URI.toString());
+        args.putString(JigglesLoader.BUNDLE_SELECTION_KEY, TrackEntry._ID + "=?");
+        args.putStringArray(JigglesLoader.BUNDLE_SELECTION_ARGS_KEY, new String[] { trackId });
+
+        loaderManager.initLoader(TRACK_LOADER_ID, args, jigglesLoader).forceLoad();
+    }
+
+    public void setUpActivity(Track track) {
+        if(track == null)
+            finish();
 
         VisualizerView visualizerView = findViewById(R.id.player_visualizer);
         playerUtilities = new PlayerUtilities(this, playerView, visualizerView);
@@ -174,30 +198,29 @@ public class PlayerActivity extends AppCompatActivity {
         if(album != null) {
             Artist artist = album.getArtist();
             if(artist != null) {
-                TextView textArtistView = (TextView) findViewById(R.id.player_artist);
+                TextView textArtistView = findViewById(R.id.player_artist);
                 textArtistView.setText(artist.getName());
             }
 
-            Bitmap artwork = album.getArt();
-            if(artwork != null)
-                updateLayoutArtwork(artwork);
+            updateLayoutArtwork(album.getArt());
         }
     }
 
-    public void updateLayoutArtwork(Bitmap artwork) {
-        ((ImageView) findViewById(R.id.player_thumbnail)).setImageBitmap(artwork);
+    public void updateLayoutArtwork(Image artwork) {
+        ImageView thumbnail = findViewById(R.id.player_thumbnail);
 
-        Palette palette = Palette.from(artwork)
-                .generate();
+        Picasso
+                .get()
+                .load(artwork.getUri())
+                .into(thumbnail);
 
-        int defaultColor = ContextCompat.getColor(this, R.color.iconsTextColor);
-        int lightVibrantColor = palette.getDarkVibrantColor(defaultColor);
+        int darkVibrantColor = artwork.getColor();
         int color = ContextCompat.getColor(this, R.color.primaryTextColor);
 
         GradientDrawable gradientDrawable = new GradientDrawable(
                 GradientDrawable.Orientation.TOP_BOTTOM,
                 new int[] {
-                        lightVibrantColor,
+                        darkVibrantColor,
                         color
                 }
         );
@@ -209,7 +232,7 @@ public class PlayerActivity extends AppCompatActivity {
     }
 
     public void setPlayer(Track track) {
-        playerUtilities.prepareExoPlayerFromByteArray(track);
+        playerUtilities.setSource(track);
     }
 
     public void attachListener(JigglesConnection jigglesConnection) {

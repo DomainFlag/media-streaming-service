@@ -78,14 +78,16 @@ public class Album {
         this.images.add(new Image(art));
     }
 
+    public void setArt(Image image) {
+        this.images.add(image);
+    }
+
     public void setArt(Uri uriArt) {
         this.images.add(new Image(uriArt));
     }
 
-    public void setArt(List<Uri> images) {
-        for(Uri uri : images) {
-            this.images.add(new Image(uri));
-        }
+    public void setArt(List<Image> images) {
+        this.images = images;
     }
 
     public void addItem(Collection collection, Track track) {
@@ -124,10 +126,20 @@ public class Album {
         return images;
     }
 
-    public Bitmap getArt() {
+    public Image getArt() {
         if(images.size() > 0)
-            return images.get(0).getBitmap();
+            return images.get(0);
         else return null;
+    }
+
+    public static boolean isUnique(Album album, Cursor cursor) {
+        if(album == null)
+            return false;
+
+        int indexAlbumId = cursor.getColumnIndex(AlbumEntry._ID);
+        int id = cursor.getInt(indexAlbumId);
+
+        return album.getId().equals(String.valueOf(id));
     }
 
     public static Album parseCursor(Cursor cursor) {
