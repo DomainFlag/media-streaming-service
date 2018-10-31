@@ -24,7 +24,7 @@ import com.example.cchiv.jiggles.Constants;
 import com.example.cchiv.jiggles.R;
 import com.example.cchiv.jiggles.model.Comm;
 import com.example.cchiv.jiggles.model.Thread;
-import com.example.cchiv.jiggles.utilities.Formatter;
+import com.example.cchiv.jiggles.utilities.Tools;
 import com.example.cchiv.jiggles.utilities.TreeParser;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
@@ -110,7 +110,7 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ThreadView
                 });
 
         holder.author.setText(thread.getAuthor().getName());
-        holder.date.setText(Formatter.parseDate(thread.getId()));
+        holder.date.setText(Tools.parseDate(thread.getId()));
         holder.like.setText(String.valueOf(thread.getVotes()));
         holder.content.setText(thread.getContent());
 

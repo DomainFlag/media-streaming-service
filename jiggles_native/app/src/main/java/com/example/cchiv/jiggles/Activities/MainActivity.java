@@ -19,6 +19,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        SharedPreferences sharedPreferences = getSharedPreferences(Constants.AUTH_TOKEN, MODE_PRIVATE);
+        if(sharedPreferences.getString(Constants.TOKEN, null) != null) {
+            Intent intent = new Intent(this, HomeActivity.class);
+
+            startActivity(intent);
+        }
+
         ImageView welcomeBackground = findViewById(R.id.welcome_background);
         Picasso.get()
                 .load(R.drawable.background)

@@ -6,7 +6,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 
 import com.example.cchiv.jiggles.data.ContentContract.AlbumEntry;
-import com.example.cchiv.jiggles.utilities.Formatter;
+import com.example.cchiv.jiggles.utilities.Tools;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -160,7 +160,7 @@ public class Album {
         boolean albumFavourite = cursor.getInt(indexAlbumFavourite) == 1;
 
 
-        return new Album(String.valueOf(id), albumName, Formatter.parseStringDate(albumReleaseDate), albumUri, albumLocal, albumType, albumFavourite);
+        return new Album(String.valueOf(id), albumName, Tools.parseStringDate(albumReleaseDate), albumUri, albumLocal, albumType, albumFavourite);
     }
 
     public static ContentValues parseValues(Album album) {

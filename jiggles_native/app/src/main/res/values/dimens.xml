@@ -18,4 +18,6 @@
     <dimen name="auth_social_icon">48dp</dimen>
 
     <dimen name="button_elevation">4dp</dimen>
+
+    <dimen name="exo_player_button_dimen">30dp</dimen>
 </resources>

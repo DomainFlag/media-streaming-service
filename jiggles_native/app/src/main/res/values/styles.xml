@@ -13,6 +13,13 @@
         <item name="colorPrimaryDark">@color/primaryTextColor</item>
     </style>
 
+    <style name="ExoMediaButton">
+        <item name="android:background">?android:attr/selectableItemBackground</item>
+        <item name="android:layout_width">@dimen/exo_player_button_dimen</item>
+        <item name="android:layout_height">@dimen/exo_player_button_dimen</item>
+        <item name="android:layout_margin">@dimen/activity_margin_closer</item>
+    </style>
+
     <style name="social_auth_icon_style">
         <item name="android:layout_width">@dimen/auth_social_icon</item>
         <item name="android:layout_height">@dimen/auth_social_icon</item>

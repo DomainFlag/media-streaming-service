@@ -48,6 +48,14 @@ public class PlayerUtilities {
 
     private Context context;
 
+    public interface OnStateChanged {
+        void onStateChanged(boolean playWhenReady, int playbackState);
+    }
+
+    private OnStateChanged onStateChanged;
+
+    private Track track;
+
     private JigglesConnection jigglesConnection = null;
     private VisualizerView visualizerView = null;
     private Visualizer visualizer = null;
@@ -59,6 +67,7 @@ public class PlayerUtilities {
 
     public PlayerUtilities(Context context, PlayerView playerView) {
         this.context = context;
+        this.onStateChanged = (OnStateChanged) context;
 
         setPlayer(playerView);
     }
@@ -314,6 +323,8 @@ public class PlayerUtilities {
 
                     jigglesConnection.write(action, action.length);
                 }
+
+                onStateChanged.onStateChanged(playWhenReady, playbackState);
             }
 
             @Override
@@ -349,6 +360,8 @@ public class PlayerUtilities {
     }
 
     public void prepareExoPlayerFromByteArray(Track track) {
+        this.track = track;
+
         DataFetcher dataFetcher = new DataFetcher(track);
         PipedInputStream pipedInputStream = dataFetcher.getPipedInputStream();
         dataFetcher.start();
@@ -369,6 +382,8 @@ public class PlayerUtilities {
     }
 
     public void setSource(Track track) {
+        this.track = track;
+
         DefaultDataSourceFactory defaultDataSourceFactory = new DefaultDataSourceFactory(context,
                 Util.getUserAgent(context, context.getPackageName()));
 
@@ -403,6 +418,10 @@ public class PlayerUtilities {
         exoPlayer.setPlayWhenReady(play);
     }
 
+    public void changeSeeker(long value) {
+        exoPlayer.seekTo(value);
+    }
+
     public void togglePlayback(boolean play) {
         // Only change playback state when not in(pause state but resume action)
         if(playerPlaybackState || !play) {
@@ -420,6 +439,14 @@ public class PlayerUtilities {
 
         if(visualizer != null)
             visualizer.release();
+    }
+
+    public Track getTrack() {
+        return track;
+    }
+
+    public SimpleExoPlayer getExoPlayer() {
+        return exoPlayer;
     }
 
     public class CustomDataSource implements DataSource {

@@ -3,15 +3,25 @@ package com.example.cchiv.jiggles.activities;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.bluetooth.BluetoothDevice;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.ColorStateList;
-import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.graphics.drawable.GradientDrawable;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.media.session.MediaButtonReceiver;
+import android.support.v4.media.session.MediaSessionCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -34,20 +44,30 @@ import com.example.cchiv.jiggles.utilities.JigglesConnection;
 import com.example.cchiv.jiggles.utilities.JigglesLoader;
 import com.example.cchiv.jiggles.utilities.JigglesProtocol;
 import com.example.cchiv.jiggles.utilities.PlayerUtilities;
+import com.example.cchiv.jiggles.utilities.Tools;
 import com.example.cchiv.jiggles.utilities.VisualizerView;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.squareup.picasso.Picasso;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Set;
 
-public class PlayerActivity extends AppCompatActivity {
+public class PlayerActivity extends AppCompatActivity implements PlayerUtilities.OnStateChanged {
 
-    private final static String TAG = "PlayerActivity";
+    private static final String TAG = "PlayerActivity";
+
+    private static final String NOTIFICATION_PLAYER_CONTROLLER = "NOTIFICATION_PLAYER_CONTROLLER";
+    private static final int NOTIFICATION_PLAYER_ID = 721;
 
     private static final int TRACK_LOADER_ID = 221;
 
     private boolean utilitiesToggle = false;
+
+    private NotificationManager notificationManager;
+    private static MediaSessionCompat mediaSessionCompat;
+    private PlaybackStateCompat.Builder playbackStateCompatBuilder;
 
     private JigglesConnection jigglesConnection = null;
     private PlayerUtilities playerUtilities = null;
@@ -58,6 +78,8 @@ public class PlayerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player);
+
+        createMediaSession();
 
         Intent intent = getIntent();
         String trackId = intent.getStringExtra("trackId");
@@ -115,12 +137,12 @@ public class PlayerActivity extends AppCompatActivity {
     public void setBluetoothConnection() {
         // Server - Client
         findViewById(R.id.player_share).setOnClickListener((view) -> {
-            AvailableDevicesDialog availableDevicesDialog = new AvailableDevicesDialog(this, bluetoothDevice -> {
+            AvailableDevicesDialog availableDevicesDialog = new AvailableDevicesDialog();
+            availableDevicesDialog.onAttachBluetoothDeviceListener(bluetoothDevice -> {
                 if(jigglesConnection != null) {
                     jigglesConnection.onPairDevice(bluetoothDevice);
                 }
             });
-
             availableDevicesDialog.show(getFragmentManager(),  "availableDevicesDialog");
 
             jigglesConnection = new JigglesConnection(this, (message, type, size, data) -> {
@@ -181,10 +203,12 @@ public class PlayerActivity extends AppCompatActivity {
         ImageView menu = findViewById(R.id.player_menu);
         menu.setOnClickListener((view) -> {
             if(utilitiesToggle) {
-                menu.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.pleasureColor)));
+                menu.setAlpha(1.0f);
+
                 utilities.setVisibility(View.GONE);
             } else {
-                menu.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.iconsTextColor)));
+                menu.setAlpha(0.6f);
+
                 utilities.setVisibility(View.VISIBLE);
             }
 
@@ -216,6 +240,8 @@ public class PlayerActivity extends AppCompatActivity {
 
         int darkVibrantColor = artwork.getColor();
         int color = ContextCompat.getColor(this, R.color.primaryTextColor);
+
+        Tools.setStatusBarColor(this, darkVibrantColor);
 
         GradientDrawable gradientDrawable = new GradientDrawable(
                 GradientDrawable.Orientation.TOP_BOTTOM,
@@ -251,12 +277,16 @@ public class PlayerActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
 
+        mediaSessionCompat.setActive(false);
+
         if(jigglesConnection != null) {
             jigglesConnection.release();
         }
 
-        if(playerUtilities != null)
+        if(playerUtilities != null) {
             playerUtilities.release();
+            notificationManager.cancelAll();
+        }
     }
 
     @Override
@@ -267,8 +297,6 @@ public class PlayerActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-
-        togglePlayer(false);
     }
 
     @Override
@@ -283,6 +311,125 @@ public class PlayerActivity extends AppCompatActivity {
             playerUtilities.togglePlayback(playbackState);
     }
 
+    @Override
+    public void onStateChanged(boolean playWhenReady, int playbackState) {
+        if((playbackState == Player.STATE_READY) && playWhenReady){
+            playbackStateCompatBuilder.setState(PlaybackStateCompat.STATE_PLAYING,
+                    playerUtilities.getExoPlayer().getCurrentPosition(), 1f);
+        } else if((playbackState == Player.STATE_READY)) {
+            playbackStateCompatBuilder.setState(PlaybackStateCompat.STATE_PAUSED,
+                    playerUtilities.getExoPlayer().getCurrentPosition(), 1f);
+        }
+
+        Track track = playerUtilities.getTrack();
+
+        mediaSessionCompat.setPlaybackState(playbackStateCompatBuilder.build());
+        buildNotificationPlayer(playbackStateCompatBuilder.build(), track);
+    }
+
+    private class JigglesSessionCallback extends MediaSessionCompat.Callback {
+        @Override
+        public void onPlay() {
+            Log.v(TAG, "onPlay");
+            playerUtilities.togglePlayback(true);
+        }
+
+        @Override
+        public void onPause() {
+            Log.v(TAG, "onPause");
+            playerUtilities.togglePlayback(false);
+        }
+
+        @Override
+        public void onSkipToPrevious() {
+            Log.v(TAG, "toPrevious");
+            playerUtilities.changeSeeker(0);
+        }
+    }
+
+    private void createMediaSession() {
+        mediaSessionCompat = new MediaSessionCompat(this, TAG);
+
+        mediaSessionCompat.setFlags(
+                MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS | MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
+        mediaSessionCompat.setMediaButtonReceiver(null);
+
+        playbackStateCompatBuilder = new PlaybackStateCompat.Builder()
+                .setActions(
+                        PlaybackStateCompat.ACTION_PLAY |
+                                PlaybackStateCompat.ACTION_PAUSE |
+                                PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS |
+                                PlaybackStateCompat.ACTION_PLAY_PAUSE);
+
+        mediaSessionCompat.setPlaybackState(playbackStateCompatBuilder.build());
+        mediaSessionCompat.setCallback(new JigglesSessionCallback());
+        mediaSessionCompat.setActive(true);
+    }
+
+    private void buildNotificationPlayer(PlaybackStateCompat state, Track track) {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, NOTIFICATION_PLAYER_CONTROLLER);
+
+        int toggleIcon;
+        if(state.getState() == PlaybackStateCompat.STATE_PLAYING) {
+            toggleIcon = R.drawable.exo_controls_pause;
+        } else {
+            toggleIcon = R.drawable.exo_controls_play;
+        }
+
+        NotificationCompat.Action playbackAction = new NotificationCompat.Action(
+                toggleIcon, "Toggle playback",
+                    MediaButtonReceiver.buildMediaButtonPendingIntent(this,
+                        PlaybackStateCompat.ACTION_PLAY_PAUSE));
+
+        NotificationCompat.Action restartAction = new NotificationCompat
+                .Action(R.drawable.exo_controls_previous, "Restart",
+                    MediaButtonReceiver.buildMediaButtonPendingIntent(this,
+                            PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS));
+
+        PendingIntent contentPendingIntent = PendingIntent.getActivity
+                (this, 0, new Intent(this, PlayerActivity.class), 0);
+
+        Image art = track.getAlbum().getArt();
+        Bitmap largeIcon = null;
+        try {
+            largeIcon = MediaStore.Images.Media.getBitmap(this.getContentResolver(), art.getUri());
+        } catch(IOException e) {
+            Log.v(TAG, e.toString());
+        }
+
+        Notification notification = builder
+                .setContentTitle(track.getName())
+                .setColorized(true)
+                .setStyle(new android.support.v4.media.app.NotificationCompat.MediaStyle()
+                        .setShowActionsInCompactView(0))
+                .setColor(art.getColor())
+                .setContentText(track.getArtist().getName())
+                .setSmallIcon(R.drawable.ic_microphone)
+                .setLargeIcon(largeIcon)
+                .setPriority(NotificationCompat.PRIORITY_LOW)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setContentIntent(contentPendingIntent)
+                .addAction(restartAction)
+                .addAction(playbackAction)
+                .setStyle(new android.support.v4.media.app.NotificationCompat.MediaStyle()
+                        .setMediaSession(mediaSessionCompat.getSessionToken())
+                        .setShowActionsInCompactView(0,1))
+                .build();
+
+        notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(NOTIFICATION_PLAYER_CONTROLLER,
+                    "Channel human readable title",
+                    NotificationManager.IMPORTANCE_LOW);
+
+            notificationManager.createNotificationChannel(channel);
+        }
+
+        notificationManager.notify(NOTIFICATION_PLAYER_ID, notification);
+    }
+
+
     public static class AvailableDevicesDialog extends DialogFragment {
 
         public interface OnBluetoothDeviceSelect {
@@ -290,6 +437,8 @@ public class PlayerActivity extends AppCompatActivity {
         }
 
         private static final String TAG = "AvailableDevicesDialog";
+
+        private Context context;
 
         private ArrayAdapter<String> arrayAdapter;
 
@@ -301,11 +450,15 @@ public class PlayerActivity extends AppCompatActivity {
             super();
         }
 
-        public AvailableDevicesDialog(Context context, OnBluetoothDeviceSelect onBluetoothDeviceSelect) {
-            super();
+        @Override
+        public void onAttach(Context context) {
+            super.onAttach(context);
 
+            this.context = context;
+        }
+
+        public void onAttachBluetoothDeviceListener(OnBluetoothDeviceSelect onBluetoothDeviceSelect) {
             this.onBluetoothDeviceSelect = onBluetoothDeviceSelect;
-            arrayAdapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, new ArrayList<>());
         }
 
         @Override
@@ -315,6 +468,8 @@ public class PlayerActivity extends AppCompatActivity {
 
             View inflatedView = getActivity().getLayoutInflater().inflate(R.layout.dialog_devices_layout, null, false);
             builder.setView(inflatedView);
+
+            arrayAdapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, new ArrayList<>());
 
             ListView listView = inflatedView.findViewById(R.id.devices_list);
             listView.setAdapter(arrayAdapter);
@@ -344,6 +499,16 @@ public class PlayerActivity extends AppCompatActivity {
             arrayAdapter.add(device.getName());
 
             arrayAdapter.notifyDataSetChanged();
+        }
+    }
+
+    public static class MediaPlayerReceiver extends BroadcastReceiver {
+
+        public MediaPlayerReceiver() {}
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            MediaButtonReceiver.handleIntent(mediaSessionCompat, intent);
         }
     }
 }

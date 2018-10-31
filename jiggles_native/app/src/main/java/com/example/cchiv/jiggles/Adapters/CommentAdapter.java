@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import com.example.cchiv.jiggles.R;
 import com.example.cchiv.jiggles.model.Comm;
-import com.example.cchiv.jiggles.utilities.Formatter;
+import com.example.cchiv.jiggles.utilities.Tools;
 
 import java.util.List;
 
@@ -48,7 +48,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
         params.setMargins(dimen * comment.getDepth(), 0, 0, 0);
 
         holder.author.setText(comment.getAuthor().getName());
-        holder.date.setText(Formatter.parseDate(comment.getId()));
+        holder.date.setText(Tools.parseDate(comment.getId()));
         holder.content.setText(comment.getContent());
         holder.like.setText(String.valueOf(comment.getLikes()));
         holder.reply.setOnClickListener(view -> {

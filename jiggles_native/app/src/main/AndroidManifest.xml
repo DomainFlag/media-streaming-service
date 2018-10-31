@@ -46,6 +46,7 @@
             android:label="Search"/>
 
         <activity
+            android:launchMode="singleTask"
             android:name=".activities.PlayerActivity"
             android:theme="@style/AppThemeNoBar"
             android:label="Player"/>
@@ -62,6 +63,12 @@
             android:authorities="com.example.android.JigglesProvider"
             android:name=".data.JigglesProvider"
             android:exported="false"/>
+
+        <receiver android:name=".activities.PlayerActivity$MediaPlayerReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+        </receiver>
 
     </application>
 
