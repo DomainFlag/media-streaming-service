@@ -15,11 +15,11 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-public class NewsAdapter extends ModelAdapter<NewsAdapter.NewsViewHolder, News> {
+public class HighlightAdapter extends ModelAdapter<HighlightAdapter.NewsViewHolder, News> {
 
     private Context context;
 
-    public NewsAdapter(Context context, ArrayList<News> news) {
+    public HighlightAdapter(Context context, ArrayList<News> news) {
         this.context = context;
         this.data = news;
     }

@@ -159,7 +159,6 @@ public class Album {
         String albumType = cursor.getString(indexAlbumType);
         boolean albumFavourite = cursor.getInt(indexAlbumFavourite) == 1;
 
-
         return new Album(String.valueOf(id), albumName, Tools.parseStringDate(albumReleaseDate), albumUri, albumLocal, albumType, albumFavourite);
     }
 

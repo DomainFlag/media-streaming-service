@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <android.support.v4.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/home_bar"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:background="@color/iconsTextColor"
+                    android:orientation="horizontal"
+                    android:gravity="center">
+
+                    <TextView
+                        android:id="@+id/home_search"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:clickable="true"
+                        android:drawableLeft="@drawable/ic_lens"
+                        android:drawablePadding="@dimen/activity_margin_component"
+                        android:drawableStart="@drawable/ic_lens"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:padding="@dimen/activity_margin_component"
+                        android:textColor="@color/primaryTextColor"
+                        android:textSize="@dimen/activity_text_subheader"/>
+
+                    <TextView
+                        android:id="@+id/home_notication"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="4 people nearby listening to music"/>
+
+                    <ImageView
+                        android:id="@+id/home_profile"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/activity_margin_component"
+                        android:src="@drawable/ic_account"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/home_releases"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#f9f2fc"
+                    android:gravity="center"
+                    android:padding="@dimen/activity_margin_component"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="@dimen/activity_text_header"
+                        android:textStyle="bold"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:layout_marginTop="@dimen/activity_margin_relative"
+                        android:layout_marginBottom="@dimen/activity_margin_relative"
+                        android:text="@string/home_releases_label"/>
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/home_release_list"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/activity_margin_relative"
+                        android:layout_marginBottom="@dimen/activity_margin_relative"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#f9f2fc"
+                    android:padding="@dimen/activity_margin_component"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/home_releases">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="@dimen/activity_text_header"
+                        android:textStyle="bold"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:layout_marginTop="@dimen/activity_margin_relative"
+                        android:layout_marginBottom="@dimen/activity_margin_relative"
+                        android:text="@string/home_news_label"/>
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/home_news_list"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/activity_margin_relative"
+                        android:layout_marginBottom="@dimen/activity_margin_relative"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </android.support.v4.widget.NestedScrollView>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+</LinearLayout>

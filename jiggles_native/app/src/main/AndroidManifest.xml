@@ -4,17 +4,14 @@
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
-
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-
-    <uses-permission android:name="android.permission.BLUETOOTH" />
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 
     <application
         android:allowBackup="true"
@@ -38,38 +35,26 @@
             android:name=".activities.AuthActivity"/>
 
         <activity
-            android:name=".activities.HomeActivity"
-            android:label="Home"/>
-
-        <activity
             android:name=".activities.SearchActivity"
             android:label="Search"/>
 
         <activity
-            android:launchMode="singleTask"
             android:name=".activities.PlayerActivity"
-            android:theme="@style/AppThemeNoBar"
-            android:label="Player"/>
-
-        <activity
-            android:name=".activities.ForumActivity"
-            android:label="Forum"/>
-
-        <activity
-            android:name=".activities.CollectionActivity"
-            android:theme="@style/AppThemeNoBar"/>
+            android:label="Player"
+            android:launchMode="singleTask"/>
 
         <provider
-            android:authorities="com.example.android.JigglesProvider"
             android:name=".data.JigglesProvider"
+            android:authorities="com.example.android.JigglesProvider"
             android:exported="false"/>
 
         <receiver android:name=".activities.PlayerActivity$MediaPlayerReceiver">
             <intent-filter>
-                <action android:name="android.intent.action.MEDIA_BUTTON" />
+                <action android:name="android.intent.action.MEDIA_BUTTON"/>
             </intent-filter>
         </receiver>
 
+        <activity android:name=".activities.HomeActivity"/>
     </application>
 
 </manifest>

@@ -59,12 +59,6 @@
                     android:src="@drawable/ic_auth_facebook"/>
 
                 <ImageView
-                    android:id="@+id/auth_google"
-                    style="@style/social_auth_icon_style"
-                    android:contentDescription="@string/auth_google_description"
-                    android:src="@drawable/ic_auth_google"/>
-
-                <ImageView
                     android:id="@+id/auth_twitter"
                     style="@style/social_auth_icon_style"
                     android:contentDescription="@string/auth_twitter_description"

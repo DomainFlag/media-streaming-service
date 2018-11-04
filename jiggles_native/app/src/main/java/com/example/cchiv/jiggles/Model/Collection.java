@@ -143,8 +143,10 @@ public class Collection {
             if(!Track.isUnique(track, cursor)) {
                 track = Track.parseCursor(cursor);
                 track.setArtist(artist);
+                track.setAlbum(album);
 
                 album.getTracks().add(track);
+
                 collection.tracks.add(track);
             }
         }

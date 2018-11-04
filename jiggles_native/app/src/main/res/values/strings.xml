@@ -16,7 +16,6 @@
 
 
     <!-- Authentication -->
-    <string name="auth_google_description">Google Authentication</string>
     <string name="auth_facebook_description">Facebook Authentication</string>
     <string name="auth_twitter_description">Twitter Authentication</string>
 
@@ -38,6 +37,14 @@
     <string name="auth_redirection_log_in">Login in here</string>
     <string name="auth_redirection_text">%1$s,\n%2$s</string>
 
+    <!-- Home -->
+    <string-array name="home_pager_fragments">
+        <item>Home</item>
+        <item>Latest</item>
+        <item>Store</item>
+    </string-array>
+
+    <string name="home_tab_description">Tab Title</string>
 
     <!-- Home -->
     <string name="home_player">Player</string>

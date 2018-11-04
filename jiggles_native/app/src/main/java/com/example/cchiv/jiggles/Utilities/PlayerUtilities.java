@@ -8,6 +8,8 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.Surface;
 
+import com.example.cchiv.jiggles.model.Album;
+import com.example.cchiv.jiggles.model.Collection;
 import com.example.cchiv.jiggles.model.Track;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
@@ -21,6 +23,7 @@ import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.analytics.AnalyticsListener;
 import com.google.android.exoplayer2.decoder.DecoderCounters;
 import com.google.android.exoplayer2.metadata.Metadata;
+import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.MediaSourceEventListener;
@@ -54,7 +57,7 @@ public class PlayerUtilities {
 
     private OnStateChanged onStateChanged;
 
-    private Track track;
+    private Collection collection;
 
     private JigglesConnection jigglesConnection = null;
     private VisualizerView visualizerView = null;
@@ -359,10 +362,10 @@ public class PlayerUtilities {
         });
     }
 
-    public void prepareExoPlayerFromByteArray(Track track) {
-        this.track = track;
+    public void prepareExoPlayerFromByteArray(Collection collection) {
+        this.collection = collection;
 
-        DataFetcher dataFetcher = new DataFetcher(track);
+        DataFetcher dataFetcher = new DataFetcher(collection.getTracks().get(0));
         PipedInputStream pipedInputStream = dataFetcher.getPipedInputStream();
         dataFetcher.start();
 
@@ -381,17 +384,36 @@ public class PlayerUtilities {
         exoPlayer.setPlayWhenReady(true);
     }
 
-    public void setSource(Track track) {
-        this.track = track;
+    private ConcatenatingMediaSource setMultipleSources(ExtractorMediaSource.Factory factory, Album album) {
+        ConcatenatingMediaSource concatenatingMediaSource = new ConcatenatingMediaSource();
+
+        for(Track track : album.getTracks()) {
+            MediaSource mediaSource = factory.createMediaSource(Uri.parse(track.getUri()));
+
+            concatenatingMediaSource.addMediaSource(mediaSource);
+        }
+
+        return concatenatingMediaSource;
+    }
+
+    public void setSource(Collection collection, boolean wholeContent) {
+        this.collection = collection;
 
         DefaultDataSourceFactory defaultDataSourceFactory = new DefaultDataSourceFactory(context,
                 Util.getUserAgent(context, context.getPackageName()));
 
         ExtractorMediaSource.Factory factory = new ExtractorMediaSource.Factory(defaultDataSourceFactory);
-        MediaSource mediaSource = factory.createMediaSource(
-                Uri.parse(track.getUri()));
+        if(wholeContent) {
+            ConcatenatingMediaSource concatenatingMediaSource = setMultipleSources(factory, collection.getAlbums().get(0));
 
-        exoPlayer.prepare(mediaSource);
+            exoPlayer.prepare(concatenatingMediaSource);
+        } else {
+            MediaSource mediaSource = factory.createMediaSource(
+                    Uri.parse(collection.getTracks().get(0).getUri()));
+
+            exoPlayer.prepare(mediaSource);
+        }
+
         exoPlayer.setPlayWhenReady(true);
     }
 
@@ -441,8 +463,8 @@ public class PlayerUtilities {
             visualizer.release();
     }
 
-    public Track getTrack() {
-        return track;
+    public Collection getCollection() {
+        return collection;
     }
 
     public SimpleExoPlayer getExoPlayer() {

@@ -1,6 +1,6 @@
 package com.example.cchiv.jiggles.fragments;
 
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.GradientDrawable;
@@ -58,11 +58,7 @@ public class AlbumFragment extends Fragment {
         recyclerView.setLayoutManager(linearLayoutManager);
 
         ContentAdapter contentAdapter = new ContentAdapter(context, (trackId) -> {
-            Intent intent = new Intent(context, PlayerActivity.class);
-
-            intent.putExtra("trackId", trackId);
-
-            startActivity(intent);
+            createPlayIntent(trackId, false);
         }, album, position);
         recyclerView.setAdapter(contentAdapter);
 
@@ -71,7 +67,21 @@ public class AlbumFragment extends Fragment {
         return rootView;
     }
 
+    private void createPlayIntent(String resourceId, boolean wholeAlbum) {
+        Intent intent = new Intent(context, PlayerActivity.class);
+
+        intent.putExtra("resourceId", resourceId);
+        intent.putExtra("wholeAlbum", wholeAlbum);
+
+        startActivity(intent);
+    }
+
     private void updateLayout() {
+        TextView albumPlayView = rootView.findViewById(R.id.album_play);
+        albumPlayView.setOnClickListener((view) -> {
+            createPlayIntent(album.getId(), true);
+        });
+
         ImageView thumbnail = rootView.findViewById(R.id.album_thumbnail);
         Image image = album.getArt();
         Picasso

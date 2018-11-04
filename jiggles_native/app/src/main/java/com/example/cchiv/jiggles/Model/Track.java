@@ -128,18 +128,7 @@ public class Track {
         String trackType = cursor.getString(indexTrackType);
         boolean trackFavourite = cursor.getInt(indexTrackFavourite) == 1;
 
-        Album album = Album.parseCursor(cursor);
-        Image image = Image.parseCursor(cursor);
-        album.setArt(image);
-
-        Artist artist = Artist.parseCursor(cursor);
-        album.setArtist(artist);
-
-        Track track = new Track(String.valueOf(id), trackName, trackType, trackUri, trackLocal, trackFavourite);
-        track.setArtist(artist);
-        track.setAlbum(album);
-
-        return track;
+        return new Track(String.valueOf(id), trackName, trackType, trackUri, trackLocal, trackFavourite);
     }
 
     public static ContentValues parseValues(Track track) {

@@ -17,6 +17,7 @@ import com.example.cchiv.jiggles.model.Review;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 public class ReleaseAdapter extends ModelAdapter<ReleaseAdapter.ReleaseViewHolder, Release> {
@@ -43,12 +44,12 @@ public class ReleaseAdapter extends ModelAdapter<ReleaseAdapter.ReleaseViewHolde
     @Override
     public void onBindViewHolder(@NonNull ReleaseViewHolder holder, int position) {
         Release release = data.get(position);
-        ArrayList<Review> reviews = release.getReviews();
+        List<Review> reviews = release.getReviews();
         onBindDataViewHolder(holder, release.getUrl(), release.getArtist(), release.getTitle(), reviews);
     }
 
 
-    private void onBindDataViewHolder(@NonNull ReleaseViewHolder holder, String url, String artist, String title, ArrayList<Review> reviews) {
+    private void onBindDataViewHolder(@NonNull ReleaseViewHolder holder, String url, String artist, String title, List<Review> reviews) {
         Picasso.get()
                 .load(url)
                 .resize(175, 175)

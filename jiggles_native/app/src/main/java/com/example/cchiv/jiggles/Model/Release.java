@@ -10,6 +10,7 @@ import com.example.cchiv.jiggles.data.ContentContract.ReleaseEntry;
 import com.example.cchiv.jiggles.utilities.JigglesLoader;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Release {
 
@@ -18,9 +19,9 @@ public class Release {
     private String artist;
     private String url;
 
-    private ArrayList<Review> reviews;
+    private List<Review> reviews;
 
-    public Release(String _id, String title, String artist, String url, ArrayList<Review> reviews) {
+    public Release(String _id, String title, String artist, String url, List<Review> reviews) {
         this._id = _id;
         this.title = title;
         this.artist = artist;
@@ -44,12 +45,12 @@ public class Release {
         return url;
     }
 
-    public ArrayList<Review> getReviews() {
+    public List<Review> getReviews() {
         return reviews;
     }
 
-    public static ArrayList<Release> parseValues(Cursor cursor) {
-        ArrayList<Release> releases = new ArrayList<>();
+    public static List<Release> parseValues(Cursor cursor) {
+        List<Release> releases = new ArrayList<>();
 
         int indexReleaseId = cursor.getColumnIndex(ReleaseEntry._ID);
         int indexReleaseIdentifier = cursor.getColumnIndex(ReleaseEntry.COL_RELEASE_IDENTIFIER);
@@ -82,8 +83,8 @@ public class Release {
         return contentValues;
     }
 
-    public static ArrayList<ContentProviderOperation> batchOperations(ArrayList<Release> releases) {
-        ArrayList<ContentProviderOperation> operations = new ArrayList<>();
+    public static List<ContentProviderOperation> batchOperations(List<Release> releases) {
+        List<ContentProviderOperation> operations = new ArrayList<>();
 
         int previousResult = 0;
         for(Release release : releases) {

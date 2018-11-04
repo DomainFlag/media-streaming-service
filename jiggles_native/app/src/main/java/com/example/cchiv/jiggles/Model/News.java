@@ -8,6 +8,7 @@ import com.example.cchiv.jiggles.data.ContentContract.NewsEntry;
 import com.example.cchiv.jiggles.utilities.JigglesLoader;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class News {
 
@@ -39,8 +40,8 @@ public class News {
         return caption;
     }
 
-    public static ArrayList<News> parseValues(Cursor cursor) {
-        ArrayList<News> news = new ArrayList<>();
+    public static List<News> parseValues(Cursor cursor) {
+        List<News> news = new ArrayList<>();
 
         int indexNewsId = cursor.getColumnIndex(NewsEntry._ID);
         int indexNewsIdentifier = cursor.getColumnIndex(NewsEntry.COL_NEWS_IDENTIFIER);

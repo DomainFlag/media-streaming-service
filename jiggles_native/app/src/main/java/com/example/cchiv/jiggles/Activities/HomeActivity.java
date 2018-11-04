@@ -1,175 +1,176 @@
 package com.example.cchiv.jiggles.activities;
 
-import android.content.ContentValues;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
+import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
-import com.example.cchiv.jiggles.Constants;
 import com.example.cchiv.jiggles.R;
-import com.example.cchiv.jiggles.adapters.NewsAdapter;
-import com.example.cchiv.jiggles.adapters.ReleaseAdapter;
-import com.example.cchiv.jiggles.data.ContentContract.NewsEntry;
-import com.example.cchiv.jiggles.data.ContentContract.ReleaseEntry;
-import com.example.cchiv.jiggles.model.News;
-import com.example.cchiv.jiggles.model.Release;
-import com.example.cchiv.jiggles.utilities.JigglesLoader;
-import com.example.cchiv.jiggles.utilities.NetworkUtilities;
+import com.example.cchiv.jiggles.fragments.pager.HomeFragment;
+import com.example.cchiv.jiggles.fragments.pager.LatestFragment;
+import com.example.cchiv.jiggles.fragments.pager.StoreFragment;
+import com.example.cchiv.jiggles.utilities.Tools;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class HomeActivity extends AppCompatActivity {
 
     private static final String TAG = "HomeActivity";
 
-    private static final int HOME_NEWS_LOADER_ID = 21;
-    private static final int HOME_RELEASES_LOADER_ID = 22;
+    private static final int HOME_NUM_PAGES = 3;
 
-    private NetworkUtilities networkUtilities = new NetworkUtilities();;
+    private ViewPager viewPager;
 
-    private NewsAdapter newsAdapter;
-    private ReleaseAdapter releaseAdapter;
+    public static final int[] TAB_ICONS_ARRAY = {
+            R.drawable.ic_home,
+            R.drawable.ic_home,
+            R.drawable.ic_store,
+    };
+
+    public static final int ARRAY_TAB_TITLES = R.array.home_pager_fragments;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        SharedPreferences sharedPreferences = getSharedPreferences(Constants.AUTH_TOKEN, MODE_PRIVATE);
-        String token = sharedPreferences.getString(Constants.TOKEN, null);
-        if(token != null) {
-            // Do something
+        Tools.resolveAuthToken(this);
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        List<Tab> tabs = Tab.generate(this);
+        SliderPageAdapter pageAdapter = new SliderPageAdapter(this, fragmentManager, tabs);
+
+        viewPager = findViewById(R.id.home_pager);
+        viewPager.setAdapter(pageAdapter);
+
+        setTabLayout(pageAdapter, viewPager);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(viewPager.getCurrentItem() == 0) {
+            super.onBackPressed();
         } else {
-            finish();
+            viewPager.setCurrentItem(viewPager.getCurrentItem() - 1);
+        }
+    }
+
+    public void setTabLayout(SliderPageAdapter pageAdapter, ViewPager viewPager) {
+        TabLayout tabLayout = findViewById(R.id.tab_layout);
+        tabLayout.setupWithViewPager(viewPager);
+
+        for(int it = 0; it < tabLayout.getTabCount(); it++) {
+            TabLayout.Tab tab = tabLayout.getTabAt(it);
+            if(tab == null)
+                continue;
+
+            tab.setCustomView(pageAdapter.getTabView(it));
+        }
+    }
+
+    public class SliderPageAdapter extends FragmentPagerAdapter {
+
+        private Context context;
+        private List<Tab> tabs;
+
+        private SliderPageAdapter(Context context, FragmentManager fm, List<Tab> tabs) {
+            super(fm);
+
+            this.context = context;
+            this.tabs = tabs;
         }
 
-        SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-            if(checkInternetConnectivity())
-                fetchLiveContent();
-        });
-
-        findViewById(R.id.home_player).setOnClickListener(view -> {
-            Intent intent = new Intent(this, CollectionActivity.class);
-            startActivity(intent);
-        });
-
-        findViewById(R.id.home_forum).setOnClickListener(view -> {
-            Intent intent = new Intent(this, ForumActivity.class);
-            startActivity(intent);
-        });
-
-        newsAdapter = new NewsAdapter(this, new ArrayList<>());
-        createListView(R.id.home_news_list, newsAdapter);
-
-        releaseAdapter = new ReleaseAdapter(this, new ArrayList<>());
-        createListView(R.id.home_release_list, releaseAdapter);
-
-        fetchCachedContent();
-    }
-
-    public void createListView(int resource, RecyclerView.Adapter adapter) {
-        RecyclerView recyclerView = findViewById(resource);
-        setRecyclerView(recyclerView, adapter);
-    }
-
-    public void fetchCachedContent() {
-        LoaderManager loaderManager = getSupportLoaderManager();
-
-        JigglesLoader jigglesNewsLoader = new JigglesLoader<>(this,
-                (JigglesLoader.OnPostLoaderCallback<ArrayList<News>>) this::updateLayoutNews,
-                News::parseValues
-        );
-
-        loaderManager.initLoader(HOME_NEWS_LOADER_ID, News.bundleValues(), jigglesNewsLoader).forceLoad();
-
-        JigglesLoader jigglesReleasesLoader = new JigglesLoader<>(this,
-                (JigglesLoader.OnPostLoaderCallback<ArrayList<Release>>) this::updateLayoutReleases,
-                Release::parseValues
-        );
-
-        loaderManager.initLoader(HOME_RELEASES_LOADER_ID, Release.bundleValues(), jigglesReleasesLoader).forceLoad();
-    }
-
-    public void setRecyclerView(RecyclerView recyclerView, RecyclerView.Adapter adapter) {
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setNestedScrollingEnabled(true);
-
-        RecyclerView.LayoutManager layoutManager =
-                new GridLayoutManager(this,
-                        getResources().getInteger(R.integer.layout_grid_columns_count),
-                        LinearLayoutManager.VERTICAL,
-                        false);
-        recyclerView.setLayoutManager(layoutManager);
-
-        recyclerView.setAdapter(adapter);
-    }
-
-    public void onClickSearch(View view) {
-        Intent intent = new Intent(this, SearchActivity.class);
-        startActivity(intent);
-    }
-
-    private boolean checkInternetConnectivity() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-        if(connectivityManager == null)
-            return false;
-
-        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-        return networkInfo != null && networkInfo.isConnected();
-    }
-
-    public void fetchLiveContent() {
-        networkUtilities.fetchReleases(releases -> {
-            // Do something with releases
-            if(releases != null) {
-                ContentValues[] contentValues = new ContentValues[releases.size()];
-                for(int it = 0; it < releases.size(); it++) {
-                    contentValues[it] = Release.parseValues(releases.get(it));
+        @Override
+        public Fragment getItem(int position) {
+            Fragment fragment = null;
+            switch(position) {
+                case 0 : {
+                    fragment = new HomeFragment();
+                    break;
                 }
-
-                long insertedRows = getContentResolver().bulkInsert(
-                        ReleaseEntry.CONTENT_URI,
-                        contentValues
-                );
-
-                updateLayoutReleases(releases);
-            }
-        });
-
-        networkUtilities.fetchNews(news -> {
-            if(news != null) {
-                ContentValues[] contentValues = new ContentValues[news.size()];
-                for(int it = 0; it < news.size(); it++) {
-                    contentValues[it] = News.parseValues(news.get(it));
+                case 1 : {
+                    fragment = new LatestFragment();
+                    break;
                 }
-
-                getContentResolver().bulkInsert(
-                        NewsEntry.CONTENT_URI,
-                        contentValues
-                );
-
-                updateLayoutNews(news);
+                case 2 : {
+                    fragment = new StoreFragment();
+                    break;
+                }
+                default : {
+                    Log.v(TAG, "Unknown app part requested");
+                }
             }
-        });
+
+            if(fragment != null)
+                fragment.onAttach(context);
+
+            return fragment;
+        }
+
+        private View getTabView(int pos) {
+            Tab tab = tabs.get(pos);
+
+            View view = LayoutInflater.from(context).inflate(R.layout.pager_tab_layout, null);
+
+            ImageView imageView = view.findViewById(R.id.tab_icon);
+            imageView.setImageDrawable(tab.getDrawable());
+
+            TextView textView = view.findViewById(R.id.tab_title);
+            textView.setText(tab.getTitle());
+
+            return view;
+        }
+
+        @Override
+        public int getCount() {
+            return HOME_NUM_PAGES;
+        }
     }
 
-    public void updateLayoutReleases(ArrayList<Release> releases) {
-        releaseAdapter.onSwapData(releases);
-        releaseAdapter.notifyDataSetChanged();
-    }
+    private static class Tab {
 
-    public void updateLayoutNews(ArrayList<News> news) {
-        newsAdapter.onSwapData(news);
-        newsAdapter.notifyDataSetChanged();
+        private Drawable drawable;
+        private String title;
+
+        private Tab(Drawable drawable, String title) {
+            this.drawable = drawable;
+            this.title = title;
+        }
+
+        private Drawable getDrawable() {
+            return drawable;
+        }
+
+        private String getTitle() {
+            return title;
+        }
+
+        private static List<Tab> generate(Context context) {
+            List<Tab> tabs = new ArrayList<>();
+
+            String[] titles = context.getResources().getStringArray(ARRAY_TAB_TITLES);
+            for(int i = 0; i < HOME_NUM_PAGES; i++) {
+                Drawable icon = ContextCompat.getDrawable(context, TAB_ICONS_ARRAY[i]);
+                String title = titles[i];
+
+                Tab tab = new Tab(icon, title);
+
+                tabs.add(tab);
+            }
+
+            return tabs;
+        }
     }
 }

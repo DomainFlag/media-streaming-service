@@ -34,10 +34,12 @@ import android.widget.Toast;
 
 import com.example.cchiv.jiggles.R;
 import com.example.cchiv.jiggles.data.ContentContract;
+import com.example.cchiv.jiggles.data.ContentContract.AlbumEntry;
 import com.example.cchiv.jiggles.data.ContentContract.TrackEntry;
 import com.example.cchiv.jiggles.interfaces.OnUpdatePairedDevices;
 import com.example.cchiv.jiggles.model.Album;
 import com.example.cchiv.jiggles.model.Artist;
+import com.example.cchiv.jiggles.model.Collection;
 import com.example.cchiv.jiggles.model.Image;
 import com.example.cchiv.jiggles.model.Track;
 import com.example.cchiv.jiggles.utilities.JigglesConnection;
@@ -74,6 +76,8 @@ public class PlayerActivity extends AppCompatActivity implements PlayerUtilities
 
     private PlayerView playerView;
 
+    private boolean wholeAlbum;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,9 +86,10 @@ public class PlayerActivity extends AppCompatActivity implements PlayerUtilities
         createMediaSession();
 
         Intent intent = getIntent();
-        String trackId = intent.getStringExtra("trackId");
+        String resourceId = intent.getStringExtra("resourceId");
+        wholeAlbum = intent.getBooleanExtra("wholeAlbum", false);
 
-        if(trackId == null)
+        if(resourceId == null)
             finish();
 
         playerView = findViewById(R.id.player);
@@ -92,32 +97,35 @@ public class PlayerActivity extends AppCompatActivity implements PlayerUtilities
 
         LoaderManager loaderManager = getSupportLoaderManager();
         JigglesLoader jigglesLoader = new JigglesLoader<>(this,
-                (JigglesLoader.OnPostLoaderCallback<Track>) this::setUpActivity,
+                (JigglesLoader.OnPostLoaderCallback<Collection>) this::setUpActivity,
                 cursor -> {
-                    if(cursor.moveToNext())
-                        return Track.parseCursor(cursor);
-                    else return null;
+                    if(cursor.moveToNext()) {
+                        return Collection.parseCursor(cursor);
+                    } else return null;
                 }
         );
 
+        Log.v(TAG, resourceId);
+
         Bundle args = new Bundle();
         args.putString(JigglesLoader.BUNDLE_URI_KEY, ContentContract.CONTENT_COLLECTION_URI.toString());
-        args.putString(JigglesLoader.BUNDLE_SELECTION_KEY, TrackEntry._ID + "=?");
-        args.putStringArray(JigglesLoader.BUNDLE_SELECTION_ARGS_KEY, new String[] { trackId });
+        if(!wholeAlbum)
+            args.putString(JigglesLoader.BUNDLE_SELECTION_KEY, TrackEntry._ID + "=?");
+        else args.putString(JigglesLoader.BUNDLE_SELECTION_KEY, AlbumEntry._ID + "=?");
+        args.putStringArray(JigglesLoader.BUNDLE_SELECTION_ARGS_KEY, new String[] { resourceId });
 
         loaderManager.initLoader(TRACK_LOADER_ID, args, jigglesLoader).forceLoad();
     }
 
-    public void setUpActivity(Track track) {
-        if(track == null)
+    public void setUpActivity(Collection collection) {
+        if(collection == null)
             finish();
 
         VisualizerView visualizerView = findViewById(R.id.player_visualizer);
         playerUtilities = new PlayerUtilities(this, playerView, visualizerView);
+        playerUtilities.setSource(collection, wholeAlbum);
 
-        setPlayer(track);
-
-        updateUserInterface(track);
+        updateUserInterface(collection);
         setBluetoothConnection();
     }
 
@@ -186,11 +194,13 @@ public class PlayerActivity extends AppCompatActivity implements PlayerUtilities
                 }
             });
 
-            attachListener(jigglesConnection);
+            playerUtilities.attachConnection(jigglesConnection);
         });
     }
 
-    public void updateUserInterface(Track track){
+    public void updateUserInterface(Collection collection) {
+        Track track = collection.getTracks().get(0);
+
         findViewById(R.id.player_lyrics).setOnClickListener((view) -> {
             // Do something later with lyrics
         });
@@ -257,14 +267,6 @@ public class PlayerActivity extends AppCompatActivity implements PlayerUtilities
         playerView.setShutterBackgroundColor(ContextCompat.getColor(this, R.color.visualizerClearColor));
     }
 
-    public void setPlayer(Track track) {
-        playerUtilities.setSource(track);
-    }
-
-    public void attachListener(JigglesConnection jigglesConnection) {
-        playerUtilities.attachConnection(jigglesConnection);
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(jigglesConnection != null)
@@ -321,9 +323,11 @@ public class PlayerActivity extends AppCompatActivity implements PlayerUtilities
                     playerUtilities.getExoPlayer().getCurrentPosition(), 1f);
         }
 
-        Track track = playerUtilities.getTrack();
+        Collection collection = playerUtilities.getCollection();
 
         mediaSessionCompat.setPlaybackState(playbackStateCompatBuilder.build());
+        Track track = collection.getTracks().get(0);
+
         buildNotificationPlayer(playbackStateCompatBuilder.build(), track);
     }
 

@@ -141,7 +141,6 @@ public class Artist {
         String artistType = cursor.getString(indexArtistType);
         boolean artistFavourite = cursor.getInt(indexArtistFavourite) == 1;
 
-
         return new Artist(String.valueOf(id), artistName, artistUri, artistLocal, artistType, artistFavourite);
     }
 
