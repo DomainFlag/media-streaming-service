@@ -19,6 +19,7 @@ import android.widget.TextView;
 import com.example.cchiv.jiggles.R;
 import com.example.cchiv.jiggles.fragments.pager.HomeFragment;
 import com.example.cchiv.jiggles.fragments.pager.LatestFragment;
+import com.example.cchiv.jiggles.fragments.pager.SearchFragment;
 import com.example.cchiv.jiggles.fragments.pager.StoreFragment;
 import com.example.cchiv.jiggles.utilities.Tools;
 
@@ -29,7 +30,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private static final String TAG = "HomeActivity";
 
-    private static final int HOME_NUM_PAGES = 3;
+    private static final int HOME_NUM_PAGES = 4;
 
     private ViewPager viewPager;
 
@@ -37,6 +38,7 @@ public class HomeActivity extends AppCompatActivity {
             R.drawable.ic_home,
             R.drawable.ic_home,
             R.drawable.ic_store,
+            R.drawable.ic_lens
     };
 
     public static final int ARRAY_TAB_TITLES = R.array.home_pager_fragments;
@@ -50,12 +52,22 @@ public class HomeActivity extends AppCompatActivity {
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         List<Tab> tabs = Tab.generate(this);
-        SliderPageAdapter pageAdapter = new SliderPageAdapter(this, fragmentManager, tabs);
 
+        SliderPageAdapter pageAdapter = new SliderPageAdapter(this, fragmentManager, tabs);
         viewPager = findViewById(R.id.home_pager);
         viewPager.setAdapter(pageAdapter);
 
         setTabLayout(pageAdapter, viewPager);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
     @Override
@@ -106,6 +118,10 @@ public class HomeActivity extends AppCompatActivity {
                 }
                 case 2 : {
                     fragment = new StoreFragment();
+                    break;
+                }
+                case 3 : {
+                    fragment = new SearchFragment();
                     break;
                 }
                 default : {

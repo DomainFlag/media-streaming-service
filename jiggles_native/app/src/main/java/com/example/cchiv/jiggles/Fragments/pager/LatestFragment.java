@@ -2,7 +2,6 @@ package com.example.cchiv.jiggles.fragments.pager;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -18,7 +17,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.cchiv.jiggles.R;
-import com.example.cchiv.jiggles.activities.SearchActivity;
 import com.example.cchiv.jiggles.adapters.HighlightAdapter;
 import com.example.cchiv.jiggles.adapters.ReleaseAdapter;
 import com.example.cchiv.jiggles.data.ContentContract.NewsEntry;
@@ -56,11 +54,6 @@ public class LatestFragment extends Fragment {
         swipeRefreshLayout.setOnRefreshListener(() -> {
             if(Tools.checkInternetConnectivity(context))
                 fetchLiveContent();
-        });
-
-        rootView.findViewById(R.id.home_search).setOnClickListener((view) -> {
-            Intent intent = new Intent(context, SearchActivity.class);
-            startActivity(intent);
         });
 
         highlightAdapter = new HighlightAdapter(context, new ArrayList<>());

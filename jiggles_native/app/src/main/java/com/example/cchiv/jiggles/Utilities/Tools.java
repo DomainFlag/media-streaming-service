@@ -5,14 +5,19 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewCompat;
 import android.util.Log;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
 import com.example.cchiv.jiggles.Constants;
+import com.example.cchiv.jiggles.R;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -75,6 +80,20 @@ public class Tools {
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
 
         return networkInfo != null && networkInfo.isConnected();
+    }
+
+    public static void setGradientBackground(Context context, View view, int color) {
+        int darkMutedColor = ContextCompat.getColor(context, R.color.primaryTextColor);
+
+        GradientDrawable gradientDrawable = new GradientDrawable(
+                GradientDrawable.Orientation.TOP_BOTTOM,
+                new int[] {
+                        color,
+                        darkMutedColor
+                }
+        );
+
+        ViewCompat.setBackground(view, gradientDrawable);
     }
 
 }

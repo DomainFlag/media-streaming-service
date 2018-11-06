@@ -1,35 +1,27 @@
-package com.example.cchiv.jiggles.utilities;
+package com.example.cchiv.jiggles.player;
 
 import android.content.Context;
 import android.media.audiofx.Visualizer;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.support.annotation.Nullable;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
-import android.view.Surface;
 
 import com.example.cchiv.jiggles.model.Album;
 import com.example.cchiv.jiggles.model.Collection;
 import com.example.cchiv.jiggles.model.Track;
+import com.example.cchiv.jiggles.player.listeners.PlayerAnalyticsListener;
+import com.example.cchiv.jiggles.player.listeners.PlayerEventListener;
+import com.example.cchiv.jiggles.utilities.VisualizerView;
 import com.google.android.exoplayer2.C;
-import com.google.android.exoplayer2.DefaultRenderersFactory;
-import com.google.android.exoplayer2.ExoPlaybackException;
+import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
-import com.google.android.exoplayer2.Format;
-import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
-import com.google.android.exoplayer2.Timeline;
-import com.google.android.exoplayer2.analytics.AnalyticsListener;
-import com.google.android.exoplayer2.decoder.DecoderCounters;
-import com.google.android.exoplayer2.metadata.Metadata;
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
-import com.google.android.exoplayer2.source.MediaSourceEventListener;
-import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
-import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DataSpec;
@@ -45,321 +37,92 @@ import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 
-public class PlayerUtilities {
+public class MediaPlayer {
 
-    private static final String TAG = "PlayerUtilities";
-
-    private Context context;
+    private static final String TAG = "MediaPlayer";
 
     public interface OnStateChanged {
-        void onStateChanged(boolean playWhenReady, int playbackState);
+        void onTrackChanged(Track track);
     }
+
+    private Context context;
 
     private OnStateChanged onStateChanged;
 
     private Collection collection;
 
-    private JigglesConnection jigglesConnection = null;
     private VisualizerView visualizerView = null;
     private Visualizer visualizer = null;
 
     public boolean playerPlaybackState = true;
     public boolean playerPlaybackAction = true;
 
-    private SimpleExoPlayer exoPlayer;
+    private SimpleExoPlayer exoPlayer = null;
+    private RemoteConnection remoteConnection = null;
 
-    public PlayerUtilities(Context context, PlayerView playerView) {
+    public MediaPlayer(Context context) {
         this.context = context;
-        this.onStateChanged = (OnStateChanged) context;
-
-        setPlayer(playerView);
+        this.onStateChanged = ((OnStateChanged) context);
     }
 
-    public PlayerUtilities(Context context, PlayerView playerView, VisualizerView visualizerView) {
-        this(context, playerView);
-
-        this.visualizerView = visualizerView;
+    public void attachConnection(RemoteConnection remoteConnection) {
+        this.remoteConnection = remoteConnection;
     }
 
-    public void attachConnection(JigglesConnection jigglesConnection) {
-        this.jigglesConnection = jigglesConnection;
+    public Track getCurrentTrack() {
+        int index = exoPlayer.getCurrentWindowIndex();
+
+        return collection.getTrack(index);
     }
 
-    public void setPlayer(PlayerView playerView) {
-        DefaultRenderersFactory defaultRenderersFactory = new DefaultRenderersFactory(context);
+    public void setPlayer(PlayerView playerView, PlayerMediaSession playerMediaSession) {
         DefaultTrackSelector defaultTrackSelector = new DefaultTrackSelector();
+        exoPlayer = ExoPlayerFactory.newSimpleInstance(context, defaultTrackSelector);
 
-        exoPlayer = ExoPlayerFactory.newSimpleInstance(defaultRenderersFactory, defaultTrackSelector);
-        playerView.setPlayer(exoPlayer);
-
-        exoPlayer.addAnalyticsListener(new AnalyticsListener() {
-            @Override
-            public void onPlayerStateChanged(EventTime eventTime, boolean playWhenReady, int
-                    playbackState) {
-
-            }
-
-            @Override
-            public void onTimelineChanged(EventTime eventTime, int reason) {
-
-            }
-
+        exoPlayer.addAnalyticsListener(new PlayerAnalyticsListener() {
             @Override
             public void onPositionDiscontinuity(EventTime eventTime, int reason) {
-
-            }
-
-            @Override
-            public void onSeekStarted(EventTime eventTime) {
-
-            }
-
-            @Override
-            public void onSeekProcessed(EventTime eventTime) {
-
-            }
-
-            @Override
-            public void onPlaybackParametersChanged(EventTime eventTime, PlaybackParameters
-                    playbackParameters) {
-
-            }
-
-            @Override
-            public void onRepeatModeChanged(EventTime eventTime, int repeatMode) {
-
-            }
-
-            @Override
-            public void onShuffleModeChanged(EventTime eventTime, boolean shuffleModeEnabled) {
-
-            }
-
-            @Override
-            public void onLoadingChanged(EventTime eventTime, boolean isLoading) {
-
-            }
-
-            @Override
-            public void onPlayerError(EventTime eventTime, ExoPlaybackException error) {
-
-            }
-
-            @Override
-            public void onTracksChanged(EventTime eventTime, TrackGroupArray trackGroups,
-                                        TrackSelectionArray trackSelections) {
-
-            }
-
-            @Override
-            public void onLoadStarted(EventTime eventTime, MediaSourceEventListener.LoadEventInfo
-                    loadEventInfo, MediaSourceEventListener.MediaLoadData mediaLoadData) {
-
-            }
-
-            @Override
-            public void onLoadCompleted(EventTime eventTime, MediaSourceEventListener
-                    .LoadEventInfo loadEventInfo, MediaSourceEventListener.MediaLoadData
-                                                mediaLoadData) {
-
-            }
-
-            @Override
-            public void onLoadCanceled(EventTime eventTime, MediaSourceEventListener
-                    .LoadEventInfo loadEventInfo, MediaSourceEventListener.MediaLoadData
-                                               mediaLoadData) {
-
-            }
-
-            @Override
-            public void onLoadError(EventTime eventTime, MediaSourceEventListener.LoadEventInfo
-                    loadEventInfo, MediaSourceEventListener.MediaLoadData mediaLoadData,
-                                    IOException error, boolean wasCanceled) {
-
-            }
-
-            @Override
-            public void onDownstreamFormatChanged(EventTime eventTime, MediaSourceEventListener.MediaLoadData mediaLoadData) {
-
-            }
-
-            @Override
-            public void onUpstreamDiscarded(EventTime eventTime, MediaSourceEventListener
-                    .MediaLoadData mediaLoadData) {
-
-            }
-
-            @Override
-            public void onMediaPeriodCreated(EventTime eventTime) {
-
-            }
-
-            @Override
-            public void onMediaPeriodReleased(EventTime eventTime) {
-
-            }
-
-            @Override
-            public void onReadingStarted(EventTime eventTime) {
-
-            }
-
-            @Override
-            public void onBandwidthEstimate(EventTime eventTime, int totalLoadTimeMs, long
-                    totalBytesLoaded, long bitrateEstimate) {
-
-            }
-
-            @Override
-            public void onViewportSizeChange(EventTime eventTime, int width, int height) {
-
-            }
-
-            @Override
-            public void onNetworkTypeChanged(EventTime eventTime, @Nullable NetworkInfo
-                    networkInfo) {
-
-            }
-
-            @Override
-            public void onMetadata(EventTime eventTime, Metadata metadata) {
-
-            }
-
-            @Override
-            public void onDecoderEnabled(EventTime eventTime, int trackType, DecoderCounters decoderCounters) {
-
-            }
-
-            @Override
-            public void onDecoderInitialized(EventTime eventTime, int trackType, String
-                    decoderName, long initializationDurationMs) {
-
-            }
-
-            @Override
-            public void onDecoderInputFormatChanged(EventTime eventTime, int trackType, Format format) {
-
-            }
-
-            @Override
-            public void onDecoderDisabled(EventTime eventTime, int trackType, DecoderCounters decoderCounters) {
-
+                if(reason == ExoPlayer.DISCONTINUITY_REASON_PERIOD_TRANSITION ||
+                        reason == ExoPlayer.DISCONTINUITY_REASON_SEEK_ADJUSTMENT) {
+                    onStateChanged.onTrackChanged(getCurrentTrack());
+                }
             }
 
             @Override
             public void onAudioSessionId(EventTime eventTime, int audioSessionId) {
                 setUpVisualizer(visualizerView, audioSessionId);
             }
-
-            @Override
-            public void onAudioUnderrun(EventTime eventTime, int bufferSize, long bufferSizeMs, long elapsedSinceLastFeedMs) {
-
-            }
-
-            @Override
-            public void onDroppedVideoFrames(EventTime eventTime, int droppedFrames, long elapsedMs) {
-
-            }
-
-            @Override
-            public void onVideoSizeChanged(EventTime eventTime, int width, int height, int unappliedRotationDegrees, float pixelWidthHeightRatio) {
-
-            }
-
-            @Override
-            public void onRenderedFirstFrame(EventTime eventTime, Surface surface) {
-
-            }
-
-            @Override
-            public void onDrmKeysLoaded(EventTime eventTime) {
-
-            }
-
-            @Override
-            public void onDrmSessionManagerError(EventTime eventTime, Exception error) {
-
-            }
-
-            @Override
-            public void onDrmKeysRestored(EventTime eventTime) {
-
-            }
-
-            @Override
-            public void onDrmKeysRemoved(EventTime eventTime) {
-
-            }
         });
 
-        exoPlayer.addListener(new Player.EventListener() {
-            @Override
-            public void onTimelineChanged(Timeline timeline, @Nullable Object manifest, int reason) {
-
-            }
-
-            @Override
-            public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray
-                    trackSelections) {
-
-            }
-
-            @Override
-            public void onLoadingChanged(boolean isLoading) {
-
-            }
-
+        exoPlayer.addListener(new PlayerEventListener() {
             @Override
             public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
                 // Don't change the state when ( resume state but pause state )
                 if(!playerPlaybackState || playerPlaybackAction)
                     playerPlaybackState = playWhenReady;
 
-                if(jigglesConnection != null) {
+                if(remoteConnection != null) {
                     byte[] action;
                     if(playWhenReady) {
-                        action = JigglesProtocol.createResumeAction();
+                        action = RemoteProtocol.createResumeAction();
                     } else {
-                        action = JigglesProtocol.createPauseAction();
+                        action = RemoteProtocol.createPauseAction();
                     }
 
-                    jigglesConnection.write(action, action.length);
+                    remoteConnection.write(action, action.length);
                 }
 
-                onStateChanged.onStateChanged(playWhenReady, playbackState);
-            }
+                if((playbackState == Player.STATE_READY) && playWhenReady) {
+                    playerMediaSession.setState(PlaybackStateCompat.STATE_PLAYING);
+                } else if((playbackState == Player.STATE_READY)) {
+                    playerMediaSession.setState(PlaybackStateCompat.STATE_PAUSED);
+                }
 
-            @Override
-            public void onRepeatModeChanged(int repeatMode) {
-
-            }
-
-            @Override
-            public void onShuffleModeEnabledChanged(boolean shuffleModeEnabled) {
-
-            }
-
-            @Override
-            public void onPlayerError(ExoPlaybackException error) {
-
-            }
-
-            @Override
-            public void onPositionDiscontinuity(int reason) {
-
-            }
-
-            @Override
-            public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
-
-            }
-
-            @Override
-            public void onSeekProcessed() {
-
+                playerMediaSession.buildNotificationPlayer(getCurrentTrack());
             }
         });
+
+//        playerView.setPlayer(exoPlayer);
     }
 
     public void prepareExoPlayerFromByteArray(Collection collection) {
@@ -417,6 +180,10 @@ public class PlayerUtilities {
         exoPlayer.setPlayWhenReady(true);
     }
 
+    public void setVisualizer(VisualizerView visualizer) {
+        this.visualizerView = visualizer;
+    }
+
     private void setUpVisualizer(VisualizerView visualizerView, int audioSessionId) {
         if(visualizerView != null && audioSessionId != C.AUDIO_SESSION_ID_UNSET) {
             visualizer = new Visualizer(audioSessionId);
@@ -444,23 +211,26 @@ public class PlayerUtilities {
         exoPlayer.seekTo(value);
     }
 
+    public void detachPlayer(PlayerView playerView) {
+        PlayerView.switchTargetView(exoPlayer, playerView, null);
+    }
+
     public void togglePlayback(boolean play) {
         // Only change playback state when not in(pause state but resume action)
         if(playerPlaybackState || !play) {
             playerPlaybackAction = play;
 
             exoPlayer.setPlayWhenReady(play);
-
-            if(visualizer != null)
-                visualizer.setEnabled(play);
         }
     }
 
     public void release() {
         exoPlayer.release();
+//        remoteConnection.release();
+    }
 
-        if(visualizer != null)
-            visualizer.release();
+    public void releaseVisualizer() {
+        visualizer.release();
     }
 
     public Collection getCollection() {

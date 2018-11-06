@@ -31,30 +31,30 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".activities.AuthActivity"/>
-
-        <activity
-            android:name=".activities.SearchActivity"
-            android:label="Search"/>
+        <activity android:name=".activities.AuthActivity"/>
 
         <activity
             android:name=".activities.PlayerActivity"
             android:label="Player"
             android:launchMode="singleTask"/>
 
+        <activity android:name=".activities.HomeActivity"/>
+        <activity android:name=".activities.AlbumActivity"/>
+
         <provider
             android:name=".data.JigglesProvider"
             android:authorities="com.example.android.JigglesProvider"
             android:exported="false"/>
 
-        <receiver android:name=".activities.PlayerActivity$MediaPlayerReceiver">
+        <receiver android:name=".player.PlayerMediaSession$MediaPlayerReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON"/>
             </intent-filter>
         </receiver>
 
-        <activity android:name=".activities.HomeActivity"/>
+        <service android:name=".services.PlayerService"
+            android:exported="false"/>
+
     </application>
 
 </manifest>

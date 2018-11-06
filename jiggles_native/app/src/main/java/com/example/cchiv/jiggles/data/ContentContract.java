@@ -165,6 +165,9 @@ public class ContentContract {
 
         public static final String TABLE_NAME = "release";
 
+        public static final String TABLE_NAME_RELEASES = TABLE_NAME + " INNER JOIN " + ReviewEntry.TABLE_NAME +
+                " ON (" + getColumnAliased(TABLE_NAME, ReleaseEntry._ID) + " = " + getColumnAliased(ReviewEntry.TABLE_NAME, ReviewEntry.COL_REVIEW_RELEASE) + ");";
+
         public static final String _ID = TABLE_NAME + BaseColumns._ID;
         public static final String COL_RELEASE_IDENTIFIER = "release_identifier";
         public static final String COL_RELEASE_TITLE = "release_title";

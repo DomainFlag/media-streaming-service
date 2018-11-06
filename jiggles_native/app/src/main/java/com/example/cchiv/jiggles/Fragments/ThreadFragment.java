@@ -32,7 +32,7 @@ import java.io.FileNotFoundException;
 
 import static android.app.Activity.RESULT_OK;
 
-public class ThreadCreatorFragment extends Fragment {
+public class ThreadFragment extends Fragment {
 
     private static final String TAG = "ThreadCreatorFragment";
 

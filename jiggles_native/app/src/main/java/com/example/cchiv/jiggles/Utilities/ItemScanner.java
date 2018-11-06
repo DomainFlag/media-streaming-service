@@ -79,7 +79,7 @@ public class ItemScanner {
     private static int decodeArtColor(Context context, Bitmap bitmap) {
         Palette palette = Palette.from(bitmap).generate();
 
-        return palette.getDarkVibrantColor(ContextCompat.getColor(context, R.color.iconsTextColor));
+        return palette.getDarkVibrantColor(ContextCompat.getColor(context, R.color.colorPrimary));
     }
 
     private static Image decodeArtImage(Context context, String title, Bitmap bitmap) {

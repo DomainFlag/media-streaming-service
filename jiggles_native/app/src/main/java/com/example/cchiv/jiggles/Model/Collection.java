@@ -35,6 +35,18 @@ public class Collection {
             this.albums = albums;
     }
 
+    public Track getTrack(int pos) {
+        return tracks.get(pos);
+    }
+
+    public Album getAlbum(int pos) {
+        return albums.get(pos);
+    }
+
+    public Artist getArtist(int pos) {
+        return artists.get(pos);
+    }
+
     public void setFilterBy() {
         this.filterBy = filterBy;
     }

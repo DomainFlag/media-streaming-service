@@ -42,6 +42,7 @@
         <item>Home</item>
         <item>Latest</item>
         <item>Store</item>
+        <item>Search</item>
     </string-array>
 
     <string name="home_tab_description">Tab Title</string>

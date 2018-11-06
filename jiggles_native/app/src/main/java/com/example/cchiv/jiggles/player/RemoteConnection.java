@@ -1,4 +1,4 @@
-package com.example.cchiv.jiggles.utilities;
+package com.example.cchiv.jiggles.player;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
@@ -23,7 +23,7 @@ import java.util.UUID;
 
 import static android.app.Activity.RESULT_OK;
 
-public class JigglesConnection implements OnSearchPairedDevices {
+public class RemoteConnection implements OnSearchPairedDevices {
 
     private static final String TAG = "JigglesConnection";
 
@@ -68,7 +68,7 @@ public class JigglesConnection implements OnSearchPairedDevices {
         }
     };
 
-    public JigglesConnection(Context context, OnManageStreamData onManageStreamData, OnUpdatePairedDevices onUpdatePairedDevices) {
+    public RemoteConnection(Context context, OnManageStreamData onManageStreamData, OnUpdatePairedDevices onUpdatePairedDevices) {
         this.context = context;
         this.onManageStreamData = onManageStreamData;
         this.onUpdatePairedDevices = onUpdatePairedDevices;

@@ -1,9 +1,9 @@
 package com.example.cchiv.jiggles.utilities;
 
-import android.support.v4.content.AsyncTaskLoader;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.content.AsyncTaskLoader;
 
 public abstract class JigglesAsyncTaskLoader<T> extends AsyncTaskLoader<T> {
 

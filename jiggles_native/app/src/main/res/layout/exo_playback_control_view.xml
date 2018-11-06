@@ -54,55 +54,46 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:baselineAligned="false"
-        android:orientation="horizontal">
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingTop="4dp"
+        tools:background="@color/primaryTextColor">
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:paddingTop="4dp"
-            tools:background="@color/primaryTextColor">
+        <ImageButton
+            android:id="@id/exo_repeat_toggle"
+            android:tint="@color/iconsTextColor"
+            android:contentDescription="@string/player_shuffle"
+            style="@style/ExoMediaButton"/>
 
-            <ImageButton
-                android:id="@id/exo_repeat_toggle"
-                android:tint="@color/iconsTextColor"
-                android:contentDescription="@string/player_shuffle"
-                style="@style/ExoMediaButton"/>
+        <ImageButton
+            android:id="@id/exo_prev"
+            android:tint="@color/iconsTextColor"
+            android:contentDescription="@string/player_previous"
+            style="@style/ExoMediaButton.Previous"/>
 
-            <ImageButton
-                android:id="@id/exo_prev"
-                android:tint="@color/iconsTextColor"
-                android:contentDescription="@string/player_previous"
-                style="@style/ExoMediaButton.Previous"/>
+        <ImageButton
+            android:id="@id/exo_play"
+            android:tint="@color/iconsTextColor"
+            android:contentDescription="@string/player_play"
+            style="@style/ExoMediaButton.Play"/>
 
-            <ImageButton
-                android:id="@id/exo_play"
-                android:tint="@color/iconsTextColor"
-                android:contentDescription="@string/player_play"
-                style="@style/ExoMediaButton.Play"/>
+        <ImageButton
+            android:id="@id/exo_pause"
+            android:tint="@color/iconsTextColor"
+            android:contentDescription="@string/player_pause"
+            style="@style/ExoMediaButton.Pause"/>
 
-            <ImageButton
-                android:id="@id/exo_pause"
-                android:tint="@color/iconsTextColor"
-                android:contentDescription="@string/player_pause"
-                style="@style/ExoMediaButton.Pause"/>
+        <ImageButton
+            android:id="@id/exo_next"
+            android:tint="@color/iconsTextColor"
+            android:contentDescription="@string/player_next"
+            style="@style/ExoMediaButton.Next"/>
 
-            <ImageButton
-                android:id="@id/exo_next"
-                android:tint="@color/iconsTextColor"
-                android:contentDescription="@string/player_next"
-                style="@style/ExoMediaButton.Next"/>
-
-            <ImageButton
-                android:id="@id/exo_shuffle"
-                android:tint="@color/iconsTextColor"
-                android:contentDescription="@string/player_shuffle"
-                style="@style/ExoMediaButton.Shuffle"/>
-
-        </LinearLayout>
+        <ImageButton
+            android:id="@id/exo_shuffle"
+            android:tint="@color/iconsTextColor"
+            android:contentDescription="@string/player_shuffle"
+            style="@style/ExoMediaButton.Shuffle"/>
 
     </LinearLayout>
 

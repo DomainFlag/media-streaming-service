@@ -1,25 +1,25 @@
 package com.example.cchiv.jiggles.fragments.pager;
 
-import android.support.v4.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import com.example.cchiv.jiggles.R;
+import com.example.cchiv.jiggles.activities.AlbumActivity;
 import com.example.cchiv.jiggles.adapters.ContentAdapter;
 import com.example.cchiv.jiggles.data.ContentContract;
-import com.example.cchiv.jiggles.fragments.AlbumFragment;
 import com.example.cchiv.jiggles.model.Collection;
 import com.example.cchiv.jiggles.utilities.ItemScanner;
 import com.example.cchiv.jiggles.utilities.JigglesLoader;
@@ -32,8 +32,6 @@ public class StoreFragment extends Fragment {
 
     private static final String FRAGMENT_ALBUM_KEY = "FRAGMENT_ALBUM_KEY";
     private static final String FRAGMENT_COLLECTION_KEY = "FRAGMENT_COLLECTION_KEY";
-
-    private AlbumFragment albumFragment = null;
 
     private Context context;
 
@@ -52,13 +50,11 @@ public class StoreFragment extends Fragment {
             savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_store_layout, container, false);
 
-        // Menu generation
-        rootView.findViewById(R.id.collection_menu).setOnClickListener((view) -> {
+        getActivity().findViewById(R.id.home_menu).setOnClickListener((view) -> {
             PopupMenu popup = new PopupMenu(context, view);
-            MenuInflater menuInflater = popup.getMenuInflater();
 
             Menu menu = popup.getMenu();
-            menuInflater.inflate(R.menu.collection_menu, menu);
+            popup.getMenuInflater().inflate(R.menu.collection_menu, menu);
 
             for(int itemMenu : MENU_ITEMS) {
                 menu.findItem(itemMenu).setOnMenuItemClickListener(menuItem -> {
@@ -81,15 +77,11 @@ public class StoreFragment extends Fragment {
         LoaderManager loaderManager = ((AppCompatActivity) context).getSupportLoaderManager();
         loaderManager.initLoader(COLLECTION_LOADER_ID, args, jigglesLoader).forceLoad();
 
-        contentAdapter = new ContentAdapter(context, (album, position) -> {
-            albumFragment = new AlbumFragment();
-            albumFragment.onAttach(context);
-            albumFragment.onAttachAlbum(album, position);
-
-//            getFragmentManager().beginTransaction()
-//                    .replace(R.id.fragment_candy, albumFragment, FRAGMENT_ALBUM_KEY)
-//                    .commit();
-        }, null);
+        contentAdapter = new ContentAdapter(context, null, ContentAdapter.MODE_ALBUM, (id) -> {
+            Intent intent = new Intent(context, AlbumActivity.class);
+            intent.putExtra(AlbumActivity.ALBUM_ID, id);
+            startActivity(intent);
+        });
 
         RecyclerView recyclerView = rootView.findViewById(R.id.collection_list);
         recyclerView.setAdapter(contentAdapter);
@@ -116,14 +108,4 @@ public class StoreFragment extends Fragment {
     public void resolveLocalMedia() {
         Collection collection = ItemScanner.resolveLocalMedia(context);
     }
-
-//    @Override
-//    public void onBackPressed() {
-//        Fragment fragment = getFragmentManager().findFragmentByTag(FRAGMENT_ALBUM_KEY);
-//        if(fragment != null && fragment.isVisible()) {
-//            getFragmentManager().beginTransaction()
-//                    .replace(R.id.fragment_candy, collectionFragment)
-//                    .commit();
-//        } else super.onBackPressed();
-//    }
 }

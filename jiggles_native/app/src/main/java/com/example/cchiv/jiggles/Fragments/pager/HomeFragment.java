@@ -15,7 +15,7 @@ import android.view.ViewGroup;
 
 import com.example.cchiv.jiggles.R;
 import com.example.cchiv.jiggles.adapters.ThreadAdapter;
-import com.example.cchiv.jiggles.fragments.ThreadCreatorFragment;
+import com.example.cchiv.jiggles.fragments.ThreadFragment;
 import com.example.cchiv.jiggles.utilities.NetworkUtilities;
 
 public class HomeFragment extends Fragment {
@@ -31,7 +31,7 @@ public class HomeFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_home_layout, container, false);
 
         rootView.findViewById(R.id.forum_thread_creator).setOnClickListener((view) -> {
-            Fragment fragment = new ThreadCreatorFragment();
+            Fragment fragment = new ThreadFragment();
 
             FragmentManager fragmentManager = ((AppCompatActivity) context).getSupportFragmentManager();
             fragmentManager.beginTransaction()

@@ -51,7 +51,7 @@
         android:layout_height="0dp"
         android:layout_weight="4"
         android:gravity="center"
-        android:layout_margin="@dimen/activity_margin_component">
+        android:layout_margin="@dimen/activity_margin_section">
 
         <ImageView
             android:id="@+id/player_thumbnail"
@@ -131,6 +131,8 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:layout_margin="@dimen/activity_margin_component"
+        app:show_timeout="-1"
+        app:shutter_background_color="@android:color/transparent"
         app:surface_type="none"
         app:use_artwork="false"
         app:hide_on_touch="false"
