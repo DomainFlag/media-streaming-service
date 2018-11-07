@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/home_player"
+    android:layout_width="match_parent"
+    android:layout_height="40dp"
+    android:background="@color/pleasureColor"
+    android:gravity="center"
+    android:orientation="horizontal"
+    android:visibility="gone">
+
+    <TextView
+        android:id="@+id/home_player_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:textColor="@color/iconsTextColor"
+        android:textSize="@dimen/activity_text_span"
+        android:textStyle="bold"
+        tools:text="ColdPlay - Lovers in Japan"/>
+
+    <ImageView
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="@dimen/activity_margin_relative"
+        android:paddingHorizontal="@dimen/activity_margin_closer"
+        android:paddingVertical="@dimen/activity_margin_sibling"
+        android:src="@drawable/exo_icon_pause"/>
+
+</RelativeLayout>

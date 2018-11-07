@@ -29,7 +29,7 @@ public class Release {
         this.reviews = reviews;
     }
 
-    public String get_id() {
+    public String getId() {
         return _id;
     }
 
@@ -49,6 +49,16 @@ public class Release {
         return reviews;
     }
 
+    public static boolean isUnique(Release release, Cursor cursor) {
+        if(release == null)
+            return false;
+
+        int indexReleaseId = cursor.getColumnIndex(ReleaseEntry._ID);
+        int id = cursor.getInt(indexReleaseId);
+
+        return release.getId().equals(String.valueOf(id));
+    }
+
     public static List<Release> parseValues(Cursor cursor) {
         List<Release> releases = new ArrayList<>();
 
@@ -58,15 +68,24 @@ public class Release {
         int indexReleaseUrl = cursor.getColumnIndexOrThrow(ReleaseEntry.COL_RELEASE_URL);
         int indexReleaseTitle = cursor.getColumnIndexOrThrow(ReleaseEntry.COL_RELEASE_TITLE);
 
+        Release release = null;
+        Review review = null;
         while(cursor.moveToNext()) {
-            int releaseId = cursor.getInt(indexReleaseId);
-            String releaseIdentifier = cursor.getColumnName(indexReleaseIdentifier);
-            String releaseUrl = cursor.getString(indexReleaseUrl);
-            String releaseArtist = cursor.getString(indexReleaseArtist);
-            String releaseTitle = cursor.getString(indexReleaseTitle);
+            if(!Release.isUnique(release, cursor)) {
+                int releaseId = cursor.getInt(indexReleaseId);
+                String releaseIdentifier = cursor.getColumnName(indexReleaseIdentifier);
+                String releaseUrl = cursor.getString(indexReleaseUrl);
+                String releaseArtist = cursor.getString(indexReleaseArtist);
+                String releaseTitle = cursor.getString(indexReleaseTitle);
 
-            Release release = new Release(releaseIdentifier, releaseTitle, releaseUrl, releaseUrl, new ArrayList<>());
-            releases.add(release);
+                release = new Release(releaseIdentifier, releaseTitle, releaseArtist, releaseUrl, new ArrayList<>());
+                releases.add(release);
+            }
+
+            if(!Review.isUnique(review, cursor)) {
+                review = Review.parseValues(cursor);
+                release.getReviews().add(review);
+            }
         }
 
         return releases;
@@ -75,7 +94,7 @@ public class Release {
     public static ContentValues parseValues(Release release) {
         ContentValues contentValues = new ContentValues();
 
-        contentValues.put(ReleaseEntry.COL_RELEASE_IDENTIFIER, release.get_id());
+        contentValues.put(ReleaseEntry.COL_RELEASE_IDENTIFIER, release.getId());
         contentValues.put(ReleaseEntry.COL_RELEASE_ARTIST, release.getArtist());
         contentValues.put(ReleaseEntry.COL_RELEASE_TITLE, release.getTitle());
         contentValues.put(ReleaseEntry.COL_RELEASE_URL, release.getUrl());

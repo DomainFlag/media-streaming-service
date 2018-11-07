@@ -45,6 +45,8 @@
         <item>Search</item>
     </string-array>
 
+    <string name="home_bar_title">%1$s - %2$s</string>
+
     <string name="home_tab_description">Tab Title</string>
 
     <!-- Home -->

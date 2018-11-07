@@ -70,12 +70,19 @@ public class MediaPlayer {
     }
 
     public Track getCurrentTrack() {
-        int index = exoPlayer.getCurrentWindowIndex();
+        if(exoPlayer != null) {
+            int index = exoPlayer.getCurrentWindowIndex();
 
-        return collection.getTrack(index);
+            return collection.getTrack(index);
+        }
+
+        return null;
     }
 
-    public void setPlayer(PlayerView playerView, PlayerMediaSession playerMediaSession) {
+    public void setPlayer(PlayerMediaSession playerMediaSession) {
+        if(exoPlayer != null)
+            release();
+
         DefaultTrackSelector defaultTrackSelector = new DefaultTrackSelector();
         exoPlayer = ExoPlayerFactory.newSimpleInstance(context, defaultTrackSelector);
 
@@ -121,8 +128,6 @@ public class MediaPlayer {
                 playerMediaSession.buildNotificationPlayer(getCurrentTrack());
             }
         });
-
-//        playerView.setPlayer(exoPlayer);
     }
 
     public void prepareExoPlayerFromByteArray(Collection collection) {
@@ -178,6 +183,8 @@ public class MediaPlayer {
         }
 
         exoPlayer.setPlayWhenReady(true);
+
+        onStateChanged.onTrackChanged(getCurrentTrack());
     }
 
     public void setVisualizer(VisualizerView visualizer) {
@@ -225,7 +232,9 @@ public class MediaPlayer {
     }
 
     public void release() {
-        exoPlayer.release();
+        if(exoPlayer != null)
+            exoPlayer.release();
+
 //        remoteConnection.release();
     }
 

@@ -7,7 +7,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.ImageView;
@@ -25,7 +24,7 @@ import com.example.cchiv.jiggles.utilities.JigglesLoader;
 import com.example.cchiv.jiggles.utilities.Tools;
 import com.squareup.picasso.Picasso;
 
-public class AlbumActivity extends AppCompatActivity {
+public class AlbumActivity extends PlayerAppCompatActivity {
 
     private static final int LOADER_ALBUM_ID = 721;
 
@@ -38,9 +37,8 @@ public class AlbumActivity extends AppCompatActivity {
     });;
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_layout_album);
+    protected void onCreateActivity(@Nullable Bundle savedInstanceState) {
+        setContentView(R.layout.activity_album);
 
         RecyclerView recyclerView = findViewById(R.id.album_list);
         recyclerView.setHasFixedSize(true);
@@ -64,6 +62,11 @@ public class AlbumActivity extends AppCompatActivity {
 
         LoaderManager loaderManager = getSupportLoaderManager();
         loaderManager.initLoader(LOADER_ALBUM_ID, bundle, jigglesLoader).forceLoad();
+    }
+
+    @Override
+    protected void onDestroyActivity() {
+
     }
 
     private void createPlayerIntent(String resource, boolean whole) {

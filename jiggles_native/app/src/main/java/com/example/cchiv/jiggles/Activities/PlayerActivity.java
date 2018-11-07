@@ -13,10 +13,13 @@ import com.example.cchiv.jiggles.model.Artist;
 import com.example.cchiv.jiggles.model.Image;
 import com.example.cchiv.jiggles.model.Track;
 import com.example.cchiv.jiggles.services.PlayerService;
+import com.example.cchiv.jiggles.services.PlayerServiceConnection;
 import com.example.cchiv.jiggles.utilities.Tools;
+import com.google.android.exoplayer2.ui.PlayerView;
 import com.squareup.picasso.Picasso;
 
-public class PlayerActivity extends AppCompatActivity {
+public class PlayerActivity extends AppCompatActivity implements
+        PlayerService.OnCallbackListener, PlayerServiceConnection.OnCallbackConnectionComplete {
 
     private static final String TAG = "PlayerActivity";
 
@@ -27,7 +30,11 @@ public class PlayerActivity extends AppCompatActivity {
 
     private boolean toolsToggle = false;
 
+    public PlayerView playerView = null;
+
     private boolean resourceWhole;
+
+    public PlayerServiceConnection playerServiceConnection = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,15 +56,15 @@ public class PlayerActivity extends AppCompatActivity {
         if(id == null)
             finish();
 
-        Intent serviceIntent = new Intent(this, PlayerService.class);
         Bundle bundle = new Bundle();
         bundle.putString(PlayerService.RESOURCE_IDENTIFIER, id);
 
-        serviceIntent.putExtras(bundle);
-        startService(serviceIntent);
+        playerView = findViewById(R.id.player);
+        playerServiceConnection = new PlayerServiceConnection(this, playerView);
+        playerServiceConnection.onStartService(bundle);
     }
 
-    public void onAttachTrack(Track track) {
+    public void attachTrack(Track track) {
         View tools = findViewById(R.id.player_utilities);
         findViewById(R.id.player_menu).setOnClickListener((view) -> {
             if(toolsToggle) {
@@ -107,5 +114,26 @@ public class PlayerActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
+        if(playerView != null)
+            playerServiceConnection.onDetachPlayerView();
+
+        unbindService(playerServiceConnection);
+    }
+
+    @Override
+    public void onCallbackListener(Track track) {
+        attachTrack(track);
+
+        playerView.setPlayer(playerServiceConnection.getMediaPlayer().getExoPlayer());
+        playerView.showController();
+    }
+
+    @Override
+    public void onCallbackConnectionComplete() {
+        Track track = playerServiceConnection.getCurrentTrack();
+        if(track != null) {
+            attachTrack(track);
+        }
     }
 }

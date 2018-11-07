@@ -3,13 +3,13 @@ package com.example.cchiv.jiggles.activities;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,7 +26,7 @@ import com.example.cchiv.jiggles.utilities.Tools;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends PlayerAppCompatActivity {
 
     private static final String TAG = "HomeActivity";
 
@@ -36,16 +36,15 @@ public class HomeActivity extends AppCompatActivity {
 
     public static final int[] TAB_ICONS_ARRAY = {
             R.drawable.ic_home,
-            R.drawable.ic_home,
+            R.drawable.ic_latest,
             R.drawable.ic_store,
-            R.drawable.ic_lens
+            R.drawable.ic_search
     };
 
     public static final int ARRAY_TAB_TITLES = R.array.home_pager_fragments;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onCreateActivity(@Nullable Bundle savedInstanceState) {
         setContentView(R.layout.activity_home);
 
         Tools.resolveAuthToken(this);
@@ -61,9 +60,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
+    protected void onDestroyActivity() {}
 
     @Override
     protected void onResume() {

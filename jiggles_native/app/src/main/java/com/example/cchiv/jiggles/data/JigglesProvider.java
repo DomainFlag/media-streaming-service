@@ -108,7 +108,7 @@ public class JigglesProvider extends ContentProvider {
                 break;
             }
             case RELEASE_MANY : {
-                cursor = sqLiteDatabase.query(ContentContract.ReleaseEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, orderBy);
+                cursor = sqLiteDatabase.query(ContentContract.ReleaseEntry.TABLE_NAME_RELEASES, projection, selection, selectionArgs, null, null, orderBy);
                 break;
             }
             case COLLECTION : {
