@@ -5,8 +5,8 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.os.Bundle;
 
-import com.example.cchiv.jiggles.data.ContentContract.ReviewEntry;
 import com.example.cchiv.jiggles.data.ContentContract.ReleaseEntry;
+import com.example.cchiv.jiggles.data.ContentContract.ReviewEntry;
 import com.example.cchiv.jiggles.utilities.JigglesLoader;
 
 import java.util.ArrayList;
@@ -14,15 +14,17 @@ import java.util.List;
 
 public class Release {
 
-    private String _id;
+    private static final String TAG = "Release";
+
+    private String id;
     private String title;
     private String artist;
     private String url;
 
     private List<Review> reviews;
 
-    public Release(String _id, String title, String artist, String url, List<Review> reviews) {
-        this._id = _id;
+    public Release(String id, String title, String artist, String url, List<Review> reviews) {
+        this.id = id;
         this.title = title;
         this.artist = artist;
         this.url = url;
@@ -30,7 +32,7 @@ public class Release {
     }
 
     public String getId() {
-        return _id;
+        return id;
     }
 
     public String getTitle() {
@@ -72,13 +74,13 @@ public class Release {
         Review review = null;
         while(cursor.moveToNext()) {
             if(!Release.isUnique(release, cursor)) {
-                int releaseId = cursor.getInt(indexReleaseId);
+                int id = cursor.getInt(indexReleaseId);
                 String releaseIdentifier = cursor.getColumnName(indexReleaseIdentifier);
                 String releaseUrl = cursor.getString(indexReleaseUrl);
                 String releaseArtist = cursor.getString(indexReleaseArtist);
                 String releaseTitle = cursor.getString(indexReleaseTitle);
 
-                release = new Release(releaseIdentifier, releaseTitle, releaseArtist, releaseUrl, new ArrayList<>());
+                release = new Release(String.valueOf(id), releaseTitle, releaseArtist, releaseUrl, new ArrayList<>());
                 releases.add(release);
             }
 
@@ -102,44 +104,44 @@ public class Release {
         return contentValues;
     }
 
-    public static List<ContentProviderOperation> batchOperations(List<Release> releases) {
-        List<ContentProviderOperation> operations = new ArrayList<>();
-
-        int previousResult = 0;
-        for(Release release : releases) {
-            ContentProviderOperation contentProviderReleaseOperation = ContentProviderOperation
-                    .newInsert(ReleaseEntry.CONTENT_URI)
-                    .withValues(parseValues(release))
-                    .build();
-
-            operations.add(contentProviderReleaseOperation);
-            for(Review review : release.getReviews()) {
-                ContentProviderOperation contentProviderReviewOperation = ContentProviderOperation
-                        .newInsert(ReviewEntry.CONTENT_URI)
-                        .withValueBackReference(ReviewEntry.COL_REVIEW_RELEASE, previousResult)
-                        .withValues(Review.parseValues(review))
-                        .build();
-
-                operations.add(contentProviderReviewOperation);
-            }
-
-            previousResult += (release.getReviews().size() + 1);
-        }
-
-        return operations;
-    };
-
     public static Bundle bundleValues() {
         Bundle bundle = new Bundle();
         bundle.putString(JigglesLoader.BUNDLE_URI_KEY, ReleaseEntry.CONTENT_URI.toString());
-        bundle.putStringArray(JigglesLoader.BUNDLE_PROJECTION_KEY, new String[] {
-                ReleaseEntry._ID,
-                ReleaseEntry.COL_RELEASE_IDENTIFIER,
-                ReleaseEntry.COL_RELEASE_TITLE,
-                ReleaseEntry.COL_RELEASE_ARTIST,
-                ReleaseEntry.COL_RELEASE_URL
-        });
 
         return bundle;
+    }
+
+    public static ArrayList<ContentProviderOperation> parseValues(List<Release> releases) {
+        ArrayList<ContentProviderOperation> contentProviderOperations = new ArrayList<>();
+
+        int index = 0;
+        for(int g = 0; g < releases.size(); g++) {
+            Release release = releases.get(g);
+            int releaseIndex = index;
+
+            contentProviderOperations.add(
+                    ContentProviderOperation
+                            .newInsert(ReleaseEntry.CONTENT_URI)
+                            .withValues(Release.parseValues(release))
+                            .build());
+
+            index++;
+
+            List<Review> reviews = release.getReviews();
+            for(int h = 0; h < reviews.size(); h++) {
+                Review review = reviews.get(h);
+
+                contentProviderOperations.add(
+                        ContentProviderOperation
+                                .newInsert(ReviewEntry.CONTENT_URI)
+                                .withValues(Review.parseValues(review))
+                                .withValueBackReference(ReviewEntry.COL_REVIEW_RELEASE, releaseIndex)
+                                .build());
+
+                index++;
+            }
+        }
+
+        return contentProviderOperations;
     }
 }

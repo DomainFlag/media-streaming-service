@@ -61,7 +61,7 @@ public class Review {
         int indexReviewUrl = cursor.getColumnIndexOrThrow(ReviewEntry.COL_REVIEW_URL);
 
         int id = cursor.getInt(indexReviewId);
-        String reviewAuthor = cursor.getColumnName(indexReviewAuthor);
+        String reviewAuthor = cursor.getString(indexReviewAuthor);
         String reviewUrl = cursor.getString(indexReviewUrl);
         String reviewContent = cursor.getString(indexReviewContent);
         int reviewScore = cursor.getInt(indexReviewScore);
@@ -72,6 +72,7 @@ public class Review {
     public static ContentValues parseValues(Review review) {
         ContentValues contentValues = new ContentValues();
 
+        contentValues.put(ReviewEntry.COL_REVIEW_IDENTIFIER, review.getId());
         contentValues.put(ReviewEntry.COL_REVIEW_AUTHOR, review.getAuthor());
         contentValues.put(ReviewEntry.COL_REVIEW_CONTENT, review.getContent());
         contentValues.put(ReviewEntry.COL_REVIEW_SCORE, review.getScore());

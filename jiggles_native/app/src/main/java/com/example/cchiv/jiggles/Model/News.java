@@ -78,13 +78,6 @@ public class News {
     public static Bundle bundleValues() {
         Bundle bundle = new Bundle();
         bundle.putString(JigglesLoader.BUNDLE_URI_KEY, NewsEntry.CONTENT_URI.toString());
-        bundle.putStringArray(JigglesLoader.BUNDLE_PROJECTION_KEY, new String[] {
-                NewsEntry._ID,
-                NewsEntry.COL_NEWS_IDENTIFIER,
-                NewsEntry.COL_NEWS_CAPTION,
-                NewsEntry.COL_NEWS_HEADER,
-                NewsEntry.COL_NEWS_AUTHOR
-        });
 
         return bundle;
     }

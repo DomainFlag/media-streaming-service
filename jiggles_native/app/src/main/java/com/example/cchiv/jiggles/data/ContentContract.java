@@ -147,6 +147,7 @@ public class ContentContract {
         public static final String TABLE_NAME = "review";
 
         public static final String _ID = TABLE_NAME + BaseColumns._ID;
+        public static final String COL_REVIEW_IDENTIFIER = "review_identifier";
         public static final String COL_REVIEW_AUTHOR = "review_author";
         public static final String COL_REVIEW_RELEASE = "review_release";
         public static final String COL_REVIEW_CONTENT = "review_content";

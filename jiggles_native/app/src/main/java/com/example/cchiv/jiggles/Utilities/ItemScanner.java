@@ -65,6 +65,7 @@ public class ItemScanner {
     public static Bitmap scaleBitmapResource(Bitmap bitmap) {
         if(bitmap.getHeight() != IMAGE_SCALING_HEIGHT_SIZE
                 && bitmap.getWidth() != IMAGE_SCALING_WIDTH_SIZE) {
+
             return Bitmap.createScaledBitmap(bitmap,
                     IMAGE_SCALING_WIDTH_SIZE,
                     IMAGE_SCALING_HEIGHT_SIZE,
@@ -78,8 +79,12 @@ public class ItemScanner {
 
     private static int decodeArtColor(Context context, Bitmap bitmap) {
         Palette palette = Palette.from(bitmap).generate();
+        int defaultColor = ContextCompat.getColor(context, R.color.motionPrimaryDarkColor);
+        int color = palette.getDarkVibrantColor(defaultColor);
 
-        return palette.getDarkVibrantColor(ContextCompat.getColor(context, R.color.colorPrimary));
+        if(color == defaultColor)
+            return palette.getVibrantColor(defaultColor);
+        else return color;
     }
 
     private static Image decodeArtImage(Context context, String title, Bitmap bitmap) {
@@ -109,11 +114,9 @@ public class ItemScanner {
             Bitmap bitmap = BitmapFactory.decodeFile(path);
             int color = decodeArtColor(context, bitmap);
 
-            Log.v(TAG, String.valueOf(color));
-
             Image image = new Image("file:///" + path, color, IMAGE_SCALING_HEIGHT_SIZE, IMAGE_SCALING_WIDTH_SIZE);
 
-            arts.add(image);
+            arts.add(0, image);
         }
 
         return arts;
@@ -139,13 +142,11 @@ public class ItemScanner {
             } else {
                 // No cover art is embedded, we look at locations relative to parent
                 List<Bitmap> bitmaps = decodeSurroundedBitmapArt(path);
-                for(int g = 0; g < arts.size(); g++) {
+                for(int g = 0; g < bitmaps.size(); g++) {
                     Bitmap bitmap = bitmaps.get(g);
 
                     album.setArt(decodeArtImage(context, album.getName()  + "_" + g, bitmap));
                 }
-
-                album.setArt(arts);
             }
         }
     }

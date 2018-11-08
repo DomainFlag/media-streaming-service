@@ -50,6 +50,8 @@ public class StoreFragment extends Fragment {
             savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_store_layout, container, false);
 
+//        resolveLocalMedia();
+
         getActivity().findViewById(R.id.home_menu).setOnClickListener((view) -> {
             PopupMenu popup = new PopupMenu(context, view);
 

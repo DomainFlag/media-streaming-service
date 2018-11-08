@@ -1,6 +1,5 @@
 package com.example.cchiv.jiggles.adapters;
 
-import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -11,15 +10,9 @@ public abstract class ModelAdapter<T extends RecyclerView.ViewHolder, B> extends
     private static final String TAG = "ModelAdapter";
 
     public List<B> data = new ArrayList<>();
-    private Cursor cursor = null;
 
     public void onSwapData(List<B> objects) {
-        data.clear();
-        data.addAll(objects);
-    }
-
-    public Cursor getCursor() {
-        return cursor;
+        data = objects;
     }
 
     public List<B> getData() {
@@ -28,8 +21,6 @@ public abstract class ModelAdapter<T extends RecyclerView.ViewHolder, B> extends
 
     @Override
     public int getItemCount() {
-        if(getCursor() != null)
-            return getCursor().getCount();
-        else return data.size();
+        return data.size();
     }
 }

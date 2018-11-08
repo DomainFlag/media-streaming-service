@@ -33,7 +33,7 @@
             app:contentInsetRight="0dp"
             app:contentInsetEnd="0dp"
             app:contentInsetStartWithNavigation="0dp"
-            app:layout_scrollFlags="scroll|enterAlwaysCollapsed">
+            app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
             <LinearLayout
                 android:id="@+id/album_background"

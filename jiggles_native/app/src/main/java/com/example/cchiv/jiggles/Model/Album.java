@@ -128,7 +128,9 @@ public class Album {
 
     public Image getArt() {
         if(images.size() > 0)
-            return images.get(0);
+            if(images.size() == 1)
+                return images.get(0);
+            else return images.get(0);
         else return null;
     }
 

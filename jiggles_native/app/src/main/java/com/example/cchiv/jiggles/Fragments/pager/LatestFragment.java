@@ -1,8 +1,11 @@
 package com.example.cchiv.jiggles.fragments.pager;
 
+import android.content.ContentProviderResult;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.OperationApplicationException;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -19,8 +22,8 @@ import android.view.ViewGroup;
 import com.example.cchiv.jiggles.R;
 import com.example.cchiv.jiggles.adapters.HighlightAdapter;
 import com.example.cchiv.jiggles.adapters.ReleaseAdapter;
+import com.example.cchiv.jiggles.data.ContentContract;
 import com.example.cchiv.jiggles.data.ContentContract.NewsEntry;
-import com.example.cchiv.jiggles.data.ContentContract.ReleaseEntry;
 import com.example.cchiv.jiggles.model.News;
 import com.example.cchiv.jiggles.model.Release;
 import com.example.cchiv.jiggles.utilities.JigglesLoader;
@@ -37,7 +40,9 @@ public class LatestFragment extends Fragment {
     private static final int HOME_NEWS_LOADER_ID = 21;
     private static final int HOME_RELEASES_LOADER_ID = 22;
 
-    private NetworkUtilities networkUtilities = new NetworkUtilities();;
+    private NetworkUtilities networkUtilities = new NetworkUtilities();
+
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     private HighlightAdapter highlightAdapter;
     private ReleaseAdapter releaseAdapter;
@@ -50,7 +55,7 @@ public class LatestFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_latest_layout, container, false);
 
-        SwipeRefreshLayout swipeRefreshLayout = rootView.findViewById(R.id.swipe_refresh_layout);
+        swipeRefreshLayout = rootView.findViewById(R.id.swipe_refresh_layout);
         swipeRefreshLayout.setOnRefreshListener(() -> {
             if(Tools.checkInternetConnectivity(context))
                 fetchLiveContent();
@@ -108,18 +113,21 @@ public class LatestFragment extends Fragment {
         networkUtilities.fetchReleases(releases -> {
             // Do something with releases
             if(releases != null) {
-                ContentValues[] contentValues = new ContentValues[releases.size()];
-                for(int it = 0; it < releases.size(); it++) {
-                    contentValues[it] = Release.parseValues(releases.get(it));
-                }
+                try {
+                    ContentProviderResult[] results = context.getContentResolver()
+                            .applyBatch(ContentContract.AUTHORITY, Release.parseValues(releases));
 
-                long insertedRows = context.getContentResolver().bulkInsert(
-                        ReleaseEntry.CONTENT_URI,
-                        contentValues
-                );
+                    // Do something with the results
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                } catch (OperationApplicationException e) {
+                    e.printStackTrace();
+                }
 
                 updateLayoutReleases(releases);
             }
+
+            swipeRefreshLayout.stopNestedScroll();
         });
 
         networkUtilities.fetchNews(news -> {

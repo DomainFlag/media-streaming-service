@@ -1,12 +1,9 @@
 package com.example.cchiv.jiggles.activities;
 
 import android.content.Intent;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.ImageView;
@@ -65,9 +62,7 @@ public class AlbumActivity extends PlayerAppCompatActivity {
     }
 
     @Override
-    protected void onDestroyActivity() {
-
-    }
+    protected void onDestroyActivity() {}
 
     private void createPlayerIntent(String resource, boolean whole) {
         Intent intent = new Intent(this, PlayerActivity.class);
@@ -95,18 +90,11 @@ public class AlbumActivity extends PlayerAppCompatActivity {
                 .error(R.drawable.ic_artwork_placeholder)
                 .into(thumbnail);
 
+
         LinearLayout linearLayout = findViewById(R.id.album_background);
-        GradientDrawable gradientDrawable = new GradientDrawable(
-                GradientDrawable.Orientation.TL_BR,
-                new int[] {
-                        image.getColor(),
-                        ContextCompat.getColor(this, R.color.primaryTextColor)
-                }
-        );
 
+        Tools.setGradientBackground(this, linearLayout, image.getColor());
         Tools.setStatusBarColor(this, image.getColor());
-
-        ViewCompat.setBackground(linearLayout, gradientDrawable);
 
         Artist artist = album.getArtist();
         if(artist != null) {

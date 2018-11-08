@@ -86,7 +86,7 @@ public class Tools {
         int darkMutedColor = ContextCompat.getColor(context, R.color.primaryTextColor);
 
         GradientDrawable gradientDrawable = new GradientDrawable(
-                GradientDrawable.Orientation.TOP_BOTTOM,
+                GradientDrawable.Orientation.TL_BR,
                 new int[] {
                         color,
                         darkMutedColor

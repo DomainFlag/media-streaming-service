@@ -20,6 +20,7 @@ import com.example.cchiv.jiggles.data.ContentContract.ArtistEntry;
 import com.example.cchiv.jiggles.data.ContentContract.AlbumEntry;
 import com.example.cchiv.jiggles.data.ContentContract.TrackEntry;
 import com.example.cchiv.jiggles.data.ContentContract.ImageEntry;
+import com.example.cchiv.jiggles.data.ContentContract.ReviewEntry;
 
 import java.util.ArrayList;
 
@@ -156,6 +157,10 @@ public class JigglesProvider extends ContentProvider {
                 insertedRowId = sqLiteDatabase.insert(ReleaseEntry.TABLE_NAME,null, contentValues);
                 break;
             }
+            case REVIEW_MANY : {
+                insertedRowId = sqLiteDatabase.insert(ReviewEntry.TABLE_NAME, null, contentValues);
+                break;
+            }
         }
 
         if(getContext() != null)
@@ -189,34 +194,6 @@ public class JigglesProvider extends ContentProvider {
 
                 for(ContentValues value : values) {
                     long rowId = sqLiteDatabase.insert(ReleaseEntry.TABLE_NAME, null, value);
-                    if(rowId != -1)
-                        insertedRows++;
-                }
-
-                sqLiteDatabase.setTransactionSuccessful();
-
-                sqLiteDatabase.endTransaction();
-                break;
-            }
-            default : {
-                Log.v(TAG, "Unknown operation");
-            }
-        }
-
-        return insertedRows;
-    }
-
-    public int bulkInsert(@NonNull Uri uri, @NonNull ContentValues[] values, @Nullable String selection, @Nullable String[] selectionArgs) {
-        SQLiteDatabase sqLiteDatabase = contentDbHelper.getWritableDatabase();
-        int insertedRows = 0;
-
-        switch(uriMatcher.match(uri)) {
-            case RELEASE_MANY : {
-                sqLiteDatabase.beginTransaction();
-
-                for(ContentValues value : values) {
-
-                    long rowId = sqLiteDatabase.insert(NewsEntry.TABLE_NAME, null, value);
                     if(rowId != -1)
                         insertedRows++;
                 }

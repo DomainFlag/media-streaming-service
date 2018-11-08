@@ -2,10 +2,8 @@ package com.example.cchiv.jiggles.adapters;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +17,7 @@ import com.example.cchiv.jiggles.model.Artist;
 import com.example.cchiv.jiggles.model.Collection;
 import com.example.cchiv.jiggles.model.Image;
 import com.example.cchiv.jiggles.model.Track;
+import com.example.cchiv.jiggles.utilities.Tools;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -111,14 +110,8 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         holder.name.setText(album.getName());
 
-        int leftColor = ContextCompat.getColor(context, R.color.primaryTextColor);
         int rightColor = onLoadAlbumArt(album, holder);
-
-        GradientDrawable gradientDrawable = new GradientDrawable(
-                GradientDrawable.Orientation.TL_BR,
-                new int[] { leftColor, rightColor });
-
-        ViewCompat.setBackground(holder.itemView, gradientDrawable);
+        Tools.setGradientBackground(context, holder.itemView, rightColor);
 
         Artist artist = album.getArtist();
         if(artist != null) {
@@ -140,22 +133,23 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         List<Image> images = album.getImages();
 
         if(images != null && images.size() > 0) {
-            if(images.size() > 1) {
-                loadArtAlbum(images.get(1), holder.artSecondary);
+            if(images.size() == 1) {
+                loadArtAlbum(images.get(0), holder.art);
+
+                holder.artSecondary.setVisibility(View.INVISIBLE);
+                return images.get(0).getColor();
+            } else {
+                loadArtAlbum(images.get(1), holder.art);
+                loadArtAlbum(images.get(0), holder.artSecondary);
 
                 holder.artSecondary.setVisibility(View.VISIBLE);
-            } else {
-                holder.artSecondary.setVisibility(View.INVISIBLE);
-                holder.art.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_artwork_placeholder));
             }
-
-            loadArtAlbum(images.get(0), holder.art);
 
             return images.get(0).getColor();
         } else {
             holder.art.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_artwork_placeholder));
 
-            return ContextCompat.getColor(context, R.color.colorPrimaryDark);
+            return ContextCompat.getColor(context, R.color.motionPrimaryDarkColor);
         }
     }
 

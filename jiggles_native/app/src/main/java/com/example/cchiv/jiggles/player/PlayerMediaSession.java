@@ -58,6 +58,15 @@ public class PlayerMediaSession {
         mediaSessionCompat.setActive(true);
     }
 
+    public void release() {
+        if(mediaSessionCompat != null) {
+            mediaSessionCompat.setActive(false);
+            mediaSessionCompat.release();
+
+            mediaSessionCompat = null;
+        }
+    }
+
     public void setState(int state) {
         builder.setState(state, mediaPlayer.getExoPlayer().getCurrentPosition(), 1f);
     }
@@ -120,7 +129,8 @@ public class PlayerMediaSession {
     }
 
     public void setActive(boolean active) {
-        mediaSessionCompat.setActive(active);
+        if(mediaSessionCompat != null)
+            mediaSessionCompat.setActive(active);
     }
 
     private class JigglesSessionCallback extends MediaSessionCompat.Callback {

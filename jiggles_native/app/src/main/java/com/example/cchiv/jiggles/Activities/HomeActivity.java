@@ -33,6 +33,7 @@ public class HomeActivity extends PlayerAppCompatActivity {
     private static final int HOME_NUM_PAGES = 4;
 
     private ViewPager viewPager;
+    private TabLayout tabLayout;
 
     public static final int[] TAB_ICONS_ARRAY = {
             R.drawable.ic_home,
@@ -55,12 +56,26 @@ public class HomeActivity extends PlayerAppCompatActivity {
         SliderPageAdapter pageAdapter = new SliderPageAdapter(this, fragmentManager, tabs);
         viewPager = findViewById(R.id.home_pager);
         viewPager.setAdapter(pageAdapter);
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
+
+            @Override
+            public void onPageSelected(int position) {
+                updateTabLayout(position);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {}
+        });
 
         setTabLayout(pageAdapter, viewPager);
     }
 
     @Override
-    protected void onDestroyActivity() {}
+    protected void onDestroyActivity() {
+        playerServiceConnection.release();
+    }
 
     @Override
     protected void onResume() {
@@ -77,7 +92,7 @@ public class HomeActivity extends PlayerAppCompatActivity {
     }
 
     public void setTabLayout(SliderPageAdapter pageAdapter, ViewPager viewPager) {
-        TabLayout tabLayout = findViewById(R.id.tab_layout);
+        tabLayout = findViewById(R.id.tab_layout);
         tabLayout.setupWithViewPager(viewPager);
 
         for(int it = 0; it < tabLayout.getTabCount(); it++) {
@@ -86,6 +101,26 @@ public class HomeActivity extends PlayerAppCompatActivity {
                 continue;
 
             tab.setCustomView(pageAdapter.getTabView(it));
+        }
+
+        updateTabLayout(0);
+    }
+
+    public void updateTabLayout(int position) {
+        for(int i = 0; i < tabLayout.getTabCount(); i++) {
+            TabLayout.Tab tab = tabLayout.getTabAt(i);
+
+            if(tab != null) {
+                View view = tab.getCustomView();
+
+                if(view != null) {
+                    if(tab.getPosition() != position) {
+                        tab.getCustomView().setAlpha(0.6f);
+                    } else {
+                        tab.getCustomView().setAlpha(1.0f);
+                    }
+                }
+            }
         }
     }
 

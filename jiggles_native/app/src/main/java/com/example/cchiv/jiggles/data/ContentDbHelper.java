@@ -103,6 +103,7 @@ public class ContentDbHelper extends SQLiteOpenHelper {
 
         String sqlReviewQuery = "CREATE TABLE " + ReviewEntry.TABLE_NAME + " (" +
                 ReviewEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                ReviewEntry.COL_REVIEW_IDENTIFIER + " TEXT UNIQUE NOT NULL, " +
                 ReviewEntry.COL_REVIEW_AUTHOR + " TEXT NOT NULL, " +
                 ReviewEntry.COL_REVIEW_RELEASE + " INTEGER REFERENCES " +
                     ReleaseEntry.TABLE_NAME + "(" + ReleaseEntry._ID + ")" + ", " +
