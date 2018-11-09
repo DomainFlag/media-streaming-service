@@ -7,6 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    tools:background="@color/motionPrimaryDarkColor"
     tools:context=".activities.PlayerActivity">
 
     <RelativeLayout
@@ -115,6 +116,7 @@
         android:id="@+id/player_devices"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:alpha="0.6"
         android:layout_gravity="center"
         android:gravity="center"
         android:drawableLeft="@drawable/ic_wireless"
@@ -123,7 +125,7 @@
         android:textSize="@dimen/activity_text_span"
         android:textStyle="bold"
         android:textColor="@color/iconsTextColor"
-        android:text="@string/player_share_message"/>
+        tools:text="@string/player_share_message"/>
 
     <com.google.android.exoplayer2.ui.PlayerView
         android:id="@+id/player"

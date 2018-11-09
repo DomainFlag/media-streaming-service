@@ -1,5 +1,6 @@
 package com.example.cchiv.jiggles.fragments.pager;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Paint;
@@ -30,7 +31,7 @@ import com.example.cchiv.jiggles.utilities.NetworkUtilities;
 
 public class SearchFragment extends Fragment implements TextView.OnEditorActionListener {
 
-    private final static String TAG = "SearchActivity";
+    private final static String TAG = "SearchFragment";
 
     private static final int SPAN_COLS = 2;
 
@@ -64,7 +65,7 @@ public class SearchFragment extends Fragment implements TextView.OnEditorActionL
         recyclerView.setAdapter(contentAdapter);
 
         ImageButton imageButton = rootView.findViewById(R.id.search_close);
-//        imageButton.setOnClickListener(view -> finish());
+        imageButton.setOnClickListener(view -> ((Activity) context).onBackPressed());
 
         EditText editText = (EditText) rootView.findViewById(R.id.search_edit);
         editText.setOnEditorActionListener(this);

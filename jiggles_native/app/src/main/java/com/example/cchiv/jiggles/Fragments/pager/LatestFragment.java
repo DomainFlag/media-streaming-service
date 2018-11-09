@@ -18,6 +18,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.cchiv.jiggles.R;
 import com.example.cchiv.jiggles.adapters.HighlightAdapter;
@@ -59,6 +60,10 @@ public class LatestFragment extends Fragment {
         swipeRefreshLayout.setOnRefreshListener(() -> {
             if(Tools.checkInternetConnectivity(context))
                 fetchLiveContent();
+            else {
+                Toast.makeText(context, R.string.app_connectivity_negative, Toast.LENGTH_SHORT).show();
+                swipeRefreshLayout.setRefreshing(false);
+            }
         });
 
         highlightAdapter = new HighlightAdapter(context, new ArrayList<>());
@@ -127,7 +132,7 @@ public class LatestFragment extends Fragment {
                 updateLayoutReleases(releases);
             }
 
-            swipeRefreshLayout.stopNestedScroll();
+            swipeRefreshLayout.setRefreshing(false);
         });
 
         networkUtilities.fetchNews(news -> {

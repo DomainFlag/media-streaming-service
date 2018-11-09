@@ -5,6 +5,8 @@
     <string name="app_tools_placeholder_number">21</string>
     <string name="app_tools_placeholder_date">Mon Aug 06 2018</string>
 
+    <string name="app_connectivity_negative">No valid internet connection, try again!</string>
+
 
     <!-- Welcome -->
     <string name="welcome_header_text">More then just a music collection.</string>
@@ -46,13 +48,11 @@
     </string-array>
 
     <string name="home_bar_title">%1$s - %2$s</string>
+    <string name="home_bar_controller">Player controller</string>
 
     <string name="home_tab_description">Tab Title</string>
 
-    <!-- Home -->
-    <string name="home_player">Player</string>
-    <string name="home_forum">Forum</string>
-
+    <!-- Latest -->
     <string name="home_releases_label">Releases</string>
     <string name="home_news_label">News</string>
 
@@ -93,7 +93,7 @@
     <string name="player_share_message">Connected</string>
 
 
-    <!-- Collection -->
+    <!-- Store -->
     <string name="collection_art">Track art</string>
 
     <string name="collection_filter">Filter By</string>
@@ -108,7 +108,7 @@
     <string name="player_devices_label">Devices:</string>
 
 
-    <!-- Forum -->
+    <!-- Home -->
     <string name="forum_thread_comment">Comment</string>
     <string name="forum_thread_like">Like</string>
 

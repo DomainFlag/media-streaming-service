@@ -41,16 +41,17 @@ public class MediaPlayer {
 
     private static final String TAG = "MediaPlayer";
 
-    public interface OnStateChanged {
-        void onTrackChanged(Track track);
+    public interface OnTrackStateChanged {
+        void onTrackStateChanged(Track track);
     }
 
     private Context context;
 
-    private OnStateChanged onStateChanged;
+    private OnTrackStateChanged onTrackStateChanged;
 
     private Collection collection;
 
+    private PlayerMediaSession playerMediaSession = null;
     private VisualizerView visualizerView = null;
     private Visualizer visualizer = null;
 
@@ -62,7 +63,7 @@ public class MediaPlayer {
 
     public MediaPlayer(Context context) {
         this.context = context;
-        this.onStateChanged = ((OnStateChanged) context);
+        this.onTrackStateChanged = ((OnTrackStateChanged) context);
     }
 
     public void attachConnection(RemoteConnection remoteConnection) {
@@ -80,6 +81,8 @@ public class MediaPlayer {
     }
 
     public void setPlayer(PlayerMediaSession playerMediaSession) {
+        this.playerMediaSession = playerMediaSession;
+
         if(exoPlayer != null)
             release();
 
@@ -91,7 +94,8 @@ public class MediaPlayer {
             public void onPositionDiscontinuity(EventTime eventTime, int reason) {
                 if(reason == ExoPlayer.DISCONTINUITY_REASON_PERIOD_TRANSITION ||
                         reason == ExoPlayer.DISCONTINUITY_REASON_SEEK_ADJUSTMENT) {
-                    onStateChanged.onTrackChanged(getCurrentTrack());
+                    onTrackStateChanged.onTrackStateChanged(getCurrentTrack());
+                    playerMediaSession.buildNotificationPlayer(getCurrentTrack());
                 }
             }
 
@@ -119,15 +123,22 @@ public class MediaPlayer {
                     remoteConnection.write(action, action.length);
                 }
 
-                if((playbackState == Player.STATE_READY) && playWhenReady) {
-                    playerMediaSession.setState(PlaybackStateCompat.STATE_PLAYING);
-                } else if((playbackState == Player.STATE_READY)) {
-                    playerMediaSession.setState(PlaybackStateCompat.STATE_PAUSED);
-                }
-
-                playerMediaSession.buildNotificationPlayer(getCurrentTrack());
+                triggerMediaSession(playbackState, playWhenReady);
             }
         });
+    }
+
+    public void triggerMediaSession(int playbackState, boolean playWhenReady) {
+        if((playbackState == Player.STATE_READY) && playWhenReady) {
+            playerMediaSession.setState(PlaybackStateCompat.STATE_PLAYING);
+        } else if((playbackState == Player.STATE_READY)) {
+            playerMediaSession.setState(PlaybackStateCompat.STATE_PAUSED);
+        }
+
+        Track track = getCurrentTrack();
+        playerMediaSession.buildNotificationPlayer(track);
+
+        onTrackStateChanged.onTrackStateChanged(getCurrentTrack());
     }
 
     public void prepareExoPlayerFromByteArray(Collection collection) {
@@ -164,14 +175,14 @@ public class MediaPlayer {
         return concatenatingMediaSource;
     }
 
-    public void setSource(Collection collection, boolean wholeContent) {
+    public void setSource(Collection collection) {
         this.collection = collection;
 
         DefaultDataSourceFactory defaultDataSourceFactory = new DefaultDataSourceFactory(context,
                 Util.getUserAgent(context, context.getPackageName()));
 
         ExtractorMediaSource.Factory factory = new ExtractorMediaSource.Factory(defaultDataSourceFactory);
-        if(wholeContent) {
+        if(collection.getTracks().size() > 1) {
             ConcatenatingMediaSource concatenatingMediaSource = setMultipleSources(factory, collection.getAlbums().get(0));
 
             exoPlayer.prepare(concatenatingMediaSource);
@@ -184,7 +195,7 @@ public class MediaPlayer {
 
         exoPlayer.setPlayWhenReady(true);
 
-        onStateChanged.onTrackChanged(getCurrentTrack());
+        onTrackStateChanged.onTrackStateChanged(getCurrentTrack());
     }
 
     public void setVisualizer(VisualizerView visualizer) {
@@ -212,6 +223,8 @@ public class MediaPlayer {
 
     public void togglePlayer(boolean play) {
         exoPlayer.setPlayWhenReady(play);
+
+        triggerMediaSession(Player.STATE_READY, play);
     }
 
     public void changeSeeker(long value) {
@@ -234,8 +247,6 @@ public class MediaPlayer {
     public void release() {
         if(exoPlayer != null)
             exoPlayer.release();
-
-//        remoteConnection.release();
     }
 
     public void releaseVisualizer() {

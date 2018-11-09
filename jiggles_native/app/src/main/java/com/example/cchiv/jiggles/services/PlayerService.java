@@ -9,6 +9,7 @@ import android.os.IBinder;
 import android.widget.Toast;
 
 import com.example.cchiv.jiggles.data.ContentContract;
+import com.example.cchiv.jiggles.data.ContentContract.TrackEntry;
 import com.example.cchiv.jiggles.model.Collection;
 import com.example.cchiv.jiggles.model.Track;
 import com.example.cchiv.jiggles.player.MediaPlayer;
@@ -18,20 +19,20 @@ import com.example.cchiv.jiggles.utilities.JigglesLoader;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PlayerService extends Service implements MediaPlayer.OnStateChanged {
+public class PlayerService extends Service implements MediaPlayer.OnTrackStateChanged {
 
     private static final String TAG = "PlayerService";
 
-    private static final int SERVICE_NOTIFICATION_ID = 9921;
+    public static final int SERVICE_NOTIFICATION_ID = 9921;
 
-    private static final int LOADER_SERVICE_TRACK_ID = 1021;
-    private static final int LOADER_SERVICE_ALBUM_ID = 1121;
+    private static final int LOADER_SERVICE_COLLECTION_ID = 1021;
 
     public interface OnCallbackListener {
-        void onCallbackListener(Track track);
+        void onCallbackListener(Track track, int playbackStateCompat);
     }
 
     public static final String RESOURCE_IDENTIFIER = "RESOURCE_IDENTIFIER";
+    public static final String RESOURCE_TYPE = "RESOURCE_TYPE";
 
     public List<OnCallbackListener> listeners = new ArrayList<>();
 
@@ -52,24 +53,26 @@ public class PlayerService extends Service implements MediaPlayer.OnStateChanged
 
         Bundle bundle = intent.getExtras();
         if(bundle != null) {
-            String resource = bundle.getString(RESOURCE_IDENTIFIER, null);
+            String resourceId = bundle.getString(RESOURCE_IDENTIFIER, null);
+            String resourceType = bundle.getString(RESOURCE_TYPE, TrackEntry._ID);
 
-            if(resource != null) {
+            if(resourceId != null && resourceType != null) {
                 Bundle loaderBundle = new Bundle();
                 loaderBundle.putString(JigglesLoader.BUNDLE_URI_KEY, ContentContract.CONTENT_COLLECTION_URI.toString());
-                loaderBundle.putString(JigglesLoader.BUNDLE_SELECTION_KEY, ContentContract.TrackEntry._ID + "=?");
-                loaderBundle.putStringArray(JigglesLoader.BUNDLE_SELECTION_ARGS_KEY, new String[] { resource });
+                loaderBundle.putString(JigglesLoader.BUNDLE_SELECTION_KEY, resourceType + "=?");
+                loaderBundle.putStringArray(JigglesLoader.BUNDLE_SELECTION_ARGS_KEY, new String[] { resourceId });
 
                 JigglesLoader.AsyncTaskContentLoader<Collection> asyncTaskContentLoader =
                         new JigglesLoader.AsyncTaskContentLoader<>(this, loaderBundle, Collection::parseCursor);
 
-                asyncTaskContentLoader.registerListener(LOADER_SERVICE_TRACK_ID, (loader, collection) -> {
+                asyncTaskContentLoader.registerListener(LOADER_SERVICE_COLLECTION_ID, (loader, collection) -> {
                     playerMediaSession.createMediaSession();
 
                     mediaPlayer.setPlayer(playerMediaSession);
-                    mediaPlayer.setSource(collection, false);
+                    mediaPlayer.setSource(collection);
 
-                    setForegroundService(mediaPlayer.getCurrentTrack());
+                    Track track = getCurrentTrack();
+                    setForegroundService(track);
                 });
 
                 asyncTaskContentLoader.forceLoad();
@@ -126,12 +129,12 @@ public class PlayerService extends Service implements MediaPlayer.OnStateChanged
 
     public void onTrackNotifyAll(Track track) {
         for(OnCallbackListener listener : listeners) {
-            listener.onCallbackListener(track);
+            listener.onCallbackListener(track, playerMediaSession.getState());
         }
     }
 
     @Override
-    public void onTrackChanged(Track track) {
+    public void onTrackStateChanged(Track track) {
         onTrackNotifyAll(track);
     }
 
@@ -139,7 +142,15 @@ public class PlayerService extends Service implements MediaPlayer.OnStateChanged
         return mediaPlayer;
     }
 
+    public PlayerMediaSession getPlayerMediaSession() {
+        return playerMediaSession;
+    }
+
     public Track getCurrentTrack() {
         return mediaPlayer.getCurrentTrack();
+    }
+
+    public int getPlaybackStateCompat() {
+        return playerMediaSession.getState();
     }
 }

@@ -50,14 +50,7 @@ public class PlayerActivity extends AppCompatActivity implements
         });
 
         Intent intent = getIntent();
-        String id = intent.getStringExtra(RESOURCE_ID);
-        resourceWhole = intent.getBooleanExtra(RESOURCE_WHOLE, false);
-
-        if(id == null)
-            finish();
-
-        Bundle bundle = new Bundle();
-        bundle.putString(PlayerService.RESOURCE_IDENTIFIER, id);
+        Bundle bundle = intent.getExtras();
 
         playerView = findViewById(R.id.player);
         playerServiceConnection = new PlayerServiceConnection(this, playerView);
@@ -122,18 +115,18 @@ public class PlayerActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onCallbackListener(Track track) {
-        attachTrack(track);
-
-        playerView.setPlayer(playerServiceConnection.getMediaPlayer().getExoPlayer());
-        playerView.showController();
-    }
-
-    @Override
     public void onCallbackConnectionComplete() {
         Track track = playerServiceConnection.getCurrentTrack();
         if(track != null) {
             attachTrack(track);
         }
+    }
+
+    @Override
+    public void onCallbackListener(Track track, int playbackStateCompat) {
+        attachTrack(track);
+
+        playerView.setPlayer(playerServiceConnection.getMediaPlayer().getExoPlayer());
+        playerView.showController();
     }
 }

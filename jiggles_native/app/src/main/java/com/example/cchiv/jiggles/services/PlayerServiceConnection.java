@@ -7,9 +7,11 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.cchiv.jiggles.model.Track;
 import com.example.cchiv.jiggles.player.MediaPlayer;
+import com.example.cchiv.jiggles.player.PlayerMediaSession;
 import com.google.android.exoplayer2.ui.PlayerView;
 
 public class PlayerServiceConnection implements ServiceConnection {
@@ -42,6 +44,7 @@ public class PlayerServiceConnection implements ServiceConnection {
 
     @Override
     public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+        Toast.makeText(context, "Service is connected", Toast.LENGTH_LONG).show();
         PlayerService.PlayerBinder playerBinder = (PlayerService.PlayerBinder) iBinder;
 
         playerService = playerBinder.getService();
@@ -49,6 +52,7 @@ public class PlayerServiceConnection implements ServiceConnection {
 
         if(playerView != null) {
             playerView.setPlayer(getMediaPlayer().getExoPlayer());
+            playerView.showController();
         }
 
         onCallbackConnectionComplete.onCallbackConnectionComplete();
@@ -83,6 +87,10 @@ public class PlayerServiceConnection implements ServiceConnection {
         return playerService.getMediaPlayer();
     }
 
+    public PlayerMediaSession getPlayerMediaSession() {
+        return playerService.getPlayerMediaSession();
+    }
+
     public void onDetachPlayerView() {
         if(playerView != null) {
             MediaPlayer mediaPlayer = getMediaPlayer();
@@ -95,5 +103,11 @@ public class PlayerServiceConnection implements ServiceConnection {
         if(playerService != null)
             return playerService.getCurrentTrack();
         else return null;
+    }
+
+    public int getPlaybackStateCompat() {
+        if(playerService != null)
+            return playerService.getPlaybackStateCompat();
+        else return -1;
     }
 }

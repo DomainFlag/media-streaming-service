@@ -22,11 +22,13 @@
         tools:text="ColdPlay - Lovers in Japan"/>
 
     <ImageView
+        android:id="@+id/home_player_controller"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
+        android:contentDescription="@string/home_bar_controller"
         android:layout_marginRight="@dimen/activity_margin_relative"
         android:paddingHorizontal="@dimen/activity_margin_closer"
         android:paddingVertical="@dimen/activity_margin_sibling"

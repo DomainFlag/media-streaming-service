@@ -17,6 +17,7 @@ import com.example.cchiv.jiggles.model.Album;
 import com.example.cchiv.jiggles.model.Artist;
 import com.example.cchiv.jiggles.model.Collection;
 import com.example.cchiv.jiggles.model.Image;
+import com.example.cchiv.jiggles.services.PlayerService;
 import com.example.cchiv.jiggles.utilities.JigglesLoader;
 import com.example.cchiv.jiggles.utilities.Tools;
 import com.squareup.picasso.Picasso;
@@ -30,7 +31,7 @@ public class AlbumActivity extends PlayerAppCompatActivity {
     private static final String TAG = "AlbumActivity";
 
     private ContentAdapter contentAdapter = new ContentAdapter(this, null, ContentAdapter.MODE_TRACK, id -> {
-        createPlayerIntent(id, false);
+        createPlayerIntent(id, ContentContract.TrackEntry._ID);
     });;
 
     @Override
@@ -64,11 +65,14 @@ public class AlbumActivity extends PlayerAppCompatActivity {
     @Override
     protected void onDestroyActivity() {}
 
-    private void createPlayerIntent(String resource, boolean whole) {
+    private void createPlayerIntent(String resourceId, String resourceType) {
         Intent intent = new Intent(this, PlayerActivity.class);
 
-        intent.putExtra(PlayerActivity.RESOURCE_ID, resource);
-        intent.putExtra(PlayerActivity.RESOURCE_WHOLE, whole);
+        Bundle bundle = new Bundle();
+        bundle.putString(PlayerService.RESOURCE_IDENTIFIER, resourceId);
+        bundle.putString(PlayerService.RESOURCE_TYPE, resourceType);
+
+        intent.putExtras(bundle);
 
         startActivity(intent);
     }
@@ -78,7 +82,7 @@ public class AlbumActivity extends PlayerAppCompatActivity {
 
         TextView albumPlayView = findViewById(R.id.album_play);
         albumPlayView.setOnClickListener((view) -> {
-            createPlayerIntent(album.getId(), true);
+            createPlayerIntent(album.getId(), ContentContract.AlbumEntry._ID);
         });
 
         ImageView thumbnail = findViewById(R.id.album_thumbnail);
