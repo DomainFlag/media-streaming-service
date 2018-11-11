@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import com.example.cchiv.jiggles.dialogs.ConnectivityDialog;
 import com.example.cchiv.jiggles.interfaces.OnUpdatePairedDevices;
+import com.example.cchiv.jiggles.player.protocol.RemoteProtocol;
 
 import java.util.Set;
 
@@ -33,13 +34,13 @@ public class PlayerRemote {
             switch (type) {
                 case RemoteConnection.MessageConstants.MESSAGE_READ: {
                     if(size > 0) {
-                        actOnAction(RemoteProtocol.decodeAction(data));
+//                        actOnAction(RemoteProtocol.decodeAction(data));
                     } else Log.v(TAG, "No data");
                     break;
                 }
                 case RemoteConnection.MessageConstants.MESSAGE_WRITE: {
                     if(size > 0) {
-                        actOnAction(RemoteProtocol.decodeAction(data));
+//                        actOnAction(RemoteProtocol.decodeAction(data));
                     } else Log.v(TAG, "No data");
                     break;
                 }
@@ -69,15 +70,14 @@ public class PlayerRemote {
             }
         });
 
-
         mediaPlayer.attachConnection(remoteConnection);
     }
 
     public void actOnAction(String action) {
         ((Activity) context).runOnUiThread(() -> {
-            if(action.startsWith(RemoteProtocol.ACTION_PAUSE)) {
+            if(action.startsWith(RemoteProtocol.ACTIONS.ACTION_PAUSE)) {
                 mediaPlayer.togglePlayer(false);
-            } else if(action.startsWith(RemoteProtocol.ACTION_RESUME)) {
+            } else if(action.startsWith(RemoteProtocol.ACTIONS.ACTION_RESUME)) {
                 mediaPlayer.togglePlayer(true);
             } else {
                 Log.v(TAG, "Unknown operation");

@@ -12,6 +12,7 @@ import com.example.cchiv.jiggles.model.Collection;
 import com.example.cchiv.jiggles.model.Track;
 import com.example.cchiv.jiggles.player.listeners.PlayerAnalyticsListener;
 import com.example.cchiv.jiggles.player.listeners.PlayerEventListener;
+import com.example.cchiv.jiggles.player.protocol.RemoteProtocol;
 import com.example.cchiv.jiggles.utilities.VisualizerView;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlayer;
