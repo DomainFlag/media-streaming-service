@@ -57,7 +57,7 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ThreadView
 
         return new ThreadViewHolder(
                 layoutInflater
-                        .inflate(R.layout.thread_layout, parent, false)
+                        .inflate(R.layout.home_thread, parent, false)
         );
     }
 

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="@dimen/activity_margin_section">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/thumbnail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxHeight="240dp"
+            android:scaleType="centerCrop"
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/forum_thread_comment"
+            tools:src="@drawable/thumbnail"/>
+
+        <ImageView
+            android:id="@+id/menu_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@id/thumbnail"
+            android:layout_alignRight="@+id/thumbnail"
+            android:layout_alignTop="@id/thumbnail"
+            android:contentDescription="@string/player_menu"
+            android:padding="@dimen/activity_margin_component"
+            android:src="@drawable/ic_menu_simple_white"/>
+
+        <LinearLayout
+            android:id="@+id/menu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@id/menu_button"
+            android:layout_alignRight="@id/menu_button"
+            android:layout_below="@+id/menu_button"
+            android:layout_marginHorizontal="@dimen/activity_margin_section"
+            android:background="@drawable/border_round"
+            android:backgroundTint="@color/pleasureColor"
+            android:elevation="@dimen/button_elevation"
+            android:orientation="vertical"
+            android:padding="@dimen/activity_margin_relative"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/edit"
+                style="@style/thread_menu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/ic_create"
+                android:drawableStart="@drawable/ic_create"
+                android:text="@string/thread_edit"/>
+
+            <TextView
+                android:id="@+id/delete"
+                style="@style/thread_menu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/activity_margin_relative"
+                android:drawableLeft="@drawable/ic_rubbish_bin"
+                android:drawableStart="@drawable/ic_rubbish_bin"
+                android:text="@string/thread_delete"/>
+
+        </LinearLayout>
+
+        <include
+            layout="@layout/home_feed_bar"/>
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/secondaryColor"/>
+
+    <LinearLayout
+        android:id="@+id/thread_body"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/iconsTextColor"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/activity_text_span"
+            android:textColor="@color/primaryTextColor"
+            android:layout_margin="@dimen/activity_margin_relative"
+            tools:text="@string/app_tools_placeholder"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/comments"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/minimize"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_margin="@dimen/activity_margin_relative"
+            android:textStyle="bold"
+            android:textColor="@color/motionPrimaryColor"
+            android:textSize="@dimen/activity_text_subparagraph"
+            android:letterSpacing="0.22"
+            android:text="@string/thread_more"/>
+
+    </LinearLayout>
+
+</LinearLayout>

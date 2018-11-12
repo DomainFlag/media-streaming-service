@@ -1,6 +1,7 @@
 package com.example.cchiv.jiggles.activities;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -12,8 +13,10 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.example.cchiv.jiggles.R;
@@ -42,6 +45,13 @@ public class HomeActivity extends PlayerAppCompatActivity {
             R.drawable.ic_search
     };
 
+    private final static int[] MENU_ITEMS = new int[] {
+            R.id.filter_artist,
+            R.id.filter_album,
+            R.id.filter_track,
+            R.id.filter_all
+    };
+
     public static final int ARRAY_TAB_TITLES = R.array.home_pager_fragments;
 
     @Override
@@ -49,6 +59,22 @@ public class HomeActivity extends PlayerAppCompatActivity {
         setContentView(R.layout.activity_home);
 
         Tools.resolveAuthToken(this);
+
+        findViewById(R.id.home_account).setOnClickListener((view) -> {
+            PopupMenu popup = new PopupMenu(this, view);
+
+            Menu menu = popup.getMenu();
+            popup.getMenuInflater().inflate(R.menu.account_menu, menu);
+
+            menu.findItem(R.id.account_log_out).setOnMenuItemClickListener(menuItem -> {
+                Intent intent = new Intent(this, AuthActivity.class);
+                startActivity(intent);
+
+                return false;
+            });
+
+            popup.show();
+        });
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         List<Tab> tabs = Tab.generate(this);

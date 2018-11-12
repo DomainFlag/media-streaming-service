@@ -8,7 +8,8 @@
     android:background="@color/pleasureColor"
     android:gravity="center"
     android:orientation="horizontal"
-    android:visibility="gone">
+    android:visibility="gone"
+    tools:visibility="visible">
 
     <TextView
         android:id="@+id/home_player_title"

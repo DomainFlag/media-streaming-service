@@ -7,7 +7,7 @@ android {
     compileSdkVersion 27
     defaultConfig {
         applicationId "com.example.cchiv.jiggles"
-        minSdkVersion 14
+        minSdkVersion 15
         targetSdkVersion 27
         versionCode 1
         versionName "1.0"
@@ -36,6 +36,14 @@ dependencies {
     implementation 'com.android.support:palette-v7:27.1.1'
 
     implementation 'com.google.android.gms:play-services-maps:16.0.0'
+
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.9.3'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.9.3'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.3'
+
+    // spotify dependencies
+    implementation project(":spotify-app-remote")
+    implementation project(":spotify-auth-release")
 
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation 'com.squareup.picasso:picasso:2.71828'

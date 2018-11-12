@@ -34,12 +34,21 @@
         <activity android:name=".activities.AuthActivity"/>
 
         <activity
+            android:name="com.spotify.sdk.android.authentication.LoginActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
+        <activity
             android:name=".activities.PlayerActivity"
             android:label="Player"
             android:launchMode="singleTask"/>
 
-        <activity android:name=".activities.HomeActivity"/>
-        <activity android:name=".activities.AlbumActivity"/>
+        <activity
+            android:name=".activities.HomeActivity"
+            android:launchMode="singleTop"/>
+
+        <activity
+            android:name=".activities.AlbumActivity"
+            android:launchMode="singleTop"/>
 
         <provider
             android:name=".data.JigglesProvider"

@@ -16,13 +16,15 @@ public class Connection {
 
     public Connection() {}
 
-    public void resolve(Chunk chunk) {
+    public void resolve(Message.OnMessageCallback onMessageCallback, Chunk chunk) {
         String identifier = chunk.getHeader(RemoteProtocol.IDENTIFIER.HEADER);
         String chunkSize = chunk.getHeader(RemoteProtocol.CHUNKS.LENGTH.HEADER);
 
         if(identifier != null && chunkSize != null) {
             if(!messages.containsKey(identifier)) {
-                Message message = new Message(identifier, Integer.valueOf(chunkSize), chunk);
+                Message message = new Message(identifier, Integer.valueOf(chunkSize));
+                message.onAttachMessageCallback(onMessageCallback);
+                message.resolve(chunk);
 
                 messages.put(identifier, message);
             } else {
@@ -74,11 +76,11 @@ public class Connection {
                 onMessageCallback.onMessageCallback(this);
         }
 
-        public static String decodeString(Connection.Message message) {
+        public static String decodeString(Message message) {
             StringBuilder stringBuilder = new StringBuilder();
 
             try {
-                for(Connection.Chunk chunk: message.chunks) {
+                for(Chunk chunk: message.chunks) {
                     String data = new String(chunk.getBody(), "ISO-8859-1");
 
                     stringBuilder.append(data);
@@ -95,14 +97,18 @@ public class Connection {
             return chunks.get(position).getBody();
         }
 
-        public static Bitmap decodeImage(Connection.Message message) {
+        public List<Chunk> getChunks() {
+            return chunks;
+        }
+
+        public static Bitmap decodeImage(Message message) {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
             try {
-                for(Connection.Chunk chunk: message.chunks)
+                for(Chunk chunk: message.chunks)
                     byteArrayOutputStream.write(chunk.body);
             } catch(IOException e) {
-                Log.v(TAG, e.toString());
+                Log.v(TAG,  e.toString());
             }
 
             byte[] raw = byteArrayOutputStream.toByteArray();

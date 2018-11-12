@@ -34,7 +34,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
     public CommentViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new CommentViewHolder(
                 LayoutInflater.from(context)
-                        .inflate(R.layout.thread_comment_layout, parent, false)
+                        .inflate(R.layout.home_comment_layout, parent, false)
         );
     }
 

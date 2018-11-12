@@ -4,4 +4,7 @@
 node_modules/
 jiggles_playground/
 
+jiggles_native/spotify-app-remote
+jiggles_native/spotify-auth-release
+
 **/app_config.*

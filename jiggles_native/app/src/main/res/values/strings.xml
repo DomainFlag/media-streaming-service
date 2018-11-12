@@ -18,8 +18,9 @@
 
 
     <!-- Authentication -->
-    <string name="auth_facebook_description">Facebook Authentication</string>
-    <string name="auth_twitter_description">Twitter Authentication</string>
+    <string name="auth_facebook_description">Facebook Auth</string>
+    <string name="auth_spotify_description">Spotify Auth</string>
+    <string name="auth_twitter_description">Twitter Auth</string>
 
     <string name="auth_social_header">Social %1$s with any of\.\.\.</string>
     <string name="auth_social_header_log_in">log in</string>
@@ -47,10 +48,47 @@
         <item>Search</item>
     </string-array>
 
+    <string name="home_account_profile">Profile</string>
+    <string name="home_account_settings">Settings</string>
+    <string name="home_account_log_out">Log Out</string>
+
     <string name="home_bar_title">%1$s - %2$s</string>
     <string name="home_bar_controller">Player controller</string>
 
+    <!-- Home Thread -->
     <string name="home_tab_description">Tab Title</string>
+
+    <string name="forum_thread_comment">Comment</string>
+    <string name="forum_thread_like">Like</string>
+
+    <string name="forum_thread_thumbnail_description">Thread Thumbnail</string>
+
+    <string name="forum_thread_comment_reply">Reply</string>
+    <string name="forum_thread_reply_hint">Reply\.\.\.</string>
+
+    <string name="forum_thread_creator_content_hint">Content\.\.\.</string>
+    <string name="forum_thread_creator_create">Post</string>
+
+    <string name="forum_menu">Thread More</string>
+
+    <string name="thread_edit">Edit thread</string>
+    <string name="thread_delete">Delete thread</string>
+
+    <string name="comment_caption">Author caption</string>
+
+    <string name="thread_less">Less\.\.\.</string>
+    <string name="thread_more">More\.\.\.</string>
+
+    <!-- Home Update -->
+    <string name="forum_update_like">%1s recently liked it.</string>
+    <string name="forum_update_playlist">%1s created a new playlist.</string>
+
+    <string name="update_content_caption_description">Content caption</string>
+
+    <string name="update_content_title_placeholder">The xx</string>
+    <string name="update_content_subtitle_placeholder">xx</string>
+
+    <string name="forum_update_action">Listen to it.</string>
 
     <!-- Latest -->
     <string name="home_releases_label">Releases</string>
@@ -106,29 +144,6 @@
 
     <!-- Dialog Alert - Devices -->
     <string name="player_devices_label">Devices:</string>
-
-
-    <!-- Home -->
-    <string name="forum_thread_comment">Comment</string>
-    <string name="forum_thread_like">Like</string>
-
-    <string name="forum_thread_thumbnail_description">Thread Thumbnail</string>
-
-    <string name="forum_thread_comment_reply">Reply</string>
-    <string name="forum_thread_reply_hint">Reply\.\.\.</string>
-
-    <string name="forum_thread_creator_content_hint">Content\.\.\.</string>
-    <string name="forum_thread_creator_create">Post</string>
-
-    <string name="forum_menu">Thread More</string>
-
-    <string name="thread_edit">Edit thread</string>
-    <string name="thread_delete">Delete thread</string>
-
-    <string name="comment_caption">Author caption</string>
-
-    <string name="thread_less">Less\.\.\.</string>
-    <string name="thread_more">More\.\.\.</string>
 
 
 </resources>

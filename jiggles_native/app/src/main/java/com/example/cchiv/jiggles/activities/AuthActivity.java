@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import com.example.cchiv.jiggles.Constants;
 import com.example.cchiv.jiggles.R;
+import com.example.cchiv.jiggles.spotify.SpotifyConnection;
 import com.example.cchiv.jiggles.utilities.NetworkUtilities;
 
 public class AuthActivity extends AppCompatActivity {
@@ -110,6 +111,11 @@ public class AuthActivity extends AppCompatActivity {
     private void changeAuthState() {
         Intent intent = getIntent();
         String authType = intent.getStringExtra(Constants.AUTH_TYPE_KEY);
+
+        findViewById(R.id.auth_spotify).setOnClickListener((view -> {
+            SpotifyConnection spotifyConnection = new SpotifyConnection(this);
+            spotifyConnection.connect();
+        }));
 
         if(authType != null) {
             String authTypeText = null;

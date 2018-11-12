@@ -30,9 +30,6 @@ public class StoreFragment extends Fragment {
 
     private static final int COLLECTION_LOADER_ID = 191;
 
-    private static final String FRAGMENT_ALBUM_KEY = "FRAGMENT_ALBUM_KEY";
-    private static final String FRAGMENT_COLLECTION_KEY = "FRAGMENT_COLLECTION_KEY";
-
     private Context context;
 
     private ContentAdapter contentAdapter = null;

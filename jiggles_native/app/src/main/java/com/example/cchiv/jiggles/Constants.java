@@ -15,6 +15,10 @@ public class Constants {
 
     public static final String PREFERENCE_EMAIL = "PREFERENCE_EMAIL";
 
+    /* Spotify */
+    public static final String CLIENT_ID = app_config.CLIENT_ID;
+    public static final String REDIRECT_URI = app_config.REDIRECT_URI;
+
     /* Network */
     public static final String SCHEME = "https";
     public static final String AUTHORITY = app_config.APP;

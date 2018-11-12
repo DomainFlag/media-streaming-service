@@ -59,6 +59,12 @@
                     android:src="@drawable/ic_auth_facebook"/>
 
                 <ImageView
+                    android:id="@+id/auth_spotify"
+                    style="@style/social_auth_icon_style"
+                    android:contentDescription="@string/auth_spotify_description"
+                    android:src="@drawable/ic_auth_spotify"/>
+
+                <ImageView
                     android:id="@+id/auth_twitter"
                     style="@style/social_auth_icon_style"
                     android:contentDescription="@string/auth_twitter_description"
