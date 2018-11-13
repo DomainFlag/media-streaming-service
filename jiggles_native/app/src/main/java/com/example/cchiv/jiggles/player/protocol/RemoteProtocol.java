@@ -35,6 +35,9 @@ public class RemoteProtocol {
 
         public static class LENGTH {
             public static final String HEADER = "chunks-length";
+
+            public static final int UNKNOWN_STREAM_LENGTH = -2;
+            public static final int UNKNOWN_STREAM_END = -1;
         }
     }
 
@@ -44,6 +47,7 @@ public class RemoteProtocol {
 
             public static final String TYPE_TEXT = "text";
             public static final String TYPE_RAW = "raw";
+            public static final String TYPE_JSON = "json";
             public static final String TYPE_NONE = "none";
         }
 
@@ -52,40 +56,48 @@ public class RemoteProtocol {
         }
     }
 
-    public static byte[] createResumeAction() {
+    public static byte[] createResumeAction(String identifier) {
         Builder builder = new Builder();
 
         return builder
                 .appendHeader(ACTIONS.HEADER, ACTIONS.ACTION_RESUME)
+                .appendHeader(IDENTIFIER.HEADER, identifier)
+                .appendHeader(CHUNKS.LENGTH.HEADER, 1)
                 .appendHeader(CONTENT.TYPE.HEADER, CONTENT.TYPE.TYPE_NONE)
                 .build();
     }
 
-    public static byte[] createSeekAction(float value) {
+    public static byte[] createSeekAction(String identifier, float value) {
         Builder builder = new Builder();
 
         return builder
                 .appendHeader(ACTIONS.HEADER, ACTIONS.ACTION_SEEK)
+                .appendHeader(IDENTIFIER.HEADER, identifier)
+                .appendHeader(CHUNKS.LENGTH.HEADER, 1)
                 .appendHeader(CONTENT.TYPE.HEADER, CONTENT.TYPE.TYPE_TEXT)
                 .appendBody(value).build();
     }
 
-    public static byte[] createPauseAction() {
+    public static byte[] createPauseAction(String identifier) {
         Builder builder = new Builder();
 
         return builder
                 .appendHeader(ACTIONS.HEADER, ACTIONS.ACTION_PAUSE)
+                .appendHeader(IDENTIFIER.HEADER, identifier)
+                .appendHeader(CHUNKS.LENGTH.HEADER, 1)
                 .appendHeader(CONTENT.TYPE.HEADER, CONTENT.TYPE.TYPE_NONE)
                 .build();
     }
 
-    public static byte[] createStreamAction(byte[] data) {
+    public static byte[] createStreamAction(String identifier, byte[] data, int size, int length) {
         Builder builder = new Builder();
 
         return builder
                 .appendHeader(ACTIONS.HEADER, ACTIONS.ACTION_STREAM)
+                .appendHeader(IDENTIFIER.HEADER, identifier)
+                .appendHeader(CHUNKS.LENGTH.HEADER, size)
                 .appendHeader(CONTENT.TYPE.HEADER, CONTENT.TYPE.TYPE_RAW)
-                .appendBody(data)
+                .appendBody(data, length)
                 .build();
     }
 
@@ -97,18 +109,16 @@ public class RemoteProtocol {
         else return null;
     };
 
-    public static Connection.Chunk decodeChunk(byte[] data) {
+    public static Connection.Chunk decodeChunk(byte[] data, int size) {
         try {
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(data);
             InputStreamReader inputStreamReader = new InputStreamReader(byteArrayInputStream, "ISO-8859-1");
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 
             HashMap<String, String> headers = new HashMap<>();
-            int offset = 0;
-            int length = 0;
 
             String line = bufferedReader.readLine();
-            while(line != null && line.equals("\n")) {
+            while(line != null && !line.equals("\n")) {
                 Header header = decodeHeader(line);
 
                 if(header != null) {
@@ -117,15 +127,20 @@ public class RemoteProtocol {
                     }
                 }
 
-                offset += line.getBytes().length;
-
                 line = bufferedReader.readLine();
             }
 
-            byte[] body = new byte[length];
-            int pos = 0;
-            while(pos != -1) {
-                pos = byteArrayInputStream.read(body, offset, length);
+            byte[] body = null;
+            if(headers.containsKey(CONTENT.LENGTH.HEADER)) {
+                int length = Integer.valueOf(headers.get(CONTENT.LENGTH.HEADER));
+
+                if(length > 0) {
+                    body = new byte[length];
+
+                    int offset = data.length - length;
+
+                    System.arraycopy(data, offset, body, 0, length);
+                }
             }
 
             return new Connection.Chunk(headers, body);
@@ -143,6 +158,8 @@ public class RemoteProtocol {
         private List<Header> headers = new ArrayList<>();
 
         private byte[] body = null;
+
+        private int length = -1;
 
         private Builder appendHeader(Header header) {
             headers.add(header);
@@ -178,6 +195,12 @@ public class RemoteProtocol {
             return this;
         }
 
+        private Builder appendBody(byte[] body, int length) {
+            this.length = length;
+
+            return this.appendBody(body);
+        }
+
         public byte[] build() {
             try {
                 int length = body != null ? body.length : 0;
@@ -195,7 +218,7 @@ public class RemoteProtocol {
                     byte[] message = new byte[headers.length + body.length];
 
                     System.arraycopy(headers, 0, message, 0, headers.length);
-                    System.arraycopy(body, 0, message, headers.length, body.length);
+                    System.arraycopy(body, 0, message, headers.length, length);
 
                     return message;
                 }

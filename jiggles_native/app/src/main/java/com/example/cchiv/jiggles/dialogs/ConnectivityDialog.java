@@ -14,6 +14,7 @@ import android.widget.ListView;
 import com.example.cchiv.jiggles.R;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 public class ConnectivityDialog extends DialogFragment {
@@ -26,11 +27,12 @@ public class ConnectivityDialog extends DialogFragment {
 
     private Context context;
 
-    private ArrayAdapter<String> arrayAdapter;
+    private ArrayAdapter<String> arrayAdapter = null;
 
     private OnBluetoothDeviceSelect onBluetoothDeviceSelect;
 
     private ArrayList<BluetoothDevice> bluetoothDevices = new ArrayList<>();
+    private List<String> dialogList = new ArrayList<>();
 
     @Override
     public void onAttach(Context context) {
@@ -51,7 +53,7 @@ public class ConnectivityDialog extends DialogFragment {
         View inflatedView = getActivity().getLayoutInflater().inflate(R.layout.dialog_devices_layout, null, false);
         builder.setView(inflatedView);
 
-        arrayAdapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, new ArrayList<>());
+        arrayAdapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, dialogList);
 
         ListView listView = inflatedView.findViewById(R.id.devices_list);
         listView.setAdapter(arrayAdapter);
@@ -70,16 +72,28 @@ public class ConnectivityDialog extends DialogFragment {
     public void onUpdateDialog(Set<BluetoothDevice> devices) {
         bluetoothDevices.addAll(devices);
 
-        for(BluetoothDevice device : devices)
-            arrayAdapter.add(device.getName());
+        if(arrayAdapter != null) {
+            for(BluetoothDevice device : devices) {
+                arrayAdapter.add(device.getName());
+            }
 
-        arrayAdapter.notifyDataSetChanged();
+            arrayAdapter.notifyDataSetChanged();
+        } else {
+            for(BluetoothDevice device : devices) {
+                dialogList.add(device.getName());
+            }
+        }
     }
 
     public void onUpdateDialog(BluetoothDevice device) {
         bluetoothDevices.add(device);
-        arrayAdapter.add(device.getName());
 
-        arrayAdapter.notifyDataSetChanged();
+        if(arrayAdapter != null) {
+            arrayAdapter.add(device.getName());
+
+            arrayAdapter.notifyDataSetChanged();
+        } else {
+            dialogList.add(device.getName());
+        }
     }
 }

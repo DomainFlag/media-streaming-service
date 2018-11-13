@@ -1,11 +1,12 @@
 package com.example.cchiv.jiggles.interfaces;
 
 import android.bluetooth.BluetoothDevice;
+import android.content.Context;
 
 import java.util.Set;
 
 public interface OnUpdatePairedDevices {
     void onUpdatePairedDevices(Set<BluetoothDevice> devices);
-    void onAddPairedDevice(BluetoothDevice device);
-    void onPairedDoneDevice(String message);
+    void onUpdatePairedDevices(BluetoothDevice device);
+    void onUpdateInterface(Context context, BluetoothDevice bluetoothDevice);
 }

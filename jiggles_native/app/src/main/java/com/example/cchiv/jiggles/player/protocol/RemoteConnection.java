@@ -1,4 +1,4 @@
-package com.example.cchiv.jiggles.player;
+package com.example.cchiv.jiggles.player.protocol;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
@@ -14,6 +14,7 @@ import android.util.Log;
 import com.example.cchiv.jiggles.interfaces.OnManageStreamData;
 import com.example.cchiv.jiggles.interfaces.OnSearchPairedDevices;
 import com.example.cchiv.jiggles.interfaces.OnUpdatePairedDevices;
+import com.example.cchiv.jiggles.player.PlayerRemote;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,28 +26,19 @@ import static android.app.Activity.RESULT_OK;
 
 public class RemoteConnection implements OnSearchPairedDevices {
 
-    private static final String TAG = "JigglesConnection";
-
-    // Types of messages that are viable
-    public interface MessageConstants {
-        int MESSAGE_READ = 0;
-        int MESSAGE_WRITE = 1;
-        int MESSAGE_TOAST = 2;
-    }
+    private static final String TAG = "RemoteConnection";
 
     private OnManageStreamData onManageStreamData;
     private OnUpdatePairedDevices onUpdatePairedDevices;
 
     private static final String UUID_IDENTIFIER = "74911d97-529f-4d4c-9aa9-20445d526923";
-
     private static final int REQUEST_ENABLE_BT = 1201;
-
     private BluetoothAdapter mBluetoothAdapter;
 
     private Context context;
 
-    private ConnectedThread connectedThread;
-
+    private ConnectedThread connectedThread = null;
+    private ClientThread clientThread;
     private RemoteThread remoteThread;
 
     private boolean receiverRegistered = false;
@@ -61,52 +53,47 @@ public class RemoteConnection implements OnSearchPairedDevices {
                 // object and its info from the Intent and update the UI with the new device
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
 
-                onUpdatePairedDevices.onAddPairedDevice(device);
+                onUpdatePairedDevices.onUpdatePairedDevices(device);
             } else {
                 Log.v(TAG, "Action not found");
             }
         }
     };
 
-    public RemoteConnection(Context context, OnManageStreamData onManageStreamData, OnUpdatePairedDevices onUpdatePairedDevices) {
+    public RemoteConnection(Context context, PlayerRemote playerRemote) {
         this.context = context;
-        this.onManageStreamData = onManageStreamData;
-        this.onUpdatePairedDevices = onUpdatePairedDevices;
+        this.onManageStreamData = (OnManageStreamData) playerRemote;
+        this.onUpdatePairedDevices = (OnUpdatePairedDevices) playerRemote;
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
         searchPairedDevices();
-
-        remoteThread = new RemoteThread();
-        remoteThread.start();
-
     }
 
-    public void onPairDevice(BluetoothDevice bluetoothDevice) {
+    /**
+     * Starting server thread
+     */
+    public void startServerThread() {
+        remoteThread = new RemoteThread();
+        remoteThread.start();
+    }
+
+    /**
+     * Starting client thread(one remains server the other one becomes client)
+     * @param bluetoothDevice connected bluetooth device
+     */
+    public void startRemoteClient(BluetoothDevice bluetoothDevice) {
+        // Stopping the server thread
         remoteThread.setRunning(false);
 
-        ClientThread clientThread = new ClientThread(bluetoothDevice);
+        clientThread = new ClientThread(bluetoothDevice);
         clientThread.start();
-
-        Thread thread = new Thread(() -> {
-            try {
-                // Wait 15s
-                Thread.sleep(15000);
-
-                int len = 30;
-                byte[] message = new byte[len];
-
-                write(message, len);
-            } catch(InterruptedException e) {
-                Log.v(TAG, e.toString());
-            }
-        });
-        thread.start();
     }
 
     public void discover() {
         Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-        discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 500);
+
+        discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 1000);
         context.startActivity(discoverableIntent);
     }
 
@@ -118,7 +105,6 @@ public class RemoteConnection implements OnSearchPairedDevices {
                 ((Activity) context).startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
             } else {
                 Log.v(TAG, "The bluetooth is enabled");
-
                 searchPairedDevices();
 
                 Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
@@ -128,10 +114,6 @@ public class RemoteConnection implements OnSearchPairedDevices {
         } else {
             Log.v(TAG, "Couldn't get the bluetooth adapter");
         }
-    }
-
-    public void write(byte[] data, int len) {
-        connectedThread.write(data);
     }
 
     @Override
@@ -158,8 +140,18 @@ public class RemoteConnection implements OnSearchPairedDevices {
     public void release() {
         if(receiverRegistered) {
             context.unregisterReceiver(mReceiver);
+
             receiverRegistered = false;
         }
+
+        if(remoteThread != null)
+            remoteThread.cancel();
+
+        if(clientThread != null)
+            clientThread.cancel();
+
+        if(connectedThread != null)
+            connectedThread.cancel();
     }
 
     // Client
@@ -174,7 +166,7 @@ public class RemoteConnection implements OnSearchPairedDevices {
             mmDevice = device;
 
             try {
-                Log.v(TAG, "Create the RfcommSocket");
+                Log.v(TAG, "Create the RfcommSocket for attempting to connect with " + device.getName());
                 // Get a BluetoothSocket to connect with the given BluetoothDevice.
                 // MY_UUID is the app's UUID string, also used in the server code.
                 tmp = device.createRfcommSocketToServiceRecord(UUID.fromString(UUID_IDENTIFIER));
@@ -204,7 +196,8 @@ public class RemoteConnection implements OnSearchPairedDevices {
                 return;
             }
 
-            onUpdatePairedDevices.onPairedDoneDevice("Paired with " + mmDevice.getName());
+            // Updating the UI that the pairing went successfully
+            onUpdatePairedDevices.onUpdateInterface(context, mmDevice);
 
             // The connection attempt succeeded. Perform work associated with
             // the connection in a separate thread.
@@ -232,6 +225,7 @@ public class RemoteConnection implements OnSearchPairedDevices {
             // Use a temporary object that is later assigned to mmServerSocket
             // because mmServerSocket is final.
             BluetoothServerSocket tmp = null;
+
             try {
                 Log.v(TAG, "Listen to Rfcomm for anything");
                 // MY_UUID is the app's UUID string, also used by the client code.
@@ -247,22 +241,27 @@ public class RemoteConnection implements OnSearchPairedDevices {
         @Override
         public void run() {
             BluetoothSocket socket = null;
+
             // Keep listening until exception occurs or a socket is returned.
             while(running) {
                 try {
                     socket = mmServerSocket.accept(50);
                 } catch(IOException e) {
                     if(!running) {
-                        Log.e(TAG, "Socket's accept() method failed", e);
-                        break;
+                        Log.v(TAG, "Server was closed");
+                    } else {
+                        Log.v(TAG, "Socket's accept() method failed");
                     }
                 }
 
                 try {
                     if(socket != null) {
+                        // Cancel discovery because it otherwise slows down the connection.
+                        mBluetoothAdapter.cancelDiscovery();
+
                         // A connection was accepted. Perform work associated with
                         // the connection in a separate thread.
-                        onUpdatePairedDevices.onPairedDoneDevice("Paired with " + socket.getRemoteDevice().getName());
+                        onUpdatePairedDevices.onUpdateInterface(context, socket.getRemoteDevice());
 
                         connectedThread = new ConnectedThread(socket);
                         connectedThread.start();
@@ -292,11 +291,18 @@ public class RemoteConnection implements OnSearchPairedDevices {
         }
     }
 
+    public void writeStream(byte[] data) {
+        if(connectedThread != null)
+            connectedThread.write(data);
+    }
+
     public class ConnectedThread extends Thread {
         private final BluetoothSocket mmSocket;
         private final InputStream mmInStream;
         private final OutputStream mmOutStream;
-        private byte[] mmBuffer; // mmBuffer store for the stream
+
+        // mmBuffer store for the stream
+        private byte[] mmBuffer;
 
         private ConnectedThread(BluetoothSocket socket) {
             mmSocket = socket;
@@ -331,33 +337,27 @@ public class RemoteConnection implements OnSearchPairedDevices {
                 try {
                     // Read from the InputStream.
                     numBytes = mmInStream.read(mmBuffer);
-                    // Send the obtained bytes to the UI activity.
 
                     if(numBytes > 0)
                         Log.v(TAG, "Read " + String.valueOf(numBytes));
 
-                    onManageStreamData.onManageStreamData("", MessageConstants.MESSAGE_READ, numBytes, mmBuffer);
-                } catch (IOException e) {
+                    // Send the obtained chunk to the UI activity.
+                    onManageStreamData.onManageStreamData(context, mmBuffer, numBytes);
+                } catch(IOException e) {
                     Log.d(TAG, "Input stream was disconnected", e);
                     break;
                 }
             }
         }
 
-        // Call this from the main activity to send data to the remote device.
+        // Call this from the client thread to send data to the remote device.
         public void write(byte[] bytes) {
             try {
                 mmOutStream.write(bytes);
 
-                // Share the sent message with the UI activity.
-                onManageStreamData.onManageStreamData("", MessageConstants.MESSAGE_WRITE, -1, mmBuffer);
-
                 Log.v(TAG, "Message written successfully");
             } catch (IOException e) {
                 Log.e(TAG, "Error occurred when sending data", e);
-
-                // Send a failure message back to the activity.
-                onManageStreamData.onManageStreamData("Couldn't send data to the other device", MessageConstants.MESSAGE_TOAST, -1, null);
             }
         }
 

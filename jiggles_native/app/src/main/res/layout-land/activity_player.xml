@@ -76,8 +76,26 @@
             android:layout_width="200dp"
             android:layout_height="20dp"
             android:layout_centerInParent="true"
-            android:layout_margin="@dimen/activity_margin_section"
-            android:layout_alignBottom="@id/player_thumbnail"/>
+            android:layout_margin="@dimen/activity_margin_component"
+            android:layout_above="@id/player_devices"/>
+
+        <TextView
+            android:id="@+id/player_devices"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha="0.6"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:drawableLeft="@drawable/ic_wireless"
+            android:drawableTint="@color/iconsTextColor"
+            android:drawablePadding="@dimen/activity_margin_relative"
+            android:textSize="@dimen/activity_text_span"
+            android:textStyle="bold"
+            android:textColor="@color/iconsTextColor"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="@dimen/activity_margin_relative"
+            tools:text="@string/player_share_message"/>
 
     </RelativeLayout>
 
@@ -122,6 +140,8 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:layout_margin="@dimen/activity_margin_component"
+            app:shutter_background_color="@android:color/transparent"
+            app:show_timeout="0"
             app:surface_type="none"
             app:use_artwork="false"
             app:hide_on_touch="false"

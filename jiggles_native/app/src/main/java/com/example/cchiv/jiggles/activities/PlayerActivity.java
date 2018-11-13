@@ -1,5 +1,6 @@
 package com.example.cchiv.jiggles.activities;
 
+import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +13,7 @@ import com.example.cchiv.jiggles.model.Album;
 import com.example.cchiv.jiggles.model.Artist;
 import com.example.cchiv.jiggles.model.Image;
 import com.example.cchiv.jiggles.model.Track;
+import com.example.cchiv.jiggles.player.PlayerRemote;
 import com.example.cchiv.jiggles.services.PlayerService;
 import com.example.cchiv.jiggles.services.PlayerServiceConnection;
 import com.example.cchiv.jiggles.utilities.Tools;
@@ -19,7 +21,8 @@ import com.google.android.exoplayer2.ui.PlayerView;
 import com.squareup.picasso.Picasso;
 
 public class PlayerActivity extends AppCompatActivity implements
-        PlayerService.OnCallbackListener, PlayerServiceConnection.OnCallbackConnectionComplete {
+        PlayerService.OnCallbackListener, PlayerServiceConnection.OnCallbackConnectionComplete,
+        PlayerRemote.OnUpdateInterface {
 
     private static final String TAG = "PlayerActivity";
 
@@ -41,12 +44,17 @@ public class PlayerActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player);
 
+        findViewById(R.id.player_back).setOnClickListener((view) -> {
+            finish();
+        });
+
         findViewById(R.id.player_lyrics).setOnClickListener((view) -> {
             // Do something later with lyrics
         });
 
-        findViewById(R.id.player_back).setOnClickListener((view) -> {
-            finish();
+        findViewById(R.id.player_share).setOnClickListener((view) -> {
+            PlayerRemote playerRemote = new PlayerRemote(this, playerServiceConnection.getMediaPlayer());
+            playerRemote.createRemoteConnection();
         });
 
         Intent intent = getIntent();
@@ -128,5 +136,12 @@ public class PlayerActivity extends AppCompatActivity implements
 
         playerView.setPlayer(playerServiceConnection.getMediaPlayer().getExoPlayer());
         playerView.showController();
+    }
+
+    @Override
+    public void onUpdateInterface(BluetoothDevice bluetoothDevice) {
+        TextView textView = findViewById(R.id.player_devices);
+        textView.setAlpha(1.0f);
+        textView.setText(getString(R.string.player_share_message, bluetoothDevice.getName()));
     }
 }

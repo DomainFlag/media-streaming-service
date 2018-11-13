@@ -128,7 +128,7 @@
 
     <string name="player_back">Player Back</string>
 
-    <string name="player_share_message">Connected</string>
+    <string name="player_share_message">Connected with %1$s</string>
 
 
     <!-- Store -->

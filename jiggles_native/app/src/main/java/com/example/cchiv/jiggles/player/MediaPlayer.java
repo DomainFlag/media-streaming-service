@@ -12,7 +12,6 @@ import com.example.cchiv.jiggles.model.Collection;
 import com.example.cchiv.jiggles.model.Track;
 import com.example.cchiv.jiggles.player.listeners.PlayerAnalyticsListener;
 import com.example.cchiv.jiggles.player.listeners.PlayerEventListener;
-import com.example.cchiv.jiggles.player.protocol.RemoteProtocol;
 import com.example.cchiv.jiggles.utilities.VisualizerView;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlayer;
@@ -60,15 +59,15 @@ public class MediaPlayer {
     public boolean playerPlaybackAction = true;
 
     private SimpleExoPlayer exoPlayer = null;
-    private RemoteConnection remoteConnection = null;
+    private PlayerRemote playerRemote = null;
 
     public MediaPlayer(Context context) {
         this.context = context;
         this.onTrackStateChanged = ((OnTrackStateChanged) context);
     }
 
-    public void attachConnection(RemoteConnection remoteConnection) {
-        this.remoteConnection = remoteConnection;
+    public void onAttachRemotePlayer(PlayerRemote playerRemote) {
+        this.playerRemote = playerRemote;
     }
 
     public Track getCurrentTrack() {
@@ -96,6 +95,7 @@ public class MediaPlayer {
                 if(reason == ExoPlayer.DISCONTINUITY_REASON_PERIOD_TRANSITION ||
                         reason == ExoPlayer.DISCONTINUITY_REASON_SEEK_ADJUSTMENT) {
                     onTrackStateChanged.onTrackStateChanged(getCurrentTrack());
+
                     playerMediaSession.buildNotificationPlayer(getCurrentTrack());
                 }
             }
@@ -113,15 +113,8 @@ public class MediaPlayer {
                 if(!playerPlaybackState || playerPlaybackAction)
                     playerPlaybackState = playWhenReady;
 
-                if(remoteConnection != null) {
-                    byte[] action;
-                    if(playWhenReady) {
-                        action = RemoteProtocol.createResumeAction();
-                    } else {
-                        action = RemoteProtocol.createPauseAction();
-                    }
-
-                    remoteConnection.write(action, action.length);
+                if(playerRemote != null) {
+                    playerRemote.onStateChanged(playbackState, playWhenReady);
                 }
 
                 triggerMediaSession(playbackState, playWhenReady);

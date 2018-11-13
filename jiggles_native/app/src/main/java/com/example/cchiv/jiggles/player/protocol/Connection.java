@@ -1,7 +1,5 @@
 package com.example.cchiv.jiggles.player.protocol;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
@@ -9,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 public class Connection {
 
@@ -16,23 +15,30 @@ public class Connection {
 
     public Connection() {}
 
-    public void resolve(Message.OnMessageCallback onMessageCallback, Chunk chunk) {
+    public Message createMessage(Message.OnMessageCallback onMessageCallback) {
+        String identifier;
+        do {
+            identifier = Message.generateIdentifier();
+        } while(messages.containsKey(identifier));
+
+        Message message = new Message(identifier);
+        message.onAttachMessageCallback(onMessageCallback);
+        messages.put(identifier, message);
+
+        return message;
+    };
+
+    public void resolve(Chunk chunk) {
         String identifier = chunk.getHeader(RemoteProtocol.IDENTIFIER.HEADER);
-        String chunkSize = chunk.getHeader(RemoteProtocol.CHUNKS.LENGTH.HEADER);
 
-        if(identifier != null && chunkSize != null) {
-            if(!messages.containsKey(identifier)) {
-                Message message = new Message(identifier, Integer.valueOf(chunkSize));
-                message.onAttachMessageCallback(onMessageCallback);
+        if(identifier != null) {
+            if(messages.containsKey(identifier)) {
+                Message message = messages.get(identifier);
+
                 message.resolve(chunk);
-
-                messages.put(identifier, message);
-            } else {
-                messages.get(identifier).resolve(chunk);
             }
         }
     }
-
 
     public static class Message {
 
@@ -50,19 +56,20 @@ public class Connection {
         // Identifier that uniquely identifies a message
         private String identifier = null;
 
-        private int chunkSize = -1;
-
         List<Chunk> chunks = new ArrayList<>();
 
-        private Message(String identifier, int chunkSize) {
+        private Message(String identifier) {
             this.identifier = identifier;
-            this.chunkSize = chunkSize;
         }
 
-        private Message(String identifier, int chunkSize, Chunk chunk) {
-            this(identifier, chunkSize);
+        private Message(String identifier, Chunk chunk) {
+            this(identifier);
 
             resolve(chunk);
+        }
+
+        public static String generateIdentifier() {
+            return UUID.randomUUID().toString();
         }
 
         private void onAttachMessageCallback(OnMessageCallback onMessageCallback) {
@@ -70,10 +77,14 @@ public class Connection {
         }
 
         private void resolve(Chunk chunk) {
-            chunks.add(chunk);
+            int chunkSize = Integer.valueOf(chunk.getHeader(RemoteProtocol.CHUNKS.LENGTH.HEADER));
 
-            if(chunks.size() == chunkSize)
-                onMessageCallback.onMessageCallback(this);
+            if(chunkSize == RemoteProtocol.CHUNKS.LENGTH.UNKNOWN_STREAM_END) {
+                if(this.onMessageCallback != null)
+                    onMessageCallback.onMessageCallback(this);
+            } else {
+                chunks.add(chunk);
+            }
         }
 
         public static String decodeString(Message message) {
@@ -93,27 +104,26 @@ public class Connection {
             return stringBuilder.toString();
         }
 
-        public byte[] decodeAudioSource(int position) {
-            return chunks.get(position).getBody();
-        }
-
         public List<Chunk> getChunks() {
             return chunks;
         }
 
-        public static Bitmap decodeImage(Message message) {
+        public String getIdentifier() {
+            return this.identifier;
+        }
+
+        public static byte[] decodeByteSource(Message message) {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
             try {
-                for(Chunk chunk: message.chunks)
+                for(Chunk chunk: message.chunks) {
                     byteArrayOutputStream.write(chunk.body);
+                }
             } catch(IOException e) {
                 Log.v(TAG,  e.toString());
             }
 
-            byte[] raw = byteArrayOutputStream.toByteArray();
-
-            return BitmapFactory.decodeByteArray(raw, 0, raw.length);
+            return byteArrayOutputStream.toByteArray();
         }
     }
 
