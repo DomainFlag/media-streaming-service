@@ -14,7 +14,7 @@
         android:orientation="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <android.support.v4.view.ViewPager
+        <com.example.cchiv.jiggles.AppViewPager
             android:id="@+id/home_pager"
             android:layout_width="match_parent"
             android:layout_height="0dp"

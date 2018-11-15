@@ -21,6 +21,7 @@ import com.example.cchiv.jiggles.data.ContentContract.AlbumEntry;
 import com.example.cchiv.jiggles.data.ContentContract.TrackEntry;
 import com.example.cchiv.jiggles.data.ContentContract.ImageEntry;
 import com.example.cchiv.jiggles.data.ContentContract.ReviewEntry;
+import com.example.cchiv.jiggles.data.ContentContract.NotificationEntry;
 
 import java.util.ArrayList;
 
@@ -52,6 +53,9 @@ public class JigglesProvider extends ContentProvider {
     private static final int IMAGE_SINGLE = 35;
     private static final int IMAGE_MANY = 36;
 
+    private static final int NOTIFICATION_SINGLE = 37;
+    private static final int NOTIFICATION_MANY = 38;
+
     private static final int COLLECTION = 101;
 
     public static UriMatcher uriMatcher = buildUriMatcher();
@@ -80,6 +84,9 @@ public class JigglesProvider extends ContentProvider {
 
         uriMatcher.addURI(ContentContract.AUTHORITY, ContentContract.PATH_IMAGES, IMAGE_MANY);
         uriMatcher.addURI(ContentContract.AUTHORITY, ContentContract.PATH_IMAGES + "/#", IMAGE_SINGLE);
+
+        uriMatcher.addURI(ContentContract.AUTHORITY, ContentContract.PATH_NOTIFICATIONS, NOTIFICATION_MANY);
+        uriMatcher.addURI(ContentContract.AUTHORITY, ContentContract.PATH_NOTIFICATIONS + "/#", NOTIFICATION_SINGLE);
 
         /* Custom uri matchers */
         uriMatcher.addURI(ContentContract.AUTHORITY, ContentContract.PATH_COLLECTION, COLLECTION);
@@ -159,6 +166,10 @@ public class JigglesProvider extends ContentProvider {
             }
             case REVIEW_MANY : {
                 insertedRowId = sqLiteDatabase.insert(ReviewEntry.TABLE_NAME, null, contentValues);
+                break;
+            }
+            case NOTIFICATION_MANY : {
+                insertedRowId = sqLiteDatabase.insert(NotificationEntry.TABLE_NAME, null, contentValues);
                 break;
             }
         }

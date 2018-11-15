@@ -47,14 +47,17 @@ public class StoreFragment extends Fragment {
             savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_store_layout, container, false);
 
-//        resolveLocalMedia();
-
         getActivity().findViewById(R.id.home_menu).setOnClickListener((view) -> {
             PopupMenu popup = new PopupMenu(context, view);
 
             Menu menu = popup.getMenu();
-            popup.getMenuInflater().inflate(R.menu.collection_menu, menu);
+            menu.findItem(R.id.collection_refresh).setOnMenuItemClickListener(item -> {
+                resolveLocalMedia();
 
+                return false;
+            });
+
+            popup.getMenuInflater().inflate(R.menu.collection_menu, menu);
             for(int itemMenu : MENU_ITEMS) {
                 menu.findItem(itemMenu).setOnMenuItemClickListener(menuItem -> {
                     Toast.makeText(context, "Filter by", Toast.LENGTH_SHORT).show();
@@ -105,6 +108,7 @@ public class StoreFragment extends Fragment {
     }
 
     public void resolveLocalMedia() {
-        Collection collection = ItemScanner.resolveLocalMedia(context);
+        ItemScanner.AsyncItemScanner asyncItemScanner = new ItemScanner.AsyncItemScanner(context, this::onUpdateFragment);
+        asyncItemScanner.execute();
     }
 }

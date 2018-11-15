@@ -14,6 +14,7 @@ import com.example.cchiv.jiggles.data.ContentContract.ReleaseEntry;
 import com.example.cchiv.jiggles.data.ContentContract.NewsEntry;
 import com.example.cchiv.jiggles.data.ContentContract.ImageEntry;
 import com.example.cchiv.jiggles.data.ContentContract.CommentEntry;
+import com.example.cchiv.jiggles.data.ContentContract.NotificationEntry;
 
 public class ContentDbHelper extends SQLiteOpenHelper {
 
@@ -91,6 +92,19 @@ public class ContentDbHelper extends SQLiteOpenHelper {
 
         sqLiteDatabase.execSQL(sqlImageQuery);
 
+        // Notification
+        String sqlNotificationQuery = "CREATE TABLE " + NotificationEntry.TABLE_NAME + " (" +
+                NotificationEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                NotificationEntry.COL_NOTIFICATION_AUTHOR + " TEXT NOT NULL, " +
+                NotificationEntry.COL_NOTIFICATION_TYPE + " TEXT NOT NULL, " +
+                NotificationEntry.COL_NOTIFICATION_RESOURCE + " TEXT NOT NULL, " +
+                NotificationEntry.COL_NOTIFICATION_IDENTIFIER + " INTEGER NOT NULL, " +
+                NotificationEntry.COL_NOTIFICATION_VOTES + " INTEGER DEFAULT 0 " +
+                ")";
+
+        sqLiteDatabase.execSQL(sqlNotificationQuery);
+
+        // Thread
         String sqlThreadQuery = "CREATE TABLE " + ThreadEntry.TABLE_NAME + " (" +
                 ThreadEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 ThreadEntry.COL_THREAD_AUTHOR + " TEXT NOT NULL, " +

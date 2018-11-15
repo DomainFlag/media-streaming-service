@@ -65,7 +65,8 @@
             android:layout_margin="@dimen/activity_margin_sibling"
             android:textSize="@dimen/activity_text_span"
             android:ellipsize="marquee"
-            android:maxLines="3"
+            android:maxLines="2"
+            android:lines="2"
             tools:text="@string/app_tools_placeholder"/>
 
     </LinearLayout>

@@ -130,10 +130,10 @@
 
     <string name="player_share_message">Connected with %1$s</string>
 
-
     <!-- Store -->
     <string name="collection_art">Track art</string>
 
+    <string name="collection_refresh">Refresh</string>
     <string name="collection_filter">Filter By</string>
 
     <string name="collection_filter_artist">Artist</string>

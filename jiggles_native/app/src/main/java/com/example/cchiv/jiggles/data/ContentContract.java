@@ -12,6 +12,7 @@ public class ContentContract {
     public static final String PATH_ARTISTS = "artists";
     public static final String PATH_USERS = "users";
     public static final String PATH_THREADS = "threads";
+    public static final String PATH_NOTIFICATIONS = "notifications";
     public static final String PATH_REVIEWS = "reviews";
     public static final String PATH_RELEASES = "releases";
     public static final String PATH_NEWS = "news";
@@ -134,6 +135,25 @@ public class ContentContract {
         public static final String COL_THREAD_CAPTION = "thread_caption";
         public static final String COL_THREAD_CONTENT = "thread_content";
         public static final String COL_THREAD_VOTES = "thread_votes";
+        public static final String COL_THREAD_DATE = "thread_votes";
+    }
+
+    /**
+     * Table with comments
+     */
+    public static final class NotificationEntry implements BaseColumns {
+
+        public static final Uri CONTENT_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_NOTIFICATIONS).build();
+
+        public static final String TABLE_NAME = "notification";
+
+        public static final String _ID = TABLE_NAME + BaseColumns._ID;
+        public static final String COL_NOTIFICATION_AUTHOR = "notification_author";
+        public static final String COL_NOTIFICATION_TYPE = "notification_type";
+        public static final String COL_NOTIFICATION_RESOURCE = "notification_resource";
+        public static final String COL_NOTIFICATION_IDENTIFIER = "notification_identifier";
+        public static final String COL_NOTIFICATION_VOTES = "notification_votes";
     }
 
     /**

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:baselineAligned="false"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/release_caption"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:adjustViewBounds="true"
+        android:contentDescription="@string/home_release_caption"
+        tools:src="@drawable/thumbnail"/>
+
+    <TextView
+        android:id="@+id/release_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/activity_margin_component"
+        android:textColor="@color/primaryTextColor"
+        android:textSize="@dimen/activity_text_paragraph"
+        android:textStyle="bold"
+        tools:text="@string/app_tools_placeholder"/>
+
+    <TextView
+        android:id="@+id/release_artist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/activity_margin_relative"
+        android:textColor="@color/primaryTextColor"
+        android:textSize="@dimen/activity_text_span"
+        tools:text="@string/app_tools_placeholder"/>
+
+    <TextView
+        android:id="@+id/release_score"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/activity_margin_relative"
+        android:textColor="@color/primaryTextColor"
+        android:textSize="@dimen/activity_text_span"
+        tools:text="@string/app_tools_placeholder"/>
+
+</LinearLayout>

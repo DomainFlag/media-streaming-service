@@ -21,8 +21,8 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.cchiv.jiggles.R;
+import com.example.cchiv.jiggles.adapters.FeatureAdapter;
 import com.example.cchiv.jiggles.adapters.HighlightAdapter;
-import com.example.cchiv.jiggles.adapters.ReleaseAdapter;
 import com.example.cchiv.jiggles.data.ContentContract;
 import com.example.cchiv.jiggles.data.ContentContract.NewsEntry;
 import com.example.cchiv.jiggles.model.News;
@@ -46,7 +46,8 @@ public class LatestFragment extends Fragment {
     private SwipeRefreshLayout swipeRefreshLayout;
 
     private HighlightAdapter highlightAdapter;
-    private ReleaseAdapter releaseAdapter;
+
+    private FeatureAdapter featureAdapter;
 
     private Context context;
 
@@ -69,8 +70,7 @@ public class LatestFragment extends Fragment {
         highlightAdapter = new HighlightAdapter(context, new ArrayList<>());
         createListView(rootView, R.id.home_news_list, highlightAdapter);
 
-        releaseAdapter = new ReleaseAdapter(context, new ArrayList<>());
-        createListView(rootView, R.id.home_release_list, releaseAdapter);
+        featureAdapter = new FeatureAdapter(context, new FeatureAdapter.Feature("New"), rootView);
 
         fetchCachedContent();
 
@@ -165,7 +165,7 @@ public class LatestFragment extends Fragment {
     }
 
     public void updateLayoutReleases(List<Release> releases) {
-        releaseAdapter.onSwapData(releases);
-        releaseAdapter.notifyDataSetChanged();
+        FeatureAdapter.Feature feature = FeatureAdapter.Feature.parse("New", releases);
+        featureAdapter.onSwapData(feature);
     }
 }
