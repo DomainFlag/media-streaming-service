@@ -49,7 +49,7 @@ public class HighlightAdapter extends ModelAdapter<HighlightAdapter.NewsViewHold
                 .centerCrop()
                 .into(holder.caption);
 
-        holder.author.setText(String.format(context.getString(R.string.home_news_author), author));
+        holder.author.setText(String.format(context.getString(R.string.app_component_author), author));
         holder.header.setText(header);
     }
 

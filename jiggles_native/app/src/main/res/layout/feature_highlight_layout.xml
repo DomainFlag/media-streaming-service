@@ -7,42 +7,47 @@
     android:baselineAligned="false"
     android:orientation="horizontal">
 
-    <RelativeLayout
+    <ImageView
+        android:id="@+id/release_caption"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:gravity="center">
+        android:adjustViewBounds="true"
+        android:contentDescription="@string/home_release_caption"
+        tools:src="@drawable/thumbnail"/>
 
-        <ImageView
-            android:id="@+id/release_caption"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:adjustViewBounds="true"
-            android:contentDescription="@string/home_release_caption"
-            tools:src="@drawable/thumbnail"/>
+    <LinearLayout
+        android:id="@+id/release_reviews"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:background="@android:color/transparent"
+        tools:background="@color/iconsTextColor">
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/release_caption"
-            android:layout_marginTop="@dimen/activity_margin_component"
-            android:layout_centerHorizontal="true"
-            android:gravity="center">
+            android:padding="@dimen/activity_margin_relative"
+            android:gravity="center_vertical"
+            android:layout_alignBottom="@id/release_caption"
+            android:layout_alignRight="@id/release_caption"
+            android:layout_alignEnd="@id/release_caption"
+            android:orientation="horizontal">
 
             <ImageView
                 android:id="@+id/release_impact"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:contentDescription="@string/home_release_impact"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginRight="@dimen/activity_margin_relative"
+                android:layout_marginEnd="@dimen/activity_margin_relative"
                 android:src="@drawable/ic_impact"/>
 
             <TextView
                 android:id="@+id/release_score"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
-                android:layout_marginStart="8dp"
                 android:textColor="@color/primaryTextColor"
                 android:textSize="@dimen/activity_text_ogre"
                 android:textStyle="bold"
@@ -54,16 +59,8 @@
             android:id="@+id/release_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@id/release_caption"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_marginBottom="@dimen/activity_margin_relative"
-            android:layout_marginEnd="@dimen/activity_margin_relative"
-            android:layout_marginLeft="@dimen/activity_margin_relative"
-            android:layout_marginRight="@dimen/activity_margin_relative"
-            android:layout_marginStart="@dimen/activity_margin_relative"
-            android:layout_marginTop="@dimen/activity_margin_sibling"
-            android:textColor="@color/iconsTextColor"
+            android:layout_marginTop="@dimen/activity_margin_section"
+            android:textColor="@color/primaryTextColor"
             android:textSize="@dimen/activity_text_subparagraph"
             android:textStyle="bold"
             tools:text="@string/app_tools_placeholder"/>
@@ -72,30 +69,10 @@
             android:id="@+id/release_artist"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/release_title"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_marginBottom="@dimen/activity_margin_sibling"
-            android:layout_marginEnd="@dimen/activity_margin_relative"
-            android:layout_marginLeft="@dimen/activity_margin_relative"
-            android:layout_marginRight="@dimen/activity_margin_relative"
-            android:layout_marginStart="@dimen/activity_margin_relative"
             android:layout_marginTop="@dimen/activity_margin_sibling"
-            android:gravity="end"
-            android:textAlignment="textEnd"
-            android:textColor="@color/iconsTextColor"
             android:textSize="@dimen/activity_text_span"
             tools:text="@string/app_tools_placeholder"/>
 
-    </RelativeLayout>
-
-    <LinearLayout
-        android:id="@+id/release_reviews"
-        android:visibility="gone"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        tools:background="@color/secondaryColor"/>
+    </LinearLayout>
 
 </LinearLayout>

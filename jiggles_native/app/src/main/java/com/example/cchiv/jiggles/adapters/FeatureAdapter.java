@@ -1,11 +1,16 @@
 package com.example.cchiv.jiggles.adapters;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewCompat;
+import android.support.v7.graphics.Palette;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +22,7 @@ import com.example.cchiv.jiggles.R;
 import com.example.cchiv.jiggles.model.Release;
 import com.example.cchiv.jiggles.model.Review;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +49,9 @@ public class FeatureAdapter {
         recyclerView.setHasFixedSize(true);
         recyclerView.setNestedScrollingEnabled(false);
 
+        FeatureItemDecoration featureItemDecoration = new FeatureItemDecoration(16);
+        recyclerView.addItemDecoration(featureItemDecoration);
+
         RecyclerView.LayoutManager layoutManager =
                 new LinearLayoutManager(context,
                         LinearLayoutManager.HORIZONTAL,
@@ -54,15 +63,61 @@ public class FeatureAdapter {
         ((TextView) view.findViewById(R.id.feature_title)).setText(feature.title);
 
         inflateHighlightView(view, feature.highlight);
-        inflateNotableView(view, feature.notable);
+        inflateFreshView(view, feature.notable);
     }
 
-    private void fillCaptionView(View rootView, Release release, int width, int height) {
+    private int getPaletteColor(Bitmap bitmap) {
+        Palette palette = Palette.from(bitmap).generate();
+
+        int defaultColor = ContextCompat.getColor(context, R.color.iconsTextColor);
+
+        int color = palette.getVibrantColor(defaultColor);
+        if(defaultColor == color)
+            color = palette.getLightVibrantColor(defaultColor);
+
+
+        if(defaultColor == color)
+            color = palette.getDominantColor(defaultColor);
+
+        return color;
+    }
+
+    private void fillCaptionView(View rootView, View parent, Release release, int width, int height) {
         ImageView caption = rootView.findViewById(R.id.release_caption);
         Picasso.get()
                 .load(release.getUrl())
                 .resize(width, height)
-                .into(caption);
+                .into(new Target() {
+                    @Override
+                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                        caption.setImageBitmap(bitmap);
+
+                        if(parent != null) {
+                            int color = getPaletteColor(bitmap);
+
+                            GradientDrawable gradientDrawable = new GradientDrawable(
+                                    GradientDrawable.Orientation.LEFT_RIGHT,
+                                    new int[] {
+                                            color,
+                                            ContextCompat.getColor(context, R.color.iconsTextColor)
+                                    }
+                            );
+
+                            View view = parent.findViewById(R.id.feature_highlight_gradient);
+                            ViewCompat.setBackground(view, gradientDrawable);
+                        }
+                    }
+
+                    @Override
+                    public void onBitmapFailed(Exception e, Drawable errorDrawable) {
+
+                    }
+
+                    @Override
+                    public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+                    }
+                });
 
         ((TextView) rootView.findViewById(R.id.release_artist)).setText(release.getArtist());
         ((TextView) rootView.findViewById(R.id.release_title)).setText(release.getTitle());
@@ -75,21 +130,21 @@ public class FeatureAdapter {
             View view = LayoutInflater.from(context)
                     .inflate(R.layout.feature_highlight_layout, null, false);
 
-            fillCaptionView(view, release, 200, 200);
-            onComputeScore(release.getReviews(), view, true);
+            fillCaptionView(view, rootView, release, 325, 325);
+            onComputeScore(release.getReviews(), view, false);
 
             linearLayout.addView(view);
         }
     }
 
-    private void inflateNotableView(View rootView, List<Release> releases) {
-        LinearLayout linearLayout = rootView.findViewById(R.id.feature_notable);
+    private void inflateFreshView(View rootView, List<Release> releases) {
+        LinearLayout linearLayout = rootView.findViewById(R.id.feature_fresh);
 
         for(Release release : releases) {
             View view = LayoutInflater.from(context)
-                    .inflate(R.layout.feature_notable_layout, null, false);
+                    .inflate(R.layout.feature_fresh_layout, linearLayout, false);
 
-            fillCaptionView(view, release, 65, 65);
+            fillCaptionView(view, null, release, 250, 250);
             onComputeScore(release.getReviews(), view, false);
 
             linearLayout.addView(view);
@@ -113,7 +168,7 @@ public class FeatureAdapter {
                 LinearLayout root = rootView.findViewById(R.id.release_reviews);
 
                 View view = LayoutInflater.from(context)
-                        .inflate(R.layout.review_layout, root, false);
+                        .inflate(R.layout.feature_review_layout, root, false);
 
                 view.findViewById(R.id.review_score_indicator).setBackgroundColor(color);
 
@@ -133,10 +188,10 @@ public class FeatureAdapter {
 
         if(rootView != null || detailedLayout) {
             TextView viewScore = rootView.findViewById(R.id.release_score);
+            ImageView viewImpact = rootView.findViewById(R.id.release_impact);
 
             if(total < IMPACT_THRESHOLD)
-                rootView.findViewById(R.id.release_impact).setVisibility(View.GONE);
-            else viewScore.setTextColor(ContextCompat.getColor(context, R.color.colorPrimaryDark));
+                viewImpact.setVisibility(View.GONE);
 
             viewScore.setText(totalScore);
         }
@@ -146,11 +201,34 @@ public class FeatureAdapter {
 
     public void onSwapData(Feature feature) {
         inflateHighlightView(rootView, feature.highlight);
-        inflateNotableView(rootView, feature.notable);
+        inflateFreshView(rootView, feature.notable);
 
-        Log.v(TAG, String.valueOf(feature.others.size()));
         otherAdapter.onSwapData(feature.others);
         otherAdapter.notifyDataSetChanged();
+    }
+
+    public class FeatureItemDecoration extends RecyclerView.ItemDecoration {
+
+        private int space;
+
+        private FeatureItemDecoration(int space) {
+            this.space = space;
+        }
+
+        @Override
+        public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView
+                .State state) {
+            int position = parent.getChildAdapterPosition(view);
+
+            if(position == 0)
+                outRect.right = space;
+            else if(position == parent.getChildCount() - 1)
+                outRect.left = space;
+            else {
+                outRect.left = space;
+                outRect.right = space;
+            }
+        }
     }
 
     public static class Feature {
@@ -214,11 +292,11 @@ public class FeatureAdapter {
 
             Picasso.get()
                     .load(release.getUrl())
-                    .resize(100, 100)
+                    .resize(200, 200)
                     .into(holder.caption);
 
-            holder.artist.setText(release.getArtist());
             holder.title.setText(release.getTitle());
+            holder.artist.setText(context.getString(R.string.app_component_author, release.getArtist()));
 
             List<Review> reviews = release.getReviews();
             String score = onComputeScore(reviews, null, false);

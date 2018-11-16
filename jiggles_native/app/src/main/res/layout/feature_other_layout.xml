@@ -19,19 +19,23 @@
         android:id="@+id/release_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/activity_margin_component"
+        android:layout_marginTop="@dimen/activity_margin_closer"
         android:textColor="@color/primaryTextColor"
-        android:textSize="@dimen/activity_text_paragraph"
-        android:textStyle="bold"
+        android:textSize="@dimen/activity_text_subparagraph"
+        android:maxLines="1"
+        android:maxWidth="100dp"
+        android:ellipsize="end"
         tools:text="@string/app_tools_placeholder"/>
 
     <TextView
         android:id="@+id/release_artist"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/activity_margin_relative"
-        android:textColor="@color/primaryTextColor"
+        android:layout_marginTop="@dimen/activity_margin_sibling"
         android:textSize="@dimen/activity_text_span"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:maxWidth="100dp"
         tools:text="@string/app_tools_placeholder"/>
 
     <TextView
@@ -41,6 +45,9 @@
         android:layout_marginTop="@dimen/activity_margin_relative"
         android:textColor="@color/primaryTextColor"
         android:textSize="@dimen/activity_text_span"
+        android:maxLines="1"
+        android:maxWidth="100dp"
+        android:ellipsize="end"
         tools:text="@string/app_tools_placeholder"/>
 
 </LinearLayout>

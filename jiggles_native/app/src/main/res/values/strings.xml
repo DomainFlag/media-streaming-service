@@ -5,7 +5,15 @@
     <string name="app_tools_placeholder_number">21</string>
     <string name="app_tools_placeholder_date">Mon Aug 06 2018</string>
 
+    <string name="app_component_author">By %1$s</string>
+
     <string name="app_connectivity_negative">No valid internet connection, try again!</string>
+
+
+    <!-- Feature -->
+    <string name="feature_highlight">Highlight</string>
+    <string name="feature_fresh">Fresh</string>
+    <string name="feature_other">Other</string>
 
 
     <!-- Welcome -->
@@ -93,8 +101,6 @@
     <!-- Latest -->
     <string name="home_releases_label">Releases</string>
     <string name="home_news_label">News</string>
-
-    <string name="home_news_author">By %1$s</string>
 
     <string name="home_release_caption">Release Caption</string>
     <string name="home_release_impact">Release Impact</string>

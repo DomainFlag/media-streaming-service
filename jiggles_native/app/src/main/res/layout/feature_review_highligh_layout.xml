@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:paddingLeft="@dimen/activity_margin_component"
+    android:paddingStart="@dimen/activity_margin_component"
+    android:paddingRight="@dimen/activity_margin_component"
+    android:paddingEnd="@dimen/activity_margin_component"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/review_author"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/activity_margin_relative"
+        android:textColor="@color/primaryTextColor"
+        android:textSize="@dimen/activity_text_span"
+        android:textStyle="bold"
+        tools:text="@string/app_tools_placeholder"/>
+
+    <TextView
+        android:id="@+id/review_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/activity_margin_sibling"
+        android:textSize="@dimen/activity_text_subspan"
+        android:singleLine="true"
+        android:lines="1"
+        tools:text="@string/app_tools_placeholder"/>
+
+    <RatingBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/activity_margin_sibling"
+        android:progressTint="@color/iconsTextColor"
+        android:stepSize="20"
+        android:numStars="5"
+        tools:rating="2.8"
+        style="?attr/ratingBarStyleSmall"/>
+
+</LinearLayout>
