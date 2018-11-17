@@ -57,6 +57,7 @@ public class Constants {
     public static final String THREADS = "threads";
     public static final String COMMENT = "comment";
 
+    public static final String FRESH = "fresh";
     public static final String NEWS = "news";
     public static final String RELEASES = "releases";
 

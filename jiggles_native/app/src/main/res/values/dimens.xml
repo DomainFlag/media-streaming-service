@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="activity_margin_ogre">32dp</dimen>
     <dimen name="activity_margin_section">24dp</dimen>
     <dimen name="activity_margin_gap">20dp</dimen>
     <dimen name="activity_margin_component">16dp</dimen>

@@ -15,6 +15,10 @@
     <string name="feature_fresh">Fresh</string>
     <string name="feature_other">Other</string>
 
+    <!-- Dialog Fresh -->
+    <string name="dialog_fresh_title">New %1$s</string>
+    <string name="dialog_fresh_action">Play</string>
+
 
     <!-- Welcome -->
     <string name="welcome_header_text">More then just a music collection.</string>
@@ -81,11 +85,10 @@
 
     <string name="thread_edit">Edit thread</string>
     <string name="thread_delete">Delete thread</string>
+    <string name="thread_comments">%1$d comments</string>
+    <string name="thread_followers">844 followers</string>
 
     <string name="comment_caption">Author caption</string>
-
-    <string name="thread_less">Less\.\.\.</string>
-    <string name="thread_more">More\.\.\.</string>
 
     <!-- Home Update -->
     <string name="forum_update_like">%1s recently liked it.</string>

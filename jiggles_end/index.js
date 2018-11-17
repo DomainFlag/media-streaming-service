@@ -22,6 +22,7 @@ let {Track} = require("./models/track");
 let {Artist} = require("./models/artist");
 let {Thread} = require("./models/thread");
 let {Social} = require("./models/social");
+let {Release} = require("./models/release");
 
 const ENTERTAINMENT_TYPES = {
     track : ['id', 'name', 'uri', 'track_number', 'type', 'images', 'artists'],
@@ -364,6 +365,20 @@ app.delete(/^\/forum\/thread/, function(req, res) {
             }
         })
     });
+});
+
+app.get(/^\/main\/fresh$/, function(req, res) {
+    Release.find({}, null, { limit : 1 })
+        .then((data) => {
+            res.set({
+                'Content-Type': 'application/json'
+            });
+
+            res.send(JSON.stringify(data));
+        })
+        .catch(() => {
+            res.status(401).send();
+        });
 });
 
 /* Collection content(GET, POST, DELETE) */

@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -56,7 +55,6 @@ public abstract class PlayerAppCompatActivity extends AppCompatActivity implemen
     }
 
     private void updatePlayerBar(Track track, int playbackStateCompat) {
-        Log.v(TAG, String.valueOf(playbackStateCompat));
         if(track == null) {
             barPlayerLayout.setVisibility(View.GONE);
             barPlayerLayout.setOnClickListener(null);

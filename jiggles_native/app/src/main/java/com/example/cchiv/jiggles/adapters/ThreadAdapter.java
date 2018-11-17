@@ -110,12 +110,14 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ThreadView
                 });
 
         holder.author.setText(thread.getAuthor().getName());
-        holder.date.setText(Tools.parseDate(thread.getId()));
+        holder.date.setText(Tools.parseSocialDate(thread.getId()));
         holder.like.setText(String.valueOf(thread.getVotes()));
         holder.content.setText(thread.getContent());
 
         TreeParser treeParser = new TreeParser();
         List<Comm> comments = treeParser.queryTree(thread.getComments());
+
+        holder.threadComments.setText(context.getString(R.string.thread_comments, comments.size()));
 
         CommentAdapter commentAdapter = new CommentAdapter(context, comments);
         holder.comments.setAdapter(commentAdapter);
@@ -168,6 +170,7 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ThreadView
         private TextView content;
         private ConstraintLayout utilities;
         private RecyclerView comments;
+        private TextView threadComments;
 
         private ImageView menu_button;
 
@@ -186,6 +189,7 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ThreadView
             utilities = itemView.findViewById(R.id.utilities);
             content = itemView.findViewById(R.id.content);
             comments = itemView.findViewById(R.id.comments);
+            threadComments = itemView.findViewById(R.id.thread_comments);
 
             menu = itemView.findViewById(R.id.menu);
             menu_button = itemView.findViewById(R.id.menu_button);

@@ -6,11 +6,11 @@
     android:id="@+id/utilities"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:padding="@dimen/activity_margin_closer"
     android:layout_alignBottom="@id/thumbnail"
     android:layout_centerInParent="true"
     android:gravity="center"
     android:orientation="horizontal"
-    android:paddingHorizontal="@dimen/activity_margin_relative"
     tools:background="@color/iconsTextColor">
 
     <TextView
@@ -67,30 +67,10 @@
         android:textColor="@color/primaryTextColor"
         android:textSize="@dimen/activity_text_span"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/date"
-        app:layout_constraintEnd_toStartOf="@+id/date"
-        app:layout_constraintStart_toEndOf="@+id/comment"
-        app:layout_constraintTop_toTopOf="@+id/date"
-        tools:text="@string/app_tools_placeholder"/>
-
-    <TextView
-        android:id="@+id/date"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginLeft="4dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="8dp"
-        android:drawableTint="@color/primaryTextColor"
-        android:textColor="@color/primaryTextColor"
-        android:textSize="@dimen/activity_text_span"
-        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/author"
+        app:layout_constraintStart_toEndOf="@+id/comment"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="@string/app_tools_placeholder_date"/>
+        tools:text="@string/app_tools_placeholder"/>
 
 </android.support.constraint.ConstraintLayout>

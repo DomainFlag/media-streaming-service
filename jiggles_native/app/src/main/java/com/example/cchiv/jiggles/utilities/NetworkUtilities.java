@@ -131,6 +131,37 @@ public class NetworkUtilities {
         }
     }
 
+    /* Fetch Fresh Release */
+    public static class FetchFreshRelease extends AsyncCustomNetworkTask<Release> {
+
+        public FetchFreshRelease(NetworkCallbacks<Release> networkCallbacks, String token) {
+            super(networkCallbacks);
+
+            Uri uri = new Uri.Builder()
+                    .scheme(Constants.SCHEME)
+                    .authority(Constants.AUTHORITY)
+                    .appendPath(Constants.MAIN)
+                    .appendPath(Constants.FRESH)
+                    .build();
+
+            Request request = new Request.Builder()
+                    .url(uri.toString())
+                    .addHeader("Content-Type", "application/json")
+                    .addHeader("X-Auth", token)
+                    .get()
+                    .build();
+
+            execute(request);
+        }
+
+        @Override
+        public Release onParseNetworkCallback(Gson gson, JSONObject jsonObject) {
+            Type type = new TypeToken<Release>() {}.getType();
+
+            return gson.fromJson(jsonObject.toString(), type);
+        }
+    }
+
     /* Fetch Releases */
     public void fetchReleases(FetchReleases.OnPostNetworkCallback onPostNetworkCallback) {
         new FetchReleases(onPostNetworkCallback);
@@ -492,11 +523,11 @@ public class NetworkUtilities {
         }
 
         @Override
-        protected void onPostExecute(Response r) {
-            super.onPostExecute(r);
+        protected void onPostExecute(Response response) {
+            super.onPostExecute(response);
 
             if(this.onPostNetworkCallback != null)
-                this.onPostNetworkCallback.onPostNetworkCallback(r);
+                this.onPostNetworkCallback.onPostNetworkCallback(response);
         }
     }
 
@@ -565,6 +596,65 @@ public class NetworkUtilities {
                 if(context != null)
                     this.onPostNetworkCallback.onPostNetworkCallback(context, token);
             }
+        }
+    }
+
+    public abstract static class AsyncCustomNetworkTask<T> extends AsyncTask<Request, Void, T> {
+
+        private static Gson gson = new Gson();
+
+        public interface NetworkCallbacks<T> {
+            void onPostNetworkCallback(T result);
+        }
+
+        private NetworkCallbacks<T> networkCallbacks;
+
+        private OkHttpClient client = new OkHttpClient();
+
+        public abstract T onParseNetworkCallback(Gson gson, JSONObject jsonObject);
+
+        public AsyncCustomNetworkTask(NetworkCallbacks<T> networkCallbacks) {
+            this.networkCallbacks = networkCallbacks;
+        }
+
+        @Override
+        protected T doInBackground(Request... requests) {
+            try {
+                Response response = client.newCall(requests[0]).execute();
+
+                ResponseBody body = response.body();
+                if(body == null)
+                    return null;
+
+                try {
+                    String resString = body.string();
+                    if(resString == null)
+                        return null;
+
+                    JSONArray jsonArray = new JSONArray(resString);
+
+                    return onParseNetworkCallback(gson,
+                            jsonArray.getJSONObject(0));
+                } catch(JSONException e) {
+                    Log.v(TAG, e.toString());
+                }
+            } catch(IOException e) {
+                Log.v(TAG, e.toString());
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(T result) {
+            super.onPostExecute(result);
+
+            networkCallbacks.onPostNetworkCallback(result);
         }
     }
 

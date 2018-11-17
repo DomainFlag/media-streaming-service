@@ -20,9 +20,12 @@
         android:id="@+id/thread_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/border_edit_text_normal"
+        android:lines="6"
+        android:minLines="6"
         android:padding="@dimen/activity_margin_component"
         android:hint="@string/forum_thread_creator_content_hint"
-        android:inputType="textMultiLine"/>
+        android:inputType="textImeMultiLine"/>
 
     <Button
         android:id="@+id/thread_submit"
