@@ -99,7 +99,7 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         List<Image> images = artist.getImages();
         if(images.size() > 0)
             Picasso.get()
-                    .load(images.get(0).getUri())
+                    .load(images.get(0).getUrl())
                     .into(holder.thumbnail);
 
         holder.name.setText(artist.getName());
@@ -111,7 +111,7 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         holder.name.setText(album.getName());
 
         int rightColor = onLoadAlbumArt(album, holder);
-        Tools.setGradientBackground(context, holder.itemView, rightColor);
+        Tools.setGradientBackground(context, holder.itemView, rightColor, 255);
 
         Artist artist = album.getArtist();
         if(artist != null) {
@@ -157,7 +157,7 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         Bitmap bitmap = image.getBitmap();
         if(bitmap == null) {
             Picasso.get()
-                    .load(image.getUri())
+                    .load(image.getUrl())
                     .placeholder(R.drawable.ic_artwork_placeholder)
                     .error(R.drawable.ic_artwork_placeholder)
                     .into(imageView);

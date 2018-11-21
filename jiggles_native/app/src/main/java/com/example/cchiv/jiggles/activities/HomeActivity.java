@@ -135,7 +135,7 @@ public class HomeActivity extends PlayerAppCompatActivity {
         NetworkUtilities.FetchFreshRelease fetchFreshRelease = new NetworkUtilities
                 .FetchFreshRelease(dialogFragment::onUpdateDialog, token);
 
-        dialogFragment.show(getFragmentManager(), "fsfasfa");
+        dialogFragment.show(getFragmentManager(), TAG);
     }
 
     public void setTabLayout(SliderPageAdapter pageAdapter, ViewPager viewPager) {
@@ -295,9 +295,14 @@ public class HomeActivity extends PlayerAppCompatActivity {
             return builder.create();
         }
 
-        public void onUpdateDialog(Release release) {
+        public void onUpdateDialog(List<Release> releases) {
+            if(releases == null || releases.size() == 0)
+                return;
+
+            Release release = releases.get(0);
+
             TextView textTitleView = rootView.findViewById(R.id.dialog_fresh_title);
-            textTitleView.setText(getString(R.string.dialog_fresh_title, "album", release.getArtist()));
+            textTitleView.setText(getString(R.string.dialog_fresh_title, "album"));
 
             ((TextView) rootView.findViewById(R.id.dialog_release_title))
                     .setText(release.getTitle());
@@ -323,7 +328,7 @@ public class HomeActivity extends PlayerAppCompatActivity {
                             imageView.setImageBitmap(bitmap);
 
                             int color = Tools.getPaletteColor(getActivity(), bitmap);
-                            Tools.setGradientBackground(getActivity(), relativeLayout, color, R.color.iconsTextColor);
+                            Tools.setGradientBackground(getActivity(), relativeLayout, color, R.color.iconsTextColor, 255);
                         }
 
                         @Override

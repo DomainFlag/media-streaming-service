@@ -110,8 +110,8 @@ public class PlayerMediaSession {
         Image art = track.getAlbum().getArt();
         Bitmap largeIcon = null;
         try {
-            if(art.getUri() != null)
-                largeIcon = MediaStore.Images.Media.getBitmap(context.getContentResolver(), art.getUri());
+            if(art.getUrl() != null)
+                largeIcon = MediaStore.Images.Media.getBitmap(context.getContentResolver(), art.getUrl());
             else largeIcon = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_artwork_placeholder);
         } catch(IOException e) {
             Log.v(TAG, e.toString());

@@ -1,6 +1,5 @@
 package com.example.cchiv.jiggles.activities;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
@@ -75,23 +74,20 @@ public class AuthActivity extends AppCompatActivity {
         }
 
         if(email != null && password != null) {
-            NetworkUtilities networkUtilities = new NetworkUtilities();
-            networkUtilities.authLogging(this, email, password, new NetworkUtilities.AuthLogging.OnPostNetworkCallback() {
-                @Override
-                public void onPostNetworkCallback(Context context, String token) {
-                    if(token != null && !token.isEmpty()) {
-                        SharedPreferences sharedPreferences = getSharedPreferences(Constants.AUTH_TOKEN, MODE_PRIVATE);
-                        sharedPreferences.edit()
-                                .putString(Constants.TOKEN, token)
-                                .apply();
+            NetworkUtilities.ResolveAuthLogging resolveAuthLogging = new NetworkUtilities
+                    .ResolveAuthLogging(token -> {
+                        if(token != null && !token.isEmpty()) {
+                            SharedPreferences sharedPreferences = getSharedPreferences(Constants.AUTH_TOKEN, MODE_PRIVATE);
+                            sharedPreferences.edit()
+                                    .putString(Constants.TOKEN, token)
+                                    .apply();
 
-                        Intent intent = new Intent(context, HomeActivity.class);
-                        startActivity(intent);
-                    } else {
-                        // Error message to show
-                    }
-                }
-            });
+                            Intent intent = new Intent(this, HomeActivity.class);
+                            startActivity(intent);
+                        } else {
+                            // Error message to show
+                        }
+                    }, email, password);
         } else {
             // Error message to show
         }

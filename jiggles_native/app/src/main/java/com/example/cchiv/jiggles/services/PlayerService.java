@@ -51,31 +51,33 @@ public class PlayerService extends Service implements MediaPlayer.OnTrackStateCh
     public int onStartCommand(Intent intent, int flags, int startId) {
         Toast.makeText(this, "Service starting", Toast.LENGTH_SHORT).show();
 
-        Bundle bundle = intent.getExtras();
-        if(bundle != null) {
-            String resourceId = bundle.getString(RESOURCE_IDENTIFIER, null);
-            String resourceType = bundle.getString(RESOURCE_TYPE, TrackEntry._ID);
+        if(intent != null) {
+            Bundle bundle = intent.getExtras();
+            if(bundle != null) {
+                String resourceId = bundle.getString(RESOURCE_IDENTIFIER, null);
+                String resourceType = bundle.getString(RESOURCE_TYPE, TrackEntry._ID);
 
-            if(resourceId != null && resourceType != null) {
-                Bundle loaderBundle = new Bundle();
-                loaderBundle.putString(JigglesLoader.BUNDLE_URI_KEY, ContentContract.CONTENT_COLLECTION_URI.toString());
-                loaderBundle.putString(JigglesLoader.BUNDLE_SELECTION_KEY, resourceType + "=?");
-                loaderBundle.putStringArray(JigglesLoader.BUNDLE_SELECTION_ARGS_KEY, new String[] { resourceId });
+                if(resourceId != null && resourceType != null) {
+                    Bundle loaderBundle = new Bundle();
+                    loaderBundle.putString(JigglesLoader.BUNDLE_URI_KEY, ContentContract.CONTENT_COLLECTION_URI.toString());
+                    loaderBundle.putString(JigglesLoader.BUNDLE_SELECTION_KEY, resourceType + "=?");
+                    loaderBundle.putStringArray(JigglesLoader.BUNDLE_SELECTION_ARGS_KEY, new String[] { resourceId });
 
-                JigglesLoader.AsyncTaskContentLoader<Collection> asyncTaskContentLoader =
-                        new JigglesLoader.AsyncTaskContentLoader<>(this, loaderBundle, Collection::parseCursor);
+                    JigglesLoader.AsyncTaskContentLoader<Collection> asyncTaskContentLoader =
+                            new JigglesLoader.AsyncTaskContentLoader<>(this, loaderBundle, Collection::parseCursor);
 
-                asyncTaskContentLoader.registerListener(LOADER_SERVICE_COLLECTION_ID, (loader, collection) -> {
-                    playerMediaSession.createMediaSession();
+                    asyncTaskContentLoader.registerListener(LOADER_SERVICE_COLLECTION_ID, (loader, collection) -> {
+                        playerMediaSession.createMediaSession();
 
-                    mediaPlayer.setPlayer(playerMediaSession);
-                    mediaPlayer.setSource(collection);
+                        mediaPlayer.setPlayer(playerMediaSession);
+                        mediaPlayer.setSource(collection);
 
-                    Track track = getCurrentTrack();
-                    setForegroundService(track);
-                });
+                        Track track = getCurrentTrack();
+                        setForegroundService(track);
+                    });
 
-                asyncTaskContentLoader.forceLoad();
+                    asyncTaskContentLoader.forceLoad();
+                }
             }
         }
 

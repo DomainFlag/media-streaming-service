@@ -4,15 +4,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/iconsTextColor"
-    android:layout_margin="@dimen/activity_margin_section"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:elevation="4dp"
     app:elevation="4dp">
 
     <ImageView
         android:id="@+id/news_caption"
-        android:layout_width="320dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
         android:scaleType="centerCrop"
@@ -34,15 +32,16 @@
         android:textSize="@dimen/activity_text_paragraph"
         android:textStyle="bold"
         android:layout_alignBottom="@id/news_caption"
+        android:layout_centerHorizontal="true"
         tools:text="@string/app_tools_placeholder"/>
 
     <TextView
         android:id="@+id/news_header"
-        android:layout_width="320dp"
-        android:layout_height="100dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:textSize="@dimen/activity_text_paragraph"
         android:textColor="@color/primaryTextColor"
-        android:padding="@dimen/activity_margin_component"
+        android:padding="@dimen/activity_margin_section"
         android:layout_below="@id/news_caption"
         tools:text="@string/app_tools_placeholder"/>
 

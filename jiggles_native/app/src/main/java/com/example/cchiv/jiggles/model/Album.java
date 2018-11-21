@@ -3,7 +3,6 @@ package com.example.cchiv.jiggles.model;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.net.Uri;
 
 import com.example.cchiv.jiggles.data.ContentContract.AlbumEntry;
 import com.example.cchiv.jiggles.utilities.Tools;
@@ -82,8 +81,8 @@ public class Album {
         this.images.add(image);
     }
 
-    public void setArt(Uri uriArt) {
-        this.images.add(new Image(uriArt));
+    public void setArt(String url) {
+        this.images.add(new Image(url));
     }
 
     public void setArt(List<Image> images) {

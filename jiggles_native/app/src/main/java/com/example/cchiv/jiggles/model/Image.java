@@ -15,27 +15,26 @@ public class Image {
     public int height;
     public int width;
     public int color;
-    private Uri uri = null;
+    private String url = null;
     private Bitmap bitmap = null;
 
-    public Image(String uri, int color, int height, int width) {
+    public Image(String url, int color, int height, int width) {
         this.color = color;
         this.height = height;
         this.width = width;
-        this.uri = Uri.parse(uri);
+        this.url = url;
     }
 
-    public Image(String id, int color, int height, int width, String uri) {
+    public Image(String id, int color, int height, int width, String url) {
         this.id = id;
         this.color = color;
         this.height = height;
         this.width = width;
-        if(uri != null)
-            this.uri = Uri.parse(uri);
+        this.url = url;
     }
 
-    public Image(Uri uri) {
-        this.uri = uri;
+    public Image(String url) {
+        this.url = url;
     }
 
     public Image(Bitmap bitmap) {
@@ -58,8 +57,10 @@ public class Image {
         return bitmap;
     }
 
-    public Uri getUri() {
-        return uri;
+    public Uri getUrl() {
+        if(url != null)
+            return Uri.parse(url);
+        else return null;
     }
 
     public String getId() {
@@ -102,7 +103,7 @@ public class Image {
         contentValues.put(ImageEntry.COL_IMAGE_COLOR, image.getColor());
         contentValues.put(ImageEntry.COL_IMAGE_HEIGHT, image.getWidth());
         contentValues.put(ImageEntry.COL_IMAGE_WIDTH, image.getWidth());
-        contentValues.put(ImageEntry.COL_IMAGE_URI, image.getUri().toString());
+        contentValues.put(ImageEntry.COL_IMAGE_URI, image.getUrl().toString());
 
         return contentValues;
     }

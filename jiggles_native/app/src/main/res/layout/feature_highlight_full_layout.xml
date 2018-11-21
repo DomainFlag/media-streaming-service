@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/release_caption"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:scaleType="centerCrop"
+        android:maxHeight="200dp"
+        android:contentDescription="@string/home_release_caption"
+        tools:src="@drawable/thumbnail"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:background="@drawable/background_transparent_gradient"/>
+
+    <TextView
+        android:id="@+id/release_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxWidth="220dp"
+        android:textAlignment="center"
+        android:layout_marginBottom="@dimen/activity_margin_sibling"
+        android:layout_above="@id/release_artist"
+        android:layout_centerHorizontal="true"
+        android:textColor="@color/iconsTextColor"
+        android:textSize="@dimen/activity_text_subparagraph"
+        android:textStyle="bold"
+        tools:text="@string/app_tools_placeholder"/>
+
+    <TextView
+        android:id="@+id/release_artist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@id/release_divider"
+        android:layout_marginBottom="@dimen/activity_margin_sibling"
+        android:textSize="@dimen/activity_text_span"
+        android:textColor="@color/iconsTextColor"
+        tools:text="@string/app_tools_placeholder"/>
+
+    <View
+        android:id="@+id/release_divider"
+        android:layout_width="60dp"
+        android:layout_height="2dp"
+        android:layout_marginBottom="@dimen/activity_margin_component"
+        android:background="@drawable/border_round"
+        android:layout_centerHorizontal="true"
+        android:layout_alignBottom="@id/release_caption"/>
+
+</RelativeLayout>

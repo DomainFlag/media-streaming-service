@@ -89,7 +89,7 @@ public class AlbumActivity extends PlayerAppCompatActivity {
         Image image = album.getArt();
         Picasso
                 .get()
-                .load(image.getUri())
+                .load(image.getUrl())
                 .placeholder(R.drawable.ic_artwork_placeholder)
                 .error(R.drawable.ic_artwork_placeholder)
                 .into(thumbnail);
@@ -97,7 +97,7 @@ public class AlbumActivity extends PlayerAppCompatActivity {
 
         LinearLayout linearLayout = findViewById(R.id.album_background);
 
-        Tools.setGradientBackground(this, linearLayout, image.getColor());
+        Tools.setGradientBackground(this, linearLayout, image.getColor(), 255);
         Tools.setStatusBarColor(this, image.getColor());
 
         Artist artist = album.getArtist();

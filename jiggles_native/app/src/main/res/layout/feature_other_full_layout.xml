@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/release_caption"
+        android:layout_width="225dp"
+        android:layout_height="175dp"
+        android:adjustViewBounds="true"
+        android:scaleType="centerCrop"
+        android:contentDescription="@string/home_release_caption"
+        tools:src="@drawable/thumbnail"/>
+
+    <TextView
+        android:id="@+id/release_artist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/activity_margin_component"
+        android:layout_alignBottom="@id/release_caption"
+        android:layout_marginTop="@dimen/activity_margin_sibling"
+        android:textSize="@dimen/activity_text_span"
+        android:textColor="@color/iconsTextColor"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:maxWidth="100dp"
+        tools:text="@string/app_tools_placeholder"/>
+
+    <View
+        android:id="@+id/release_divider"
+        android:layout_width="60dp"
+        android:layout_height="1dp"
+        android:layout_marginTop="@dimen/activity_margin_component"
+        android:layout_below="@id/release_caption"
+        android:background="@drawable/border_round"
+        android:layout_centerHorizontal="true"/>
+
+    <TextView
+        android:id="@+id/release_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/activity_margin_closer"
+        android:layout_below="@id/release_divider"
+        android:layout_centerHorizontal="true"
+        android:textAlignment="center"
+        android:textColor="@color/primaryTextColor"
+        android:textSize="@dimen/activity_text_subspan"
+        android:maxWidth="200dp"
+        tools:text="@string/app_tools_placeholder"/>
+
+</RelativeLayout>

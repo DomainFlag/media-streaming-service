@@ -12,10 +12,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +19,8 @@ import android.widget.Toast;
 
 import com.example.cchiv.jiggles.R;
 import com.example.cchiv.jiggles.adapters.FeatureAdapter;
-import com.example.cchiv.jiggles.adapters.HighlightAdapter;
+import com.example.cchiv.jiggles.adapters.FeatureAlbumAdapter;
+import com.example.cchiv.jiggles.adapters.FeatureLatestAdapter;
 import com.example.cchiv.jiggles.data.ContentContract;
 import com.example.cchiv.jiggles.data.ContentContract.NewsEntry;
 import com.example.cchiv.jiggles.model.News;
@@ -32,7 +29,6 @@ import com.example.cchiv.jiggles.utilities.JigglesLoader;
 import com.example.cchiv.jiggles.utilities.NetworkUtilities;
 import com.example.cchiv.jiggles.utilities.Tools;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class LatestFragment extends Fragment {
@@ -42,13 +38,10 @@ public class LatestFragment extends Fragment {
     private static final int HOME_NEWS_LOADER_ID = 21;
     private static final int HOME_RELEASES_LOADER_ID = 22;
 
-    private NetworkUtilities networkUtilities = new NetworkUtilities();
-
     private SwipeRefreshLayout swipeRefreshLayout;
 
-    private HighlightAdapter highlightAdapter;
-
-    private FeatureAdapter featureAdapter;
+    private FeatureLatestAdapter featureLatestAdapter;
+    private FeatureAlbumAdapter featureAlbumAdapter;
 
     private Context context;
 
@@ -68,19 +61,12 @@ public class LatestFragment extends Fragment {
             }
         });
 
-        highlightAdapter = new HighlightAdapter(context, new ArrayList<>());
-        createListView(rootView, R.id.home_news_list, highlightAdapter);
-
-        featureAdapter = new FeatureAdapter(context, new FeatureAdapter.Feature("New"), rootView);
+        featureLatestAdapter = new FeatureLatestAdapter(context, null, "Latest", rootView.findViewById(R.id.feature_latest));
+        featureAlbumAdapter = new FeatureAlbumAdapter(context, null, "New", rootView.findViewById(R.id.feature_highlights));
 
         fetchCachedContent();
 
         return rootView;
-    }
-
-    public void createListView(View rootView, int resource, RecyclerView.Adapter adapter) {
-        RecyclerView recyclerView = rootView.findViewById(resource);
-        setRecyclerView(recyclerView, adapter);
     }
 
     public void fetchCachedContent() {
@@ -101,22 +87,8 @@ public class LatestFragment extends Fragment {
         loaderManager.initLoader(HOME_RELEASES_LOADER_ID, Release.bundleValues(), jigglesReleasesLoader).forceLoad();
     }
 
-    public void setRecyclerView(RecyclerView recyclerView, RecyclerView.Adapter adapter) {
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setNestedScrollingEnabled(false);
-
-        RecyclerView.LayoutManager layoutManager =
-                new GridLayoutManager(context,
-                        getResources().getInteger(R.integer.layout_grid_columns_count),
-                        LinearLayoutManager.VERTICAL,
-                        false);
-        recyclerView.setLayoutManager(layoutManager);
-
-        recyclerView.setAdapter(adapter);
-    }
-
     public void fetchLiveContent() {
-        networkUtilities.fetchReleases(releases -> {
+        NetworkUtilities.FetchReleases fetchReleases = new NetworkUtilities.FetchReleases(releases -> {
             // Do something with releases
             if(releases != null) {
                 try {
@@ -136,7 +108,7 @@ public class LatestFragment extends Fragment {
             swipeRefreshLayout.setRefreshing(false);
         });
 
-        networkUtilities.fetchNews(news -> {
+        NetworkUtilities.FetchNews fetchNews = new NetworkUtilities.FetchNews(news -> {
             if(news != null) {
                 ContentValues[] contentValues = new ContentValues[news.size()];
                 for(int it = 0; it < news.size(); it++) {
@@ -161,12 +133,12 @@ public class LatestFragment extends Fragment {
     }
 
     public void updateLayoutNews(List<News> news) {
-        highlightAdapter.onSwapData(news);
-        highlightAdapter.notifyDataSetChanged();
+        FeatureAdapter.Feature feature = featureLatestAdapter.onCreateFeature("Latest", news);
+        featureLatestAdapter.onSwapData(feature);
     }
 
     public void updateLayoutReleases(List<Release> releases) {
-        FeatureAdapter.Feature feature = FeatureAdapter.Feature.parse("New", releases);
-        featureAdapter.onSwapData(feature);
+        FeatureAdapter.Feature feature = featureAlbumAdapter.onCreateFeature("New", releases);
+        featureAlbumAdapter.onSwapData(feature);
     }
 }

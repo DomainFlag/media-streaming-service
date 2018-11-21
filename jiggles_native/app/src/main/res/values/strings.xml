@@ -78,7 +78,7 @@
     <string name="forum_thread_comment_reply">Reply</string>
     <string name="forum_thread_reply_hint">Reply\.\.\.</string>
 
-    <string name="forum_thread_creator_content_hint">Content\.\.\.</string>
+    <string name="forum_thread_creator_content_hint">What do you think of\.\.\.</string>
     <string name="forum_thread_creator_create">Post</string>
 
     <string name="forum_menu">Thread More</string>
@@ -89,6 +89,26 @@
     <string name="thread_followers">844 followers</string>
 
     <string name="comment_caption">Author caption</string>
+
+    <!-- Thread Edit -->
+    <string name="thread_edit_account_description">Account</string>
+
+    <string name="thread_edit_music">Music</string>
+    <string name="thread_edit_music_description">Upload music</string>
+
+    <string name="thread_edit_media">Media</string>
+    <string name="thread_edit_media_description">Upload media</string>
+
+    <string name="thread_edit_empower">Empower</string>
+    <string name="thread_edit_empower_description">Empower</string>
+
+    <string name="thread_edit_emoji">Emoji</string>
+    <string name="thread_edit_emoji_description">Insert emoji</string>
+
+    <string name="thread_edit_preview">Preview</string>
+    <string name="thread_edit_preview_description">Preview Thread</string>
+
+    <string name="thread_edit_submit">Submit</string>
 
     <!-- Home Update -->
     <string name="forum_update_like">%1s recently liked it.</string>
@@ -132,8 +152,9 @@
 
     <string name="player_menu">Player Menu</string>
     <string name="player_thumbnail">Player Thumbnail</string>
-    <string name="player_lyrics">Player Lyrics</string>
-    <string name="player_share">Player Share</string>
+    <string name="player_media_lyrics">Media Sing Along</string>
+    <string name="player_media_identifier">Media Identifier</string>
+    <string name="player_media_share">Media Share</string>
 
     <string name="player_back">Player Back</string>
 

@@ -14,30 +14,10 @@
         android:layout_margin="@dimen/activity_margin_relative">
 
         <RelativeLayout
-            android:id="@+id/feature_highlight_gradient"
+            android:id="@+id/feature_highlight"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/background_transparent_gradient">
-
-            <LinearLayout
-                android:id="@+id/feature_highlight"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/activity_margin_component"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/activity_margin_relative"
-                    android:text="@string/feature_highlight"
-                    android:textColor="@color/iconsTextColor"
-                    android:textSize="@dimen/activity_text_subparagraph"
-                    android:textStyle="bold"/>
-
-            </LinearLayout>
-
-        </RelativeLayout>
+            android:background="@drawable/background_transparent_gradient"/>
 
     </android.support.v7.widget.CardView>
 
@@ -65,7 +45,7 @@
                 tools:text="@string/app_name"/>
 
             <LinearLayout
-                android:id="@+id/feature_fresh_container"
+                android:id="@+id/feature_fresh_layout"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:padding="@dimen/activity_margin_component"
@@ -90,6 +70,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/feature_other_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/activity_margin_component"
@@ -100,7 +81,7 @@
                 android:orientation="vertical"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/feature_fresh_container">
+                app:layout_constraintTop_toBottomOf="@+id/feature_fresh_layout">
 
                 <TextView
                     android:layout_width="wrap_content"

@@ -49,8 +49,7 @@ public class HomeFragment extends Fragment {
         ThreadAdapter threadAdapter = new ThreadAdapter(context, null);
         recyclerView.setAdapter(threadAdapter);
 
-        NetworkUtilities networkUtilities = new NetworkUtilities();
-        networkUtilities.fetchThreads((threads) -> {
+        NetworkUtilities.FetchThreads fetchThreads = new NetworkUtilities.FetchThreads(threads -> {
             threadAdapter.swapContent(threads);
             threadAdapter.notifyDataSetChanged();
         });

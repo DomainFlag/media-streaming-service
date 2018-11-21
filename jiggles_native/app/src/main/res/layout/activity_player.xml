@@ -1,145 +1,167 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    android:id="@+id/player_background"
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:background="@color/motionPrimaryDarkColor"
-    tools:context=".activities.PlayerActivity">
+    android:layout_height="match_parent">
 
-    <RelativeLayout
+    <ImageView
+        android:id="@+id/player_underlay"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/activity_margin_component"
-        android:layout_gravity="center">
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        tools:background="@drawable/thumbnail"/>
 
-        <ImageView
-            android:id="@+id/player_back"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:contentDescription="@string/player_back"
-            android:src="@drawable/ic_back"/>
-
-        <TextView
-            android:id="@+id/player_track"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/iconsTextColor"
-            android:textStyle="bold"
-            android:textSize="@dimen/activity_text_subheader"
-            android:layout_centerHorizontal="true"
-            tools:text="@string/app_tools_placeholder"/>
-
-        <TextView
-            android:id="@+id/player_artist"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/secondaryColor"
-            android:textStyle="bold"
-            android:textSize="@dimen/activity_text_paragraph"
-            android:layout_centerHorizontal="true"
-            android:layout_below="@id/player_track"
-            tools:text="@string/app_tools_placeholder"/>
-
-    </RelativeLayout>
-
-    <RelativeLayout
+    <LinearLayout
+        android:id="@+id/player_background"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="4"
-        android:gravity="center"
-        android:layout_margin="@dimen/activity_margin_section">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:background="@color/backgroundVibrantColor"
+        tools:context=".activities.PlayerActivity">
 
-        <ImageView
-            android:id="@+id/player_thumbnail"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:adjustViewBounds="true"
-            android:scaleType="fitXY"
-            android:contentDescription="@string/player_thumbnail"
-            tools:src="@drawable/thumbnail"/>
-
-        <ImageView
-            android:id="@+id/player_menu"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_menu_simple_white"
-            android:contentDescription="@string/player_menu"
-            android:padding="@dimen/activity_margin_component"
-            android:layout_alignTop="@id/player_thumbnail"
-            android:layout_alignRight="@id/player_thumbnail"
-            android:layout_alignEnd="@id/player_thumbnail"/>
-
-        <LinearLayout
-            android:id="@+id/player_utilities"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:orientation="vertical"
-            android:layout_below="@id/player_menu"
-            android:layout_alignRight="@id/player_thumbnail"
-            android:layout_alignEnd="@id/player_thumbnail">
-
-            <ImageView
-                android:id="@+id/player_lyrics"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="@dimen/activity_margin_component"
-                android:contentDescription="@string/player_lyrics"
-                android:src="@drawable/ic_microphone"/>
-
-            <ImageView
-                android:id="@+id/player_share"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="@dimen/activity_margin_component"
-                android:contentDescription="@string/player_lyrics"
-                android:src="@drawable/ic_share"/>
-
-        </LinearLayout>
-
-        <com.example.cchiv.jiggles.utilities.VisualizerView
-            android:id="@+id/player_visualizer"
-            android:layout_width="200dp"
-            android:layout_height="20dp"
-            android:layout_centerInParent="true"
             android:layout_margin="@dimen/activity_margin_component"
-            android:layout_alignBottom="@id/player_thumbnail"/>
+            android:layout_gravity="center">
 
-    </RelativeLayout>
+            <ImageView
+                android:id="@+id/player_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:contentDescription="@string/player_back"
+                android:src="@drawable/ic_back"/>
 
-    <TextView
-        android:id="@+id/player_devices"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:alpha="0.6"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:drawableLeft="@drawable/ic_wireless"
-        android:drawableTint="@color/iconsTextColor"
-        android:drawablePadding="@dimen/activity_margin_relative"
-        android:textSize="@dimen/activity_text_span"
-        android:textStyle="bold"
-        android:textColor="@color/iconsTextColor"
-        tools:text="@string/player_share_message"/>
+            <TextView
+                android:id="@+id/player_track"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/iconsTextColor"
+                android:textStyle="bold"
+                android:textSize="@dimen/activity_text_subheader"
+                android:layout_centerHorizontal="true"
+                tools:text="@string/app_tools_placeholder"/>
 
-    <com.google.android.exoplayer2.ui.PlayerView
-        android:id="@+id/player"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_margin="@dimen/activity_margin_component"
-        app:shutter_background_color="@android:color/transparent"
-        app:show_timeout="0"
-        app:surface_type="none"
-        app:use_artwork="false"
-        app:hide_on_touch="false"
-        app:hide_during_ads="false"
-        app:show_shuffle_button="true"
-        app:repeat_toggle_modes="none|all|one"/>
+            <TextView
+                android:id="@+id/player_artist"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/secondaryColor"
+                android:textStyle="bold"
+                android:textSize="@dimen/activity_text_paragraph"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/player_track"
+                tools:text="@string/app_tools_placeholder"/>
 
-</LinearLayout>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="4"
+            android:gravity="center"
+            android:layout_margin="@dimen/activity_margin_section">
+
+            <ImageView
+                android:id="@+id/player_thumbnail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:scaleType="fitXY"
+                android:contentDescription="@string/player_thumbnail"
+                tools:src="@drawable/thumbnail"/>
+
+            <ImageView
+                android:id="@+id/player_menu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_menu_simple_white"
+                android:contentDescription="@string/player_menu"
+                android:padding="@dimen/activity_margin_component"
+                android:layout_alignTop="@id/player_thumbnail"
+                android:layout_alignRight="@id/player_thumbnail"
+                android:layout_alignEnd="@id/player_thumbnail"/>
+
+            <LinearLayout
+                android:id="@+id/player_utilities"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone"
+                android:layout_below="@id/player_menu"
+                android:layout_alignRight="@id/player_thumbnail"
+                android:layout_alignEnd="@id/player_thumbnail"
+                tools:visibility="visible">
+
+                <ImageView
+                    android:id="@+id/player_media_lyrics"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/activity_margin_component"
+                    android:contentDescription="@string/player_media_lyrics"
+                    android:src="@drawable/ic_microphone"/>
+
+                <ImageView
+                    android:id="@+id/player_media_identifier"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/activity_margin_component"
+                    android:contentDescription="@string/player_media_identifier"
+                    android:src="@drawable/ic_identify_song"/>
+
+                <ImageView
+                    android:id="@+id/player_media_share"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/activity_margin_component"
+                    android:contentDescription="@string/player_media_share"
+                    android:src="@drawable/ic_share"/>
+
+            </LinearLayout>
+
+            <com.example.cchiv.jiggles.utilities.VisualizerView
+                android:id="@+id/player_visualizer"
+                android:layout_width="200dp"
+                android:layout_height="20dp"
+                android:layout_centerInParent="true"
+                android:layout_margin="@dimen/activity_margin_component"
+                android:layout_alignBottom="@id/player_thumbnail"/>
+
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/player_devices"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha="0.4"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:drawableLeft="@drawable/ic_wireless"
+            android:drawableTint="@color/iconsTextColor"
+            android:drawablePadding="@dimen/activity_margin_relative"
+            android:textSize="@dimen/activity_text_span"
+            android:textStyle="bold"
+            android:textColor="@color/iconsTextColor"
+            tools:text="@string/player_share_message"/>
+
+        <com.google.android.exoplayer2.ui.PlayerView
+            android:id="@+id/player"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_margin="@dimen/activity_margin_component"
+            app:shutter_background_color="@android:color/transparent"
+            app:show_timeout="0"
+            app:surface_type="none"
+            app:use_artwork="false"
+            app:hide_on_touch="false"
+            app:hide_during_ads="false"
+            app:show_shuffle_button="true"
+            app:repeat_toggle_modes="none|all|one"/>
+
+    </LinearLayout>
+
+</RelativeLayout>

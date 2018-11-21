@@ -14,12 +14,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.cchiv.jiggles.R;
-import com.example.cchiv.jiggles.model.Release;
-import com.example.cchiv.jiggles.model.Review;
 import com.example.cchiv.jiggles.utilities.Tools;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
@@ -27,22 +24,23 @@ import com.squareup.picasso.Target;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FeatureAdapter {
+public abstract class FeatureAdapter<T> extends ModelAdapter<FeatureAdapter.FeatureViewHolder, T> {
 
     private static final String TAG = "FeatureAdapter";
 
     private Context context;
 
     private View rootView;
+    private int resource;
 
-    private OtherAdapter otherAdapter;
-
-    public FeatureAdapter(Context context, Feature feature, View view) {
+    public FeatureAdapter(Context context, View view, int resource) {
         this.context = context;
         this.rootView = view;
-        this.otherAdapter = new OtherAdapter(context, feature.others);
+        this.resource = resource;
+    }
 
-        RecyclerView recyclerView = view.findViewById(R.id.feature_other);
+    public void onAttachFeature(Feature feature) {
+        RecyclerView recyclerView = rootView.findViewById(R.id.feature_other);
         recyclerView.setHasFixedSize(true);
         recyclerView.setNestedScrollingEnabled(false);
 
@@ -55,18 +53,34 @@ public class FeatureAdapter {
                         false);
 
         recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(otherAdapter);
+        recyclerView.setAdapter(this);
 
-        ((TextView) view.findViewById(R.id.feature_title)).setText(feature.title);
+        ((TextView) rootView.findViewById(R.id.feature_title)).setText(feature.title);
 
-        inflateHighlightView(view, feature.highlight);
-        inflateFreshView(view, feature.notable);
+        inflateHighlightView(rootView, feature.getHighlight());
+        inflateFreshView(rootView, feature.getFresh());
     }
 
-    private void fillCaptionView(View rootView, View parent, Release release, int width, int height) {
+    public void disableHighlightFeature() {
+        rootView.findViewById(R.id.feature_highlight_layout).setVisibility(View.GONE);
+    }
+
+    public void disableFreshFeature() {
+        rootView.findViewById(R.id.feature_fresh_layout).setVisibility(View.GONE);
+    }
+
+    public void disableOtherFeature() {
+        rootView.findViewById(R.id.feature_other_layout).setVisibility(View.GONE);
+    }
+
+    public Context getContext() {
+        return context;
+    }
+
+    public void fillCaptionView(View rootView, View parent, String url, int width, int height) {
         ImageView caption = rootView.findViewById(R.id.release_caption);
         Picasso.get()
-                .load(release.getUrl())
+                .load(url)
                 .resize(width, height)
                 .placeholder(R.drawable.ic_artwork_placeholder)
                 .into(new Target() {
@@ -85,8 +99,17 @@ public class FeatureAdapter {
                                     }
                             );
 
-                            View view = parent.findViewById(R.id.feature_highlight_gradient);
+                            View view = parent.findViewById(R.id.feature_highlight);
                             ViewCompat.setBackground(view, gradientDrawable);
+                        } else {
+                            View view = rootView.findViewById(R.id.release_divider);
+
+                            if(view != null) {
+                                int color = Tools.getPaletteColor(context, bitmap);
+
+                                GradientDrawable drawable = (GradientDrawable) view.getBackground();
+                                drawable.setColor(color);
+                            }
                         }
                     }
 
@@ -96,55 +119,18 @@ public class FeatureAdapter {
                     @Override
                     public void onPrepareLoad(Drawable placeHolderDrawable) {}
                 });
-
-        ((TextView) rootView.findViewById(R.id.release_artist)).setText(release.getArtist());
-        ((TextView) rootView.findViewById(R.id.release_title)).setText(release.getTitle());
     }
 
-    private void inflateHighlightView(View rootView, Release release) {
-        if(release != null) {
-            LinearLayout linearLayout = rootView.findViewById(R.id.feature_highlight);
+    public abstract void inflateHighlightView(View rootView, T highlight);
 
-            View view = LayoutInflater.from(context)
-                    .inflate(R.layout.feature_highlight_layout, null, false);
-
-            fillCaptionView(view, rootView, release, 325, 325);
-
-            Tools.ScoreView scoreView = new Tools.ScoreView(
-                    view.findViewById(R.id.release_score),
-                    view.findViewById(R.id.release_impact)
-            );
-            Tools.onComputeScore(context, release.getReviews(), scoreView, false);
-
-            linearLayout.addView(view);
-        }
-    }
-
-    private void inflateFreshView(View rootView, List<Release> releases) {
-        LinearLayout linearLayout = rootView.findViewById(R.id.feature_fresh);
-
-        for(Release release : releases) {
-            View view = LayoutInflater.from(context)
-                    .inflate(R.layout.feature_fresh_layout, linearLayout, false);
-
-            fillCaptionView(view, null, release, 250, 250);
-
-            Tools.ScoreView scoreView = new Tools.ScoreView(
-                    view.findViewById(R.id.release_score),
-                    view.findViewById(R.id.release_impact)
-            );
-            Tools.onComputeScore(context, release.getReviews(), scoreView, false);
-
-            linearLayout.addView(view);
-        }
-    }
+    public abstract void inflateFreshView(View rootView, List<T> content);
 
     public void onSwapData(Feature feature) {
         inflateHighlightView(rootView, feature.highlight);
-        inflateFreshView(rootView, feature.notable);
+        inflateFreshView(rootView, feature.fresh);
 
-        otherAdapter.onSwapData(feature.others);
-        otherAdapter.notifyDataSetChanged();
+        onSwapData(feature.others);
+        notifyDataSetChanged();
     }
 
     public class FeatureItemDecoration extends RecyclerView.ItemDecoration {
@@ -171,93 +157,90 @@ public class FeatureAdapter {
         }
     }
 
-    public static class Feature {
-        private String title = null;
-        private Release highlight = null;
-        private List<Release> notable = new ArrayList<>();
-        private List<Release> others = new ArrayList<>();
+    public class Feature {
 
-        public Feature(String title) {
+        private String title = null;
+
+        private T highlight = null;
+        private List<T> fresh = new ArrayList<>();
+        private List<T> others = new ArrayList<>();
+
+        private boolean complete;
+
+        public Feature(String title, boolean complete) {
             this.title = title;
+            this.complete = complete;
         }
 
-        public Feature(String title, Release highlight, List<Release> notable, List<Release> others) {
-            this.title = title;
+        public Feature(String title, List<T> content, boolean complete) {
+            this(title, complete);
+
+            if(content == null)
+                return;
+
+            if(content.size() > 0) {
+                highlight = content.get(0);
+
+                if(content.size() > 2) {
+                    if(complete) {
+                        fresh = content.subList(1, 3);
+
+                        if(content.size() > 3)
+                            others = content.subList(3, content.size());
+                    } else {
+                        others = content.subList(1, content.size());
+                    }
+                }
+            }
+        }
+
+        public Feature(String title, T highlight, List<T> fresh, List<T> others, boolean complete) {
+            this(title, complete);
+
             this.highlight = highlight;
-            this.notable = notable;
+            this.fresh = fresh;
             this.others = others;
         }
 
-        public static Feature parse(String title, List<Release> releases) {
-            Feature feature = new Feature(title);
-            feature.title = title;
+        public String getTitle() {
+            return title;
+        }
 
-            if(releases.size() > 0) {
-                feature.highlight = releases.get(0);
+        public T getHighlight() {
+            return highlight;
+        }
 
-                if(releases.size() > 1) {
-                    feature.notable = releases.subList(1, 3);
+        public List<T> getFresh() {
+            return fresh;
+        }
 
-                    if(releases.size() > 2)
-                        feature.others = releases.subList(3, releases.size());
-                }
-            }
-
-            return feature;
+        public List<T> getOthers() {
+            return others;
         }
     }
 
-    public class OtherAdapter extends ModelAdapter<OtherAdapter.ReleaseViewHolder, Release> {
+    @NonNull
+    @Override
+    public FeatureViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        return new FeatureViewHolder(
+                LayoutInflater.from(parent.getContext())
+                        .inflate(resource, parent, false)) {
+        };
+    }
 
-        private static final String TAG = "OtherAdapter";
+    public class FeatureViewHolder extends RecyclerView.ViewHolder {
+        public ImageView caption;
+        public TextView artist;
+        public TextView title;
+        public TextView score;
 
-        private Context context;
+        public FeatureViewHolder(View itemView) {
+            super(itemView);
 
-        private OtherAdapter(Context context, List<Release> releases) {
-            this.context = context;
-            this.data = releases;
-        }
-
-        @NonNull
-        @Override
-        public OtherAdapter.ReleaseViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            return new OtherAdapter.ReleaseViewHolder(
-                    LayoutInflater.from(parent.getContext())
-                            .inflate(R.layout.feature_other_layout, parent, false));
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull OtherAdapter.ReleaseViewHolder holder, int position) {
-            Release release = data.get(position);
-
-            Picasso.get()
-                    .load(release.getUrl())
-                    .resize(200, 200)
-                    .into(holder.caption);
-
-            holder.title.setText(release.getTitle());
-            holder.artist.setText(context.getString(R.string.app_component_author, release.getArtist()));
-
-            List<Review> reviews = release.getReviews();
-            String score = Tools.onComputeScore(context, reviews, null, false);
-            holder.score.setText(score);
-        }
-
-        public class ReleaseViewHolder extends RecyclerView.ViewHolder {
-
-            private ImageView caption;
-            private TextView artist;
-            private TextView title;
-            private TextView score;
-
-            private ReleaseViewHolder(View itemView) {
-                super(itemView);
-
-                caption = itemView.findViewById(R.id.release_caption);
-                artist = itemView.findViewById(R.id.release_artist);
-                title = itemView.findViewById(R.id.release_title);
-                score = itemView.findViewById(R.id.release_score);
-            }
+            caption = itemView.findViewById(R.id.release_caption);
+            artist = itemView.findViewById(R.id.release_artist);
+            title = itemView.findViewById(R.id.release_title);
+            score = itemView.findViewById(R.id.release_score);
         }
     }
 }

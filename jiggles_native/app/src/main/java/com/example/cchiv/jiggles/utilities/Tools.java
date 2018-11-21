@@ -113,7 +113,7 @@ public class Tools {
         return networkInfo != null && networkInfo.isConnected();
     }
 
-    public static void setGradientBackground(Context context, View view, int color, int defaultColor) {
+    public static void setGradientBackground(Context context, View view, int color, int defaultColor, int alpha) {
         int darkMutedColor = ContextCompat.getColor(context, defaultColor);
 
         GradientDrawable gradientDrawable = new GradientDrawable(
@@ -124,11 +124,13 @@ public class Tools {
                 }
         );
 
+        gradientDrawable.setAlpha(alpha);
+
         ViewCompat.setBackground(view, gradientDrawable);
     }
 
-    public static void setGradientBackground(Context context, View view, int color) {
-        setGradientBackground(context, view, color, R.color.primaryTextColor);
+    public static void setGradientBackground(Context context, View view, int color, int alpha) {
+        setGradientBackground(context, view, color, R.color.primaryTextColor, alpha);
     }
 
     public static String getToken(Context context) {

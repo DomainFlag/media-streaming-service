@@ -14,13 +14,15 @@
     <color name="pleasureColor">#148491</color>
     <color name="dividerColor">#D4E4EF</color>
     <color name="primaryTextColor">#15101C</color>
-    <color name="secondaryColor">#CACCC9</color>
+    <color name="secondaryColor">#BABCB9</color>
     <color name="iconsTextColor">#FFFFFF</color>
     <color name="tertiaryColor">#f9ef27</color>
 
+    <color name="searchDarkColor">#030101</color>
+    <color name="searchLightColor">#044F67</color>
     <color name="playedPlayerColor">#EEEEEE</color>
 
-    <color name="visualizerClearColor">#00000000</color>
+    <color name="backgroundVibrantColor">#55FFFFFF</color>
 
     <color name="colorScoreAcclaim">#29A369</color>
     <color name="colorScorePossitive">#F2E827</color>

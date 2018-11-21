@@ -2,6 +2,7 @@ package com.example.cchiv.jiggles.utilities;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -22,14 +23,10 @@ public class VisualizerView extends View {
     private int width, height;
     private Paint paint = new Paint();
 
-    private int clearColor;
-
     public VisualizerView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
 
         this.context = context;
-
-        clearColor = ContextCompat.getColor(context, R.color.visualizerClearColor);
 
         paint.setColor(ContextCompat.getColor(context, R.color.iconsTextColor));
         paint.setStrokeWidth(1.0f);
@@ -39,7 +36,7 @@ public class VisualizerView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        canvas.drawColor(clearColor);
+        canvas.drawColor(Color.TRANSPARENT);
 
         if(data != null) {
             float length = data.length / THRESHOLD;

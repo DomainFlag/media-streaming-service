@@ -36,7 +36,7 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ThreadView
 
     private static final String TAG = "ThreadAdapter";
 
-    private ArrayList<Thread> threads;
+    private List<Thread> threads;
     private Context context;
 
     private Typeface typeface;
@@ -156,7 +156,7 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ThreadView
         else return 0;
     }
 
-    public void swapContent(ArrayList<Thread> threads) {
+    public void swapContent(List<Thread> threads) {
         this.threads = threads;
     }
 

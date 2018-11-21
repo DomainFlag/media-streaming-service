@@ -21,6 +21,7 @@
         tools:src="@drawable/thumbnail"/>
 
     <View
+        android:id="@+id/release_gradient"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/background_transparent_gradient"/>
@@ -55,6 +56,7 @@
         tools:text="@string/app_tools_placeholder"/>
 
     <LinearLayout
+        android:id="@+id/release_rating"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="@dimen/activity_margin_relative"

@@ -33,9 +33,9 @@
             android:layout_weight="1"
             android:paddingHorizontal="@dimen/activity_margin_sibling"
             app:unplayed_color="@color/playedPlayerColor"
-            app:played_color="@color/colorAccent"
+            app:played_color="@color/colorPrimary"
             app:buffered_color="@color/secondaryColor"
-            app:scrubber_color="@color/colorAccent"/>
+            app:scrubber_color="@color/colorPrimary"/>
 
         <TextView
             android:id="@id/exo_duration"
@@ -61,36 +61,48 @@
 
         <ImageButton
             android:id="@id/exo_repeat_toggle"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:tint="@color/iconsTextColor"
             android:contentDescription="@string/player_shuffle"
             style="@style/ExoMediaButton"/>
 
         <ImageButton
             android:id="@id/exo_prev"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:tint="@color/iconsTextColor"
             android:contentDescription="@string/player_previous"
             style="@style/ExoMediaButton.Previous"/>
 
         <ImageButton
             android:id="@id/exo_play"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:tint="@color/iconsTextColor"
             android:contentDescription="@string/player_play"
             style="@style/ExoMediaButton.Play"/>
 
         <ImageButton
             android:id="@id/exo_pause"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:tint="@color/iconsTextColor"
             android:contentDescription="@string/player_pause"
             style="@style/ExoMediaButton.Pause"/>
 
         <ImageButton
             android:id="@id/exo_next"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:tint="@color/iconsTextColor"
             android:contentDescription="@string/player_next"
             style="@style/ExoMediaButton.Next"/>
 
         <ImageButton
             android:id="@id/exo_shuffle"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:tint="@color/iconsTextColor"
             android:contentDescription="@string/player_shuffle"
             style="@style/ExoMediaButton.Shuffle"/>

@@ -53,7 +53,7 @@ public class ThreadFragment extends Fragment {
                 try {
                     Bitmap bitmap = BitmapFactory.decodeStream(contentResolver.openInputStream(data.getData()));
 
-                    ImageView thumbnail = rootView.findViewById(R.id.thread_thumbnail);
+                    ImageView thumbnail = rootView.findViewById(R.id.thread_content);
                     thumbnail.setImageBitmap(bitmap);
                 } catch(FileNotFoundException e) {
                     Log.v(TAG, e.toString());
@@ -74,14 +74,14 @@ public class ThreadFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_thread_layout, container, false);
 
-        rootView.findViewById(R.id.thread_thumbnail).setOnClickListener((view) -> {
+        rootView.findViewById(R.id.thread_content).setOnClickListener((view) -> {
             Intent intent = new Intent(Intent.ACTION_PICK);
             intent.setType("image/*");
             startActivityForResult(Intent.createChooser(intent, "Select Thumbnail"), ACTION_PICK_CODE);
         });
 
-        rootView.findViewById(R.id.thread_submit).setOnClickListener((view) -> {
-            BitmapDrawable bitmapDrawable = (BitmapDrawable) ((ImageView) rootView.findViewById(R.id.thread_thumbnail)).getDrawable();
+        rootView.findViewById(R.id.thread_edit_submit).setOnClickListener((view) -> {
+            BitmapDrawable bitmapDrawable = (BitmapDrawable) ((ImageView) rootView.findViewById(R.id.thread_content)).getDrawable();
             Bitmap bitmap = bitmapDrawable.getBitmap();
 
             String content = ((TextView) rootView.findViewById(R.id.thread_content)).getEditableText().toString();
@@ -89,9 +89,7 @@ public class ThreadFragment extends Fragment {
             SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.AUTH_TOKEN, Context.MODE_PRIVATE);
             String token = sharedPreferences.getString(Constants.TOKEN, null);
 
-            AsyncTaskEncoder asyncTaskEncoder = new AsyncTaskEncoder((response) -> {
-                Log.v(TAG, String.valueOf(response.code()));
-            }, bitmap, content, token);
+            AsyncTaskEncoder asyncTaskEncoder = new AsyncTaskEncoder(bitmap, content, token);
             asyncTaskEncoder.execute();
         });
 
@@ -100,8 +98,6 @@ public class ThreadFragment extends Fragment {
 
     public static class AsyncTaskEncoder extends AsyncTask<Void, Void, Void> {
 
-        private NetworkUtilities.CreateThread.OnPostNetworkCallback onPostNetworkCallback;
-
         private static final String JSON_CAPTION_KEY = "caption";
         private static final String JSON_CONTENT_KEY = "content";
 
@@ -109,9 +105,7 @@ public class ThreadFragment extends Fragment {
         private Bitmap bitmap;
         private String content;
 
-        public AsyncTaskEncoder(NetworkUtilities.CreateThread.OnPostNetworkCallback onPostNetworkCallback, Bitmap bitmap, String content, String token) {
-            this.onPostNetworkCallback = onPostNetworkCallback;
-
+        public AsyncTaskEncoder(Bitmap bitmap, String content, String token) {
             this.bitmap = bitmap;
             this.content = content;
             this.token = token;
@@ -134,8 +128,10 @@ public class ThreadFragment extends Fragment {
                 jsonObject.put(JSON_CAPTION_KEY, thumbnail);
                 jsonObject.put(JSON_CONTENT_KEY, content);
 
-                NetworkUtilities networkUtilities = new NetworkUtilities();
-                networkUtilities.createThread(onPostNetworkCallback, jsonObject, token);
+                NetworkUtilities.ResolveCreateThread resolveCreateThread = new NetworkUtilities
+                        .ResolveCreateThread(thread -> {
+                            // Update the ui with the new thread
+                }, jsonObject, token);
             } catch(JSONException e) {
                 Log.v(TAG, e.toString());
             }

@@ -176,6 +176,8 @@ function returnQueryPromise(req, searchBy, searchType) {
                             item['favourite'] = true;
                     })
                 });
+
+                data[type] = data[type].items;
             });
 
             return data;

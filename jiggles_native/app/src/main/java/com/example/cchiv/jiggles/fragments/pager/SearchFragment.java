@@ -2,7 +2,6 @@ package com.example.cchiv.jiggles.fragments.pager;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -23,17 +22,16 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.example.cchiv.jiggles.Constants;
 import com.example.cchiv.jiggles.R;
 import com.example.cchiv.jiggles.adapters.ContentAdapter;
-import com.example.cchiv.jiggles.model.Collection;
 import com.example.cchiv.jiggles.utilities.NetworkUtilities;
+import com.example.cchiv.jiggles.utilities.Tools;
 
 public class SearchFragment extends Fragment implements TextView.OnEditorActionListener {
 
     private final static String TAG = "SearchFragment";
 
-    private static final int SPAN_COLS = 2;
+    private static final int SPAN_COLS = 1;
 
     private Context context;
 
@@ -53,7 +51,7 @@ public class SearchFragment extends Fragment implements TextView.OnEditorActionL
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        rootView = inflater.inflate(R.layout.activity_search, container, false);
+        rootView = inflater.inflate(R.layout.fragment_search, container, false);
 
         RecyclerView recyclerView = rootView.findViewById(R.id.search_result);
         recyclerView.setNestedScrollingEnabled(true);
@@ -106,14 +104,12 @@ public class SearchFragment extends Fragment implements TextView.OnEditorActionL
     }
 
     public void fetchQueryResults(String query) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.AUTH_TOKEN, Context.MODE_PRIVATE);
-        String token = sharedPreferences.getString(Constants.TOKEN, null);
+        String token = Tools.getToken(context);
 
         if(token != null) {
-            NetworkUtilities networkUtilities = new NetworkUtilities();
-            networkUtilities.fetchSearchResults((Collection collection) -> {
+            NetworkUtilities.FetchSearchResults fetchSearchResults = new NetworkUtilities
+                    .FetchSearchResults(collection -> {
                 // Do something with the collection
-
                 contentAdapter.swapCollection(collection);
                 contentAdapter.notifyDataSetChanged();
             }, query, token);
