@@ -95,36 +95,4 @@
 
     </LinearLayout>
 
-    <RelativeLayout
-        android:id="@+id/reply_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:padding="@dimen/activity_margin_relative">
-
-        <ImageView
-            android:id="@+id/reply_author"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_account"/>
-
-        <EditText
-            android:id="@+id/reply_value"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginRight="@dimen/activity_margin_component"
-            android:layout_marginEnd="@dimen/activity_margin_component"
-            android:padding="@dimen/activity_margin_relative"
-            android:gravity="top|start"
-            android:inputType="textMultiLine"
-            android:hint="@string/forum_thread_reply_hint"
-            android:layout_marginLeft="@dimen/activity_margin_relative"
-            android:layout_marginStart="@dimen/activity_margin_relative"
-            android:layout_toRightOf="@id/reply_author"
-            android:layout_toEndOf="@id/reply_author"
-            android:textSize="@dimen/activity_text_subparagraph"
-            android:background="@drawable/border_edit_text_normal"/>
-
-    </RelativeLayout>
-
 </LinearLayout>

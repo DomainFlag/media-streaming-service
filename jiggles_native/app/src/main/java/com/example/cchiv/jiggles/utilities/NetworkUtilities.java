@@ -5,10 +5,12 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.example.cchiv.jiggles.Constants;
-import com.example.cchiv.jiggles.model.Collection;
+import com.example.cchiv.jiggles.model.Store;
 import com.example.cchiv.jiggles.model.News;
 import com.example.cchiv.jiggles.model.Release;
+import com.example.cchiv.jiggles.model.Reply;
 import com.example.cchiv.jiggles.model.Thread;
+import com.example.cchiv.jiggles.model.User;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -17,7 +19,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.Headers;
@@ -36,7 +37,7 @@ public class NetworkUtilities {
             = MediaType.parse("application/json; charset=utf-8");
 
     /* Fetch News */
-    public static class FetchNews extends AsyncCustomNetworkTask<List<News>> {
+    public static class FetchNews extends AsyncNetworkTask<List<News>> {
 
         public FetchNews(NetworkCallbacks<List<News>> networkCallbacks) {
             super(networkCallbacks);
@@ -66,7 +67,7 @@ public class NetworkUtilities {
     }
 
     /* Fetch Fresh Release */
-    public static class FetchFreshRelease extends AsyncCustomNetworkTask<List<Release>> {
+    public static class FetchFreshRelease extends AsyncNetworkTask<List<Release>> {
 
         public FetchFreshRelease(NetworkCallbacks<List<Release>> networkCallbacks, String token) {
             super(networkCallbacks);
@@ -97,7 +98,7 @@ public class NetworkUtilities {
     }
 
     /* Fetch Releases */
-    public static class FetchReleases extends AsyncCustomNetworkTask<List<Release>> {
+    public static class FetchReleases extends AsyncNetworkTask<List<Release>> {
 
         public FetchReleases(NetworkCallbacks<List<Release>> networkCallbacks) {
             super(networkCallbacks);
@@ -127,7 +128,7 @@ public class NetworkUtilities {
     }
 
     /* Fetch Threads */
-    public static class FetchThreads extends AsyncCustomNetworkTask<List<Thread>> {
+    public static class FetchThreads extends AsyncNetworkTask<List<Thread>> {
 
         public FetchThreads(NetworkCallbacks<List<Thread>> networkCallbacks) {
             super(networkCallbacks);
@@ -136,7 +137,7 @@ public class NetworkUtilities {
                     .scheme(Constants.SCHEME)
                     .authority(Constants.AUTHORITY)
                     .appendPath(Constants.FORUM)
-                    .appendPath(Constants.THREADS)
+                    .appendPath(Constants.THREAD)
                     .build();
 
             Request request = new Request.Builder()
@@ -150,16 +151,85 @@ public class NetworkUtilities {
 
         @Override
         public List<Thread> onParseNetworkCallback(Gson gson, Headers headers, String body) {
-            Type type = new TypeToken<ArrayList<Thread>>() {}.getType();
+            Type type = new TypeToken<List<Thread>>() {}.getType();
+
+            return gson.fromJson(body, type);
+        }
+    }
+
+    /* Resolve Thread Like */
+    public static class ResolveThreadLike extends AsyncNetworkTask<Thread> {
+
+        public ResolveThreadLike(NetworkCallbacks<Thread> networkCallbacks, JSONObject body, String type, String token) {
+            super(networkCallbacks);
+
+            Uri uri = new Uri.Builder()
+                    .scheme(Constants.SCHEME)
+                    .authority(Constants.AUTHORITY)
+                    .appendPath(Constants.FORUM)
+                    .appendPath(Constants.THREAD)
+                    .appendPath(Constants.LIKE)
+                    .build();
+
+            RequestBody requestBody = RequestBody.create(JSON, body.toString());
+
+            Request request = new RequestAdaptBuilder()
+                    .setType(requestBody, type)
+                    .url(uri.toString())
+                    .addHeader("Content-Type", "application/json")
+                    .addHeader("X-Auth", token)
+                    .build();
+
+            execute(request);
+        }
+
+        @Override
+        public Thread onParseNetworkCallback(Gson gson, Headers headers, String body) {
+            Type type = new TypeToken<Thread>() {}.getType();
+
+            return gson.fromJson(body, type);
+        }
+    }
+
+    /* Resolve Reply Like */
+    public static class ResolveCommentLike extends AsyncNetworkTask<Reply> {
+
+        public ResolveCommentLike(NetworkCallbacks<Reply> networkCallbacks, JSONObject jsonObject, String type, String token) {
+            super(networkCallbacks);
+
+            Uri uri = new Uri.Builder()
+                    .scheme(Constants.SCHEME)
+                    .authority(Constants.AUTHORITY)
+                    .appendPath(Constants.FORUM)
+                    .appendPath(Constants.THREAD)
+                    .appendPath(Constants.REPLY)
+                    .appendPath(Constants.LIKE)
+                    .build();
+
+            RequestBody requestBody = RequestBody.create(JSON, jsonObject.toString());
+
+            Request request = new RequestAdaptBuilder()
+                    .setType(requestBody, type)
+                    .url(uri.toString())
+                    .addHeader("Content-Type", "application/json")
+                    .addHeader("X-Auth", token)
+                    .build();
+
+            execute(request);
+        }
+
+        @Override
+        public Reply onParseNetworkCallback(Gson gson, Headers headers, String body) {
+            Type type = new TypeToken<Reply>() {}.getType();
 
             return gson.fromJson(body, type);
         }
     }
 
     /* Fetch Search Results */
-    public static class FetchSearchResults extends AsyncCustomNetworkTask<Collection> {
+    public static class FetchSearchResults extends AsyncNetworkTask<Store> {
 
-        public FetchSearchResults(NetworkCallbacks<Collection> networkCallbacks, String query, String token) {
+        public FetchSearchResults(NetworkCallbacks<Store> networkCallbacks, String query, String token) {
             super(networkCallbacks);
 
             Uri uri = new Uri.Builder()
@@ -181,16 +251,15 @@ public class NetworkUtilities {
         }
 
         @Override
-        public Collection onParseNetworkCallback(Gson gson, Headers headers, String body) {
-            Log.v(TAG, body);
-            Type type = new TypeToken<Collection>() {}.getType();
+        public Store onParseNetworkCallback(Gson gson, Headers headers, String body) {
+            Type type = new TypeToken<Store>() {}.getType();
 
             return gson.fromJson(body, type);
         }
     }
 
     /* Resolve Thread Creation */
-    public static class ResolveCreateThread extends AsyncCustomNetworkTask<Thread> {
+    public static class ResolveCreateThread extends AsyncNetworkTask<Thread> {
 
         public ResolveCreateThread(NetworkCallbacks<Thread> networkCallbacks, JSONObject jsonObject, String token) {
             super(networkCallbacks);
@@ -222,8 +291,40 @@ public class NetworkUtilities {
         }
     }
 
+    /* Fetch User  */
+    public static class FetchUser extends AsyncNetworkTask<User> {
+
+        public FetchUser(NetworkCallbacks<User> networkCallbacks, String token) {
+            super(networkCallbacks);
+
+            Uri uri = new Uri.Builder()
+                    .scheme(Constants.SCHEME)
+                    .authority(Constants.AUTHORITY)
+                    .appendPath(Constants.USERS)
+                    .appendPath(Constants.ME)
+                    .build();
+
+            Request request = new Request.Builder()
+                    .url(uri.toString())
+                    .addHeader("Content-Type", "application/json")
+                    .addHeader("X-Auth", token)
+                    .get()
+                    .build();
+
+
+            execute(request);
+        }
+
+        @Override
+        public User onParseNetworkCallback(Gson gson, Headers headers, String body) {
+            Type type = new TypeToken<User>() {}.getType();
+
+            return gson.fromJson(body, type);
+        }
+    }
+
     /* Resolve Auth Credentials */
-    public static class ResolveAuthLogging extends AsyncCustomNetworkTask<String> {
+    public static class ResolveAuthLogging extends AsyncNetworkTask<String> {
 
         public ResolveAuthLogging(NetworkCallbacks<String> networkCallbacks, String email, String password) {
             super(networkCallbacks);
@@ -259,7 +360,24 @@ public class NetworkUtilities {
         }
     }
 
-    public abstract static class AsyncCustomNetworkTask<T> extends AsyncTask<Request, Void, T> {
+    public static class RequestAdaptBuilder extends Request.Builder {
+        private static final String TYPE_POST = "TYPE_POST";
+        private static final String TYPE_DELETE = "TYPE_DELETE";
+
+        public Request.Builder setType(RequestBody requestBody, String type) {
+            switch(type) {
+                case TYPE_POST : return post(requestBody);
+                case TYPE_DELETE : return delete(requestBody);
+                default: return this;
+            }
+        }
+
+        public static String getType(boolean ownership) {
+            return ownership ? TYPE_DELETE : TYPE_POST;
+        }
+    }
+
+    public abstract static class AsyncNetworkTask<T> extends AsyncTask<Request, Void, T> {
 
         private static Gson gson = new Gson();
 
@@ -273,7 +391,7 @@ public class NetworkUtilities {
 
         public abstract T onParseNetworkCallback(Gson gson, Headers headers, String body);
 
-        public AsyncCustomNetworkTask(NetworkCallbacks<T> networkCallbacks) {
+        public AsyncNetworkTask(NetworkCallbacks<T> networkCallbacks) {
             this.networkCallbacks = networkCallbacks;
         }
 

@@ -44,20 +44,18 @@ public class News {
         List<News> news = new ArrayList<>();
 
         int indexNewsId = cursor.getColumnIndex(NewsEntry._ID);
-        int indexNewsIdentifier = cursor.getColumnIndex(NewsEntry.COL_NEWS_IDENTIFIER);
         int indexNewsAuthor = cursor.getColumnIndexOrThrow(NewsEntry.COL_NEWS_AUTHOR);
         int indexNewsCaption = cursor.getColumnIndexOrThrow(NewsEntry.COL_NEWS_CAPTION);
         int indexNewsHeader = cursor.getColumnIndexOrThrow(NewsEntry.COL_NEWS_HEADER);
 
         while(cursor.moveToNext()) {
-            int newsId = cursor.getInt(indexNewsId);
-            String newsIdentifier = cursor.getColumnName(indexNewsIdentifier);
+            String id = cursor.getString(indexNewsId);
             String newsAuthor = cursor.getString(indexNewsAuthor);
             String newsCaption = cursor.getString(indexNewsCaption);
             String newsHeader = cursor.getString(indexNewsHeader);
 
             news.add(
-                    new News(newsIdentifier, newsAuthor, newsHeader, newsCaption)
+                    new News(id, newsAuthor, newsHeader, newsCaption)
             );
         }
 
@@ -67,7 +65,7 @@ public class News {
     public static ContentValues parseValues(News news) {
         ContentValues contentValues = new ContentValues();
 
-        contentValues.put(NewsEntry.COL_NEWS_IDENTIFIER, news.get_id());
+        contentValues.put(NewsEntry._ID, news.get_id());
         contentValues.put(NewsEntry.COL_NEWS_AUTHOR, news.getAuthor());
         contentValues.put(NewsEntry.COL_NEWS_CAPTION, news.getCaption());
         contentValues.put(NewsEntry.COL_NEWS_HEADER, news.getHeader());

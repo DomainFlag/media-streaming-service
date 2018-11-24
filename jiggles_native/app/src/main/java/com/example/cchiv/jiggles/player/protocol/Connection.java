@@ -42,7 +42,7 @@ public class Connection {
 
     public static class Message {
 
-        private static final String TAG = "Message";
+        private static final String TAG = "Notification";
 
         public interface OnMessageCallback {
             void onMessageCallback(Message message);

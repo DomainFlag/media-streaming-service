@@ -16,15 +16,15 @@ public class Release {
 
     private static final String TAG = "Release";
 
-    private String id;
+    private String _id;
     private String title;
     private String artist;
     private String url;
 
     private List<Review> reviews;
 
-    public Release(String id, String title, String artist, String url, List<Review> reviews) {
-        this.id = id;
+    public Release(String _id, String title, String artist, String url, List<Review> reviews) {
+        this._id = _id;
         this.title = title;
         this.artist = artist;
         this.url = url;
@@ -32,7 +32,7 @@ public class Release {
     }
 
     public String getId() {
-        return id;
+        return _id;
     }
 
     public String getTitle() {
@@ -56,7 +56,7 @@ public class Release {
             return false;
 
         int indexReleaseId = cursor.getColumnIndex(ReleaseEntry._ID);
-        int id = cursor.getInt(indexReleaseId);
+        String id = cursor.getString(indexReleaseId);
 
         return release.getId().equals(String.valueOf(id));
     }
@@ -65,7 +65,6 @@ public class Release {
         List<Release> releases = new ArrayList<>();
 
         int indexReleaseId = cursor.getColumnIndex(ReleaseEntry._ID);
-        int indexReleaseIdentifier = cursor.getColumnIndex(ReleaseEntry.COL_RELEASE_IDENTIFIER);
         int indexReleaseArtist = cursor.getColumnIndexOrThrow(ReleaseEntry.COL_RELEASE_ARTIST);
         int indexReleaseUrl = cursor.getColumnIndexOrThrow(ReleaseEntry.COL_RELEASE_URL);
         int indexReleaseTitle = cursor.getColumnIndexOrThrow(ReleaseEntry.COL_RELEASE_TITLE);
@@ -74,13 +73,12 @@ public class Release {
         Review review = null;
         while(cursor.moveToNext()) {
             if(!Release.isUnique(release, cursor)) {
-                int id = cursor.getInt(indexReleaseId);
-                String releaseIdentifier = cursor.getColumnName(indexReleaseIdentifier);
+                String id = cursor.getString(indexReleaseId);
                 String releaseUrl = cursor.getString(indexReleaseUrl);
                 String releaseArtist = cursor.getString(indexReleaseArtist);
                 String releaseTitle = cursor.getString(indexReleaseTitle);
 
-                release = new Release(String.valueOf(id), releaseTitle, releaseArtist, releaseUrl, new ArrayList<>());
+                release = new Release(id, releaseTitle, releaseArtist, releaseUrl, new ArrayList<>());
                 releases.add(release);
             }
 
@@ -96,7 +94,7 @@ public class Release {
     public static ContentValues parseValues(Release release) {
         ContentValues contentValues = new ContentValues();
 
-        contentValues.put(ReleaseEntry.COL_RELEASE_IDENTIFIER, release.getId());
+        contentValues.put(ReleaseEntry._ID, release.getId());
         contentValues.put(ReleaseEntry.COL_RELEASE_ARTIST, release.getArtist());
         contentValues.put(ReleaseEntry.COL_RELEASE_TITLE, release.getTitle());
         contentValues.put(ReleaseEntry.COL_RELEASE_URL, release.getUrl());
@@ -114,18 +112,14 @@ public class Release {
     public static ArrayList<ContentProviderOperation> parseValues(List<Release> releases) {
         ArrayList<ContentProviderOperation> contentProviderOperations = new ArrayList<>();
 
-        int index = 0;
         for(int g = 0; g < releases.size(); g++) {
             Release release = releases.get(g);
-            int releaseIndex = index;
 
             contentProviderOperations.add(
                     ContentProviderOperation
                             .newInsert(ReleaseEntry.CONTENT_URI)
                             .withValues(Release.parseValues(release))
                             .build());
-
-            index++;
 
             List<Review> reviews = release.getReviews();
             for(int h = 0; h < reviews.size(); h++) {
@@ -134,11 +128,8 @@ public class Release {
                 contentProviderOperations.add(
                         ContentProviderOperation
                                 .newInsert(ReviewEntry.CONTENT_URI)
-                                .withValues(Review.parseValues(review))
-                                .withValueBackReference(ReviewEntry.COL_REVIEW_RELEASE, releaseIndex)
+                                .withValues(Review.parseValues(review, release.getId()))
                                 .build());
-
-                index++;
             }
         }
 

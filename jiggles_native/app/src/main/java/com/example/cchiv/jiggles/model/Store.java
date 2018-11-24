@@ -12,9 +12,9 @@ import com.example.cchiv.jiggles.data.ContentContract.TrackEntry;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Collection {
+public class Store {
 
-    private static final String TAG = "Collection";
+    private static final String TAG = "Store";
 
     private String filterBy = Constants.ALBUM;
 
@@ -22,9 +22,9 @@ public class Collection {
     private List<Track> tracks = new ArrayList<>();
     private List<Album> albums = new ArrayList<>();
 
-    public Collection() {}
+    public Store() {}
 
-    public Collection(List<Artist> artists, List<Track> tracks, List<Album> albums) {
+    public Store(List<Artist> artists, List<Track> tracks, List<Album> albums) {
         if(artists != null)
             this.artists = artists;
 
@@ -124,8 +124,8 @@ public class Collection {
         return getCount(filterBy);
     }
 
-    public static Collection parseCursor(Cursor cursor) {
-        Collection collection = new Collection();
+    public static Store parseCursor(Cursor cursor) {
+        Store store = new Store();
 
         Artist artist = null;
         Album album = null;
@@ -135,7 +135,7 @@ public class Collection {
             if(!Artist.isUnique(artist, cursor)) {
                 artist = Artist.parseCursor(cursor);
 
-                collection.artists.add(artist);
+                store.artists.add(artist);
             }
 
             if(!Album.isUnique(album, cursor)) {
@@ -143,7 +143,7 @@ public class Collection {
                 album.setArtist(artist);
 
                 artist.getAlbums().add(album);
-                collection.albums.add(album);
+                store.albums.add(album);
             }
 
             if(!Image.isUnique(image, cursor)) {
@@ -159,16 +159,16 @@ public class Collection {
 
                 album.getTracks().add(track);
 
-                collection.tracks.add(track);
+                store.tracks.add(track);
             }
         }
 
-        return collection;
+        return store;
     }
 
-    public static ArrayList<ContentProviderOperation> parseValues(Collection collection) {
+    public static ArrayList<ContentProviderOperation> parseValues(Store store) {
         ArrayList<ContentProviderOperation> contentProviderOperations = new ArrayList<>();
-        List<Artist> artists = collection.getArtists();
+        List<Artist> artists = store.getArtists();
 
         int index = 0;
         for(int g = 0; g < artists.size(); g++) {

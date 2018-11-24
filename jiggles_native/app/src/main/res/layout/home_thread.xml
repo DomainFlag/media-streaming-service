@@ -5,41 +5,53 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="center"
     android:orientation="vertical">
 
     <RelativeLayout
+        android:id="@+id/thread_caption_layout"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@color/iconsTextColor">
 
         <ImageView
-            android:id="@+id/thumbnail"
+            android:id="@+id/thread_caption"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:maxHeight="275dp"
+            android:layout_alignParentTop="true"
             android:scaleType="centerCrop"
             android:adjustViewBounds="true"
             android:contentDescription="@string/forum_thread_comment"
             tools:src="@drawable/thumbnail"/>
 
+        <View
+            android:id="@+id/thread_divider"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_below="@id/thread_caption"
+            android:background="@color/dividerColor"/>
+
         <ImageView
-            android:id="@+id/menu_button"
+            android:id="@+id/thread_menu_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignEnd="@id/thumbnail"
-            android:layout_alignRight="@+id/thumbnail"
-            android:layout_alignTop="@id/thumbnail"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:rotation="90"
             android:contentDescription="@string/player_menu"
-            android:padding="@dimen/activity_margin_component"
-            android:src="@drawable/ic_menu_simple_white"/>
+            android:tint="@color/secondaryColor"
+            android:padding="@dimen/activity_margin_gap"
+            android:src="@drawable/ic_menu_simple_white"
+            tools:tint="@color/iconsTextColor"/>
 
         <LinearLayout
-            android:id="@+id/menu"
+            android:id="@+id/thread_menu_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignEnd="@id/menu_button"
-            android:layout_alignRight="@id/menu_button"
-            android:layout_below="@+id/menu_button"
+            android:layout_alignEnd="@id/thread_menu_button"
+            android:layout_alignRight="@id/thread_menu_button"
+            android:layout_below="@+id/thread_menu_button"
             android:layout_marginHorizontal="@dimen/activity_margin_section"
             android:background="@drawable/border_round"
             android:backgroundTint="@color/pleasureColor"
@@ -49,7 +61,7 @@
             android:visibility="gone">
 
             <TextView
-                android:id="@+id/edit"
+                android:id="@+id/thread_menu_edit"
                 style="@style/thread_menu"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -58,7 +70,7 @@
                 android:text="@string/thread_edit"/>
 
             <TextView
-                android:id="@+id/delete"
+                android:id="@+id/thread_menu_delete"
                 style="@style/thread_menu"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -73,89 +85,132 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:layout_margin="@dimen/activity_margin_component"
+            android:padding="@dimen/activity_margin_component"
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:orientation="horizontal">
 
             <ImageView
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:src="@drawable/ic_clock"
-                tools:tint="@color/iconsTextColor"/>
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_account"/>
 
             <TextView
-                android:id="@+id/date"
+                android:id="@+id/thread_author"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/activity_margin_relative"
                 android:layout_marginStart="@dimen/activity_margin_relative"
-                android:textColor="@color/primaryTextColor"
                 android:textSize="@dimen/activity_text_span"
-                android:textStyle="bold"
+                android:textColor="@color/defaultTextColor"
+                tools:text="@string/app_tools_placeholder"/>
+
+            <View
+                android:layout_width="4dp"
+                android:layout_height="4dp"
+                android:layout_marginLeft="@dimen/activity_margin_relative"
+                android:layout_marginStart="@dimen/activity_margin_relative"
+                android:background="@drawable/background_circle"
+                android:backgroundTint="@color/unexpectedColor"
+                android:textSize="@dimen/activity_text_span"
+                android:textStyle="bold"/>
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginLeft="@dimen/activity_margin_relative"
+                android:layout_marginStart="@dimen/activity_margin_relative"
+                android:src="@drawable/ic_clock"
+                android:tint="@color/secondaryColor"
+                tools:tint="@color/iconsTextColor"/>
+
+            <TextView
+                android:id="@+id/thread_timestamp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/activity_margin_relative"
+                android:layout_marginStart="@dimen/activity_margin_relative"
+                android:textColor="@color/defaultTextColor"
+                android:textSize="@dimen/activity_text_span"
                 tools:textColor="@color/iconsTextColor"
                 tools:text="@string/app_tools_placeholder_date"/>
 
         </LinearLayout>
 
-        <include
-            layout="@layout/home_feed_bar"/>
-
     </RelativeLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="@color/dividerColor"/>
-
     <LinearLayout
-        android:id="@+id/thread_body"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/iconsTextColor"
+        android:layout_below="@id/thread_divider"
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/content"
+            android:id="@+id/thread_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="@dimen/activity_text_subparagraph"
             android:textColor="@color/primaryTextColor"
-            android:padding="@dimen/activity_margin_gap"
+            android:layout_marginTop="@dimen/activity_margin_sibling"
+            android:layout_marginBottom="@dimen/activity_margin_relative"
+            android:layout_marginHorizontal="@dimen/activity_margin_component"
             tools:text="@string/app_tools_placeholder"/>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginTop="@dimen/activity_margin_closer"
+            android:orientation="horizontal">
+
+            <include
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                layout="@layout/home_feed_bar"/>
+
+            <TextView
+                android:id="@+id/thread_replies_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/activity_margin_relative"
+                android:layout_marginEnd="@dimen/activity_margin_relative"
+                android:textSize="@dimen/activity_text_span"
+                tools:text="@string/thread_comments_label"/>
+
+            <LinearLayout
+                android:id="@+id/thread_like_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/thread_feed_bar_item">
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:tint="@color/unexpectedColor"
+                    android:src="@drawable/ic_megaphone"/>
+
+                <TextView
+                    android:id="@+id/thread_followers_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/activity_margin_sibling"
+                    android:layout_marginStart="@dimen/activity_margin_sibling"
+                    android:textSize="@dimen/activity_text_span"
+                    android:textColor="@color/unexpectedColor"
+                    android:text="@string/thread_following_label"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/comments"
+            android:id="@+id/thread_replies"
             android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/activity_margin_gap"
-            android:layout_marginVertical="@dimen/activity_margin_relative">
-
-            <TextView
-                android:id="@+id/thread_comments"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentLeft="true"
-                android:textSize="@dimen/activity_text_span"
-                tools:text="@string/thread_comments"/>
-
-            <TextView
-                android:id="@+id/thread_following"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true"
-                android:textSize="@dimen/activity_text_span"
-                android:text="@string/thread_followers"/>
-
-        </RelativeLayout>
 
     </LinearLayout>
 

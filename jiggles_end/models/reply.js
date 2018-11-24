@@ -3,18 +3,22 @@ const {ObjectId} = mongoose.Schema.Types;
 
 let ReplySchema = new mongoose.Schema({
     author: { type : ObjectId, ref : 'User' },
-    body: {
-        text: {
-            type: String,
-            minLength: 1,
-        },
-        caption: {
-            type: String,
-            trim: true
-        }
+    parent: { type : ObjectId, ref : 'User' },
+    depth: {
+        type: Number,
+        default: 0,
+        min: 0
+    },
+    content: {
+        type: String
+    },
+    likes : {
+        type : Map,
+        of : String,
+        default : {}
     }
 });
 
 let Reply = mongoose.model('Reply', ReplySchema);
 
-module.exports = {Reply, ReplySchema};
+module.exports = { Reply, ReplySchema };

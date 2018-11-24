@@ -16,12 +16,12 @@
     <string name="feature_other">Other</string>
 
     <!-- Dialog Fresh -->
-    <string name="dialog_fresh_title">New %1$s</string>
-    <string name="dialog_fresh_action">Play</string>
+    <string name="dialog_fresh_title">Fresh %1$s</string>
+    <string name="dialog_fresh_action">Listen</string>
 
 
     <!-- Welcome -->
-    <string name="welcome_header_text">More then just a music collection.</string>
+    <string name="welcome_header_text">More then just a music store.</string>
     <string name="welcome_subheader_text">Listen.  Connect.  Jiggle.</string>
     <string name="welcome_helper_text">Get Started</string>
 
@@ -70,7 +70,7 @@
     <!-- Home Thread -->
     <string name="home_tab_description">Tab Title</string>
 
-    <string name="forum_thread_comment">Comment</string>
+    <string name="forum_thread_comment">Reply</string>
     <string name="forum_thread_like">Like</string>
 
     <string name="forum_thread_thumbnail_description">Thread Thumbnail</string>
@@ -85,8 +85,8 @@
 
     <string name="thread_edit">Edit thread</string>
     <string name="thread_delete">Delete thread</string>
-    <string name="thread_comments">%1$d comments</string>
-    <string name="thread_followers">844 followers</string>
+    <string name="thread_comments_label">%1$d comments</string>
+    <string name="thread_following_label">%1$s</string>
 
     <string name="comment_caption">Author caption</string>
 

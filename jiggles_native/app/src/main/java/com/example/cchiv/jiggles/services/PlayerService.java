@@ -10,7 +10,7 @@ import android.widget.Toast;
 
 import com.example.cchiv.jiggles.data.ContentContract;
 import com.example.cchiv.jiggles.data.ContentContract.TrackEntry;
-import com.example.cchiv.jiggles.model.Collection;
+import com.example.cchiv.jiggles.model.Store;
 import com.example.cchiv.jiggles.model.Track;
 import com.example.cchiv.jiggles.player.MediaPlayer;
 import com.example.cchiv.jiggles.player.PlayerMediaSession;
@@ -63,8 +63,8 @@ public class PlayerService extends Service implements MediaPlayer.OnTrackStateCh
                     loaderBundle.putString(JigglesLoader.BUNDLE_SELECTION_KEY, resourceType + "=?");
                     loaderBundle.putStringArray(JigglesLoader.BUNDLE_SELECTION_ARGS_KEY, new String[] { resourceId });
 
-                    JigglesLoader.AsyncTaskContentLoader<Collection> asyncTaskContentLoader =
-                            new JigglesLoader.AsyncTaskContentLoader<>(this, loaderBundle, Collection::parseCursor);
+                    JigglesLoader.AsyncTaskContentLoader<Store> asyncTaskContentLoader =
+                            new JigglesLoader.AsyncTaskContentLoader<>(this, loaderBundle, Store::parseCursor);
 
                     asyncTaskContentLoader.registerListener(LOADER_SERVICE_COLLECTION_ID, (loader, collection) -> {
                         playerMediaSession.createMediaSession();

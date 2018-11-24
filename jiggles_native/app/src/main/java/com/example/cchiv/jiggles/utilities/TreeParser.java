@@ -1,6 +1,6 @@
 package com.example.cchiv.jiggles.utilities;
 
-import com.example.cchiv.jiggles.model.Comm;
+import com.example.cchiv.jiggles.model.Reply;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,12 +9,12 @@ public class TreeParser {
 
     private static final String TAG = "TreeParser";
 
-    private void depthQuery(List<Node> subspace, List<Comm> comments, int depth, int count) {
+    private void depthQuery(List<Node> subspace, List<Reply> comments, int depth, int count) {
         int len = comments.size();
 
         for(int it = 0; it < len; it++) {
             if(comments.get(it-count).getDepth() == depth) {
-                Comm comment = comments.remove(it-count);
+                Reply comment = comments.remove(it-count);
 
                 Node node = new Node(comment);
                 subspace.add(node);
@@ -26,10 +26,10 @@ public class TreeParser {
 
     public class Node {
 
-        private Comm comment;
+        private Reply comment;
         private List<Node> children = new ArrayList<>();
 
-        public Node(Comm comment) {
+        public Node(Reply comment) {
             this.comment = comment;
         }
     }
@@ -67,10 +67,10 @@ public class TreeParser {
 
         private List<Node> tree;
         private int depth = 0;
-        private List<Comm> comments;
+        private List<Reply> comments;
         private Branch stack;
 
-        public Stack(List<Comm> comments) {
+        public Stack(List<Reply> comments) {
             this.depth = 0;
             this.comments = comments;
             this.stack = new Branch();
@@ -94,7 +94,7 @@ public class TreeParser {
         };
     }
 
-    public void queryTree(Node node, List<Comm> comments) {
+    public void queryTree(Node node, List<Reply> comments) {
         comments.add(node.comment);
 
         for(Node child : node.children) {
@@ -102,8 +102,8 @@ public class TreeParser {
         }
     }
 
-    public List<Comm> parseTree(Stack stack) {
-        List<Comm> comments = new ArrayList<>();
+    public List<Reply> parseTree(Stack stack) {
+        List<Reply> comments = new ArrayList<>();
 
         for(Node node : stack.getTree())
             queryTree(node, comments);
@@ -111,7 +111,7 @@ public class TreeParser {
         return comments;
     }
 
-    public List<Comm> queryTree(List<Comm> comments, int depth) {
+    public List<Reply> queryTree(List<Reply> comments, int depth) {
         Stack stack = new Stack(comments);
 
         while(stack.stack.child.size() != 0 && (stack.depth < depth || depth == -1) ) {
@@ -129,7 +129,7 @@ public class TreeParser {
         return parseTree(stack);
     }
 
-    public List<Comm> queryTree(List<Comm> comments) {
+    public List<Reply> queryTree(List<Reply> comments) {
         return queryTree(comments, -1);
     };
 };

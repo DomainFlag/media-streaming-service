@@ -1,18 +1,12 @@
 package com.example.cchiv.jiggles.adapters;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
-import android.graphics.Typeface;
-import android.graphics.drawable.BitmapDrawable;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.support.constraint.ConstraintLayout;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.ImageViewCompat;
-import android.support.v7.graphics.Palette;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,14 +16,14 @@ import android.widget.TextView;
 
 import com.example.cchiv.jiggles.Constants;
 import com.example.cchiv.jiggles.R;
-import com.example.cchiv.jiggles.model.Comm;
+import com.example.cchiv.jiggles.model.Reply;
 import com.example.cchiv.jiggles.model.Thread;
+import com.example.cchiv.jiggles.utilities.NetworkUtilities;
 import com.example.cchiv.jiggles.utilities.Tools;
 import com.example.cchiv.jiggles.utilities.TreeParser;
-import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ThreadViewHolder> {
@@ -39,15 +33,11 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ThreadView
     private List<Thread> threads;
     private Context context;
 
-    private Typeface typeface;
-
     private boolean menuToggle = false;
 
-    public ThreadAdapter(Context context, ArrayList<Thread> threads) {
+    public ThreadAdapter(Context context, List<Thread> threads) {
         this.context = context;
         this.threads = threads;
-
-        typeface = Typeface.createFromAsset(context.getAssets(), "fonts/Brandon_bld.otf");
     }
 
     @NonNull
@@ -61,26 +51,6 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ThreadView
         );
     }
 
-    private void viewContrastizer(View view, int color) {
-        if(view instanceof LinearLayout) {
-            LinearLayout linearLayout = (LinearLayout) view;
-
-            int len = linearLayout.getChildCount();
-            for(int it = 0; it < len; it++) {
-                View child = linearLayout.getChildAt(it);
-
-                if(child instanceof TextView) {
-                    ((TextView) child).setTextColor(color);
-                } else if(child instanceof LinearLayout) {
-                    viewContrastizer(child, color);
-                } else if(child instanceof ImageView) {
-                    ImageView imageView = (ImageView) child;
-                    ImageViewCompat.setImageTintList(imageView, ColorStateList.valueOf(color));
-                }
-            }
-        }
-    }
-
     @Override
     public void onBindViewHolder(@NonNull ThreadViewHolder holder, int position) {
         Thread thread = threads.get(position);
@@ -88,60 +58,81 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ThreadView
         Uri uri = buildUriResource(thread.getCaption());
         Picasso.get()
                 .load(uri)
-                .into(holder.thumbnail, new Callback() {
+                .into(new Target() {
                     @Override
-                    public void onSuccess() {
-                        BitmapDrawable bitmapDrawable = (BitmapDrawable) holder.thumbnail.getDrawable();
-
-                        if(bitmapDrawable != null) {
-                            Palette palette = Palette.from(bitmapDrawable.getBitmap()).generate();
-                            int lightMutedColor = palette.getLightMutedColor(ContextCompat.getColor(context, R.color.primaryTextColor));
-                            int darkMutedColor = palette.getDarkMutedColor(ContextCompat.getColor(context, R.color.primaryTextColor));
-
-                            viewContrastizer(holder.utilities, darkMutedColor);
-                            holder.itemView.setBackgroundColor(lightMutedColor);
-                        }
+                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                        holder.caption.setImageBitmap(bitmap);
                     }
 
                     @Override
-                    public void onError(Exception e) {
+                    public void onBitmapFailed(Exception e, Drawable errorDrawable) {
+                        holder.caption.setVisibility(View.GONE);
+                        holder.divider.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onPrepareLoad(Drawable placeHolderDrawable) {
 
                     }
                 });
 
-        holder.author.setText(thread.getAuthor().getName());
-        holder.date.setText(Tools.parseSocialDate(thread.getId()));
-        holder.like.setText(String.valueOf(thread.getVotes()));
-        holder.content.setText(thread.getContent());
+        holder.timestamp.setText(Tools.parseSocialDate(thread.getId()));
 
-        TreeParser treeParser = new TreeParser();
-        List<Comm> comments = treeParser.queryTree(thread.getComments());
+        holder.likeContent.setText(String.valueOf(thread.getLikes().size()));
+        if(thread.isOwnership()) {
+            int color = context.getResources().getColor(R.color.unexpectedColor);
 
-        holder.threadComments.setText(context.getString(R.string.thread_comments, comments.size()));
+            holder.likeIcon.setColorFilter(color);
+            holder.likeContent.setTextColor(color);
+        }
 
-        CommentAdapter commentAdapter = new CommentAdapter(context, comments);
-        holder.comments.setAdapter(commentAdapter);
-        holder.comments.setNestedScrollingEnabled(true);
+        holder.likeLayout.setOnClickListener(view -> {
+            String token = Tools.getToken(context);
 
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
-        holder.comments.setLayoutManager(linearLayoutManager);
-
-        holder.comment.setOnClickListener((view) -> {
-            // Do the comment
-
-            Log.v(TAG, thread.getId());
+            NetworkUtilities.ResolveThreadLike resolveThreadLike = new NetworkUtilities.ResolveThreadLike(result -> {
+                threads.set(position, result);
+                notifyItemChanged(position);
+            }, thread.encodeJSONObject(), NetworkUtilities.RequestAdaptBuilder.getType(thread.isOwnership()), token);
         });
 
-        holder.menu_button.setOnClickListener((view) -> {
+        holder.reply.setOnClickListener(view -> {
+            holder.replies.setVisibility(View.VISIBLE);
+        });
+        holder.author.setText(thread.getAuthor().getName());
+
+
+        holder.repliesView.setText(context.getString(R.string.thread_comments_label, thread.getComments().size()));
+        holder.repliesView.setOnClickListener(view -> {
+            holder.replies.setVisibility(View.VISIBLE);
+        });
+
+        holder.followersView.setText(context.getString(R.string.thread_following_label, "Jiggles"));
+
+        holder.content.setText(thread.getContent());
+        buildThreadRepliesTree(holder, thread);
+
+        holder.menuButton.setOnClickListener((view) -> {
             if(menuToggle)
-                holder.menu.setVisibility(View.GONE);
-            else holder.menu.setVisibility(View.VISIBLE);
+                holder.menuLayout.setVisibility(View.GONE);
+            else holder.menuLayout.setVisibility(View.VISIBLE);
 
             menuToggle = !menuToggle;
         });
     }
 
-    public Uri buildUriResource(String path) {
+    private void buildThreadRepliesTree(@NonNull ThreadViewHolder holder, Thread thread) {
+        TreeParser treeParser = new TreeParser();
+        List<Reply> comments = treeParser.queryTree(thread.getComments());
+
+        CommentAdapter commentAdapter = new CommentAdapter(context, comments);
+        holder.replies.setAdapter(commentAdapter);
+        holder.replies.setNestedScrollingEnabled(true);
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
+        holder.replies.setLayoutManager(linearLayoutManager);
+    }
+
+    private Uri buildUriResource(String path) {
         return new Uri.Builder()
                 .scheme(Constants.SCHEME)
                 .authority(Constants.AUTHORITY)
@@ -162,45 +153,46 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ThreadView
 
     public class ThreadViewHolder extends RecyclerView.ViewHolder {
 
-        private ImageView thumbnail;
-        private TextView like;
+        private ImageView caption;
+        private View divider;
+        private LinearLayout likeLayout;
+        private ImageView likeIcon;
+        private TextView likeContent;
         private TextView author;
-        private TextView date;
-        private TextView comment;
+        private LinearLayout reply;
+        private TextView timestamp;
         private TextView content;
-        private ConstraintLayout utilities;
-        private RecyclerView comments;
-        private TextView threadComments;
 
-        private ImageView menu_button;
+        private RecyclerView replies;
+        private TextView repliesView;
+        private TextView followersView;
 
-        private LinearLayout menu;
-        private TextView edit;
-        private TextView delete;
+        private LinearLayout menuLayout;
+        private ImageView menuButton;
+        private TextView menuActionEdit;
+        private TextView menuActionDelete;
 
         public ThreadViewHolder(View itemView) {
             super(itemView);
 
-            thumbnail = itemView.findViewById(R.id.thumbnail);
-            comment = itemView.findViewById(R.id.comment);
-            author = itemView.findViewById(R.id.author);
-            date = itemView.findViewById(R.id.date);
-            like = itemView.findViewById(R.id.like);
-            utilities = itemView.findViewById(R.id.utilities);
-            content = itemView.findViewById(R.id.content);
-            comments = itemView.findViewById(R.id.comments);
-            threadComments = itemView.findViewById(R.id.thread_comments);
+            caption = itemView.findViewById(R.id.thread_caption);
+            divider = itemView.findViewById(R.id.thread_divider);
+            timestamp = itemView.findViewById(R.id.thread_timestamp);
+            reply = itemView.findViewById(R.id.thread_reply);
+            author = itemView.findViewById(R.id.thread_author);
+            likeLayout = itemView.findViewById(R.id.thread_like_layout);
+            likeIcon = itemView.findViewById(R.id.thread_like_icon);
+            likeContent = itemView.findViewById(R.id.thread_like_content);
+            content = itemView.findViewById(R.id.thread_content);
+            replies = itemView.findViewById(R.id.thread_replies);
+            repliesView = itemView.findViewById(R.id.thread_replies_view);
+            followersView = itemView.findViewById(R.id.thread_followers_view);
 
-            menu = itemView.findViewById(R.id.menu);
-            menu_button = itemView.findViewById(R.id.menu_button);
+            menuLayout = itemView.findViewById(R.id.thread_menu_layout);
+            menuButton = itemView.findViewById(R.id.thread_menu_button);
 
-            edit = itemView.findViewById(R.id.edit);
-            delete = itemView.findViewById(R.id.delete);
-
-            like.setTypeface(typeface);
-            author.setTypeface(typeface);
-            date.setTypeface(typeface);
-            comment.setTypeface(typeface);
+            menuActionEdit = itemView.findViewById(R.id.thread_menu_edit);
+            menuActionDelete = itemView.findViewById(R.id.thread_menu_delete);
         }
     }
 }

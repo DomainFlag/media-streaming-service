@@ -8,27 +8,27 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class Message {
+public class Notification {
+
+    private static final String TAG = "Notification";
 
     private String _id;
     private User author;
     private String type;
     private String resource;
-    private String identifier;
     private int votes;
-    private List<Comm> comments = new ArrayList<>();
+    private List<Reply> comments = new ArrayList<>();
 
-    public Message(String _id, User author, String type, String resource, String identifier, int votes) {
+    public Notification(String _id, User author, String type, String resource, int votes) {
         this._id = _id;
         this.author = author;
         this.type = type;
         this.resource = resource;
-        this.identifier = identifier;
         this.votes = votes;
     }
 
-    public Message(String _id, User author, String type, String resource, String identifier, int votes, List<Comm> comments) {
-        this(_id, author, type, resource, identifier, votes);
+    public Notification(String _id, User author, String type, String resource, int votes, List<Reply> comments) {
+        this(_id, author, type, resource, votes);
 
         this.comments = comments;
     }
@@ -49,36 +49,30 @@ public class Message {
         return resource;
     }
 
-    public String getIdentifier() {
-        return identifier;
-    }
-
     public int getVotes() {
         return votes;
     }
 
-    public List<Comm> getComments() {
+    public List<Reply> getComments() {
         return comments;
     }
 
-    public static Message decodeMessage(Map<String, String> message) {
+    public static Notification decodeMessage(Map<String, String> message) {
         String _id = message.get(NotificationEntry._ID);
         String author = message.get(NotificationEntry.COL_NOTIFICATION_AUTHOR);
         String type = message.get(NotificationEntry.COL_NOTIFICATION_TYPE);
         String resource = message.get(NotificationEntry.COL_NOTIFICATION_RESOURCE);
-        String identifier = message.get(NotificationEntry.COL_NOTIFICATION_IDENTIFIER);
         int votes = Integer.valueOf(message.get(NotificationEntry.COL_NOTIFICATION_VOTES));
 
-        return new Message(_id, null, type, resource, identifier, votes);
+        return new Notification(_id, null, type, resource, votes);
     }
 
-    public static ContentValues parseValues(Message message) {
+    public static ContentValues parseValues(Notification notification) {
         ContentValues contentValues = new ContentValues();
 
-        contentValues.put(NotificationEntry.COL_NOTIFICATION_AUTHOR, message.getAuthor().getName());
-        contentValues.put(NotificationEntry.COL_NOTIFICATION_IDENTIFIER, message.getIdentifier());
-        contentValues.put(NotificationEntry.COL_NOTIFICATION_TYPE, message.getType());
-        contentValues.put(NotificationEntry.COL_NOTIFICATION_RESOURCE, message.getResource());
+        contentValues.put(NotificationEntry.COL_NOTIFICATION_AUTHOR, notification.getAuthor().getName());
+        contentValues.put(NotificationEntry.COL_NOTIFICATION_TYPE, notification.getType());
+        contentValues.put(NotificationEntry.COL_NOTIFICATION_RESOURCE, notification.getResource());
 
         return contentValues;
     }

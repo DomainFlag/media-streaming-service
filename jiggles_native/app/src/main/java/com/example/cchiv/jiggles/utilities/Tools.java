@@ -23,6 +23,7 @@ import android.widget.TextView;
 import com.example.cchiv.jiggles.Constants;
 import com.example.cchiv.jiggles.R;
 import com.example.cchiv.jiggles.model.Review;
+import com.example.cchiv.jiggles.model.User;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -36,6 +37,8 @@ public class Tools {
     public static final String TAG = "Tools";
 
     private static final Float IMPACT_THRESHOLD = 8.0f;
+
+    private static User user;
 
     public static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy:MM:dd HH:mm", Locale.US);
 
@@ -65,6 +68,18 @@ public class Tools {
         }
 
         return "w+";
+    }
+
+    public static void resolveUser(Context context) {
+        String token = Tools.getToken(context);
+
+        NetworkUtilities.FetchUser fetchUser = new NetworkUtilities.FetchUser(user -> {
+            Tools.user = user;
+        }, token);
+    }
+
+    public static User getUser() {
+        return user;
     }
 
     public static Date parseStringDate(String source) {

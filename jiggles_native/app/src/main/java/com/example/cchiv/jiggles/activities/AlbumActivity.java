@@ -15,7 +15,7 @@ import com.example.cchiv.jiggles.adapters.ContentAdapter;
 import com.example.cchiv.jiggles.data.ContentContract;
 import com.example.cchiv.jiggles.model.Album;
 import com.example.cchiv.jiggles.model.Artist;
-import com.example.cchiv.jiggles.model.Collection;
+import com.example.cchiv.jiggles.model.Store;
 import com.example.cchiv.jiggles.model.Image;
 import com.example.cchiv.jiggles.services.PlayerService;
 import com.example.cchiv.jiggles.utilities.JigglesLoader;
@@ -50,8 +50,8 @@ public class AlbumActivity extends PlayerAppCompatActivity {
         Intent intent = getIntent();
         String id = intent.getStringExtra(ALBUM_ID);
 
-        JigglesLoader<Collection> jigglesLoader = new JigglesLoader<>(this, (JigglesLoader
-                .OnPostLoaderCallback<Collection>) this::updateLayout, Collection::parseCursor);
+        JigglesLoader<Store> jigglesLoader = new JigglesLoader<>(this, (JigglesLoader
+                .OnPostLoaderCallback<Store>) this::updateLayout, Store::parseCursor);
 
         Bundle bundle = new Bundle();
         bundle.putString(JigglesLoader.BUNDLE_URI_KEY, ContentContract.CONTENT_COLLECTION_URI.toString());
@@ -77,8 +77,8 @@ public class AlbumActivity extends PlayerAppCompatActivity {
         startActivity(intent);
     }
 
-    private void updateLayout(Collection collection) {
-        Album album = collection.getAlbums().get(0);
+    private void updateLayout(Store store) {
+        Album album = store.getAlbums().get(0);
 
         TextView albumPlayView = findViewById(R.id.album_play);
         albumPlayView.setOnClickListener((view) -> {
@@ -113,7 +113,7 @@ public class AlbumActivity extends PlayerAppCompatActivity {
                 .setText(album.getName());
 
 
-        contentAdapter.swapCollection(collection);
+        contentAdapter.swapCollection(store);
         contentAdapter.notifyDataSetChanged();
     }
 }

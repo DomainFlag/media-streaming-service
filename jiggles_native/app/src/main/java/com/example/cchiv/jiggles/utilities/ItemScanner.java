@@ -19,7 +19,7 @@ import android.util.Log;
 import com.example.cchiv.jiggles.R;
 import com.example.cchiv.jiggles.data.ContentContract;
 import com.example.cchiv.jiggles.model.Album;
-import com.example.cchiv.jiggles.model.Collection;
+import com.example.cchiv.jiggles.model.Store;
 import com.example.cchiv.jiggles.model.Image;
 import com.example.cchiv.jiggles.model.Track;
 
@@ -151,7 +151,7 @@ public class ItemScanner {
         }
     }
 
-    private static void extractMetaData(Context context, MediaMetadataRetriever mediaMetadataRetriever, Collection collection, String path) {
+    private static void extractMetaData(Context context, MediaMetadataRetriever mediaMetadataRetriever, Store store, String path) {
         try {
             mediaMetadataRetriever.setDataSource(path);
 
@@ -166,7 +166,7 @@ public class ItemScanner {
             if(albumName != null && artistName != null) {
                 Track track = new Track(title, path);
 
-                Album album = collection.addItem(track, artistName, albumName, genreList);
+                Album album = store.addItem(track, artistName, albumName, genreList);
                 if(album != null)
                     decodeBitmapArt(context, mediaMetadataRetriever, album, path);
             }
@@ -175,12 +175,12 @@ public class ItemScanner {
         }
     };
 
-    private static void cacheLocalData(Context context, Collection collection) {
-        if(collection != null) {
+    private static void cacheLocalData(Context context, Store store) {
+        if(store != null) {
             try {
                 // Do something with ContentProviderResult[]
                 ((Activity) context).getContentResolver()
-                        .applyBatch(ContentContract.AUTHORITY, Collection.parseValues(collection));
+                        .applyBatch(ContentContract.AUTHORITY, Store.parseValues(store));
             } catch (RemoteException e) {
                 Log.v(TAG, e.toString());
             } catch (OperationApplicationException e) {
@@ -189,9 +189,9 @@ public class ItemScanner {
         }
     }
 
-    public static Collection resolveLocalMedia(Context context) {
+    public static Store resolveLocalMedia(Context context) {
         MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
-        Collection collection = null;
+        Store store = null;
 
         Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 new String[] {
@@ -199,13 +199,13 @@ public class ItemScanner {
                 }, null, null, null);
 
         if(cursor != null) {
-            collection = new Collection();
+            store = new Store();
             while(cursor.moveToNext()) {
                 int dataColumnIndex = cursor.getColumnIndex(MediaStore.Audio.Media.DATA);
 
                 String path = cursor.getString(dataColumnIndex);
 
-                extractMetaData(context, mediaMetadataRetriever, collection, path);
+                extractMetaData(context, mediaMetadataRetriever, store, path);
             }
 
             cursor.close();
@@ -213,17 +213,17 @@ public class ItemScanner {
 
         mediaMetadataRetriever.release();
 
-        cacheLocalData(context, collection);
+        cacheLocalData(context, store);
 
-        return collection;
+        return store;
     }
 
-    public static Collection scan(Context context) {
+    public static Store scan(Context context) {
         AssetManager assetManager = context.getAssets();
 
         try {
             String[] files = assetManager.list("samples");
-            Collection collection = new Collection();
+            Store store = new Store();
 
             MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
             for(String file : files) {
@@ -244,14 +244,14 @@ public class ItemScanner {
 
                 Track track = new Track(title, path);
 
-                collection.addItem(track, artistName, albumName, genreList);
+                store.addItem(track, artistName, albumName, genreList);
 
                 assetFileDescriptor.close();
             }
 
             mediaMetadataRetriever.release();
 
-            return collection;
+            return store;
         } catch(IOException e) {
             Log.v(TAG, e.toString());
         }
@@ -264,10 +264,10 @@ public class ItemScanner {
             Log.v(TAG, message);
     }
 
-    public static class AsyncItemScanner extends AsyncTask<Void, Void, Collection> {
+    public static class AsyncItemScanner extends AsyncTask<Void, Void, Store> {
 
         public interface AsyncItemScannerListener {
-            void asyncItemScannerListener(Collection collection);
+            void asyncItemScannerListener(Store store);
         }
 
         private WeakReference<Context> weakReference;
@@ -284,7 +284,7 @@ public class ItemScanner {
         }
 
         @Override
-        protected Collection doInBackground(Void... voids) {
+        protected Store doInBackground(Void... voids) {
             Context context = this.weakReference.get();
             if(context != null)
                 return resolveLocalMedia(context);
@@ -292,8 +292,8 @@ public class ItemScanner {
         }
 
         @Override
-        protected void onPostExecute(Collection collection) {
-            this.asyncItemScannerListener.asyncItemScannerListener(collection);
+        protected void onPostExecute(Store store) {
+            this.asyncItemScannerListener.asyncItemScannerListener(store);
         }
     }
 }

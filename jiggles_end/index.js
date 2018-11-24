@@ -139,7 +139,7 @@ app.get(/^\/main\/(news|releases)$/, function(req, res) {
 app.get(/^\/forum\/thread/, function(req, res) {
     Thread.find({})
         .populate('author')
-        .populate('comments.author')
+        .populate('replies.author')
         .then((documents) => {
             simpleResponseQuery(res, 200, documents, "application/json");
         })
@@ -226,35 +226,78 @@ app.get(/^\/query\/(artists|tracks|albums)\/([0-9a-zA-Z]+)$/, function(req, res)
         });
 });
 
-/* Thread Comments(POST, PUT, DELETE) */
-app.post(/^\/forum\/thread\/comment/, function(req, res) {
-    let thread_id = _.pick(req.body, ['_id']);
+/****************************************************************/
+/**
+ * Like a thread's reply
+ */
+app.post(/^\/forum\/thread\/reply\/like/, function(req, res) {
+    let body = _.pick(req.body, ["thread_id", "reply_id"]);
 
-    let body = _.pick(req.body, ['parent', 'depth', 'content']);
+    Thread.findOneAndUpdate({ "_id" : body.thread_id, "replies._id" : body.reply_id }, {
+        $set : {
+            ["replies.$.likes.".concat(req.user._id.toString())] : true
+        }
+    }, { new: true })
+        .populate("author")
+        .populate("replies.author")
+        .exec((err, raw) => {
+            if(err) simpleResponseQuery(res, 401, "couldn't like thread's reply" + err.toString());
+            else simpleResponseQuery(res, 200, raw, "application/json");
+        });
+});
+
+/**
+ * Unlike a thread's reply
+ */
+app.delete(/^\/forum\/thread\/reply\/like/, function(req, res) {
+    let body = _.pick(req.body, ["thread_id", "reply_id"]);
+
+    Thread.findOneAndUpdate({ "_id" : body.thread_id, "replies._id" : body.reply_id }, {
+        $unset : {
+            ["replies.$.likes.".concat(req.user._id.toString())] : true
+        }
+    }, { new: true })
+        .populate("author")
+        .populate("replies.author")
+        .exec((err, raw) => {
+            if(err) simpleResponseQuery(res, 401, "couldn't unlike thread's reply" + err.toString());
+            else simpleResponseQuery(res, 200, raw, "application/json");
+        });
+});
+
+/**
+ * Reply to a thread
+ */
+app.post(/^\/forum\/thread\/reply/, function(req, res) {
+    let thread = _.pick(req.body, ["thread_id"]);
+
+    let body = _.pick(req.body, ["parent", "depth", "content"]);
     body['author'] = req.user._id;
 
-    Thread.findOneAndUpdate({ _id : thread_id._id }, {
+    Thread.findOneAndUpdate({ "_id" : thread.thread_id }, {
         $push : {
-            comments : body
+            replies : body
         }
     }, { upsert : true, new: true })
     .populate('author')
-    .populate('comments.author')
+    .populate('replies.author')
     .exec((err, raw) => {
         if(err) simpleResponseQuery(res, 401, "couldn't create new message" + err.toString());
         else simpleResponseQuery(res, 200, raw, "application/json");
     });
 });
 
-app.put(/^\/forum\/thread\/comment/, function(req, res) {
-    let thread_id = _.pick(req.body, ['_id']);
+/**
+ * Update a thread's reply
+ */
+app.put(/^\/forum\/thread\/reply/, function(req, res) {
+    let thread = _.pick(req.body, ["thread_id"]);
+    let body = _.pick(req.body, ["parent", "depth", "depth"]);
 
-    let body = _.pick(req.body, ['parent', 'depth', 'content']);
-
-    Thread.update({ _id : thread_id, "comments.author" : req.user._id },
+    Thread.update({ "_id" : thread.thread_id, "replies.author" : req.user._id },
         body.reduce((acc, value) => {
             let obj = {};
-            obj["comments.$." + value] = value;
+            obj["replies.$." + value] = value;
 
             return {...acc, ...obj };
         }, {}), (err, raw) => {
@@ -263,13 +306,15 @@ app.put(/^\/forum\/thread\/comment/, function(req, res) {
         });
 });
 
+/**
+ * Delete a thread's reply
+ */
+app.delete(/^\/forum\/thread\/reply/, function(req, res) {
+    let body = _.pick(req.body, ["thread_id", "reply_id"]);
 
-app.delete(/^\/forum\/thread\/comment/, function(req, res) {
-    let body = _.pick(req.body, ['threadID, commentID']);
-
-    Thread.update({ _id : body.threadID, "comments.author" : req.user._id }, {
+    Thread.update({ "_id" : body.thread_id, "replies.author" : req.user._id }, {
         $pull : {
-            "comments.$._id" : body.commentID
+            "replies.$._id" : body.reply_id
         }
     }, (err) => {
         if(err) simpleResponseQuery(res, 401, "couldn't delete message");
@@ -277,7 +322,48 @@ app.delete(/^\/forum\/thread\/comment/, function(req, res) {
     });
 });
 
-/* Thread (GET (public), POST, PUT, DELETE) */
+/**
+ * Like a thread
+ */
+app.post(/^\/forum\/thread\/like/, function(req, res) {
+    let body = _.pick(req.body, ['thread_id']);
+
+    Thread.findOneAndUpdate({ "_id" : body.thread_id }, {
+        $set : {
+            ["likes.".concat(req.user._id.toString())] : true
+        }
+    }, { new: true })
+        .populate("author")
+        .populate("replies.author")
+        .exec((err, raw) => {
+            if(err) simpleResponseQuery(res, 401, "couldn't create new message" + err.toString());
+            else simpleResponseQuery(res, 200, raw, "application/json");
+        });
+});
+
+/**
+ * Unlike a thread
+ */
+app.delete(/^\/forum\/thread\/like/, function(req, res) {
+    let body = _.pick(req.body, ['thread_id']);
+
+    Thread.findOneAndUpdate({ "_id" : body.thread_id }, {
+        $unset : {
+            ["likes.".concat(req.user._id.toString())] : true
+        }
+    }, { new: true })
+        .populate("author")
+        .populate("replies.author")
+        .exec((err, raw) => {
+            if(err) simpleResponseQuery(res, 401, "couldn't create new message" + err.toString());
+            else simpleResponseQuery(res, 200, raw, "application/json");
+        });
+});
+
+/****************************************************************/
+/**
+ * Create a thread
+ */
 app.post(/^\/forum\/thread/, function(req, res) {
     let body = _.pick(req.body, ['caption', 'content']);
 
@@ -302,6 +388,9 @@ app.post(/^\/forum\/thread/, function(req, res) {
     });
 });
 
+/**
+ * Update a thread
+ */
 app.put(/^\/forum\/thread/, function(req, res) {
     let body = _.pick(req.body, [ '_id', 'caption', 'content']);
 
@@ -351,6 +440,9 @@ app.put(/^\/forum\/thread/, function(req, res) {
     });
 });
 
+/**
+ * Delete a thread
+ */
 app.delete(/^\/forum\/thread/, function(req, res) {
     let body = _.pick(req.body, [ '_id']);
 
@@ -524,7 +616,7 @@ app.delete('/users/me/token', (req, res) => {
     req.user.removeToken(req.token).then(() => {
         res.status(200).send();
     }, () => {
-        console.log("nope");
+        console.log("This operation can't be done, try again");
         res.status(401).send();
     });
 });

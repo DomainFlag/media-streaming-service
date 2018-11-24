@@ -9,14 +9,14 @@ import com.example.cchiv.jiggles.utilities.JigglesLoader;
 
 public class Review {
 
-    private String id;
+    private String _id;
     private String author;
     private String content;
     private String url;
     private int score;
 
-    public Review(String id, String author, String content, String url, int score) {
-        this.id = id;
+    public Review(String _id, String author, String content, String url, int score) {
+        this._id = _id;
         this.author = author;
         this.content = content;
         this.url = url;
@@ -24,7 +24,7 @@ public class Review {
     }
 
     public String getId() {
-        return id;
+        return _id;
     }
 
     public String getAuthor() {
@@ -48,9 +48,9 @@ public class Review {
             return false;
 
         int indexReviewId = cursor.getColumnIndex(ReviewEntry._ID);
-        int id = cursor.getInt(indexReviewId);
+        String id = cursor.getString(indexReviewId);
 
-        return review.getId().equals(String.valueOf(id));
+        return review.getId().equals(id);
     }
 
     public static Review parseValues(Cursor cursor) {
@@ -60,19 +60,20 @@ public class Review {
         int indexReviewScore = cursor.getColumnIndexOrThrow(ReviewEntry.COL_REVIEW_SCORE);
         int indexReviewUrl = cursor.getColumnIndexOrThrow(ReviewEntry.COL_REVIEW_URL);
 
-        int id = cursor.getInt(indexReviewId);
+        String id = cursor.getString(indexReviewId);
         String reviewAuthor = cursor.getString(indexReviewAuthor);
         String reviewUrl = cursor.getString(indexReviewUrl);
         String reviewContent = cursor.getString(indexReviewContent);
         int reviewScore = cursor.getInt(indexReviewScore);
 
-        return new Review(String.valueOf(id), reviewAuthor, reviewContent, reviewUrl, reviewScore);
+        return new Review(id, reviewAuthor, reviewContent, reviewUrl, reviewScore);
     }
 
-    public static ContentValues parseValues(Review review) {
+    public static ContentValues parseValues(Review review, String releaseId) {
         ContentValues contentValues = new ContentValues();
 
-        contentValues.put(ReviewEntry.COL_REVIEW_IDENTIFIER, review.getId());
+        contentValues.put(ReviewEntry._ID, review.getId());
+        contentValues.put(ReviewEntry.COL_REVIEW_RELEASE, releaseId);
         contentValues.put(ReviewEntry.COL_REVIEW_AUTHOR, review.getAuthor());
         contentValues.put(ReviewEntry.COL_REVIEW_CONTENT, review.getContent());
         contentValues.put(ReviewEntry.COL_REVIEW_SCORE, review.getScore());

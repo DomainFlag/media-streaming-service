@@ -22,7 +22,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.cchiv.jiggles.R;
@@ -69,6 +68,7 @@ public class HomeActivity extends PlayerAppCompatActivity {
         setContentView(R.layout.activity_home);
 
         Tools.resolveAuthToken(this);
+        Tools.resolveUser(this);
 
         findViewById(R.id.home_account).setOnClickListener((view) -> {
             PopupMenu popup = new PopupMenu(this, view);
@@ -317,8 +317,6 @@ public class HomeActivity extends PlayerAppCompatActivity {
             Tools.onComputeScore(getActivity(), release.getReviews(), scoreView, false);
 
             LinearLayout linearLayout = rootView.findViewById(R.id.dialog_fresh_reviews);
-
-            RelativeLayout relativeLayout = rootView.findViewById(R.id.dialog_background);
             ImageView imageView = rootView.findViewById(R.id.dialog_fresh_caption);
             Picasso.get()
                     .load(release.getUrl())
@@ -326,9 +324,6 @@ public class HomeActivity extends PlayerAppCompatActivity {
                         @Override
                         public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                             imageView.setImageBitmap(bitmap);
-
-                            int color = Tools.getPaletteColor(getActivity(), bitmap);
-                            Tools.setGradientBackground(getActivity(), relativeLayout, color, R.color.iconsTextColor, 255);
                         }
 
                         @Override

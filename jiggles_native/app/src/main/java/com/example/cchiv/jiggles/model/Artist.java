@@ -63,22 +63,22 @@ public class Artist {
         return albums;
     }
 
-    public Album addItem(Collection collection, Track track, String albumName) {
+    public Album addItem(Store store, Track track, String albumName) {
         Album album = new Album(albumName);
-        album.addItem(collection, track);
+        album.addItem(store, track);
 
-        collection.getAlbums().add(album);
+        store.getAlbums().add(album);
         albums.add(album);
 
         return album;
     }
 
-    public Album updateItem(Collection collection, String albumName, Track track) {
+    public Album updateItem(Store store, String albumName, Track track) {
         int it = 0;
         while(it < albums.size()) {
             Album album = albums.get(it);
             if(album.getName() != null && album.getName().equals(albumName)) {
-                album.addItem(collection, track);
+                album.addItem(store, track);
                 album.setArtist(this);
 
                 return null;
@@ -89,7 +89,7 @@ public class Artist {
 
         Album album = new Album(albumName, track);
         album.setArtist(this);
-        collection.getAlbums().add(album);
+        store.getAlbums().add(album);
 
         albums.add(album);
 

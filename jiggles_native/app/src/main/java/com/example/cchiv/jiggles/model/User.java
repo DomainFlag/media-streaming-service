@@ -4,22 +4,28 @@ import java.util.ArrayList;
 
 public class User {
 
+    private String _id;
     private String email;
     private String name;
     private String type;
     private String caption;
     private ArrayList<User> friends;
-    private Collection collection;
+    private Store store;
 
     public User() {}
 
-    public User(String email, String name, String type, String caption, ArrayList<User> friends, Collection collection) {
+    public User(String _id, String email, String name, String type, String caption, ArrayList<User> friends, Store store) {
+        this._id = _id;
         this.email = email;
         this.name = name;
         this.type = type;
         this.caption = caption;
         this.friends = friends;
-        this.collection = collection;
+        this.store = store;
+    }
+
+    public String get_id() {
+        return _id;
     }
 
     public String getEmail() {
@@ -42,7 +48,7 @@ public class User {
         return friends;
     }
 
-    public Collection getCollection() {
-        return collection;
+    public Store getStore() {
+        return store;
     }
 }

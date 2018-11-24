@@ -57,24 +57,6 @@ public class HomeFragment extends Fragment {
         return rootView;
     }
 
-//    @Override
-//    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-//        super.onCreateOptionsMenu(menu, inflater);
-//
-//        inflater.inflate(R.menu.forum_menu, menu);
-//    }
-
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        switch(item.getItemId()) {
-//            case R.menu.forum_menu : {
-//                // Handle the forum menu event
-//                Log.v(TAG, String.valueOf(R.menu.forum_menu));
-//            }
-//            default: return false;
-//        }
-//    }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);

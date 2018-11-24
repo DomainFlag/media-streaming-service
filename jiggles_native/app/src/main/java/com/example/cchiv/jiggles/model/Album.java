@@ -89,10 +89,10 @@ public class Album {
         this.images = images;
     }
 
-    public void addItem(Collection collection, Track track) {
+    public void addItem(Store store, Track track) {
         tracks.add(track);
         track.setAlbum(this);
-        collection.getTracks().add(track);
+        store.getTracks().add(track);
     }
 
     public String getId() {
@@ -118,7 +118,8 @@ public class Album {
     public Artist getArtist() {
         if(artists.size() > 0)
             return artists.get(0);
-        else return null;
+
+        return null;
     }
 
     public List<Image> getImages() {
@@ -127,10 +128,9 @@ public class Album {
 
     public Image getArt() {
         if(images.size() > 0)
-            if(images.size() == 1)
-                return images.get(0);
-            else return images.get(0);
-        else return null;
+            return images.get(0);
+
+        return null;
     }
 
     public static boolean isUnique(Album album, Cursor cursor) {

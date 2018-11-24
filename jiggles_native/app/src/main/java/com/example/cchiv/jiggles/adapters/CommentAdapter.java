@@ -12,7 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.cchiv.jiggles.R;
-import com.example.cchiv.jiggles.model.Comm;
+import com.example.cchiv.jiggles.model.Reply;
 import com.example.cchiv.jiggles.utilities.Tools;
 
 import java.util.List;
@@ -22,9 +22,9 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
     private static final String TAG = "CommentAdapter";
 
     private Context context;
-    private List<Comm> comments;
+    private List<Reply> comments;
 
-    public CommentAdapter(Context context, List<Comm> comments) {
+    public CommentAdapter(Context context, List<Reply> comments) {
         this.context = context;
         this.comments = comments;
     }
@@ -40,7 +40,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
 
     @Override
     public void onBindViewHolder(@NonNull CommentViewHolder holder, int position) {
-        Comm comment = comments.get(position);
+        Reply comment = comments.get(position);
 
         int dimen = (int) context.getResources().getDimension(R.dimen.activity_margin_component);
 
@@ -51,6 +51,18 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
         holder.date.setText(Tools.parseDate(comment.getId()));
         holder.content.setText(comment.getContent());
         holder.like.setText(String.valueOf(comment.getLikes()));
+//        if(comment.getLikes().containsKey(Tools.getUser().get_id()))
+//            holder.like.setBackgroundTintList(ColorStateList.valueOf(context.getResources().getColor(R.color.pleasureColor)));
+
+//        holder.like.setOnClickListener(view -> {
+//            // Resolve up-vote
+//            String token = Tools.getToken(context);
+//            NetworkUtilities.ResolveCommentLike resolveCommentLike = new NetworkUtilities.ResolveCommentLike(result -> {
+//                comments.set(position, result);
+//                notifyItemChanged(position);
+//            }, comment.encodeJSONObject(), NetworkUtilities.RequestAdaptBuilder.TYPE_POST, token);
+//        });
+
         holder.reply.setOnClickListener(view -> {
             if(holder.replyContainer.getVisibility() == View.GONE)
                 holder.replyContainer.setVisibility(View.VISIBLE);
@@ -87,8 +99,6 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
             content = itemView.findViewById(R.id.content);
             like = itemView.findViewById(R.id.like);
             reply = itemView.findViewById(R.id.reply);
-
-            replyContainer = itemView.findViewById(R.id.reply_container);
 
             reply_author = itemView.findViewById(R.id.reply_author);
             reply_value = itemView.findViewById(R.id.reply_value);

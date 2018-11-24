@@ -12,6 +12,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -97,9 +98,9 @@ public class LatestFragment extends Fragment {
 
                     // Do something with the results
                 } catch (RemoteException e) {
-                    e.printStackTrace();
+                    Log.v(TAG, e.toString());
                 } catch (OperationApplicationException e) {
-                    e.printStackTrace();
+                    Log.v(TAG, e.toString());
                 }
 
                 updateLayoutReleases(releases);
@@ -138,6 +139,8 @@ public class LatestFragment extends Fragment {
     }
 
     public void updateLayoutReleases(List<Release> releases) {
+        Log.v(TAG, String.valueOf(releases.size()));
+
         FeatureAdapter.Feature feature = featureAlbumAdapter.onCreateFeature("New", releases);
         featureAlbumAdapter.onSwapData(feature);
     }

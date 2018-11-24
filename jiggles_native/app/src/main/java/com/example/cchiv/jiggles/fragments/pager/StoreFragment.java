@@ -20,7 +20,7 @@ import com.example.cchiv.jiggles.R;
 import com.example.cchiv.jiggles.activities.AlbumActivity;
 import com.example.cchiv.jiggles.adapters.ContentAdapter;
 import com.example.cchiv.jiggles.data.ContentContract;
-import com.example.cchiv.jiggles.model.Collection;
+import com.example.cchiv.jiggles.model.Store;
 import com.example.cchiv.jiggles.utilities.ItemScanner;
 import com.example.cchiv.jiggles.utilities.JigglesLoader;
 
@@ -51,13 +51,13 @@ public class StoreFragment extends Fragment {
             PopupMenu popup = new PopupMenu(context, view);
 
             Menu menu = popup.getMenu();
+            popup.getMenuInflater().inflate(R.menu.collection_menu, menu);
             menu.findItem(R.id.collection_refresh).setOnMenuItemClickListener(item -> {
                 resolveLocalMedia();
 
                 return false;
             });
 
-            popup.getMenuInflater().inflate(R.menu.collection_menu, menu);
             for(int itemMenu : MENU_ITEMS) {
                 menu.findItem(itemMenu).setOnMenuItemClickListener(menuItem -> {
                     Toast.makeText(context, "Filter by", Toast.LENGTH_SHORT).show();
@@ -69,8 +69,8 @@ public class StoreFragment extends Fragment {
         });
 
         JigglesLoader jigglesLoader = new JigglesLoader<>(context,
-                (JigglesLoader.OnPostLoaderCallback<Collection>) this::onUpdateFragment,
-                Collection::parseCursor
+                (JigglesLoader.OnPostLoaderCallback<Store>) this::onUpdateFragment,
+                Store::parseCursor
         );
 
         Bundle args = new Bundle();
@@ -102,8 +102,8 @@ public class StoreFragment extends Fragment {
         this.context = context;
     }
 
-    public void onUpdateFragment(Collection collection) {
-        contentAdapter.swapCollection(collection);
+    public void onUpdateFragment(Store store) {
+        contentAdapter.swapCollection(store);
         contentAdapter.notifyDataSetChanged();
     }
 

@@ -41,8 +41,11 @@ let UserSchema = new mongoose.Schema({
         require: true,
         minlength: 6
     },
-    friends: [ { type : mongoose.Schema.Types.ObjectId, ref : 'User' } ],
-    content: {
+    friends: [{
+        type : mongoose.Schema.Types.ObjectId,
+        ref : 'User'
+    }],
+    store : {
         tracks: [TrackSchema],
         albums: [AlbumSchema],
         artists: [ArtistSchema]

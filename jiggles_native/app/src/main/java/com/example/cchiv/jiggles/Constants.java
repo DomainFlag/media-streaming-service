@@ -53,9 +53,9 @@ public class Constants {
     public static final String QUERY = "query";
     public static final String MAIN = "main";
     public static final String FORUM = "forum";
+    public static final String LIKE = "like";
     public static final String THREAD = "thread";
-    public static final String THREADS = "threads";
-    public static final String COMMENT = "comment";
+    public static final String REPLY = "reply";
 
     public static final String FRESH = "fresh";
     public static final String NEWS = "news";

@@ -14,7 +14,7 @@ import android.widget.TextView;
 import com.example.cchiv.jiggles.R;
 import com.example.cchiv.jiggles.model.Album;
 import com.example.cchiv.jiggles.model.Artist;
-import com.example.cchiv.jiggles.model.Collection;
+import com.example.cchiv.jiggles.model.Store;
 import com.example.cchiv.jiggles.model.Image;
 import com.example.cchiv.jiggles.model.Track;
 import com.example.cchiv.jiggles.utilities.Tools;
@@ -48,17 +48,17 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private Context context = null;
 
     private OnItemClickListener onItemClickListener;
-    private Collection collection;
+    private Store store;
     private int layoutMode = MODE_ALBUM;
 
-    public ContentAdapter(Context context, Collection collection) {
+    public ContentAdapter(Context context, Store store) {
         this.context = context;
-        this.collection = collection;
+        this.store = store;
     }
 
-    public ContentAdapter(Context context, Collection collection, int layoutMode, OnItemClickListener onItemClickListener) {
+    public ContentAdapter(Context context, Store store, int layoutMode, OnItemClickListener onItemClickListener) {
         this.context = context;
-        this.collection = collection;
+        this.store = store;
         this.onItemClickListener = onItemClickListener;
         this.layoutMode = layoutMode;
     }
@@ -94,7 +94,7 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     private void onBindArtistViewHolder(ArtistViewHolder holder, int position) {
-        Artist artist = collection.getArtists().get(position);
+        Artist artist = store.getArtists().get(position);
 
         List<Image> images = artist.getImages();
         if(images.size() > 0)
@@ -106,7 +106,7 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     private void onBindAlbumViewHolder(AlbumViewHolder holder, int position) {
-        Album album = collection.getAlbums().get(position);
+        Album album = store.getAlbums().get(position);
 
         holder.name.setText(album.getName());
 
@@ -167,7 +167,7 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     private void onBindTrackViewHolder(TrackViewHolder holder, int position) {
-        Track track = collection.getTrack(position);
+        Track track = store.getTrack(position);
 
         holder.name.setText(track.getName());
 
@@ -220,8 +220,8 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         return -1;
     }
 
-    public void swapCollection(Collection collection) {
-        this.collection = collection;
+    public void swapCollection(Store store) {
+        this.store = store;
     }
 
     public void swapLayoutMode(int layoutMode) {
@@ -230,13 +230,13 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public int getItemCount() {
-        if(collection == null)
+        if(store == null)
             return 0;
 
         switch(layoutMode) {
-            case MODE_ARTIST : return collection.getArtists().size();
-            case MODE_ALBUM : return collection.getAlbums().size();
-            case MODE_TRACK : return collection.getTracks().size();
+            case MODE_ARTIST : return store.getArtists().size();
+            case MODE_ALBUM : return store.getAlbums().size();
+            case MODE_TRACK : return store.getTracks().size();
         }
 
         return 0;

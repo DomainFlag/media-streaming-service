@@ -94,11 +94,10 @@ public class ContentDbHelper extends SQLiteOpenHelper {
 
         // Notification
         String sqlNotificationQuery = "CREATE TABLE " + NotificationEntry.TABLE_NAME + " (" +
-                NotificationEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                NotificationEntry._ID + " TEXT PRIMARY KEY, " +
                 NotificationEntry.COL_NOTIFICATION_AUTHOR + " TEXT NOT NULL, " +
                 NotificationEntry.COL_NOTIFICATION_TYPE + " TEXT NOT NULL, " +
                 NotificationEntry.COL_NOTIFICATION_RESOURCE + " TEXT NOT NULL, " +
-                NotificationEntry.COL_NOTIFICATION_IDENTIFIER + " INTEGER NOT NULL, " +
                 NotificationEntry.COL_NOTIFICATION_VOTES + " INTEGER DEFAULT 0 " +
                 ")";
 
@@ -116,8 +115,7 @@ public class ContentDbHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(sqlThreadQuery);
 
         String sqlReviewQuery = "CREATE TABLE " + ReviewEntry.TABLE_NAME + " (" +
-                ReviewEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                ReviewEntry.COL_REVIEW_IDENTIFIER + " TEXT UNIQUE NOT NULL, " +
+                ReviewEntry._ID + " TEXT PRIMARY KEY, " +
                 ReviewEntry.COL_REVIEW_AUTHOR + " TEXT NOT NULL, " +
                 ReviewEntry.COL_REVIEW_RELEASE + " INTEGER REFERENCES " +
                     ReleaseEntry.TABLE_NAME + "(" + ReleaseEntry._ID + ")" + ", " +
@@ -129,8 +127,7 @@ public class ContentDbHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(sqlReviewQuery);
 
         String sqlReleaseQuery = "CREATE TABLE " + ReleaseEntry.TABLE_NAME + " (" +
-                ReleaseEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                ReleaseEntry.COL_RELEASE_IDENTIFIER + " TEXT UNIQUE NOT NULL, " +
+                ReleaseEntry._ID + " TEXT PRIMARY KEY, " +
                 ReleaseEntry.COL_RELEASE_TITLE + " TEXT NOT NULL, " +
                 ReleaseEntry.COL_RELEASE_ARTIST + " TEXT NOT NULL, " +
                 ReleaseEntry.COL_RELEASE_URL + " TEXT NOT NULL " +
@@ -139,9 +136,8 @@ public class ContentDbHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(sqlReleaseQuery);
 
         String sqlNewsQuery = "CREATE TABLE " + NewsEntry.TABLE_NAME + " (" +
-                NewsEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                NewsEntry.COL_NEWS_IDENTIFIER + " TEXT UNIQUE NOT NULL, " +
-                NewsEntry.COL_NEWS_AUTHOR + " TEXT NOT NULL, " +
+                NewsEntry._ID + " TEXT PRIMARY KEY, " +
+                NewsEntry.COL_NEWS_AUTHOR + " TEXT, " +
                 NewsEntry.COL_NEWS_HEADER + " TEXT NOT NULL, " +
                 NewsEntry.COL_NEWS_CAPTION + " TEXT NOT NULL " +
                 ")";

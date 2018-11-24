@@ -355,7 +355,7 @@ public class RemoteConnection implements OnSearchPairedDevices {
             try {
                 mmOutStream.write(bytes);
 
-                Log.v(TAG, "Message written successfully");
+                Log.v(TAG, "Notification written successfully");
             } catch (IOException e) {
                 Log.e(TAG, "Error occurred when sending data", e);
             }

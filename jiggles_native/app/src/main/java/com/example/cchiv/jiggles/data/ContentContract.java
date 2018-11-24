@@ -152,7 +152,6 @@ public class ContentContract {
         public static final String COL_NOTIFICATION_AUTHOR = "notification_author";
         public static final String COL_NOTIFICATION_TYPE = "notification_type";
         public static final String COL_NOTIFICATION_RESOURCE = "notification_resource";
-        public static final String COL_NOTIFICATION_IDENTIFIER = "notification_identifier";
         public static final String COL_NOTIFICATION_VOTES = "notification_votes";
     }
 
@@ -167,7 +166,6 @@ public class ContentContract {
         public static final String TABLE_NAME = "review";
 
         public static final String _ID = TABLE_NAME + BaseColumns._ID;
-        public static final String COL_REVIEW_IDENTIFIER = "review_identifier";
         public static final String COL_REVIEW_AUTHOR = "review_author";
         public static final String COL_REVIEW_RELEASE = "review_release";
         public static final String COL_REVIEW_CONTENT = "review_content";
@@ -190,7 +188,6 @@ public class ContentContract {
                 " ON (" + getColumnAliased(TABLE_NAME, ReleaseEntry._ID) + " = " + getColumnAliased(ReviewEntry.TABLE_NAME, ReviewEntry.COL_REVIEW_RELEASE) + ");";
 
         public static final String _ID = TABLE_NAME + BaseColumns._ID;
-        public static final String COL_RELEASE_IDENTIFIER = "release_identifier";
         public static final String COL_RELEASE_TITLE = "release_title";
         public static final String COL_RELEASE_ARTIST = "release_artist";
         public static final String COL_RELEASE_URL = "release_url";
@@ -208,7 +205,6 @@ public class ContentContract {
         public static final String TABLE_NAME = "news";
 
         public static final String _ID = TABLE_NAME + BaseColumns._ID;
-        public static final String COL_NEWS_IDENTIFIER = "news_identifier";
         public static final String COL_NEWS_AUTHOR = "news_author";
         public static final String COL_NEWS_HEADER = "news_header";
         public static final String COL_NEWS_CAPTION = "news_caption";

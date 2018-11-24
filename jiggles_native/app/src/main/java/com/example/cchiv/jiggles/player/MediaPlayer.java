@@ -8,7 +8,7 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
 import com.example.cchiv.jiggles.model.Album;
-import com.example.cchiv.jiggles.model.Collection;
+import com.example.cchiv.jiggles.model.Store;
 import com.example.cchiv.jiggles.model.Track;
 import com.example.cchiv.jiggles.player.listeners.PlayerAnalyticsListener;
 import com.example.cchiv.jiggles.player.listeners.PlayerEventListener;
@@ -49,7 +49,7 @@ public class MediaPlayer {
 
     private OnTrackStateChanged onTrackStateChanged;
 
-    private Collection collection;
+    private Store store;
 
     private PlayerMediaSession playerMediaSession = null;
     private VisualizerView visualizerView = null;
@@ -74,7 +74,7 @@ public class MediaPlayer {
         if(exoPlayer != null) {
             int index = exoPlayer.getCurrentWindowIndex();
 
-            return collection.getTrack(index);
+            return store.getTrack(index);
         }
 
         return null;
@@ -135,10 +135,10 @@ public class MediaPlayer {
         onTrackStateChanged.onTrackStateChanged(getCurrentTrack());
     }
 
-    public void prepareExoPlayerFromByteArray(Collection collection) {
-        this.collection = collection;
+    public void prepareExoPlayerFromByteArray(Store store) {
+        this.store = store;
 
-        DataFetcher dataFetcher = new DataFetcher(collection.getTracks().get(0));
+        DataFetcher dataFetcher = new DataFetcher(store.getTracks().get(0));
         PipedInputStream pipedInputStream = dataFetcher.getPipedInputStream();
         dataFetcher.start();
 
@@ -169,20 +169,20 @@ public class MediaPlayer {
         return concatenatingMediaSource;
     }
 
-    public void setSource(Collection collection) {
-        this.collection = collection;
+    public void setSource(Store store) {
+        this.store = store;
 
         DefaultDataSourceFactory defaultDataSourceFactory = new DefaultDataSourceFactory(context,
                 Util.getUserAgent(context, context.getPackageName()));
 
         ExtractorMediaSource.Factory factory = new ExtractorMediaSource.Factory(defaultDataSourceFactory);
-        if(collection.getTracks().size() > 1) {
-            ConcatenatingMediaSource concatenatingMediaSource = setMultipleSources(factory, collection.getAlbums().get(0));
+        if(store.getTracks().size() > 1) {
+            ConcatenatingMediaSource concatenatingMediaSource = setMultipleSources(factory, store.getAlbums().get(0));
 
             exoPlayer.prepare(concatenatingMediaSource);
         } else {
             MediaSource mediaSource = factory.createMediaSource(
-                    Uri.parse(collection.getTracks().get(0).getUri()));
+                    Uri.parse(store.getTracks().get(0).getUri()));
 
             exoPlayer.prepare(mediaSource);
         }
@@ -247,8 +247,8 @@ public class MediaPlayer {
         visualizer.release();
     }
 
-    public Collection getCollection() {
-        return collection;
+    public Store getStore() {
+        return store;
     }
 
     public SimpleExoPlayer getExoPlayer() {

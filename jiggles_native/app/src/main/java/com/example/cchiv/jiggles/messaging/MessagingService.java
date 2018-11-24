@@ -1,6 +1,5 @@
 package com.example.cchiv.jiggles.messaging;
 
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.os.Build;
@@ -9,7 +8,7 @@ import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 
 import com.example.cchiv.jiggles.R;
-import com.example.cchiv.jiggles.model.Message;
+import com.example.cchiv.jiggles.model.Notification;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -33,12 +32,12 @@ public class MessagingService extends FirebaseMessagingService {
     public void onMessageReceived(RemoteMessage remoteMessage) {
         Map<String, String> data = remoteMessage.getData();
 
-        Message message = Message.decodeMessage(data);
+        Notification message = Notification.decodeMessage(data);
 
-//        ContentValues contentValues = Message.parseValues(message);
+//        ContentValues contentValues = Notification.parseValues(message);
 //        getContentResolver().insert(NotificationEntry.CONTENT_URI, contentValues);
 
-        Notification notification = buildNotification(message);
+        android.app.Notification notification = buildNotification(message);
         createNotificationChannel();
 
         NotificationManagerCompat.from(this).notify(MESSAGING_ID, notification);
@@ -46,13 +45,13 @@ public class MessagingService extends FirebaseMessagingService {
         super.onMessageReceived(remoteMessage);
     }
 
-    private Notification buildNotification(Message message) {
+    private android.app.Notification buildNotification(Notification notification) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, MESSAGING_CHANNEL_ID);
 
         return builder
                 .setSmallIcon(R.drawable.ic_microphone)
-                .setContentTitle("New message")
-                .setContentText(message.getType())
+                .setContentTitle("New notification")
+                .setContentText(notification.getType())
                 .setPriority(NotificationCompat.PRIORITY_LOW)
                 .build();
     }
