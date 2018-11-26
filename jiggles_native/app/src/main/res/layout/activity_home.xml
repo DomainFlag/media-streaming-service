@@ -16,8 +16,9 @@
         <include layout="@layout/player_bar_layout"/>
 
         <android.support.v7.widget.Toolbar
+            android:id="@+id/home_bar_main"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
+            android:layout_height="48dp"
             android:padding="0dp"
             android:contentInsetLeft="0dp"
             android:contentInsetStart="0dp"
@@ -31,9 +32,8 @@
             app:layout_scrollFlags="scroll|enterAlways">
 
             <LinearLayout
-                android:id="@+id/home_bar"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
+                android:layout_height="match_parent"
                 android:background="@color/iconsTextColor"
                 android:orientation="horizontal"
                 android:gravity="center">
@@ -46,12 +46,13 @@
                     android:src="@drawable/ic_account"/>
 
                 <TextView
-                    android:id="@+id/home_notication"
+                    android:id="@+id/home_notification"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center"
                     android:text="4 people nearby listening to music"
+                    android:textSize="@dimen/activity_text_span"
                     android:lines="2"
                     android:minLines="2"
                     android:singleLine="false"/>
@@ -60,8 +61,8 @@
                     android:id="@+id/home_menu"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:alpha="0.8"
-                    android:padding="@dimen/activity_margin_gap"
+                    android:tint="@color/secondaryColor"
+                    android:padding="@dimen/activity_margin_component"
                     android:src="@drawable/ic_menu"/>
 
             </LinearLayout>
@@ -83,12 +84,19 @@
             android:layout_weight="1"
             tools:context=".activities.HomeActivity"/>
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:alpha="0.15"
+            android:background="@color/unexpectedColor"/>
+
         <android.support.design.widget.TabLayout
             android:id="@+id/tab_layout"
             android:background="@color/iconsTextColor"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_gravity="bottom"
+            app:tabIndicatorColor="@android:color/transparent"
             app:tabGravity="fill"/>
 
     </LinearLayout>

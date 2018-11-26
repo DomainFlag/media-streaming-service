@@ -15,6 +15,7 @@ import com.example.cchiv.jiggles.model.Track;
 import com.example.cchiv.jiggles.player.MediaPlayer;
 import com.example.cchiv.jiggles.services.PlayerService;
 import com.example.cchiv.jiggles.services.PlayerServiceConnection;
+import com.example.cchiv.jiggles.utilities.Tools;
 
 public abstract class PlayerAppCompatActivity extends AppCompatActivity implements
         PlayerService.OnCallbackListener, PlayerServiceConnection.OnCallbackConnectionComplete {
@@ -67,6 +68,7 @@ public abstract class PlayerAppCompatActivity extends AppCompatActivity implemen
                 startActivity(intent);
             });
 
+            Tools.setGradientBackground(this, barPlayerLayout, track.getAlbum().getImages().get(0).getColor(), 255);
             switch(playbackStateCompat) {
                 case PlaybackStateCompat.STATE_PLAYING : {
                     barPlayerController.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.exo_controls_pause));

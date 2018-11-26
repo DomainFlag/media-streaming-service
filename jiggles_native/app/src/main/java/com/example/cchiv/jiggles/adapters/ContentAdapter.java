@@ -2,6 +2,7 @@ package com.example.cchiv.jiggles.adapters;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
@@ -14,11 +15,12 @@ import android.widget.TextView;
 import com.example.cchiv.jiggles.R;
 import com.example.cchiv.jiggles.model.Album;
 import com.example.cchiv.jiggles.model.Artist;
-import com.example.cchiv.jiggles.model.Store;
 import com.example.cchiv.jiggles.model.Image;
+import com.example.cchiv.jiggles.model.Store;
 import com.example.cchiv.jiggles.model.Track;
 import com.example.cchiv.jiggles.utilities.Tools;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.util.List;
 
@@ -108,10 +110,9 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private void onBindAlbumViewHolder(AlbumViewHolder holder, int position) {
         Album album = store.getAlbums().get(position);
 
-        holder.name.setText(album.getName());
+        loadAlbumArt(album, holder);
 
-        int rightColor = onLoadAlbumArt(album, holder);
-        Tools.setGradientBackground(context, holder.itemView, rightColor, 255);
+        holder.name.setText(album.getName());
 
         Artist artist = album.getArtist();
         if(artist != null) {
@@ -129,38 +130,60 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         });
     }
 
-    private int onLoadAlbumArt(Album album, AlbumViewHolder holder) {
+    private void loadAlbumArt(Album album, AlbumViewHolder holder) {
         List<Image> images = album.getImages();
 
+        int color;
         if(images != null && images.size() > 0) {
-            if(images.size() == 1) {
-                loadArtAlbum(images.get(0), holder.art);
+            color = images.get(0).getColor();
 
-                holder.artSecondary.setVisibility(View.INVISIBLE);
-                return images.get(0).getColor();
-            } else {
-                loadArtAlbum(images.get(1), holder.art);
-                loadArtAlbum(images.get(0), holder.artSecondary);
+            loadArtAlbum(images.get(0), holder, holder.art, color);
+            if(images.size() != 1) {
+                loadArtAlbum(images.get(1), holder, holder.artSecondary, null);
 
                 holder.artSecondary.setVisibility(View.VISIBLE);
+            } else {
+                holder.artSecondary.setVisibility(View.INVISIBLE);
             }
-
-            return images.get(0).getColor();
         } else {
             holder.art.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_artwork_placeholder));
 
-            return ContextCompat.getColor(context, R.color.motionPrimaryDarkColor);
+            color = ContextCompat.getColor(context, R.color.motionPrimaryDarkColor);
         }
+
+        if(color != 0)
+            Tools.setGradientBackground(context, holder.itemView, color, 255);
     }
 
-    private void loadArtAlbum(Image image, ImageView imageView) {
+    private void loadArtAlbum(Image image, AlbumViewHolder holder, ImageView imageView, Integer color) {
         Bitmap bitmap = image.getBitmap();
         if(bitmap == null) {
             Picasso.get()
                     .load(image.getUrl())
                     .placeholder(R.drawable.ic_artwork_placeholder)
                     .error(R.drawable.ic_artwork_placeholder)
-                    .into(imageView);
+                    .into(new Target() {
+                        @Override
+                        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                            imageView.setImageBitmap(bitmap);
+
+                            if(color != null && color == 0) {
+                                int paletteColor = Tools.getPaletteColor(context, bitmap);
+
+                                Tools.setGradientBackground(context, holder.itemView, paletteColor, 255);
+                            }
+                        }
+
+                        @Override
+                        public void onBitmapFailed(Exception e, Drawable errorDrawable) {
+                            imageView.setImageDrawable(errorDrawable);
+                        }
+
+                        @Override
+                        public void onPrepareLoad(Drawable placeHolderDrawable) {
+                            imageView.setImageDrawable(placeHolderDrawable);
+                        }
+                    });
         } else {
             imageView.setImageBitmap(bitmap);
         }

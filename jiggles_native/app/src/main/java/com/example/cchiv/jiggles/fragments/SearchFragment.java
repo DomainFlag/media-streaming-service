@@ -1,4 +1,4 @@
-package com.example.cchiv.jiggles.fragments.pager;
+package com.example.cchiv.jiggles.fragments;
 
 import android.app.Activity;
 import android.content.Context;
@@ -19,7 +19,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.cchiv.jiggles.R;
@@ -30,8 +30,6 @@ import com.example.cchiv.jiggles.utilities.Tools;
 public class SearchFragment extends Fragment implements TextView.OnEditorActionListener {
 
     private final static String TAG = "SearchFragment";
-
-    private static final int SPAN_COLS = 1;
 
     private Context context;
 
@@ -51,25 +49,25 @@ public class SearchFragment extends Fragment implements TextView.OnEditorActionL
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        rootView = inflater.inflate(R.layout.fragment_search, container, false);
+        rootView = inflater.inflate(R.layout.fragment_search_layout, container, false);
 
         RecyclerView recyclerView = rootView.findViewById(R.id.search_result);
         recyclerView.setNestedScrollingEnabled(true);
 
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(context, SPAN_COLS, GridLayoutManager.VERTICAL, false);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(context, 1, GridLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(gridLayoutManager);
 
         contentAdapter = new ContentAdapter(context, null);
         recyclerView.setAdapter(contentAdapter);
 
-        ImageButton imageButton = rootView.findViewById(R.id.search_close);
-        imageButton.setOnClickListener(view -> ((Activity) context).onBackPressed());
+        ImageView imageView = rootView.findViewById(R.id.home_bar_switch);
+        imageView.setOnClickListener(view -> ((Activity) context).onBackPressed());
 
-        EditText editText = (EditText) rootView.findViewById(R.id.search_edit);
+        EditText editText = rootView.findViewById(R.id.home_bar_edit);
         editText.setOnEditorActionListener(this);
         editText.requestFocus();
 
-        editTextBorder = rootView.findViewById(R.id.search_edit_border);
+        editTextBorder = rootView.findViewById(R.id.home_bar_border);
 
         TextWatcher textWatcher = new TextWatcher() {
             @Override
@@ -77,6 +75,8 @@ public class SearchFragment extends Fragment implements TextView.OnEditorActionL
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                fetchQueryResults(charSequence.toString());
+
                 int len = charSequence.length();
 
                 if(len == 0 || charSequence.equals(getResources().getString(R.string.search_hint))) {
@@ -109,7 +109,6 @@ public class SearchFragment extends Fragment implements TextView.OnEditorActionL
         if(token != null) {
             NetworkUtilities.FetchSearchResults fetchSearchResults = new NetworkUtilities
                     .FetchSearchResults(collection -> {
-                // Do something with the collection
                 contentAdapter.swapCollection(collection);
                 contentAdapter.notifyDataSetChanged();
             }, query, token);
@@ -119,7 +118,7 @@ public class SearchFragment extends Fragment implements TextView.OnEditorActionL
     @Override
     public boolean onEditorAction(TextView textView, int actionType, KeyEvent keyEvent) {
         if(actionType == EditorInfo.IME_ACTION_SEARCH) {
-            EditText editText = (EditText) rootView.findViewById(R.id.search_edit);
+            EditText editText = (EditText) rootView.findViewById(R.id.home_bar_edit);
             editText.clearFocus();
 
             InputMethodManager inputMethodManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);

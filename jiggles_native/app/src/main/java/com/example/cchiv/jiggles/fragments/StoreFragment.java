@@ -1,4 +1,4 @@
-package com.example.cchiv.jiggles.fragments.pager;
+package com.example.cchiv.jiggles.fragments;
 
 import android.content.Context;
 import android.content.Intent;
@@ -51,7 +51,7 @@ public class StoreFragment extends Fragment {
             PopupMenu popup = new PopupMenu(context, view);
 
             Menu menu = popup.getMenu();
-            popup.getMenuInflater().inflate(R.menu.collection_menu, menu);
+            popup.getMenuInflater().inflate(R.menu.store_menu, menu);
             menu.findItem(R.id.collection_refresh).setOnMenuItemClickListener(item -> {
                 resolveLocalMedia();
 

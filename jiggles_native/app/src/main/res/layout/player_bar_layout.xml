@@ -29,7 +29,7 @@
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:contentDescription="@string/home_bar_controller"
-        android:layout_marginRight="@dimen/activity_margin_relative"
+        android:layout_marginRight="1dp"
         android:paddingHorizontal="@dimen/activity_margin_closer"
         android:paddingVertical="@dimen/activity_margin_sibling"
         android:src="@drawable/exo_icon_pause"/>

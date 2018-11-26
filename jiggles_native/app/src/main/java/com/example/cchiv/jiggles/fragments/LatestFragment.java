@@ -1,4 +1,4 @@
-package com.example.cchiv.jiggles.fragments.pager;
+package com.example.cchiv.jiggles.fragments;
 
 import android.content.ContentProviderResult;
 import android.content.ContentValues;

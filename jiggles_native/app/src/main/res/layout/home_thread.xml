@@ -46,42 +46,6 @@
             tools:tint="@color/iconsTextColor"/>
 
         <LinearLayout
-            android:id="@+id/thread_menu_layout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignEnd="@id/thread_menu_button"
-            android:layout_alignRight="@id/thread_menu_button"
-            android:layout_below="@+id/thread_menu_button"
-            android:layout_marginHorizontal="@dimen/activity_margin_section"
-            android:background="@drawable/border_round"
-            android:backgroundTint="@color/pleasureColor"
-            android:elevation="@dimen/button_elevation"
-            android:orientation="vertical"
-            android:padding="@dimen/activity_margin_relative"
-            android:visibility="gone">
-
-            <TextView
-                android:id="@+id/thread_menu_edit"
-                style="@style/thread_menu"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:drawableLeft="@drawable/ic_create"
-                android:drawableStart="@drawable/ic_create"
-                android:text="@string/thread_edit"/>
-
-            <TextView
-                android:id="@+id/thread_menu_delete"
-                style="@style/thread_menu"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/activity_margin_relative"
-                android:drawableLeft="@drawable/ic_rubbish_bin"
-                android:drawableStart="@drawable/ic_rubbish_bin"
-                android:text="@string/thread_delete"/>
-
-        </LinearLayout>
-
-        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"

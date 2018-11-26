@@ -24,7 +24,7 @@ let {Thread} = require("./models/thread");
 let {Social} = require("./models/social");
 let {Release} = require("./models/release");
 
-const ENTERTAINMENT_TYPES = {
+const STORE_PROJECTION = {
     track : ['id', 'name', 'uri', 'track_number', 'type', 'images', 'artists'],
     album : ['id', 'name', 'release_date', 'uri', 'type', 'images', 'artists'],
     artist : ['name', 'type', 'uri', 'id', 'genres']
@@ -171,9 +171,9 @@ function returnQueryPromise(req, searchBy, searchType) {
                 data[type].items.forEach((item) => {
                     item['favourite'] = false;
 
-                    req.user.content[type].forEach((itemColl) => {
-                        if(itemColl.id === item.id)
-                            item['favourite'] = true;
+                    req.user.store[type].forEach((itemStore) => {
+                        if(itemStore.id === item.id)
+                            item["favourite"] = true;
                     })
                 });
 
@@ -461,6 +461,9 @@ app.delete(/^\/forum\/thread/, function(req, res) {
     });
 });
 
+/**
+ * Get fresh content
+ */
 app.get(/^\/main\/fresh$/, function(req, res) {
     Release.find({}, null, { limit : 1 })
         .then((data) => {
@@ -475,32 +478,36 @@ app.get(/^\/main\/fresh$/, function(req, res) {
         });
 });
 
-/* Collection content(GET, POST, DELETE) */
-app.get(/\/users\/collection/, (req, res) => {
+/**
+ * Get user's store
+ */
+app.get(/\/user\/store/, (req, res) => {
     let contentType = req.params[0];
 
-    simpleResponseQuery(res, 200, req.user.content[contentType], "application/json");
+    simpleResponseQuery(res, 200, req.user.store[contentType], "application/json");
 });
 
-app.post(/\/users\/collection\/(track|album|artist)/, (req, res) => {
-    let contentType = req.params[0];
-    let body = _.pick(req.body, ENTERTAINMENT_TYPES[contentType]);
+/**
+ * Save an item to the user's store
+ */
+app.post(/\/users\/store\/(tracks|albums|artists)/, (req, res) => {
+    let type = req.params[0];
+    let body = _.pick(req.body, STORE_PROJECTION[type]);
 
-    req.user.content[contentType+'s'].push(body);
+    req.user.store[type].push(body);
     req.user.save().then((result) => {
-        simpleResponseQuery(res, 200, { user : req.user }, "application/json");
+        simpleResponseQuery(res, 200, result, "application/json");
     }).catch((error) => {
-        console.log(error);
-        simpleResponseQuery(res, 401, "couldn't save content");
+        simpleResponseQuery(res, 401, "couldn't save the store");
     });
 });
 
-app.delete(/\/users\/collection\/(track|album|artist)/, (req, res) => {
-    let contentType = req.params[0];
-    let body = _.pick(req.body, ENTERTAINMENT_TYPES[contentType]);
+app.delete(/\/users\/store\/(tracks|albums|artists)/, (req, res) => {
+    let type = req.params[0];
+    let body = _.pick(req.body, STORE_PROJECTION[type]);
 
-    req.user.content[contentType + 's'] = req.user.content[contentType + 's'].filter((content) => {
-        return content.id !== body.id;
+    req.user.content[type] = req.user.content[type].filter((item) => {
+        return item.id !== body.id;
     });
 
     req.user.save().then(() => {

@@ -6,8 +6,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.cchiv.jiggles.R;
@@ -15,8 +15,8 @@ import com.example.cchiv.jiggles.adapters.ContentAdapter;
 import com.example.cchiv.jiggles.data.ContentContract;
 import com.example.cchiv.jiggles.model.Album;
 import com.example.cchiv.jiggles.model.Artist;
-import com.example.cchiv.jiggles.model.Store;
 import com.example.cchiv.jiggles.model.Image;
+import com.example.cchiv.jiggles.model.Store;
 import com.example.cchiv.jiggles.services.PlayerService;
 import com.example.cchiv.jiggles.utilities.JigglesLoader;
 import com.example.cchiv.jiggles.utilities.Tools;
@@ -95,9 +95,9 @@ public class AlbumActivity extends PlayerAppCompatActivity {
                 .into(thumbnail);
 
 
-        LinearLayout linearLayout = findViewById(R.id.album_background);
+        View view = findViewById(R.id.album_background);
 
-        Tools.setGradientBackground(this, linearLayout, image.getColor(), 255);
+        Tools.setGradientBackground(this, view, image.getColor(), 255);
         Tools.setStatusBarColor(this, image.getColor());
 
         Artist artist = album.getArtist();

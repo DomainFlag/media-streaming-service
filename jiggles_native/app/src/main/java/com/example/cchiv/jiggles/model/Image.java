@@ -14,7 +14,7 @@ public class Image {
     public String id;
     public int height;
     public int width;
-    public int color;
+    public int color = -1;
     private String url = null;
     private Bitmap bitmap = null;
 

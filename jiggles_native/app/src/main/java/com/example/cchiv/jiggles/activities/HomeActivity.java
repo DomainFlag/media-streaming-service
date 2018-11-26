@@ -25,10 +25,10 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.example.cchiv.jiggles.R;
-import com.example.cchiv.jiggles.fragments.pager.HomeFragment;
-import com.example.cchiv.jiggles.fragments.pager.LatestFragment;
-import com.example.cchiv.jiggles.fragments.pager.SearchFragment;
-import com.example.cchiv.jiggles.fragments.pager.StoreFragment;
+import com.example.cchiv.jiggles.fragments.HomeFragment;
+import com.example.cchiv.jiggles.fragments.LatestFragment;
+import com.example.cchiv.jiggles.fragments.SearchFragment;
+import com.example.cchiv.jiggles.fragments.StoreFragment;
 import com.example.cchiv.jiggles.model.Release;
 import com.example.cchiv.jiggles.utilities.NetworkUtilities;
 import com.example.cchiv.jiggles.utilities.Tools;
@@ -43,9 +43,6 @@ public class HomeActivity extends PlayerAppCompatActivity {
     private static final String TAG = "HomeActivity";
 
     private static final int HOME_NUM_PAGES = 4;
-
-    private ViewPager viewPager;
-    private TabLayout tabLayout;
 
     public static final int[] TAB_ICONS_ARRAY = {
             R.drawable.ic_home,
@@ -62,6 +59,11 @@ public class HomeActivity extends PlayerAppCompatActivity {
     };
 
     public static final int ARRAY_TAB_TITLES = R.array.home_pager_fragments;
+
+    private ViewPager viewPager;
+    private TabLayout tabLayout;
+
+    private boolean toggleBarLayout = false;
 
     @Override
     protected void onCreateActivity(@Nullable Bundle savedInstanceState) {
@@ -128,6 +130,14 @@ public class HomeActivity extends PlayerAppCompatActivity {
         }
     }
 
+    public void onToggleBarLayout(boolean toggleBarLayout) {
+        this.toggleBarLayout = toggleBarLayout;
+
+        if(toggleBarLayout)
+            findViewById(R.id.home_bar_main).setVisibility(View.GONE);
+        else findViewById(R.id.home_bar_main).setVisibility(View.VISIBLE);
+    }
+
     public void setFreshDialog() {
         FreshDialogFragment dialogFragment = new FreshDialogFragment();
 
@@ -169,6 +179,10 @@ public class HomeActivity extends PlayerAppCompatActivity {
                 }
             }
         }
+
+        if(position == 3)
+            onToggleBarLayout(true);
+        else onToggleBarLayout(false);
     }
 
     public class SliderPageAdapter extends FragmentPagerAdapter {
@@ -273,6 +287,8 @@ public class HomeActivity extends PlayerAppCompatActivity {
 
         private View rootView;
 
+        private boolean dismissed = false;
+
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -286,6 +302,8 @@ public class HomeActivity extends PlayerAppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     FreshDialogFragment.this.getDialog().dismiss();
+
+                    dismissed = true;
                 }
             });
 
@@ -296,7 +314,7 @@ public class HomeActivity extends PlayerAppCompatActivity {
         }
 
         public void onUpdateDialog(List<Release> releases) {
-            if(releases == null || releases.size() == 0)
+            if(dismissed || releases == null || releases.size() == 0)
                 return;
 
             Release release = releases.get(0);
@@ -314,6 +332,7 @@ public class HomeActivity extends PlayerAppCompatActivity {
                     rootView.findViewById(R.id.dialog_release_score),
                     rootView.findViewById(R.id.dialog_release_impact)
             );
+
             Tools.onComputeScore(getActivity(), release.getReviews(), scoreView, false);
 
             LinearLayout linearLayout = rootView.findViewById(R.id.dialog_fresh_reviews);

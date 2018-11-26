@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.widget.Toast;
 
 import com.example.cchiv.jiggles.data.ContentContract;
 import com.example.cchiv.jiggles.data.ContentContract.TrackEntry;
@@ -41,16 +40,12 @@ public class PlayerService extends Service implements MediaPlayer.OnTrackStateCh
 
     @Override
     public void onCreate() {
-        Toast.makeText(this, "Service Created", Toast.LENGTH_SHORT).show();
-
         mediaPlayer = new MediaPlayer(this);
         playerMediaSession = new PlayerMediaSession(this, mediaPlayer);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Toast.makeText(this, "Service starting", Toast.LENGTH_SHORT).show();
-
         if(intent != null) {
             Bundle bundle = intent.getExtras();
             if(bundle != null) {

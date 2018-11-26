@@ -1,4 +1,4 @@
-package com.example.cchiv.jiggles.fragments.pager;
+package com.example.cchiv.jiggles.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -15,7 +15,6 @@ import android.view.ViewGroup;
 
 import com.example.cchiv.jiggles.R;
 import com.example.cchiv.jiggles.adapters.ThreadAdapter;
-import com.example.cchiv.jiggles.fragments.ThreadFragment;
 import com.example.cchiv.jiggles.utilities.NetworkUtilities;
 
 public class HomeFragment extends Fragment {

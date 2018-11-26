@@ -1,17 +1,22 @@
 package com.example.cchiv.jiggles.adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.v7.view.menu.MenuBuilder;
+import android.support.v7.view.menu.MenuPopupHelper;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.example.cchiv.jiggles.Constants;
@@ -32,8 +37,6 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ThreadView
 
     private List<Thread> threads;
     private Context context;
-
-    private boolean menuToggle = false;
 
     public ThreadAdapter(Context context, List<Thread> threads) {
         this.context = context;
@@ -112,11 +115,8 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ThreadView
         buildThreadRepliesTree(holder, thread);
 
         holder.menuButton.setOnClickListener((view) -> {
-            if(menuToggle)
-                holder.menuLayout.setVisibility(View.GONE);
-            else holder.menuLayout.setVisibility(View.VISIBLE);
-
-            menuToggle = !menuToggle;
+            PopupMenu popupMenu = new ThreadPopupMenu(context, holder.menuButton);
+            popupMenu.show();
         });
     }
 
@@ -167,10 +167,7 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ThreadView
         private TextView repliesView;
         private TextView followersView;
 
-        private LinearLayout menuLayout;
         private ImageView menuButton;
-        private TextView menuActionEdit;
-        private TextView menuActionDelete;
 
         public ThreadViewHolder(View itemView) {
             super(itemView);
@@ -188,11 +185,23 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ThreadView
             repliesView = itemView.findViewById(R.id.thread_replies_view);
             followersView = itemView.findViewById(R.id.thread_followers_view);
 
-            menuLayout = itemView.findViewById(R.id.thread_menu_layout);
             menuButton = itemView.findViewById(R.id.thread_menu_button);
+        }
+    }
 
-            menuActionEdit = itemView.findViewById(R.id.thread_menu_edit);
-            menuActionDelete = itemView.findViewById(R.id.thread_menu_delete);
+    public class ThreadPopupMenu extends PopupMenu {
+
+        @SuppressLint("RestrictedApi")
+        public ThreadPopupMenu(Context context, View anchor) {
+            super(context, anchor);
+
+            MenuBuilder menuBuilder = new MenuBuilder(context);
+            MenuPopupHelper menuPopupHelper = new MenuPopupHelper(context, menuBuilder, anchor);
+
+            Menu menu = getMenu();
+            getMenuInflater().inflate(R.menu.thread_menu, menu);
+
+            menuPopupHelper.setForceShowIcon(true);
         }
     }
 }
