@@ -148,6 +148,8 @@
                 android:id="@+id/thread_like_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/activity_margin_component"
+                android:layout_marginEnd="@dimen/activity_margin_component"
                 style="@style/thread_feed_bar_item">
 
                 <ImageView

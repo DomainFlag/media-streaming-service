@@ -6,7 +6,12 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.LinearGradient;
+import android.graphics.Shader;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.PaintDrawable;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.RectShape;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
@@ -128,6 +133,23 @@ public class Tools {
         return networkInfo != null && networkInfo.isConnected();
     }
 
+    public static void setWeightedGradientBackground(Context context, View view, int color) {
+        int darkMutedColor = ContextCompat.getColor(context, R.color.primaryTextColor);
+
+        PaintDrawable paintDrawable = new PaintDrawable();
+        ShapeDrawable.ShaderFactory shaderFactory = new ShapeDrawable.ShaderFactory() {
+            @Override
+            public Shader resize(int width, int height) {
+                return new LinearGradient(width / 2, 0, width / 2, height,
+                        new int[] { color, darkMutedColor, darkMutedColor },
+                        new float[] {0, 0.2f, 1}, Shader.TileMode.MIRROR);
+            }
+        };
+        paintDrawable.setShape(new RectShape());
+        paintDrawable.setShaderFactory(shaderFactory);
+        ViewCompat.setBackground(view, paintDrawable);
+    }
+
     public static void setGradientBackground(Context context, View view, int color, int defaultColor, int alpha) {
         int darkMutedColor = ContextCompat.getColor(context, defaultColor);
 
@@ -140,7 +162,6 @@ public class Tools {
         );
 
         gradientDrawable.setAlpha(alpha);
-
         ViewCompat.setBackground(view, gradientDrawable);
     }
 

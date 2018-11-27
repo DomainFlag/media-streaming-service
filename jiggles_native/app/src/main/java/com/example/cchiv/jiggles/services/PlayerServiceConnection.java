@@ -7,7 +7,6 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.example.cchiv.jiggles.model.Track;
 import com.example.cchiv.jiggles.player.MediaPlayer;
@@ -44,7 +43,6 @@ public class PlayerServiceConnection implements ServiceConnection {
 
     @Override
     public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-        Toast.makeText(context, "Service is connected", Toast.LENGTH_LONG).show();
         PlayerService.PlayerBinder playerBinder = (PlayerService.PlayerBinder) iBinder;
 
         playerService = playerBinder.getService();

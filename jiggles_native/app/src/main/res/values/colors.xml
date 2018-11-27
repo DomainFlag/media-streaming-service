@@ -12,6 +12,7 @@
     <color name="motionPrimaryLightColor">#C193CC</color>
 
     <color name="unexpectedColor">#EA767A</color>
+    <color name="unexpectedLightColor">#FFC6BC</color>
 
     <color name="pleasureColor">#148491</color>
     <color name="dividerColor">#C4D4DF</color>

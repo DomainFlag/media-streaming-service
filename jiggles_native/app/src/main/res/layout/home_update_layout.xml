@@ -7,100 +7,180 @@
     android:orientation="vertical"
     android:background="@color/iconsTextColor">
 
+    <RelativeLayout
+        android:id="@+id/thread_caption_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/iconsTextColor">
+
+        <View
+            android:id="@+id/thread_divider"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_below="@id/thread_caption"
+            android:background="@color/dividerColor"/>
+
+        <ImageView
+            android:id="@+id/thread_menu_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:rotation="90"
+            android:contentDescription="@string/player_menu"
+            android:tint="@color/secondaryColor"
+            android:padding="@dimen/activity_margin_gap"
+            android:src="@drawable/ic_menu_simple_white"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="@dimen/activity_margin_component"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_account"/>
+
+            <TextView
+                android:id="@+id/thread_author"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/activity_margin_relative"
+                android:layout_marginStart="@dimen/activity_margin_relative"
+                android:textSize="@dimen/activity_text_span"
+                android:textColor="@color/defaultTextColor"
+                tools:text="@string/app_tools_placeholder"/>
+
+            <View
+                android:layout_width="4dp"
+                android:layout_height="4dp"
+                android:layout_marginLeft="@dimen/activity_margin_relative"
+                android:layout_marginStart="@dimen/activity_margin_relative"
+                android:background="@drawable/background_circle"
+                android:backgroundTint="@color/unexpectedColor"
+                android:textSize="@dimen/activity_text_span"
+                android:textStyle="bold"/>
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginLeft="@dimen/activity_margin_relative"
+                android:layout_marginStart="@dimen/activity_margin_relative"
+                android:src="@drawable/ic_clock"
+                android:tint="@color/secondaryColor"/>
+
+            <TextView
+                android:id="@+id/thread_timestamp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/activity_margin_relative"
+                android:layout_marginStart="@dimen/activity_margin_relative"
+                android:textColor="@color/defaultTextColor"
+                android:textSize="@dimen/activity_text_span"
+                tools:text="@string/app_tools_placeholder_date"/>
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
     <LinearLayout
         android:id="@+id/update_background"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/activity_margin_relative"
+        android:paddingHorizontal="@dimen/activity_margin_component"
         android:orientation="horizontal">
 
-        <LinearLayout
+        <ImageView
+            android:id="@+id/update_caption"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop"
+            android:contentDescription="@string/update_content_caption_description"
+            tools:src="@drawable/thumbnail"/>
+
+        <RelativeLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="end"
-            android:padding="@dimen/activity_margin_relative"
-            android:orientation="vertical">
+            android:layout_weight="2"
+            android:layout_marginLeft="@dimen/activity_margin_component"
+            android:layout_marginStart="@dimen/activity_margin_component">
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/update_type"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:layout_marginVertical="@dimen/activity_margin_relative"
+                android:layout_alignParentRight="true"
+                android:textSize="@dimen/activity_text_span"
+                tools:text="@string/forum_update_like"/>
 
-                <ImageView
-                    android:id="@+id/update_account"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    tools:src="@drawable/ic_account"/>
+            <TextView
+                android:id="@+id/update_content_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/activity_margin_component"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:textColor="@color/defaultTextColor"
+                android:textSize="@dimen/activity_text_paragraph"
+                android:layout_marginVertical="@dimen/activity_margin_sibling"
+                tools:text="@string/update_content_title_placeholder"/>
 
-                <TextView
-                    android:id="@+id/update_type"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/activity_margin_relative"
-                    tools:text="@string/forum_update_like"/>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:paddingVertical="@dimen/activity_margin_relative"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/update_content_title"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textStyle="bold"
-                    android:textSize="@dimen/activity_text_paragraph"
-                    android:layout_marginVertical="@dimen/activity_margin_sibling"
-                    tools:text="@string/update_content_title_placeholder"/>
-
-                <TextView
-                    android:id="@+id/update_content_subtitle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textStyle="bold"
-                    android:textSize="@dimen/activity_text_subparagraph"
-                    android:layout_marginVertical="@dimen/activity_margin_sibling"
-                    tools:text="@string/update_content_subtitle_placeholder"/>
-
-            </LinearLayout>
+            <TextView
+                android:id="@+id/update_content_subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/update_content_title"
+                android:textColor="@color/defaultTextColor"
+                android:textSize="@dimen/activity_text_subparagraph"
+                tools:text="@string/update_content_subtitle_placeholder"/>
 
             <TextView
                 android:id="@+id/update_action"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
                 android:textStyle="bold"
-                android:textColor="@color/pleasureColor"
+                android:textColor="@color/unexpectedColor"
+                android:typeface="sans"
                 android:textSize="@dimen/activity_text_subheader"
-                android:text="@string/forum_update_action"/>
+                android:text="Play it"/>
 
-        </LinearLayout>
-
-        <ImageView
-            android:id="@+id/update_caption"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
-            android:contentDescription="@string/update_content_caption_description"
-            tools:src="@drawable/thumbnail"/>
+        </RelativeLayout>
 
     </LinearLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="@color/secondaryColor"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginTop="@dimen/activity_margin_closer"
         android:orientation="horizontal">
 
-        <include layout="@layout/home_feed_bar"/>
+        <include
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            layout="@layout/home_feed_bar"/>
+
+        <TextView
+            android:id="@+id/thread_replies_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/activity_margin_component"
+            android:layout_marginEnd="@dimen/activity_margin_component"
+            android:textSize="@dimen/activity_text_span"
+            tools:text="@string/thread_comments_label"/>
 
     </LinearLayout>
 

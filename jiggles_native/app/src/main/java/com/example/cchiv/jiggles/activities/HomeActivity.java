@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -302,8 +303,6 @@ public class HomeActivity extends PlayerAppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     FreshDialogFragment.this.getDialog().dismiss();
-
-                    dismissed = true;
                 }
             });
 
@@ -311,6 +310,13 @@ public class HomeActivity extends PlayerAppCompatActivity {
             builder.setView(rootView);
 
             return builder.create();
+        }
+
+        @Override
+        public void onDismiss(DialogInterface dialog) {
+            super.onDismiss(dialog);
+
+            dismissed = true;
         }
 
         public void onUpdateDialog(List<Release> releases) {

@@ -6,31 +6,31 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="@dimen/activity_margin_component"
-    android:background="@color/primaryTextColor"
+    android:paddingBottom="@dimen/activity_margin_component"
+    android:paddingTop="@dimen/activity_margin_component"
+    android:paddingStart="@dimen/activity_margin_section"
+    android:paddingLeft="@dimen/activity_margin_section"
+    android:paddingRight="@dimen/activity_margin_section"
+    android:paddingEnd="@dimen/activity_margin_section"
     android:foreground="?android:attr/selectableItemBackground"
+    android:background="@android:color/transparent"
     tools:background="@color/primaryTextColor">
 
     <TextView
         android:id="@+id/album_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/activity_margin_sibling"
         android:textColor="@color/iconsTextColor"
-        android:textSize="@dimen/activity_text_paragraph"
-        android:layout_toRightOf="@id/album_art_container"
-        android:layout_toEndOf="@id/album_art_container"
+        android:textSize="@dimen/activity_text_subparagraph"
         tools:text="@string/app_tools_placeholder"/>
 
     <TextView
         android:id="@+id/album_artist"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/activity_margin_sibling"
+        android:layout_marginTop="@dimen/activity_margin_sibling"
         android:textColor="@color/secondaryColor"
         android:layout_below="@id/album_name"
-        android:layout_toRightOf="@id/album_art_container"
-        android:layout_toEndOf="@id/album_art_container"
         tools:text="@string/app_tools_placeholder"/>
 
 </RelativeLayout>

@@ -6,10 +6,12 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.cchiv.jiggles.R;
@@ -28,11 +30,9 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     private class ViewType {
         private final static int VIEW_ARTIST = 11;
-        private final static int VIEW_ARTIST_HIGHLIGHT = 12;
         private final static int VIEW_ALBUM = 14;
-        private final static int VIEW_ALBUM_HIGHLIGHT = 15;
         private final static int VIEW_TRACK = 17;
-        private final static int VIEW_TRACK_HIGHLIGHT = 18;
+        private final static int VIEW_SCROLL = 19;
 
         private final static int VIEW_DIVIDER = 20;
     }
@@ -40,6 +40,7 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public static final int MODE_ARTIST = 0;
     public static final int MODE_ALBUM = 1;
     public static final int MODE_TRACK = 2;
+    public static final int MODE_SCROLL = 3;
 
     public interface OnItemClickListener {
         void onItemClickListener(String id);
@@ -52,6 +53,7 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private OnItemClickListener onItemClickListener;
     private Store store;
     private int layoutMode = MODE_ALBUM;
+    private View rootView = null;
 
     public ContentAdapter(Context context, Store store) {
         this.context = context;
@@ -63,6 +65,12 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         this.store = store;
         this.onItemClickListener = onItemClickListener;
         this.layoutMode = layoutMode;
+    }
+
+    public ContentAdapter(Context context, Store store, int layoutMode, View rootView, OnItemClickListener onItemClickListener) {
+        this(context, store, layoutMode, onItemClickListener);
+
+        this.rootView = rootView;
     }
 
     @NonNull
@@ -90,6 +98,11 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         layoutInflater
                                 .inflate(R.layout.content_divider_layout, parent, false));
             }
+            case ViewType.VIEW_SCROLL : {
+                return new AlbumViewHolder(
+                        layoutInflater
+                                .inflate(R.layout.content_album_item_layout, parent, false));
+            }
         }
 
         return null;
@@ -107,10 +120,10 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         holder.name.setText(artist.getName());
     }
 
-    private void onBindAlbumViewHolder(AlbumViewHolder holder, int position) {
+    private void onBindAlbumViewHolder(AlbumViewHolder holder, int position, int viewType) {
         Album album = store.getAlbums().get(position);
 
-        loadAlbumArt(album, holder);
+        loadAlbumArt(album, holder, viewType);
 
         holder.name.setText(album.getName());
 
@@ -130,7 +143,7 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         });
     }
 
-    private void loadAlbumArt(Album album, AlbumViewHolder holder) {
+    private void loadAlbumArt(Album album, AlbumViewHolder holder, int viewType) {
         List<Image> images = album.getImages();
 
         int color;
@@ -142,8 +155,10 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 loadArtAlbum(images.get(1), holder, holder.artSecondary, null);
 
                 holder.artSecondary.setVisibility(View.VISIBLE);
+                holder.relativeLayout.setGravity(Gravity.START);
             } else {
                 holder.artSecondary.setVisibility(View.INVISIBLE);
+                holder.relativeLayout.setGravity(Gravity.CENTER);
             }
         } else {
             holder.art.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_artwork_placeholder));
@@ -151,8 +166,10 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             color = ContextCompat.getColor(context, R.color.motionPrimaryDarkColor);
         }
 
-        if(color != 0)
+        if(color != 0 && viewType != ViewType.VIEW_SCROLL)
             Tools.setGradientBackground(context, holder.itemView, color, 255);
+        else if(rootView != null)
+            Tools.setWeightedGradientBackground(context, rootView, color);
     }
 
     private void loadArtAlbum(Image image, AlbumViewHolder holder, ImageView imageView, Integer color) {
@@ -219,13 +236,19 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             case MODE_ALBUM : {
                 AlbumViewHolder albumViewHolder = (AlbumViewHolder) holder;
 
-                onBindAlbumViewHolder(albumViewHolder, position);
+                onBindAlbumViewHolder(albumViewHolder, position, getItemViewType(position));
                 break;
             }
             case MODE_TRACK : {
                 TrackViewHolder trackViewHolder = (TrackViewHolder) holder;
 
                 onBindTrackViewHolder(trackViewHolder, position);
+                break;
+            }
+            case MODE_SCROLL : {
+                AlbumViewHolder albumViewHolder = (AlbumViewHolder) holder;
+
+                onBindAlbumViewHolder(albumViewHolder, position, getItemViewType(position));
                 break;
             }
         }
@@ -238,6 +261,7 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             case MODE_ARTIST : return ViewType.VIEW_ARTIST;
             case MODE_ALBUM : return ViewType.VIEW_ALBUM;
             case MODE_TRACK : return ViewType.VIEW_TRACK;
+            case MODE_SCROLL : return ViewType.VIEW_SCROLL;
         }
 
         return -1;
@@ -260,6 +284,7 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             case MODE_ARTIST : return store.getArtists().size();
             case MODE_ALBUM : return store.getAlbums().size();
             case MODE_TRACK : return store.getTracks().size();
+            case MODE_SCROLL : return store.getAlbums().size();
         }
 
         return 0;
@@ -283,6 +308,7 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         private TextView name;
         private TextView artist;
         private TextView genres;
+        private RelativeLayout relativeLayout;
         private ImageView art;
         private ImageView artSecondary;
 
@@ -292,6 +318,7 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             name = itemView.findViewById(R.id.album_name);
             artist = itemView.findViewById(R.id.album_artist);
             genres = itemView.findViewById(R.id.album_genres);
+            relativeLayout = itemView.findViewById(R.id.album_art_container);
             art = itemView.findViewById(R.id.album_art);
             artSecondary = itemView.findViewById(R.id.album_art_secondary);
         }

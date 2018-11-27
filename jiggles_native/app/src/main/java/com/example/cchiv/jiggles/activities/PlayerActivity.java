@@ -23,8 +23,6 @@ import com.google.android.exoplayer2.ui.PlayerView;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
-import jp.wasabeef.blurry.Blurry;
-
 public class PlayerActivity extends AppCompatActivity implements
         PlayerService.OnCallbackListener, PlayerServiceConnection.OnCallbackConnectionComplete,
         PlayerRemote.OnUpdateInterface {
@@ -92,6 +90,7 @@ public class PlayerActivity extends AppCompatActivity implements
         Album album = track.getAlbum();
         Image artwork = album.getArt();
 
+        Tools.setWeightedGradientBackground(getBaseContext(), findViewById(R.id.player_underlay), artwork.getColor());
         ImageView thumbnail = findViewById(R.id.player_thumbnail);
         Picasso
                 .get()
@@ -102,13 +101,6 @@ public class PlayerActivity extends AppCompatActivity implements
                     @Override
                     public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                         thumbnail.setImageBitmap(bitmap);
-
-                        Blurry.with(getBaseContext())
-                                .radius(6)
-                                .sampling(3)
-                                .async()
-                                .from(bitmap)
-                                .into(findViewById(R.id.player_underlay));
                     }
 
                     @Override

@@ -5,22 +5,16 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.LinearSnapHelper;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.support.v7.widget.SnapHelper;
 
 import com.example.cchiv.jiggles.R;
 import com.example.cchiv.jiggles.adapters.ContentAdapter;
 import com.example.cchiv.jiggles.data.ContentContract;
-import com.example.cchiv.jiggles.model.Album;
-import com.example.cchiv.jiggles.model.Artist;
-import com.example.cchiv.jiggles.model.Image;
 import com.example.cchiv.jiggles.model.Store;
 import com.example.cchiv.jiggles.services.PlayerService;
 import com.example.cchiv.jiggles.utilities.JigglesLoader;
-import com.example.cchiv.jiggles.utilities.Tools;
-import com.squareup.picasso.Picasso;
 
 public class AlbumActivity extends PlayerAppCompatActivity {
 
@@ -30,22 +24,24 @@ public class AlbumActivity extends PlayerAppCompatActivity {
 
     private static final String TAG = "AlbumActivity";
 
-    private ContentAdapter contentAdapter = new ContentAdapter(this, null, ContentAdapter.MODE_TRACK, id -> {
+    private ContentAdapter contentTrackAdapter = new ContentAdapter(this, null, ContentAdapter.MODE_TRACK, id -> {
         createPlayerIntent(id, ContentContract.TrackEntry._ID);
-    });;
+    });
+
+    private ContentAdapter contentAlbumAdapter;
 
     @Override
     protected void onCreateActivity(@Nullable Bundle savedInstanceState) {
         setContentView(R.layout.activity_album);
 
-        RecyclerView recyclerView = findViewById(R.id.album_list);
-        recyclerView.setHasFixedSize(true);
+        contentAlbumAdapter = new ContentAdapter(this, null, ContentAdapter.MODE_SCROLL, findViewById(R.id.album_background),
+                id -> {});
+        RecyclerView recyclerView = createRecyclerView(contentAlbumAdapter, RecyclerView.HORIZONTAL, R.id.album_list);
 
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this,
-                LinearLayoutManager.VERTICAL, false);
-        recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.setAdapter(contentAdapter);
+        SnapHelper helper = new LinearSnapHelper();
+        helper.attachToRecyclerView(recyclerView);
 
+        createRecyclerView(contentTrackAdapter, RecyclerView.VERTICAL, R.id.album_tracks);
 
         Intent intent = getIntent();
         String id = intent.getStringExtra(ALBUM_ID);
@@ -60,6 +56,18 @@ public class AlbumActivity extends PlayerAppCompatActivity {
 
         LoaderManager loaderManager = getSupportLoaderManager();
         loaderManager.initLoader(LOADER_ALBUM_ID, bundle, jigglesLoader).forceLoad();
+    }
+
+    public RecyclerView createRecyclerView(ContentAdapter contentAdapter, int orientation, int resourceView) {
+        RecyclerView recyclerView = findViewById(resourceView);
+        recyclerView.setHasFixedSize(true);
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this,
+                orientation, false);
+        recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.setAdapter(contentAdapter);
+
+        return recyclerView;
     }
 
     @Override
@@ -78,42 +86,10 @@ public class AlbumActivity extends PlayerAppCompatActivity {
     }
 
     private void updateLayout(Store store) {
-        Album album = store.getAlbums().get(0);
+        contentAlbumAdapter.swapCollection(store);
+        contentAlbumAdapter.notifyDataSetChanged();
 
-        TextView albumPlayView = findViewById(R.id.album_play);
-        albumPlayView.setOnClickListener((view) -> {
-            createPlayerIntent(album.getId(), ContentContract.AlbumEntry._ID);
-        });
-
-        ImageView thumbnail = findViewById(R.id.album_thumbnail);
-        Image image = album.getArt();
-        Picasso
-                .get()
-                .load(image.getUrl())
-                .placeholder(R.drawable.ic_artwork_placeholder)
-                .error(R.drawable.ic_artwork_placeholder)
-                .into(thumbnail);
-
-
-        View view = findViewById(R.id.album_background);
-
-        Tools.setGradientBackground(this, view, image.getColor(), 255);
-        Tools.setStatusBarColor(this, image.getColor());
-
-        Artist artist = album.getArtist();
-        if(artist != null) {
-            ((TextView) findViewById(R.id.album_genres))
-                    .setText(artist.getGenres());
-
-            ((TextView) findViewById(R.id.album_artist))
-                    .setText(artist.getName());
-        }
-
-        ((TextView) findViewById(R.id.album_name))
-                .setText(album.getName());
-
-
-        contentAdapter.swapCollection(store);
-        contentAdapter.notifyDataSetChanged();
+        contentTrackAdapter.swapCollection(store);
+        contentTrackAdapter.notifyDataSetChanged();
     }
 }

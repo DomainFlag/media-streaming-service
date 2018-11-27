@@ -11,7 +11,7 @@
     <LinearLayout
         android:id="@+id/home_bar_search"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="48dp"
         android:gravity="center"
         android:background="@color/iconsTextColor"
         android:orientation="horizontal"
