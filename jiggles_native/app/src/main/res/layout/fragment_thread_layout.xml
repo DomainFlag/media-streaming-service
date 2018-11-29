@@ -39,8 +39,8 @@
             android:background="@drawable/border_edit_text_normal">
 
             <ImageView
-                android:layout_width="12dp"
-                android:layout_height="12dp"
+                android:layout_width="10dp"
+                android:layout_height="10dp"
                 android:contentDescription="@string/thread_edit_media_description"
                 android:src="@drawable/ic_thread_audio_source"/>
 
@@ -51,7 +51,7 @@
                 android:layout_marginStart="@dimen/activity_margin_relative"
                 android:contentDescription="@string/forum_thread_thumbnail_description"
                 android:textColor="@color/secondaryColor"
-                android:textSize="@dimen/activity_text_span"
+                android:textSize="@dimen/activity_text_subspan"
                 android:text="@string/thread_edit_music"/>
 
         </LinearLayout>
@@ -71,8 +71,8 @@
             android:orientation="horizontal">
 
             <ImageView
-                android:layout_width="12dp"
-                android:layout_height="12dp"
+                android:layout_width="10dp"
+                android:layout_height="10dp"
                 android:contentDescription="@string/thread_edit_media_description"
                 android:src="@drawable/ic_thread_media_image"/>
 
@@ -83,27 +83,28 @@
                 android:layout_marginStart="@dimen/activity_margin_relative"
                 android:contentDescription="@string/forum_thread_thumbnail_description"
                 android:textColor="@color/secondaryColor"
-                android:textSize="@dimen/activity_text_span"
+                android:textSize="@dimen/activity_text_subspan"
                 android:text="@string/thread_edit_media"/>
 
         </LinearLayout>
+
 
         <LinearLayout
             android:id="@+id/thread_preview_content"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
+            android:layout_toLeftOf="@id/thread_close"
+            android:layout_toStartOf="@id/thread_close"
             android:background="@drawable/border_edit_text_normal"
             android:padding="@dimen/activity_margin_relative"
-            android:layout_marginLeft="@dimen/activity_margin_component"
-            android:layout_marginStart="@dimen/activity_margin_component"
             android:gravity="center"
+            android:layout_marginRight="@dimen/activity_margin_relative"
+            android:layout_marginEnd="@dimen/activity_margin_relative"
             android:orientation="horizontal">
 
             <ImageView
-                android:layout_width="12dp"
-                android:layout_height="12dp"
+                android:layout_width="10dp"
+                android:layout_height="10dp"
                 android:contentDescription="@string/thread_edit_preview_description"
                 android:src="@drawable/ic_thread_preview_content"/>
 
@@ -115,32 +116,59 @@
                 android:contentDescription="@string/forum_thread_thumbnail_description"
                 android:textColor="@color/colorAccent"
                 android:textStyle="bold"
-                android:textSize="@dimen/activity_text_span"
+                android:textSize="@dimen/activity_text_subspan"
                 android:text="@string/thread_edit_preview"/>
 
         </LinearLayout>
 
+        <ImageView
+            android:id="@+id/thread_close"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:padding="@dimen/activity_margin_relative"
+            android:src="@drawable/ic_cancel"/>
+
     </RelativeLayout>
 
-    <EditText
-        android:id="@+id/thread_content"
+    <RelativeLayout
+        android:id="@+id/thread_content_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="top|start"
-        android:layout_below="@id/thread_header_bar"
         android:padding="@dimen/activity_margin_component"
-        android:background="@android:color/transparent"
-        android:lines="6"
-        android:minLines="6"
-        android:hint="@string/forum_thread_creator_content_hint"
-        android:inputType="textMultiLine"/>
+        android:layout_below="@id/thread_header_bar">
+
+        <EditText
+            android:id="@+id/thread_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="top|start"
+            android:background="@android:color/transparent"
+            android:lines="6"
+            android:minLines="12"
+            android:textSize="@dimen/activity_text_span"
+            android:textColor="@color/defaultTextColor"
+            android:hint="@string/forum_thread_creator_content_hint"
+            android:inputType="textMultiLine"/>
+
+        <ImageView
+            android:id="@+id/thread_caption"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_alignRight="@id/thread_content"
+            android:layout_alignEnd="@id/thread_content"
+            android:layout_alignBottom="@id/thread_content"
+            tools:src="@drawable/thumbnail"/>
+
+    </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/thread_footer_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/iconsTextColor"
-        android:layout_below="@id/thread_content"
+        android:layout_below="@id/thread_content_layout"
         android:paddingLeft="@dimen/activity_margin_component"
         android:paddingEnd="@dimen/activity_margin_component"
         android:paddingRight="@dimen/activity_margin_component"

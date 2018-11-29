@@ -13,11 +13,11 @@ let TrackSchema = new mongoose.Schema({
     },
     uri : {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     trackNumber : {
         type: Number,
-        required: true,
         default: 1
     },
     type: {

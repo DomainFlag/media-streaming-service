@@ -6,10 +6,12 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
-import android.view.Gravity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -20,13 +22,19 @@ import com.example.cchiv.jiggles.model.Artist;
 import com.example.cchiv.jiggles.model.Image;
 import com.example.cchiv.jiggles.model.Store;
 import com.example.cchiv.jiggles.model.Track;
+import com.example.cchiv.jiggles.utilities.NetworkUtilities;
 import com.example.cchiv.jiggles.utilities.Tools;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
 import java.util.List;
 
-public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements Filterable {
+
+    @Override
+    public Filter getFilter() {
+        return null;
+    }
 
     private class ViewType {
         private final static int VIEW_ARTIST = 11;
@@ -122,8 +130,20 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     private void onBindAlbumViewHolder(AlbumViewHolder holder, int position, int viewType) {
         Album album = store.getAlbums().get(position);
-
         loadAlbumArt(album, holder, viewType);
+
+        if(album.local) {
+            holder.save.setVisibility(View.GONE);
+        } else {
+            holder.save.setOnClickListener(view -> {
+                Store store = new Store(album);
+                String token = Tools.getToken(context);
+
+                NetworkUtilities.ResolveStore resolveStore = new NetworkUtilities.ResolveStore(raw -> {
+                    Log.v(TAG, raw.toString());
+                }, store, token);
+            });
+        }
 
         holder.name.setText(album.getName());
 
@@ -144,7 +164,7 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     private void loadAlbumArt(Album album, AlbumViewHolder holder, int viewType) {
-        List<Image> images = album.getImages();
+        List<Image> images = album.getImagesOpt(1);
 
         int color;
         if(images != null && images.size() > 0) {
@@ -155,10 +175,8 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 loadArtAlbum(images.get(1), holder, holder.artSecondary, null);
 
                 holder.artSecondary.setVisibility(View.VISIBLE);
-                holder.relativeLayout.setGravity(Gravity.START);
             } else {
-                holder.artSecondary.setVisibility(View.INVISIBLE);
-                holder.relativeLayout.setGravity(Gravity.CENTER);
+                holder.artSecondary.setVisibility(View.GONE);
             }
         } else {
             holder.art.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_artwork_placeholder));
@@ -271,6 +289,48 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         this.store = store;
     }
 
+    public void swapLiveCollection(Store store) {
+        if(this.store == null) {
+            this.store = store;
+
+            notifyDataSetChanged();
+        } else if(store != null && !store.getAlbums().isEmpty()){
+            List<Album> oldAlbums = this.store.getAlbums();
+            List<Album> newAlbums = store.getAlbums();
+            int g;
+            for(int i = 0; i < newAlbums.size(); i++) {
+                boolean flag = false;
+
+                for(g = 0; g < oldAlbums.size() && !flag; g++) {
+                    if(newAlbums.get(i).getUri().equals(oldAlbums.get(g).getUri())) {
+                        oldAlbums.get(g).present = true;
+                        flag = true;
+                    }
+                }
+
+                if(!flag) {
+                    Album album = newAlbums.get(i);
+                    album.present = true;
+
+                    oldAlbums.add(album);
+                    notifyItemInserted(oldAlbums.size() - 1);
+                }
+            }
+
+
+            for(int i = oldAlbums.size() - 1; i >= 0; i--) {
+                Album album = oldAlbums.get(i);
+
+                if(!album.present) {
+                    oldAlbums.remove(i);
+                    notifyItemRemoved(i);
+                } else {
+                    album.present = false;
+                }
+            }
+        }
+    }
+
     public void swapLayoutMode(int layoutMode) {
         this.layoutMode = layoutMode;
     }
@@ -311,6 +371,7 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         private RelativeLayout relativeLayout;
         private ImageView art;
         private ImageView artSecondary;
+        private TextView save;
 
         public AlbumViewHolder(View itemView) {
             super(itemView);
@@ -321,6 +382,7 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             relativeLayout = itemView.findViewById(R.id.album_art_container);
             art = itemView.findViewById(R.id.album_art);
             artSecondary = itemView.findViewById(R.id.album_art_secondary);
+            save = itemView.findViewById(R.id.album_save);
         }
     }
 

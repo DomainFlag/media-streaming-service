@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,6 +23,7 @@ import android.widget.TextView;
 
 import com.example.cchiv.jiggles.Constants;
 import com.example.cchiv.jiggles.R;
+import com.example.cchiv.jiggles.model.Thread;
 import com.example.cchiv.jiggles.utilities.NetworkUtilities;
 
 import org.json.JSONException;
@@ -38,7 +40,12 @@ public class ThreadFragment extends Fragment {
 
     private static final int ACTION_PICK_CODE = 121;
 
+    public interface OnThreadCreationCallback {
+        void onThreadCreationCallback(Thread thread);
+    }
+
     private Context context = null;
+    private OnThreadCreationCallback onThreadCreationCallback = null;
     private View rootView = null;
 
     @Override
@@ -53,8 +60,8 @@ public class ThreadFragment extends Fragment {
                 try {
                     Bitmap bitmap = BitmapFactory.decodeStream(contentResolver.openInputStream(data.getData()));
 
-                    ImageView thumbnail = rootView.findViewById(R.id.thread_content);
-                    thumbnail.setImageBitmap(bitmap);
+                    ImageView captionView = rootView.findViewById(R.id.thread_caption);
+                    captionView.setImageBitmap(bitmap);
                 } catch(FileNotFoundException e) {
                     Log.v(TAG, e.toString());
                 }
@@ -69,20 +76,33 @@ public class ThreadFragment extends Fragment {
         this.context = context;
     }
 
+    public void onAttachThreadCreationCallback(OnThreadCreationCallback onThreadCreationCallback) {
+        this.onThreadCreationCallback = onThreadCreationCallback;
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_thread_layout, container, false);
 
-        rootView.findViewById(R.id.thread_content).setOnClickListener((view) -> {
+        rootView.findViewById(R.id.thread_close).setOnClickListener(view -> {
+            FragmentManager fragmentManager = getFragmentManager();
+
+            if(fragmentManager != null)
+                fragmentManager.beginTransaction().remove(this).commit();
+        });
+
+        rootView.findViewById(R.id.thread_upload_media).setOnClickListener((view) -> {
             Intent intent = new Intent(Intent.ACTION_PICK);
             intent.setType("image/*");
             startActivityForResult(Intent.createChooser(intent, "Select Thumbnail"), ACTION_PICK_CODE);
         });
 
         rootView.findViewById(R.id.thread_edit_submit).setOnClickListener((view) -> {
-            BitmapDrawable bitmapDrawable = (BitmapDrawable) ((ImageView) rootView.findViewById(R.id.thread_content)).getDrawable();
-            Bitmap bitmap = bitmapDrawable.getBitmap();
+            BitmapDrawable bitmapDrawable = (BitmapDrawable) ((ImageView) rootView.findViewById(R.id.thread_caption)).getDrawable();
+            Bitmap bitmap = null;
+            if(bitmapDrawable != null)
+                bitmap = bitmapDrawable.getBitmap();
 
             String content = ((TextView) rootView.findViewById(R.id.thread_content)).getEditableText().toString();
 
@@ -96,7 +116,7 @@ public class ThreadFragment extends Fragment {
         return rootView;
     }
 
-    public static class AsyncTaskEncoder extends AsyncTask<Void, Void, Void> {
+    public class AsyncTaskEncoder extends AsyncTask<Void, Void, Void> {
 
         private static final String JSON_CAPTION_KEY = "caption";
         private static final String JSON_CONTENT_KEY = "content";
@@ -116,21 +136,29 @@ public class ThreadFragment extends Fragment {
             super.onPreExecute();
         }
 
+        private String encodeBitmap(Bitmap bitmap) {
+            if(bitmap != null) {
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+
+                return Base64.encodeToString(byteArrayOutputStream.toByteArray(), Base64.DEFAULT);
+            }
+
+            return "";
+        }
+
         @Override
         protected Void doInBackground(Void... voids) {
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-
-            String thumbnail = Base64.encodeToString(byteArrayOutputStream.toByteArray(), Base64.DEFAULT);
+            String caption = encodeBitmap(bitmap);
 
             JSONObject jsonObject = new JSONObject();
             try {
-                jsonObject.put(JSON_CAPTION_KEY, thumbnail);
+                jsonObject.put(JSON_CAPTION_KEY, caption);
                 jsonObject.put(JSON_CONTENT_KEY, content);
 
-                NetworkUtilities.ResolveCreateThread resolveCreateThread = new NetworkUtilities
-                        .ResolveCreateThread(thread -> {
-                            // Update the ui with the new thread
+                NetworkUtilities.ResolveCreateThread resolveCreateThread = new NetworkUtilities.ResolveCreateThread(thread -> {
+                    if(onThreadCreationCallback != null)
+                        onThreadCreationCallback.onThreadCreationCallback(thread);
                 }, jsonObject, token);
             } catch(JSONException e) {
                 Log.v(TAG, e.toString());

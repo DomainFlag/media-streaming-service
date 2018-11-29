@@ -85,7 +85,7 @@
 
     <string name="thread_edit">Edit thread</string>
     <string name="thread_delete">Delete thread</string>
-    <string name="thread_comments_label">%1$d comments</string>
+    <string name="feed_item_comments_label">%1$d replies</string>
     <string name="thread_following_label">%1$s</string>
 
     <string name="comment_caption">Author caption</string>
@@ -111,15 +111,15 @@
     <string name="thread_edit_submit">Submit</string>
 
     <!-- Home Update -->
-    <string name="forum_update_like">%1s recently liked it.</string>
-    <string name="forum_update_playlist">%1s created a new playlist.</string>
+    <string name="post_like">Recently liked it.</string>
+    <string name="post_playlist">Created a new playlist.</string>
 
-    <string name="update_content_caption_description">Content caption</string>
+    <string name="post_content_caption_description">Content caption</string>
 
-    <string name="update_content_title_placeholder">The xx</string>
-    <string name="update_content_subtitle_placeholder">xx</string>
+    <string name="post_content_title_placeholder">The xx</string>
+    <string name="post_content_subtitle_placeholder">xx</string>
 
-    <string name="forum_update_action">Listen to it.</string>
+    <string name="forum_post_action">Listen to it.</string>
 
     <!-- Latest -->
     <string name="home_releases_label">Releases</string>
@@ -162,6 +162,8 @@
 
     <!-- Store -->
     <string name="collection_art">Track art</string>
+
+    <string name="collection_save">Save</string>
 
     <string name="collection_refresh">Refresh</string>
     <string name="collection_filter">Filter By</string>

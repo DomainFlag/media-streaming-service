@@ -3,8 +3,6 @@ package com.example.cchiv.jiggles.utilities;
 import android.app.Activity;
 import android.content.Context;
 import android.content.OperationApplicationException;
-import android.content.res.AssetFileDescriptor;
-import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -19,13 +17,11 @@ import android.util.Log;
 import com.example.cchiv.jiggles.R;
 import com.example.cchiv.jiggles.data.ContentContract;
 import com.example.cchiv.jiggles.model.Album;
-import com.example.cchiv.jiggles.model.Store;
 import com.example.cchiv.jiggles.model.Image;
+import com.example.cchiv.jiggles.model.Store;
 import com.example.cchiv.jiggles.model.Track;
 
 import java.io.File;
-import java.io.FileDescriptor;
-import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -167,8 +163,9 @@ public class ItemScanner {
                 Track track = new Track(title, path);
 
                 Album album = store.addItem(track, artistName, albumName, genreList);
-                if(album != null)
+                if(album != null) {
                     decodeBitmapArt(context, mediaMetadataRetriever, album, path);
+                }
             }
         } catch(IllegalArgumentException e) {
             Log.v(TAG, path);
@@ -216,47 +213,6 @@ public class ItemScanner {
         cacheLocalData(context, store);
 
         return store;
-    }
-
-    public static Store scan(Context context) {
-        AssetManager assetManager = context.getAssets();
-
-        try {
-            String[] files = assetManager.list("samples");
-            Store store = new Store();
-
-            MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
-            for(String file : files) {
-                String path = "samples/" + file;
-
-                AssetFileDescriptor assetFileDescriptor = assetManager.openFd(path);
-                FileDescriptor fileDescriptor = assetFileDescriptor.getFileDescriptor();
-
-                mediaMetadataRetriever.setDataSource(fileDescriptor, assetFileDescriptor.getStartOffset(), assetFileDescriptor.getLength());
-
-                String albumName = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
-                String artistName = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
-                String title = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
-                String genres = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_GENRE);
-                List<String> genreList = new ArrayList<>();
-                if(genres != null)
-                    genreList = Arrays.asList(genres.split(" "));
-
-                Track track = new Track(title, path);
-
-                store.addItem(track, artistName, albumName, genreList);
-
-                assetFileDescriptor.close();
-            }
-
-            mediaMetadataRetriever.release();
-
-            return store;
-        } catch(IOException e) {
-            Log.v(TAG, e.toString());
-        }
-
-        return null;
     }
 
     public void check(String message) {

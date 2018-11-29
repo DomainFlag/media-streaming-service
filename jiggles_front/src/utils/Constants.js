@@ -43,7 +43,7 @@ const CONSTANTS = {
         RELEASES : "releases"
     },
 
-    CONTENT_TYPES : {
+    STORE_ITEMS : {
         ARTIST : "artist",
         ALBUM : "album",
         TRACK : "track"

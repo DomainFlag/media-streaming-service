@@ -142,10 +142,10 @@
                 android:layout_marginRight="@dimen/activity_margin_relative"
                 android:layout_marginEnd="@dimen/activity_margin_relative"
                 android:textSize="@dimen/activity_text_span"
-                tools:text="@string/thread_comments_label"/>
+                tools:text="@string/feed_item_comments_label"/>
 
             <LinearLayout
-                android:id="@+id/thread_like_layout"
+                android:id="@+id/feed_item_like_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="@dimen/activity_margin_component"

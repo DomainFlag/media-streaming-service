@@ -3,7 +3,6 @@ const validator = require('validator');
 const jwt = require('jsonwebtoken');
 const _ = require('lodash');
 const bcrypt = require('bcryptjs');
-const {ObjectID} = require('mongodb');
 
 const {ArtistSchema} = require("./artist");
 const {AlbumSchema} = require("./album");

@@ -75,7 +75,7 @@ public class SearchFragment extends Fragment implements TextView.OnEditorActionL
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                fetchQueryResults(charSequence.toString());
+                fetchQueryResults(charSequence.toString() + "*");
 
                 int len = charSequence.length();
 
@@ -109,8 +109,7 @@ public class SearchFragment extends Fragment implements TextView.OnEditorActionL
         if(token != null) {
             NetworkUtilities.FetchSearchResults fetchSearchResults = new NetworkUtilities
                     .FetchSearchResults(collection -> {
-                contentAdapter.swapCollection(collection);
-                contentAdapter.notifyDataSetChanged();
+                contentAdapter.swapLiveCollection(collection);
             }, query, token);
         }
     }
@@ -118,7 +117,7 @@ public class SearchFragment extends Fragment implements TextView.OnEditorActionL
     @Override
     public boolean onEditorAction(TextView textView, int actionType, KeyEvent keyEvent) {
         if(actionType == EditorInfo.IME_ACTION_SEARCH) {
-            EditText editText = (EditText) rootView.findViewById(R.id.home_bar_edit);
+            EditText editText = rootView.findViewById(R.id.home_bar_edit);
             editText.clearFocus();
 
             InputMethodManager inputMethodManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);

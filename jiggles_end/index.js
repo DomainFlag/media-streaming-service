@@ -21,6 +21,7 @@ let {Album} = require("./models/album");
 let {Track} = require("./models/track");
 let {Artist} = require("./models/artist");
 let {Thread} = require("./models/thread");
+let {Post} = require("./models/post");
 let {Social} = require("./models/social");
 let {Release} = require("./models/release");
 
@@ -78,8 +79,7 @@ app.use(function(req, res, next) {
 app.use('/resources', express.static(__dirname + '/resources'));
 
 /* Public & Non-protected Routes */
-
-app.post('/users', (req, res) => {
+app.post('/user', (req, res) => {
     let body = _.pick(req.body, ['email', 'name', 'password']);
     let user = new User(body);
 
@@ -98,7 +98,7 @@ app.post('/users', (req, res) => {
     })
 });
 
-app.post('/users/login', (req, res) => {
+app.post('/user/login', (req, res) => {
     let body = _.pick(req.body, ['email', 'password']);
 
     User.findByCredentials(body.email, body.password).then((user) => {
@@ -136,7 +136,7 @@ app.get(/^\/main\/(news|releases)$/, function(req, res) {
     }
 });
 
-app.get(/^\/forum\/thread/, function(req, res) {
+app.get(/^\/feed\/thread/, function(req, res) {
     Thread.find({})
         .populate('author')
         .populate('replies.author')
@@ -191,8 +191,8 @@ app.get(/^\/query\/(artist|track|album|all)$/, function(req, res) {
         if(searchBy === CONSTANTS.ALL) {
             let promises = [];
 
-            Object.keys(CONSTANTS.CONTENT_TYPES).forEach((key) => {
-                let searchType = CONSTANTS.CONTENT_TYPES[key];
+            Object.keys(CONSTANTS.STORE_ITEMS).forEach((key) => {
+                let searchType = CONSTANTS.STORE_ITEMS[key];
 
                 promises.push(returnQueryPromise(req, req.query[searchBy], searchType));
             });
@@ -230,7 +230,7 @@ app.get(/^\/query\/(artists|tracks|albums)\/([0-9a-zA-Z]+)$/, function(req, res)
 /**
  * Like a thread's reply
  */
-app.post(/^\/forum\/thread\/reply\/like/, function(req, res) {
+app.post(/^\/feed\/thread\/reply\/like/, function(req, res) {
     let body = _.pick(req.body, ["thread_id", "reply_id"]);
 
     Thread.findOneAndUpdate({ "_id" : body.thread_id, "replies._id" : body.reply_id }, {
@@ -249,7 +249,7 @@ app.post(/^\/forum\/thread\/reply\/like/, function(req, res) {
 /**
  * Unlike a thread's reply
  */
-app.delete(/^\/forum\/thread\/reply\/like/, function(req, res) {
+app.delete(/^\/feed\/thread\/reply\/like/, function(req, res) {
     let body = _.pick(req.body, ["thread_id", "reply_id"]);
 
     Thread.findOneAndUpdate({ "_id" : body.thread_id, "replies._id" : body.reply_id }, {
@@ -268,7 +268,7 @@ app.delete(/^\/forum\/thread\/reply\/like/, function(req, res) {
 /**
  * Reply to a thread
  */
-app.post(/^\/forum\/thread\/reply/, function(req, res) {
+app.post(/^\/feed\/thread\/reply/, function(req, res) {
     let thread = _.pick(req.body, ["thread_id"]);
 
     let body = _.pick(req.body, ["parent", "depth", "content"]);
@@ -290,7 +290,7 @@ app.post(/^\/forum\/thread\/reply/, function(req, res) {
 /**
  * Update a thread's reply
  */
-app.put(/^\/forum\/thread\/reply/, function(req, res) {
+app.put(/^\/feed\/thread\/reply/, function(req, res) {
     let thread = _.pick(req.body, ["thread_id"]);
     let body = _.pick(req.body, ["parent", "depth", "depth"]);
 
@@ -309,7 +309,7 @@ app.put(/^\/forum\/thread\/reply/, function(req, res) {
 /**
  * Delete a thread's reply
  */
-app.delete(/^\/forum\/thread\/reply/, function(req, res) {
+app.delete(/^\/feed\/thread\/reply/, function(req, res) {
     let body = _.pick(req.body, ["thread_id", "reply_id"]);
 
     Thread.update({ "_id" : body.thread_id, "replies.author" : req.user._id }, {
@@ -325,7 +325,7 @@ app.delete(/^\/forum\/thread\/reply/, function(req, res) {
 /**
  * Like a thread
  */
-app.post(/^\/forum\/thread\/like/, function(req, res) {
+app.post(/^\/feed\/thread\/like/, function(req, res) {
     let body = _.pick(req.body, ['thread_id']);
 
     Thread.findOneAndUpdate({ "_id" : body.thread_id }, {
@@ -344,7 +344,7 @@ app.post(/^\/forum\/thread\/like/, function(req, res) {
 /**
  * Unlike a thread
  */
-app.delete(/^\/forum\/thread\/like/, function(req, res) {
+app.delete(/^\/feed\/thread\/like/, function(req, res) {
     let body = _.pick(req.body, ['thread_id']);
 
     Thread.findOneAndUpdate({ "_id" : body.thread_id }, {
@@ -364,34 +364,43 @@ app.delete(/^\/forum\/thread\/like/, function(req, res) {
 /**
  * Create a thread
  */
-app.post(/^\/forum\/thread/, function(req, res) {
-    let body = _.pick(req.body, ['caption', 'content']);
 
-    let type = "png";
-    let base64Data = body.caption.replace(/^data:image\/(png|jpeg|svg\+xml|jpg);base64,/, function(val) {
-        type = arguments[1].replace(/(\+\w+)/, "");
-        return "";
-    });
+app.post(/^\/feed\/thread/, (() => {
+    let createThreadOpt = (req, res, uri, body) => {
+        Thread.create({ caption : uri, content : body.content, author : req.user._id}, (err, raw) => {
+            raw.author = req.user;
 
-    let uri = resourcesCollector.reservePath() + `.${type}`;
+            if(err) simpleResponseQuery(res, 401, "couldn't delete message");
+            else simpleResponseQuery(res, 200, raw, "application/json");
+        });
+    };
 
-    fs.writeFile(__dirname + `/${uri}`, base64Data, 'base64', (err) => {
-        if(err) simpleResponseQuery(res, 401, "couldn't create thread " + err.toString());
-        else {
-            Thread.create({ caption : uri, content : body.content, author : req.user._id}, (err, raw) => {
-                raw.author = req.user;
+    return (req, res) => {
+        let body = _.pick(req.body, ['caption', 'content']);
 
-                if(err) simpleResponseQuery(res, 401, "couldn't delete message");
-                else simpleResponseQuery(res, 200, raw, "application/json");
+        if(body.caption) {
+            let type = "png";
+            let base64Data = body.caption.replace(/^data:image\/(png|jpeg|svg\+xml|jpg);base64,/, function(val) {
+                type = arguments[1].replace(/(\+\w+)/, "");
+                return "";
             });
+
+            let uri = resourcesCollector.reservePath() + `.${type}`;
+
+            fs.writeFile(__dirname + `/${uri}`, base64Data, 'base64', (err) => {
+                if(err) simpleResponseQuery(res, 401, "couldn't create thread " + err.toString());
+                else createThreadOpt(req, res, uri, body);
+            });
+        } else {
+            createThreadOpt(req, res, "", body);
         }
-    });
-});
+    }
+})());
 
 /**
  * Update a thread
  */
-app.put(/^\/forum\/thread/, function(req, res) {
+app.put(/^\/feed\/thread/, function(req, res) {
     let body = _.pick(req.body, [ '_id', 'caption', 'content']);
 
     let type, base64Data;
@@ -443,7 +452,7 @@ app.put(/^\/forum\/thread/, function(req, res) {
 /**
  * Delete a thread
  */
-app.delete(/^\/forum\/thread/, function(req, res) {
+app.delete(/^\/feed\/thread/, function(req, res) {
     let body = _.pick(req.body, [ '_id']);
 
     Thread.findOne({ _id : body._id, author : req.user._id  }).then((thread) => {
@@ -461,8 +470,86 @@ app.delete(/^\/forum\/thread/, function(req, res) {
     });
 });
 
+/****************************************************************/
 /**
- * Get fresh content
+ * Get post
+ */
+app.get(/^\/feed\/post/, function(req, res) {
+    Post.find({})
+        .populate('author')
+        .populate('replies.author')
+        .then((documents) => {
+            simpleResponseQuery(res, 200, documents, "application/json");
+        })
+        .catch(() => {
+            simpleResponseQuery(res, 401, "invalid request");
+        });
+});
+
+/****************************************************************/
+/**
+ * Get user's store
+ */
+app.get(/\/user\/store/, (req, res) => {
+    let contentType = req.params[0];
+
+    simpleResponseQuery(res, 200, req.user.store[contentType], "application/json");
+});
+
+/**
+ * Save an item to the user's store
+ */
+app.post(/\/user\/store/, (req, res) => {
+    let body = _.pick(req.body, ["tracks", "albums", "tracks"]);
+
+    Object.keys(body).forEach((key) => {
+        if(req.user.store.hasOwnProperty(key)) {
+            body[key].forEach((item) => {
+                req.user.store[key].push(item);
+            });
+        }
+    });
+
+    Post.create({ store : body, author : req.user._id}, (err, raw) => {
+        if(err) console.log(err);
+    });
+
+    req.user.save().then((result) => {
+        simpleResponseQuery(res, 200, result, "application/json");
+    }).catch((error) => {
+        simpleResponseQuery(res, 401, "couldn't update the store");
+    });
+});
+
+/**
+ * Delete an item from the user's store
+ */
+app.delete(/\/user\/store/, (req, res) => {
+    let body = _.pick(req.body, STORE_PROJECTION[type]);
+
+    Object.keys(body.store).forEach((key) => {
+       if(req.user.store.hasOwnProperty(key)) {
+           req.user.store[key] = req.user.store[key].filter(item => {
+               for(let i = 0; i < body.store[key].length; i++) {
+                   if(item._id === body.store[key][i])
+                       return false;
+               }
+
+               return true;
+           });
+       }
+    });
+
+    req.user.save().then(() => {
+        simpleResponseQuery(res, 200, "successfully deleted item from the store");
+    }).catch(() => {
+        simpleResponseQuery(res, 401, "couldn't delete item from the store");
+    });
+});
+
+/****************************************************************/
+/**
+ * Get fresh release
  */
 app.get(/^\/main\/fresh$/, function(req, res) {
     Release.find({}, null, { limit : 1 })
@@ -476,45 +563,6 @@ app.get(/^\/main\/fresh$/, function(req, res) {
         .catch(() => {
             res.status(401).send();
         });
-});
-
-/**
- * Get user's store
- */
-app.get(/\/user\/store/, (req, res) => {
-    let contentType = req.params[0];
-
-    simpleResponseQuery(res, 200, req.user.store[contentType], "application/json");
-});
-
-/**
- * Save an item to the user's store
- */
-app.post(/\/users\/store\/(tracks|albums|artists)/, (req, res) => {
-    let type = req.params[0];
-    let body = _.pick(req.body, STORE_PROJECTION[type]);
-
-    req.user.store[type].push(body);
-    req.user.save().then((result) => {
-        simpleResponseQuery(res, 200, result, "application/json");
-    }).catch((error) => {
-        simpleResponseQuery(res, 401, "couldn't save the store");
-    });
-});
-
-app.delete(/\/users\/store\/(tracks|albums|artists)/, (req, res) => {
-    let type = req.params[0];
-    let body = _.pick(req.body, STORE_PROJECTION[type]);
-
-    req.user.content[type] = req.user.content[type].filter((item) => {
-        return item.id !== body.id;
-    });
-
-    req.user.save().then(() => {
-        simpleResponseQuery(res, 200, "successfully deleted");
-    }).catch(() => {
-        simpleResponseQuery(res, 401, "couldn't delete content");
-    });
 });
 
 /* News/Releases content(GET (public), POST, PUT, DELETE) */
@@ -569,57 +617,11 @@ app.delete(/^\/main\/(news|releases)$/, function(req, res) {
     }
 });
 
-/* Social chat(GET, POST, PUT, DELETE) */
-app.get('/users/me/social', (req, res) => {
-    Social.find({
-        $or : [{
-            creator : req.user._id
-        }, {
-            group : {
-                $elemMatch : {
-                    _id : req.user._id
-                }
-            }
-        }]
-    }).then((documents) => {
-        let social = [];
-
-        documents.forEach((document) => {
-            social.push(new Promise((resolve, reject) => {
-                let users = [];
-
-                document.group.forEach((user) => {
-                    users.push(
-                        User.find({
-                            _id : user._id
-                        }, "name").then((userName) => ({
-                            ...user, userName
-                        }))
-                    );
-                });
-
-                Promise.all(users).then((users) => {
-                    resolve(users);
-                }).catch((err) => {
-                    reject(err);
-                })
-            }));
-        });
-
-        Promise.all(social).then((data) => {
-            simpleResponseQuery(res, 200, data, "application/json");
-        }).catch(() => {
-            simpleResponseQuery(res, 401, "couldn't get the social");
-        });
-    });
+app.get('/user/me', (req, res) => {
     res.send(req.user);
 });
 
-app.get('/users/me', (req, res) => {
-    res.send(req.user);
-});
-
-app.delete('/users/me/token', (req, res) => {
+app.delete('/user/me/token', (req, res) => {
     req.user.removeToken(req.token).then(() => {
         res.status(200).send();
     }, () => {

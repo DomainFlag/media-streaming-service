@@ -12,24 +12,24 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class Thread extends FeedItem {
+public class Post extends FeedItem {
 
-    private static final String TAG = "Thread";
+    private static final String TAG = "Post";
 
     private String _id;
     private User author;
-    private String caption;
+    private Store store;
     private String content;
     private Boolean ownership = null;
     private HashMap<String, Boolean> likes;
     private List<Reply> replies = new ArrayList<>();
 
-    public Thread() {}
+    public Post() {}
 
-    public Thread(String _id, User author, String caption, String content, HashMap<String, Boolean>  likes, List<Reply> replies) {
+    public Post(String _id, User author, Store store, String content, HashMap<String, Boolean> likes, List<Reply> replies) {
         this._id = _id;
         this.author = author;
-        this.caption = caption;
+        this.store = store;
         this.content = content;
         this.likes = likes;
         this.replies = replies;
@@ -43,6 +43,14 @@ public class Thread extends FeedItem {
         return ownership;
     }
 
+    public Album getAlbum() {
+        List<Album> albums = store.getAlbums();
+        if(!albums.isEmpty())
+            return albums.get(0);
+
+        return null;
+    }
+
     public String getId() {
         return _id;
     }
@@ -51,15 +59,15 @@ public class Thread extends FeedItem {
         return author;
     }
 
-    public String getCaption() {
-        return caption;
+    public Store getStore() {
+        return store;
     }
 
     public String getContent() {
         return content;
     }
 
-    public HashMap<String, Boolean>  getLikes() {
+    public HashMap<String, Boolean> getLikes() {
         return likes;
     }
 
@@ -71,7 +79,7 @@ public class Thread extends FeedItem {
         JSONObject jsonObject = new JSONObject();
 
         try {
-            jsonObject.put(ContentContract.ThreadEntry._ID, _id);
+            jsonObject.put(ContentContract.PostEntry._ID, _id);
         } catch(JSONException e) {
             Log.v(TAG, e.toString());
         }
@@ -81,6 +89,6 @@ public class Thread extends FeedItem {
 
     @Override
     public int getViewType() {
-        return ViewType.VIEW_THREAD;
+        return ViewType.VIEW_POST;
     }
 }

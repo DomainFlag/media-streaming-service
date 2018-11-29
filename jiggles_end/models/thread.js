@@ -9,7 +9,7 @@ let ThreadSchema = new mongoose.Schema({
     },
     caption : {
         type :  String,
-        unique : true
+        default : ""
     },
     content : {
         type : String,

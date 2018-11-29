@@ -5,10 +5,11 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.example.cchiv.jiggles.Constants;
-import com.example.cchiv.jiggles.model.Store;
 import com.example.cchiv.jiggles.model.News;
+import com.example.cchiv.jiggles.model.Post;
 import com.example.cchiv.jiggles.model.Release;
 import com.example.cchiv.jiggles.model.Reply;
+import com.example.cchiv.jiggles.model.Store;
 import com.example.cchiv.jiggles.model.Thread;
 import com.example.cchiv.jiggles.model.User;
 import com.google.gson.Gson;
@@ -136,7 +137,7 @@ public class NetworkUtilities {
             Uri uri = new Uri.Builder()
                     .scheme(Constants.SCHEME)
                     .authority(Constants.AUTHORITY)
-                    .appendPath(Constants.FORUM)
+                    .appendPath(Constants.FEED)
                     .appendPath(Constants.THREAD)
                     .build();
 
@@ -157,6 +158,38 @@ public class NetworkUtilities {
         }
     }
 
+    /* Fetch Posts */
+    public static class FetchPosts extends AsyncNetworkTask<List<Post>> {
+
+        public FetchPosts(NetworkCallbacks<List<Post>> networkCallbacks, String token) {
+            super(networkCallbacks);
+
+            Uri uri = new Uri.Builder()
+                    .scheme(Constants.SCHEME)
+                    .authority(Constants.AUTHORITY)
+                    .appendPath(Constants.FEED)
+                    .appendPath(Constants.POST)
+                    .build();
+
+            Request request = new Request.Builder()
+                    .url(uri.toString())
+                    .addHeader("Content-Type", "application/json")
+                    .addHeader("X-Auth", token)
+                    .get()
+                    .build();
+
+            execute(request);
+        }
+
+        @Override
+        public List<Post> onParseNetworkCallback(Gson gson, Headers headers, String body) {
+            Log.v(TAG, body);
+            Type type = new TypeToken<List<Post>>() {}.getType();
+
+            return gson.fromJson(body, type);
+        }
+    }
+
     /* Resolve Thread Like */
     public static class ResolveThreadLike extends AsyncNetworkTask<Thread> {
 
@@ -166,7 +199,7 @@ public class NetworkUtilities {
             Uri uri = new Uri.Builder()
                     .scheme(Constants.SCHEME)
                     .authority(Constants.AUTHORITY)
-                    .appendPath(Constants.FORUM)
+                    .appendPath(Constants.FEED)
                     .appendPath(Constants.THREAD)
                     .appendPath(Constants.LIKE)
                     .build();
@@ -200,7 +233,7 @@ public class NetworkUtilities {
             Uri uri = new Uri.Builder()
                     .scheme(Constants.SCHEME)
                     .authority(Constants.AUTHORITY)
-                    .appendPath(Constants.FORUM)
+                    .appendPath(Constants.FEED)
                     .appendPath(Constants.THREAD)
                     .appendPath(Constants.REPLY)
                     .appendPath(Constants.LIKE)
@@ -267,7 +300,7 @@ public class NetworkUtilities {
             Uri uri = new Uri.Builder()
                     .scheme(Constants.SCHEME)
                     .authority(Constants.AUTHORITY)
-                    .appendPath(Constants.FORUM)
+                    .appendPath(Constants.FEED)
                     .appendPath(Constants.THREAD)
                     .build();
 
@@ -300,7 +333,7 @@ public class NetworkUtilities {
             Uri uri = new Uri.Builder()
                     .scheme(Constants.SCHEME)
                     .authority(Constants.AUTHORITY)
-                    .appendPath(Constants.USERS)
+                    .appendPath(Constants.USER)
                     .appendPath(Constants.ME)
                     .build();
 
@@ -323,23 +356,62 @@ public class NetworkUtilities {
         }
     }
 
-    /* Resolve Auth Credentials */
-    public static class ResolveAuthLogging extends AsyncNetworkTask<String> {
+    /* Resolve Store */
+    public static class ResolveStore extends AsyncNetworkTask<Store> {
 
-        public ResolveAuthLogging(NetworkCallbacks<String> networkCallbacks, String email, String password) {
+        public ResolveStore(NetworkCallbacks<Store> networkCallbacks, Store store, String token) {
             super(networkCallbacks);
 
             Uri uri = new Uri.Builder()
                     .scheme(Constants.SCHEME)
                     .authority(Constants.AUTHORITY)
-                    .appendPath(Constants.USERS)
-                    .appendPath(Constants.LOGIN)
+                    .appendPath(Constants.USER)
+                    .appendPath(Constants.STORE)
                     .build();
+
+            Gson gson = new Gson();
+            RequestBody requestBody = RequestBody.create(JSON, gson.toJson(store));
+
+            Request request = new Request.Builder()
+                    .url(uri.toString())
+                    .addHeader("Content-Type", "application/json")
+                    .addHeader("X-Auth", token)
+                    .post(requestBody)
+                    .build();
+
+            execute(request);
+        }
+
+        @Override
+        public Store onParseNetworkCallback(Gson gson, Headers headers, String body) {
+            Type type = new TypeToken<Store>() {}.getType();
+
+            return gson.fromJson(body, type);
+        }
+    }
+
+    /* Resolve Auth */
+    public static class ResolveAuth extends AsyncNetworkTask<String> {
+
+        public ResolveAuth(NetworkCallbacks<String> networkCallbacks, String authType,
+                           String email, String password, String name) {
+            super(networkCallbacks);
+
+            Uri.Builder builder = new Uri.Builder()
+                    .scheme(Constants.SCHEME)
+                    .authority(Constants.AUTHORITY)
+                    .appendPath(Constants.USER);
+
+            if(authType.equals(Constants.AUTH_SIGN_IN))
+                builder.appendPath(Constants.LOGIN);
+
+            Uri uri = builder.build();
 
             JSONObject jsonObject = new JSONObject();
             try {
                 jsonObject.put("email", email);
                 jsonObject.put("password", password);
+                jsonObject.put("name", name);
 
                 RequestBody requestBody = RequestBody.create(JSON, jsonObject.toString());
                 Request request = new Request.Builder()

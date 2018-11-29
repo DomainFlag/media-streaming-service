@@ -63,6 +63,10 @@ public class Image {
         else return null;
     }
 
+    public int getDimension() {
+        return Math.max(getWidth(), getHeight());
+    }
+
     public String getId() {
         return id;
     }

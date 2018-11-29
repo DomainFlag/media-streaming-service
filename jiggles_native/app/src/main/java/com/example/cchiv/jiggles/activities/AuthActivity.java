@@ -31,6 +31,8 @@ public class AuthActivity extends AppCompatActivity {
 
     private Typeface typeface;
 
+    private String authType = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,6 +62,7 @@ public class AuthActivity extends AppCompatActivity {
     }
 
     public void onClickAction(View view) {
+        String name = getEditTextValue(R.id.auth_name_value);
         String email = getEditTextValue(R.id.auth_email_value);
         String password = getEditTextValue(R.id.auth_password_value);
 
@@ -74,8 +77,7 @@ public class AuthActivity extends AppCompatActivity {
         }
 
         if(email != null && password != null) {
-            NetworkUtilities.ResolveAuthLogging resolveAuthLogging = new NetworkUtilities
-                    .ResolveAuthLogging(token -> {
+            NetworkUtilities.ResolveAuth resolveAuth = new NetworkUtilities.ResolveAuth(token -> {
                         if(token != null && !token.isEmpty()) {
                             SharedPreferences sharedPreferences = getSharedPreferences(Constants.AUTH_TOKEN, MODE_PRIVATE);
                             sharedPreferences.edit()
@@ -87,7 +89,7 @@ public class AuthActivity extends AppCompatActivity {
                         } else {
                             // Error message to show
                         }
-                    }, email, password);
+                    }, authType, email, password, name);
         } else {
             // Error message to show
         }
@@ -106,7 +108,7 @@ public class AuthActivity extends AppCompatActivity {
 
     private void changeAuthState() {
         Intent intent = getIntent();
-        String authType = intent.getStringExtra(Constants.AUTH_TYPE_KEY);
+        authType = intent.getStringExtra(Constants.AUTH_TYPE_KEY);
 
         findViewById(R.id.auth_spotify).setOnClickListener((view -> {
             SpotifyConnection spotifyConnection = new SpotifyConnection(this);
@@ -178,7 +180,7 @@ public class AuthActivity extends AppCompatActivity {
     public void onClickRedirect(View view) {
         Intent intent = getIntent();
 
-        String authType = intent.getStringExtra(Constants.AUTH_TYPE_KEY);
+        authType = intent.getStringExtra(Constants.AUTH_TYPE_KEY);
         if(authType.equals(Constants.AUTH_SIGN_IN))
             intent.putExtra(Constants.AUTH_TYPE_KEY, Constants.AUTH_SIGN_UP);
         else intent.putExtra(Constants.AUTH_TYPE_KEY, Constants.AUTH_SIGN_IN);

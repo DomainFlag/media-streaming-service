@@ -1,7 +1,6 @@
 package com.example.cchiv.jiggles.activities;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -10,6 +9,7 @@ import android.widget.ImageView;
 
 import com.example.cchiv.jiggles.Constants;
 import com.example.cchiv.jiggles.R;
+import com.example.cchiv.jiggles.utilities.Tools;
 import com.squareup.picasso.Picasso;
 
 public class MainActivity extends AppCompatActivity {
@@ -18,13 +18,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        SharedPreferences sharedPreferences = getSharedPreferences(Constants.AUTH_TOKEN, MODE_PRIVATE);
-        if(sharedPreferences.getString(Constants.TOKEN, null) != null) {
-            Intent intent = new Intent(this, HomeActivity.class);
-
-            startActivity(intent);
-        }
 
         ImageView welcomeBackground = findViewById(R.id.welcome_background);
         Picasso.get()
@@ -56,10 +49,15 @@ public class MainActivity extends AppCompatActivity {
         if(authType != null) {
             Intent intent;
 
-            SharedPreferences sharedPreferences = getSharedPreferences(Constants.AUTH_TOKEN, MODE_PRIVATE);
-            if(sharedPreferences.getString(Constants.TOKEN, null) != null)
-                intent = new Intent(this, HomeActivity.class);
-            else {
+            if(view.getId() == R.id.get_started) {
+                String token = Tools.getToken(this);
+                if(token != null) {
+                    intent = new Intent(this, HomeActivity.class);
+                } else {
+                    intent = new Intent(this, AuthActivity.class);
+                    intent.putExtra(Constants.AUTH_TYPE_KEY, Constants.AUTH_SIGN_IN);
+                }
+            } else {
                 intent = new Intent(this, AuthActivity.class);
                 intent.putExtra(Constants.AUTH_TYPE_KEY, authType);
             }

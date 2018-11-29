@@ -12,6 +12,7 @@ public class ContentContract {
     public static final String PATH_ARTISTS = "artists";
     public static final String PATH_USERS = "users";
     public static final String PATH_THREADS = "threads";
+    public static final String PATH_POSTS = "posts";
     public static final String PATH_NOTIFICATIONS = "notifications";
     public static final String PATH_REVIEWS = "reviews";
     public static final String PATH_RELEASES = "releases";
@@ -121,7 +122,7 @@ public class ContentContract {
     }
 
     /**
-     * Table with comments
+     * Table with replies
      */
     public static final class ThreadEntry implements BaseColumns {
 
@@ -135,11 +136,28 @@ public class ContentContract {
         public static final String COL_THREAD_CAPTION = "thread_caption";
         public static final String COL_THREAD_CONTENT = "thread_content";
         public static final String COL_THREAD_VOTES = "thread_votes";
-        public static final String COL_THREAD_DATE = "thread_votes";
     }
 
     /**
-     * Table with comments
+     * TODO(0) Needs to be done, do we need really caching?
+     * Table with replies
+     */
+    public static final class PostEntry implements BaseColumns {
+
+        public static final Uri CONTENT_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_POSTS).build();
+
+        public static final String TABLE_NAME = "post";
+
+        public static final String _ID = TABLE_NAME + BaseColumns._ID;
+        public static final String COL_POST_AUTHOR = "post_author";
+        public static final String COL_POST_CAPTION = "post_caption";
+        public static final String COL_POST_CONTENT = "post_content";
+        public static final String COL_POST_VOTES = "post_votes";
+    }
+
+    /**
+     * Table with replies
      */
     public static final class NotificationEntry implements BaseColumns {
 

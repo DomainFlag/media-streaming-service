@@ -8,6 +8,7 @@ import com.example.cchiv.jiggles.data.ContentContract.AlbumEntry;
 import com.example.cchiv.jiggles.utilities.Tools;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -20,8 +21,9 @@ public class Album {
     private String uri;
     private Date releaseDate = new Date();
     public String type = "album";
-    public boolean local = true;
+    public boolean local = false;
     public boolean favourite = true;
+    public boolean present = false;
     private List<Image> images = new ArrayList<>();
     private List<Artist> artists = new ArrayList<>();
     private List<Track> tracks = new ArrayList<>();
@@ -47,17 +49,14 @@ public class Album {
         this.favourite = favourite;
     }
 
-    public Album(String name, List<Track> tracks) {
-        this.name = name;
-        this.tracks = tracks;
-    }
-
     public Album(String name) {
         this.name = name;
+        this.local = true;
     }
 
     public Album(String name, Track track) {
         this.name = name;
+        this.local = true;
         this.tracks.add(track);
     }
 
@@ -124,6 +123,26 @@ public class Album {
 
     public List<Image> getImages() {
         return images;
+    }
+
+    public List<Image> getImagesOpt(int level) {
+        if(local) {
+            return images;
+        } else {
+            Image image = null;
+
+            int min = Integer.MAX_VALUE;
+            for(Image art : getImages()) {
+                int dimen = art.getDimension();
+
+                if(dimen < min) {
+                    min = Math.min(min, dimen);
+                    image = art;
+                }
+            }
+
+            return Collections.singletonList(image);
+        }
     }
 
     public Image getArt() {

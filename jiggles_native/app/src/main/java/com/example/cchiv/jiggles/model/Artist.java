@@ -17,8 +17,8 @@ public class Artist {
     private String name;
     private String type = "artist";
     private String uri;
-    public boolean favourite = true;
-    public boolean local = true;
+    public boolean favourite = false;
+    public boolean local = false;
     private List<String> genres = null;
     private List<Image> images = new ArrayList<>();
     private List<Album> albums = new ArrayList<>();
@@ -45,6 +45,7 @@ public class Artist {
     public Artist(String name, List<String> genres) {
         this.name = name;
         this.genres = genres;
+        this.local = true;
     }
 
     public Artist(String name, List<String> genres, List<Album> albums) {

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
-    android:id="@+id/track"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -24,32 +23,30 @@
 
     <RelativeLayout
         android:id="@+id/album_art_container"
-        android:layout_width="100dp"
-        android:layout_height="95dp"
-        android:layout_toRightOf="@id/album_genres"
-        android:layout_toEndOf="@id/album_genres">
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toEndOf="@id/album_genres"
+        android:layout_toRightOf="@id/album_genres">
 
         <ImageView
             android:id="@+id/album_art_secondary"
-            android:layout_width="85dp"
-            android:layout_height="80dp"
+            android:layout_width="90dp"
+            android:layout_height="90dp"
             android:adjustViewBounds="true"
             android:scaleType="centerCrop"
             android:contentDescription="@string/collection_art"
-            android:layout_marginRight="-18dp"
-            android:layout_marginEnd="-18dp"
-            android:layout_marginTop="18dp"
-            android:layout_alignRight="@id/album_art"
-            android:layout_alignEnd="@id/album_art"
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
             tools:src="@drawable/ic_launcher_background"/>
 
         <ImageView
             android:id="@+id/album_art"
-            android:layout_width="85dp"
-            android:layout_height="80dp"
+            android:layout_width="90dp"
+            android:layout_height="90dp"
             android:adjustViewBounds="true"
             android:scaleType="centerCrop"
-            android:layout_centerVertical="true"
             android:contentDescription="@string/collection_art"
             tools:src="@drawable/ic_launcher_background"/>
 
@@ -75,5 +72,21 @@
         android:layout_toRightOf="@id/album_art_container"
         android:layout_toEndOf="@id/album_art_container"
         tools:text="@string/app_tools_placeholder"/>
+
+    <TextView
+        android:id="@+id/album_save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/activity_margin_relative"
+        android:background="@drawable/border_white_round"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:textColor="@color/secondaryColor"
+        android:textSize="@dimen/activity_text_subspan"
+        android:typeface="sans"
+        android:textStyle="bold"
+        android:textAllCaps="true"
+        android:text="@string/collection_save"/>
 
 </RelativeLayout>

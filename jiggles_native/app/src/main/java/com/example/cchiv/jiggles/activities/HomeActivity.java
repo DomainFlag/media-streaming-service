@@ -127,7 +127,7 @@ public class HomeActivity extends PlayerAppCompatActivity {
         if(viewPager.getCurrentItem() == 0) {
             super.onBackPressed();
         } else {
-            viewPager.setCurrentItem(viewPager.getCurrentItem() - 1);
+            viewPager.setCurrentItem(viewPager.getCurrentItem() - 1, false);
         }
     }
 

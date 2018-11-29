@@ -22,7 +22,7 @@ public class Constants {
     /* Network */
     public static final String SCHEME = "https";
     public static final String AUTHORITY = app_config.APP;
-    public static final String USERS = "users";
+    public static final String USER = "user";
     public static final String LOGIN = "login";
     public static final String SIGNUP = "signup";
     public static final String ME = "me";
@@ -42,19 +42,16 @@ public class Constants {
     public static final String PENDING = "pending";
     public static final String ERROR = "ERROR";
 
-    public static final String GET = "GET";
-    public static final String POST = "POST";
-    public static final String PUT = "PUT";
-    public static final String DELETE = "DELETE";
-
     public static final String CREATE = "create";
     public static final String NONE = "none";
     public static final String UPDATE = "update";
+    public static final String STORE = "store";
     public static final String QUERY = "query";
     public static final String MAIN = "main";
-    public static final String FORUM = "forum";
+    public static final String FEED = "feed";
     public static final String LIKE = "like";
     public static final String THREAD = "thread";
+    public static final String POST = "post";
     public static final String REPLY = "reply";
 
     public static final String FRESH = "fresh";
@@ -74,7 +71,7 @@ public class Constants {
         ENTERTAINMENT_TYPES(String type) {}
     }
 
-    public enum CONTENT_TYPES {
+    public enum STORE_ITEMS {
         ARTIST(Constants.ARTIST, Artist.class),
         ALBUM(Constants.ALBUM, Album.class),
         TRACK(Constants.TRACK, Track.class);
@@ -82,6 +79,6 @@ public class Constants {
         public String type;
         public Class classType;
 
-        CONTENT_TYPES(String type, Class classType) {}
+        STORE_ITEMS(String type, Class classType) {}
     }
 }

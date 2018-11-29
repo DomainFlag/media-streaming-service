@@ -11,13 +11,13 @@
     tools:background="@color/iconsTextColor">
 
     <LinearLayout
-        android:id="@+id/thread_like_layout"
+        android:id="@+id/feed_item_like_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         style="@style/thread_feed_bar_item">
 
         <ImageView
-            android:id="@+id/thread_like_icon"
+            android:id="@+id/feed_item_like_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/activity_margin_sibling"
@@ -25,7 +25,7 @@
             android:src="@drawable/ic_like"/>
 
         <TextView
-            android:id="@+id/thread_like_content"
+            android:id="@+id/feed_item_like_content"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/activity_margin_sibling"
@@ -38,13 +38,13 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/thread_reply"
+        android:id="@+id/feed_item_reply"
         style="@style/thread_feed_bar_item"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/thread_like_layout"
+        app:layout_constraintStart_toEndOf="@+id/feed_item_like_layout"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView

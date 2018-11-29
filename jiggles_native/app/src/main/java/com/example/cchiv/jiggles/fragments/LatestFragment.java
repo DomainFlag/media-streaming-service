@@ -139,8 +139,6 @@ public class LatestFragment extends Fragment {
     }
 
     public void updateLayoutReleases(List<Release> releases) {
-        Log.v(TAG, String.valueOf(releases.size()));
-
         FeatureAdapter.Feature feature = featureAlbumAdapter.onCreateFeature("New", releases);
         featureAlbumAdapter.onSwapData(feature);
     }

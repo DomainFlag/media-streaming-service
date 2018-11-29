@@ -35,6 +35,18 @@ public class Store {
             this.albums = albums;
     }
 
+    public Store(Artist artist) {
+        setArtist(artist);
+    }
+
+    public Store(Album album) {
+        setAlbum(album);
+    }
+
+    public Store(Track track) {
+        setTrack(track);
+    }
+
     public Track getTrack(int pos) {
         return tracks.get(pos);
     }
@@ -91,6 +103,10 @@ public class Store {
 
     public void setTracks(List<Track> tracks) {
         this.tracks = tracks;
+    }
+
+    public void setTrack(Track track) {
+        this.tracks.add(track);
     }
 
     public Album addItem(Track track, String artistName, String albumName, List<String> genres) {

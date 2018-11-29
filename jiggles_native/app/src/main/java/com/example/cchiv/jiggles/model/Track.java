@@ -17,7 +17,7 @@ public class Track {
     private String type = "track";
     private String uri;
     public boolean favourite = false;
-    public boolean local = true;
+    public boolean local = false;
     private Album album;
     private List<Image> images;
     private List<Artist> artists = new ArrayList<>();
@@ -46,6 +46,7 @@ public class Track {
     public Track(String name, String uri) {
         this.name = name;
         this.uri = uri;
+        this.local = true;
     }
 
     public Artist getArtist() {

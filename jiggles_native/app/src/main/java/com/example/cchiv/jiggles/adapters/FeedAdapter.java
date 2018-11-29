@@ -21,6 +21,9 @@ import android.widget.TextView;
 
 import com.example.cchiv.jiggles.Constants;
 import com.example.cchiv.jiggles.R;
+import com.example.cchiv.jiggles.model.Album;
+import com.example.cchiv.jiggles.model.FeedItem;
+import com.example.cchiv.jiggles.model.Post;
 import com.example.cchiv.jiggles.model.Reply;
 import com.example.cchiv.jiggles.model.Thread;
 import com.example.cchiv.jiggles.utilities.NetworkUtilities;
@@ -31,32 +34,109 @@ import com.squareup.picasso.Target;
 
 import java.util.List;
 
-public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ThreadViewHolder> {
+public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private static final String TAG = "ThreadAdapter";
+    private static final String TAG = "FeedAdapter";
 
-    private List<Thread> threads;
+    private List<FeedItem> items;
     private Context context;
 
-    public ThreadAdapter(Context context, List<Thread> threads) {
+    public FeedAdapter(Context context, List<FeedItem> items) {
         this.context = context;
-        this.threads = threads;
+        this.items = items;
     }
 
     @NonNull
     @Override
-    public ThreadViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(context);
 
-        return new ThreadViewHolder(
-                layoutInflater
-                        .inflate(R.layout.home_thread_layout, parent, false)
-        );
+        switch(viewType) {
+            case FeedItem.ViewType.VIEW_POST : {
+                return new PostViewHolder(
+                        layoutInflater
+                                .inflate(R.layout.home_post_layout, parent, false)
+                );
+            }
+            case FeedItem.ViewType.VIEW_THREAD : {
+                return new ThreadViewHolder(
+                        layoutInflater
+                                .inflate(R.layout.home_thread_layout, parent, false)
+                );
+            }
+        }
+
+        return null;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ThreadViewHolder holder, int position) {
-        Thread thread = threads.get(position);
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        int viewType = getItemViewType(position);
+
+        switch(viewType) {
+            case FeedItem.ViewType.VIEW_POST : {
+                onBindPostViewHolder((PostViewHolder) holder, position);
+                break;
+            }
+            case FeedItem.ViewType.VIEW_THREAD : {
+                onBindThreadViewHolder((ThreadViewHolder) holder, position);
+                break;
+            }
+        }
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return items.get(position).getViewType();
+    }
+
+    public void onBindPostViewHolder(@NonNull PostViewHolder holder, int position) {
+        Post post = (Post) items.get(position);
+        Album album = post.getAlbum();
+
+        Uri uri = album.getArt().getUrl();
+        Picasso.get()
+                .load(uri)
+                .into(holder.caption);
+
+        // TODO(4) Album, Track, Artist has both _id and id
+//        holder.timestamp.setText(Tools.parseSocialDate(album.getId()));
+
+        holder.likeContent.setText(String.valueOf(post.getLikes().size()));
+        if(post.isOwnership()) {
+            int color = context.getResources().getColor(R.color.unexpectedColor);
+
+            holder.likeIcon.setColorFilter(color);
+            holder.likeContent.setTextColor(color);
+        }
+
+        holder.likeLayout.setOnClickListener(view -> {
+            // TODO(1) like for post
+        });
+
+        holder.reply.setOnClickListener(view -> {
+            // TODO(2) replies
+        });
+        holder.author.setText(post.getAuthor().getName());
+
+
+        holder.repliesView.setText(context.getString(R.string.feed_item_comments_label, post.getReplies().size()));
+        holder.repliesView.setOnClickListener(view -> {
+            holder.replies.setVisibility(View.VISIBLE);
+        });
+
+        holder.title.setText(album.getName());
+        holder.subtitle.setText(album.getArtist().getName());
+        holder.type.setText(context.getString(R.string.post_like));
+
+        holder.menuButton.setOnClickListener((view) -> {
+            PopupMenu popupMenu = new ThreadPopupMenu(context, holder.menuButton);
+            popupMenu.show();
+        });
+    }
+
+    public void onBindThreadViewHolder(@NonNull ThreadViewHolder holder, int position) {
+        Thread thread = (Thread) items.get(position);
 
         Uri uri = buildUriResource(thread.getCaption());
         Picasso.get()
@@ -93,7 +173,7 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ThreadView
             String token = Tools.getToken(context);
 
             NetworkUtilities.ResolveThreadLike resolveThreadLike = new NetworkUtilities.ResolveThreadLike(result -> {
-                threads.set(position, result);
+                items.set(position, result);
                 notifyItemChanged(position);
             }, thread.encodeJSONObject(), NetworkUtilities.RequestAdaptBuilder.getType(thread.isOwnership()), token);
         });
@@ -104,7 +184,7 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ThreadView
         holder.author.setText(thread.getAuthor().getName());
 
 
-        holder.repliesView.setText(context.getString(R.string.thread_comments_label, thread.getComments().size()));
+        holder.repliesView.setText(context.getString(R.string.feed_item_comments_label, thread.getReplies().size()));
         holder.repliesView.setOnClickListener(view -> {
             holder.replies.setVisibility(View.VISIBLE);
         });
@@ -122,7 +202,7 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ThreadView
 
     private void buildThreadRepliesTree(@NonNull ThreadViewHolder holder, Thread thread) {
         TreeParser treeParser = new TreeParser();
-        List<Reply> comments = treeParser.queryTree(thread.getComments());
+        List<Reply> comments = treeParser.queryTree(thread.getReplies());
 
         CommentAdapter commentAdapter = new CommentAdapter(context, comments);
         holder.replies.setAdapter(commentAdapter);
@@ -142,13 +222,60 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ThreadView
 
     @Override
     public int getItemCount() {
-        if(threads != null)
-            return threads.size();
+        if(items != null)
+            return items.size();
         else return 0;
     }
 
-    public void swapContent(List<Thread> threads) {
-        this.threads = threads;
+    public void swapContent(List<FeedItem> items) {
+        this.items = items;
+    }
+
+    public void onAddItem(FeedItem item) {
+        this.items.add(item);
+    }
+
+    public List<FeedItem> getItems() {
+        return items;
+    }
+
+    public class PostViewHolder extends RecyclerView.ViewHolder {
+
+        private ImageView caption;
+        private LinearLayout likeLayout;
+        private ImageView likeIcon;
+        private TextView likeContent;
+        private TextView author;
+        private LinearLayout reply;
+        private TextView timestamp;
+        private TextView title;
+        private TextView subtitle;
+        private TextView type;
+
+        private RecyclerView replies;
+        private TextView repliesView;
+
+        private ImageView menuButton;
+
+        public PostViewHolder(View itemView) {
+            super(itemView);
+
+            caption = itemView.findViewById(R.id.post_caption);
+            timestamp = itemView.findViewById(R.id.post_timestamp);
+            reply = itemView.findViewById(R.id.feed_item_reply);
+            author = itemView.findViewById(R.id.post_author);
+            likeLayout = itemView.findViewById(R.id.feed_item_like_layout);
+            likeIcon = itemView.findViewById(R.id.feed_item_like_icon);
+            likeContent = itemView.findViewById(R.id.feed_item_like_content);
+            title = itemView.findViewById(R.id.post_content_title);
+            subtitle = itemView.findViewById(R.id.post_content_subtitle);
+            type = itemView.findViewById(R.id.post_type);
+
+//            replies = itemView.findViewById(R.id.post_replies);
+            repliesView = itemView.findViewById(R.id.post_replies_view);
+
+            menuButton = itemView.findViewById(R.id.post_menu_button);
+        }
     }
 
     public class ThreadViewHolder extends RecyclerView.ViewHolder {
@@ -175,11 +302,11 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ThreadView
             caption = itemView.findViewById(R.id.thread_caption);
             divider = itemView.findViewById(R.id.thread_divider);
             timestamp = itemView.findViewById(R.id.thread_timestamp);
-            reply = itemView.findViewById(R.id.thread_reply);
+            reply = itemView.findViewById(R.id.feed_item_reply);
             author = itemView.findViewById(R.id.thread_author);
-            likeLayout = itemView.findViewById(R.id.thread_like_layout);
-            likeIcon = itemView.findViewById(R.id.thread_like_icon);
-            likeContent = itemView.findViewById(R.id.thread_like_content);
+            likeLayout = itemView.findViewById(R.id.feed_item_like_layout);
+            likeIcon = itemView.findViewById(R.id.feed_item_like_icon);
+            likeContent = itemView.findViewById(R.id.feed_item_like_content);
             content = itemView.findViewById(R.id.thread_content);
             replies = itemView.findViewById(R.id.thread_replies);
             repliesView = itemView.findViewById(R.id.thread_replies_view);

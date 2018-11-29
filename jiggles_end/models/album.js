@@ -11,13 +11,10 @@ let AlbumSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    release_date : {
-        type: Date,
-        required: true
-    },
     uri : {
         type: String,
-        required: true
+        required: true,
+        unique : true
     },
     type : {
         type: String,

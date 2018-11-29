@@ -24,7 +24,7 @@ const CONSTANTS = {
 
     ALL : "all",
 
-    CONTENT_TYPES : {
+    STORE_ITEMS : {
         ARTIST : "artist",
         ALBUM : "album",
         TRACK : "track"
