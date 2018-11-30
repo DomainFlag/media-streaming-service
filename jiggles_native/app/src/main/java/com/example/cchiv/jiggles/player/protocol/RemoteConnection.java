@@ -28,6 +28,9 @@ public class RemoteConnection implements OnSearchPairedDevices {
 
     private static final String TAG = "RemoteConnection";
 
+    public static final int CONNECTION_CLIENT = 921;
+    public static final int CONNECTION_SERVER = 922;
+
     private OnManageStreamData onManageStreamData;
     private OnUpdatePairedDevices onUpdatePairedDevices;
 
@@ -40,6 +43,8 @@ public class RemoteConnection implements OnSearchPairedDevices {
     private ConnectedThread connectedThread = null;
     private ClientThread clientThread;
     private RemoteThread remoteThread;
+
+    private int connectionType = CONNECTION_SERVER;
 
     private boolean receiverRegistered = false;
 
@@ -62,8 +67,8 @@ public class RemoteConnection implements OnSearchPairedDevices {
 
     public RemoteConnection(Context context, PlayerRemote playerRemote) {
         this.context = context;
-        this.onManageStreamData = (OnManageStreamData) playerRemote;
-        this.onUpdatePairedDevices = (OnUpdatePairedDevices) playerRemote;
+        this.onManageStreamData = playerRemote;
+        this.onUpdatePairedDevices = playerRemote;
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
@@ -85,6 +90,8 @@ public class RemoteConnection implements OnSearchPairedDevices {
     public void startRemoteClient(BluetoothDevice bluetoothDevice) {
         // Stopping the server thread
         remoteThread.setRunning(false);
+
+        connectionType = CONNECTION_CLIENT;
 
         clientThread = new ClientThread(bluetoothDevice);
         clientThread.start();
@@ -114,6 +121,10 @@ public class RemoteConnection implements OnSearchPairedDevices {
         } else {
             Log.v(TAG, "Couldn't get the bluetooth adapter");
         }
+    }
+
+    public int getConnectionType() {
+        return connectionType;
     }
 
     @Override
@@ -196,13 +207,13 @@ public class RemoteConnection implements OnSearchPairedDevices {
                 return;
             }
 
-            // Updating the UI that the pairing went successfully
-            onUpdatePairedDevices.onUpdateInterface(context, mmDevice);
-
             // The connection attempt succeeded. Perform work associated with
             // the connection in a separate thread.
             connectedThread = new ConnectedThread(mmSocket);
             connectedThread.start();
+
+            // Updating the UI that the pairing went successfully
+            onUpdatePairedDevices.onUpdateInterface(context, mmDevice);
         }
 
         // Closes the client socket and causes the thread to finish.
@@ -259,12 +270,12 @@ public class RemoteConnection implements OnSearchPairedDevices {
                         // Cancel discovery because it otherwise slows down the connection.
                         mBluetoothAdapter.cancelDiscovery();
 
+                        connectedThread = new ConnectedThread(socket);
+                        connectedThread.start();
+
                         // A connection was accepted. Perform work associated with
                         // the connection in a separate thread.
                         onUpdatePairedDevices.onUpdateInterface(context, socket.getRemoteDevice());
-
-                        connectedThread = new ConnectedThread(socket);
-                        connectedThread.start();
 
                         mmServerSocket.close();
                         break;
@@ -338,9 +349,6 @@ public class RemoteConnection implements OnSearchPairedDevices {
                     // Read from the InputStream.
                     numBytes = mmInStream.read(mmBuffer);
 
-                    if(numBytes > 0)
-                        Log.v(TAG, "Read " + String.valueOf(numBytes));
-
                     // Send the obtained chunk to the UI activity.
                     onManageStreamData.onManageStreamData(context, mmBuffer, numBytes);
                 } catch(IOException e) {
@@ -353,9 +361,7 @@ public class RemoteConnection implements OnSearchPairedDevices {
         // Call this from the client thread to send data to the remote device.
         public void write(byte[] bytes) {
             try {
-                mmOutStream.write(bytes);
-
-                Log.v(TAG, "Notification written successfully");
+                mmOutStream.write(bytes, 0, bytes.length);
             } catch (IOException e) {
                 Log.e(TAG, "Error occurred when sending data", e);
             }

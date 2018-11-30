@@ -126,6 +126,20 @@ public class Store {
         return artist.addItem(this, track, albumName);
     }
 
+    public int getPosition(String resourceId, String resourceType) {
+        if(resourceType.equals(TrackEntry._ID) && !albums.isEmpty()) {
+            List<Track> tracks = albums.get(0).getTracks();
+            for(int i = 0;  i < tracks.size(); i++) {
+                Track track = tracks.get(i);
+
+                if(track.getId().equals(resourceId))
+                    return i;
+            }
+        }
+
+        return 0;
+    }
+
     public int getCount(String filterBy) {
         switch(filterBy) {
             case Constants.ALBUM : return albums.size();

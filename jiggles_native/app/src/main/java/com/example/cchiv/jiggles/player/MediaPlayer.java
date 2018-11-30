@@ -72,9 +72,19 @@ public class MediaPlayer {
 
     public Track getCurrentTrack() {
         if(exoPlayer != null) {
-            int index = exoPlayer.getCurrentWindowIndex();
+            int position = exoPlayer.getCurrentWindowIndex();
 
-            return store.getTrack(index);
+            return store.getTrack(position);
+        }
+
+        return null;
+    }
+
+    public Album getCurrentAlbum() {
+        if(exoPlayer != null) {
+            int position = exoPlayer.getCurrentWindowIndex();
+
+            return store.getTrack(position).getAlbum();
         }
 
         return null;
@@ -169,24 +179,16 @@ public class MediaPlayer {
         return concatenatingMediaSource;
     }
 
-    public void setSource(Store store) {
+    public void setSource(Store store, int defaultPosition) {
         this.store = store;
 
         DefaultDataSourceFactory defaultDataSourceFactory = new DefaultDataSourceFactory(context,
                 Util.getUserAgent(context, context.getPackageName()));
 
         ExtractorMediaSource.Factory factory = new ExtractorMediaSource.Factory(defaultDataSourceFactory);
-        if(store.getTracks().size() > 1) {
-            ConcatenatingMediaSource concatenatingMediaSource = setMultipleSources(factory, store.getAlbums().get(0));
-
-            exoPlayer.prepare(concatenatingMediaSource);
-        } else {
-            MediaSource mediaSource = factory.createMediaSource(
-                    Uri.parse(store.getTracks().get(0).getUri()));
-
-            exoPlayer.prepare(mediaSource);
-        }
-
+        ConcatenatingMediaSource concatenatingMediaSource = setMultipleSources(factory, store.getAlbums().get(0));
+        exoPlayer.prepare(concatenatingMediaSource);
+        exoPlayer.seekToDefaultPosition(defaultPosition);
         exoPlayer.setPlayWhenReady(true);
 
         onTrackStateChanged.onTrackStateChanged(getCurrentTrack());

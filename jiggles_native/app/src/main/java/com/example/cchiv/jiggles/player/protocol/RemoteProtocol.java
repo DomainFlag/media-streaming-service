@@ -13,7 +13,7 @@ import java.util.List;
 
 public class RemoteProtocol {
 
-    private static final String TAG = "JigglesProtocol";
+    private static final String TAG = "RemoteProtocol";
 
     public static class IDENTIFIER {
         public static final String HEADER = "identifier-value";
@@ -111,7 +111,7 @@ public class RemoteProtocol {
 
     public static Connection.Chunk decodeChunk(byte[] data, int size) {
         try {
-            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(data);
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(data, 0, size);
             InputStreamReader inputStreamReader = new InputStreamReader(byteArrayInputStream, "ISO-8859-1");
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 
@@ -159,7 +159,7 @@ public class RemoteProtocol {
 
         private byte[] body = null;
 
-        private int length = -1;
+        private int length;
 
         private Builder appendHeader(Header header) {
             headers.add(header);

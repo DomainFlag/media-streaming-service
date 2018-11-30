@@ -79,9 +79,9 @@ public class StoreFragment extends Fragment {
         LoaderManager loaderManager = ((AppCompatActivity) context).getSupportLoaderManager();
         loaderManager.initLoader(COLLECTION_LOADER_ID, args, jigglesLoader).forceLoad();
 
-        contentAdapter = new ContentAdapter(context, null, ContentAdapter.MODE_ALBUM, (id) -> {
+        contentAdapter = new ContentAdapter(context, null, ContentAdapter.MODE_ALBUM, store -> {
             Intent intent = new Intent(context, AlbumActivity.class);
-            intent.putExtra(AlbumActivity.ALBUM_ID, id);
+            intent.putExtra(AlbumActivity.ALBUM_ID, store.getAlbum(0).getId());
             startActivity(intent);
         });
 

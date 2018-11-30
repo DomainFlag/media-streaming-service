@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 
 import com.example.cchiv.jiggles.data.ContentContract;
+import com.example.cchiv.jiggles.data.ContentContract.AlbumEntry;
 import com.example.cchiv.jiggles.data.ContentContract.TrackEntry;
 import com.example.cchiv.jiggles.model.Store;
 import com.example.cchiv.jiggles.model.Track;
@@ -30,8 +31,10 @@ public class PlayerService extends Service implements MediaPlayer.OnTrackStateCh
         void onCallbackListener(Track track, int playbackStateCompat);
     }
 
-    public static final String RESOURCE_IDENTIFIER = "RESOURCE_IDENTIFIER";
     public static final String RESOURCE_TYPE = "RESOURCE_TYPE";
+    public static final String RESOURCE_IDENTIFIER = "RESOURCE_IDENTIFIER";
+    public static final String RESOURCE_PARENT_TYPE = "RESOURCE_PARENT_TYPE";
+    public static final String RESOURCE_PARENT_IDENTIFIER = "RESOURCE_PARENT_IDENTIFIER";
 
     public List<OnCallbackListener> listeners = new ArrayList<>();
 
@@ -51,24 +54,28 @@ public class PlayerService extends Service implements MediaPlayer.OnTrackStateCh
             if(bundle != null) {
                 String resourceId = bundle.getString(RESOURCE_IDENTIFIER, null);
                 String resourceType = bundle.getString(RESOURCE_TYPE, TrackEntry._ID);
+                String resourceParentId = bundle.getString(RESOURCE_PARENT_IDENTIFIER, null);
+                String resourceParentType = bundle.getString(RESOURCE_PARENT_TYPE, AlbumEntry._ID);
 
-                if(resourceId != null && resourceType != null) {
+                if(resourceId != null && resourceParentId != null) {
                     Bundle loaderBundle = new Bundle();
                     loaderBundle.putString(JigglesLoader.BUNDLE_URI_KEY, ContentContract.CONTENT_COLLECTION_URI.toString());
-                    loaderBundle.putString(JigglesLoader.BUNDLE_SELECTION_KEY, resourceType + "=?");
-                    loaderBundle.putStringArray(JigglesLoader.BUNDLE_SELECTION_ARGS_KEY, new String[] { resourceId });
+                    loaderBundle.putString(JigglesLoader.BUNDLE_SELECTION_KEY, resourceParentType + "=?");
+                    loaderBundle.putStringArray(JigglesLoader.BUNDLE_SELECTION_ARGS_KEY, new String[] { resourceParentId });
 
                     JigglesLoader.AsyncTaskContentLoader<Store> asyncTaskContentLoader =
                             new JigglesLoader.AsyncTaskContentLoader<>(this, loaderBundle, Store::parseCursor);
 
-                    asyncTaskContentLoader.registerListener(LOADER_SERVICE_COLLECTION_ID, (loader, collection) -> {
-                        playerMediaSession.createMediaSession();
+                    asyncTaskContentLoader.registerListener(LOADER_SERVICE_COLLECTION_ID, (loader, store) -> {
+                        if(store != null) {
+                            playerMediaSession.createMediaSession();
 
-                        mediaPlayer.setPlayer(playerMediaSession);
-                        mediaPlayer.setSource(collection);
+                            mediaPlayer.setPlayer(playerMediaSession);
+                            mediaPlayer.setSource(store, store.getPosition(resourceId, resourceType));
 
-                        Track track = getCurrentTrack();
-                        setForegroundService(track);
+                            Track track = getCurrentTrack();
+                            setForegroundService(track);
+                        }
                     });
 
                     asyncTaskContentLoader.forceLoad();

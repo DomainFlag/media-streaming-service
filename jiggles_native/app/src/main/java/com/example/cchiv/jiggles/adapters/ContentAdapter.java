@@ -51,7 +51,7 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public static final int MODE_SCROLL = 3;
 
     public interface OnItemClickListener {
-        void onItemClickListener(String id);
+        void onItemClickListener(Store store);
     }
 
     private static final String TAG = "ContentAdapter";
@@ -71,8 +71,8 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public ContentAdapter(Context context, Store store, int layoutMode, OnItemClickListener onItemClickListener) {
         this.context = context;
         this.store = store;
-        this.onItemClickListener = onItemClickListener;
         this.layoutMode = layoutMode;
+        this.onItemClickListener = onItemClickListener;
     }
 
     public ContentAdapter(Context context, Store store, int layoutMode, View rootView, OnItemClickListener onItemClickListener) {
@@ -159,7 +159,9 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
 
         holder.itemView.setOnClickListener((view) -> {
-            this.onItemClickListener.onItemClickListener(album.getId());
+            Store store = new Store(album);
+
+            this.onItemClickListener.onItemClickListener(store);
         });
     }
 
@@ -238,7 +240,10 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         } else holder.artist.setText(track.getName());
 
         holder.itemView.setOnClickListener((view) -> {
-            onItemClickListener.onItemClickListener(track.getId());
+            Store store = new Store(album);
+            store.setTrack(track);
+
+            onItemClickListener.onItemClickListener(store);
         });
     }
 

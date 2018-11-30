@@ -15,6 +15,8 @@ import com.example.cchiv.jiggles.data.ContentContract;
 import com.example.cchiv.jiggles.model.Store;
 import com.example.cchiv.jiggles.services.PlayerService;
 import com.example.cchiv.jiggles.utilities.JigglesLoader;
+import com.example.cchiv.jiggles.data.ContentContract.AlbumEntry;
+import com.example.cchiv.jiggles.data.ContentContract.TrackEntry;
 
 public class AlbumActivity extends PlayerAppCompatActivity {
 
@@ -24,9 +26,8 @@ public class AlbumActivity extends PlayerAppCompatActivity {
 
     private static final String TAG = "AlbumActivity";
 
-    private ContentAdapter contentTrackAdapter = new ContentAdapter(this, null, ContentAdapter.MODE_TRACK, id -> {
-        createPlayerIntent(id, ContentContract.TrackEntry._ID);
-    });
+    private ContentAdapter contentTrackAdapter = new ContentAdapter(this, null,
+            ContentAdapter.MODE_TRACK, this::createPlayerIntent);
 
     private ContentAdapter contentAlbumAdapter;
 
@@ -34,8 +35,8 @@ public class AlbumActivity extends PlayerAppCompatActivity {
     protected void onCreateActivity(@Nullable Bundle savedInstanceState) {
         setContentView(R.layout.activity_album);
 
-        contentAlbumAdapter = new ContentAdapter(this, null, ContentAdapter.MODE_SCROLL, findViewById(R.id.album_background),
-                id -> {});
+        contentAlbumAdapter = new ContentAdapter(this, null, ContentAdapter.MODE_SCROLL,
+                findViewById(R.id.album_background), store -> {});
         RecyclerView recyclerView = createRecyclerView(contentAlbumAdapter, RecyclerView.HORIZONTAL, R.id.album_list);
 
         SnapHelper helper = new LinearSnapHelper();
@@ -73,12 +74,14 @@ public class AlbumActivity extends PlayerAppCompatActivity {
     @Override
     protected void onDestroyActivity() {}
 
-    private void createPlayerIntent(String resourceId, String resourceType) {
+    private void createPlayerIntent(Store store) {
         Intent intent = new Intent(this, PlayerActivity.class);
 
         Bundle bundle = new Bundle();
-        bundle.putString(PlayerService.RESOURCE_IDENTIFIER, resourceId);
-        bundle.putString(PlayerService.RESOURCE_TYPE, resourceType);
+        bundle.putString(PlayerService.RESOURCE_IDENTIFIER, store.getTrack(0).getId());
+        bundle.putString(PlayerService.RESOURCE_TYPE, TrackEntry._ID);
+        bundle.putString(PlayerService.RESOURCE_PARENT_IDENTIFIER, store.getAlbum(0).getId());
+        bundle.putString(PlayerService.RESOURCE_PARENT_TYPE, AlbumEntry._ID);
 
         intent.putExtras(bundle);
 

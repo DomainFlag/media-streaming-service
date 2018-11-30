@@ -1,26 +1,35 @@
 package com.example.cchiv.jiggles.player.protocol;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public class Connection {
 
+    private static final String TAG = "Connection";
+
     private HashMap<String, Message> messages = new HashMap<>();
 
-    public Connection() {}
+    public interface OnConnectionCallback {
+        void onConnectionImageCallback(Bitmap bitmap);
+    }
 
-    public Message createMessage(Message.OnMessageCallback onMessageCallback) {
-        String identifier;
-        do {
-            identifier = Message.generateIdentifier();
-        } while(messages.containsKey(identifier));
+    private OnConnectionCallback onConnectionCallback = null;
 
+    public Connection(OnConnectionCallback onConnectionCallback) {
+        this.onConnectionCallback = onConnectionCallback;
+    }
+
+    public Message createMessage(String identifier, Message.OnMessageCallback onMessageCallback) {
         Message message = new Message(identifier);
         message.onAttachMessageCallback(onMessageCallback);
         messages.put(identifier, message);
@@ -31,10 +40,31 @@ public class Connection {
     public void resolve(Chunk chunk) {
         String identifier = chunk.getHeader(RemoteProtocol.IDENTIFIER.HEADER);
 
+        int chunkSize = Integer.valueOf(chunk.getHeader(RemoteProtocol.CHUNKS.LENGTH.HEADER));
+
+        Log.v(TAG, String.valueOf(chunkSize));
+
         if(identifier != null) {
             if(messages.containsKey(identifier)) {
                 Message message = messages.get(identifier);
 
+                message.resolve(chunk);
+            } else {
+                Message.OnMessageCallback onMessageCallback = message -> {
+                    String action = chunk.getHeader(RemoteProtocol.ACTIONS.HEADER);
+                    switch(action) {
+                        case RemoteProtocol.ACTIONS.ACTION_STREAM : {
+                            Bitmap bitmap = Message.decodeStreamImageMessage(message);
+
+                            onConnectionCallback.onConnectionImageCallback(bitmap);
+                        }
+                        default : {
+                            Log.v(TAG, "Action unknown");
+                        }
+                    }
+                };
+
+                Message message = createMessage(identifier, onMessageCallback);
                 message.resolve(chunk);
             }
         }
@@ -42,7 +72,7 @@ public class Connection {
 
     public static class Message {
 
-        private static final String TAG = "Notification";
+        private static final String TAG = "Message";
 
         public interface OnMessageCallback {
             void onMessageCallback(Message message);
@@ -85,6 +115,36 @@ public class Connection {
             } else {
                 chunks.add(chunk);
             }
+        }
+
+        public static void encodeStreamMessage(RemoteConnection remoteConnection, Bitmap bitmap) {
+            byte[] data = new byte[248];
+            int len;
+
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 0, bos);
+            byte[] input = bos.toByteArray();
+            ByteArrayInputStream arrayInputStream = new ByteArrayInputStream(input);
+
+            String identifier = Message.generateIdentifier();
+
+            while((len = arrayInputStream.read(data, 0, 248)) != -1) {
+                sendMessage(remoteConnection, identifier, data, RemoteProtocol.CHUNKS.LENGTH.UNKNOWN_STREAM_LENGTH, len);
+            }
+
+            sendMessage(remoteConnection, identifier, null, RemoteProtocol.CHUNKS.LENGTH.UNKNOWN_STREAM_END, 0);
+        }
+
+        public static Bitmap decodeStreamImageMessage(Message message) {
+            byte[] body = Connection.Message.decodeByteSource(message);
+
+            return BitmapFactory.decodeByteArray(body, 0, body.length);
+        }
+
+        private static void sendMessage(RemoteConnection remoteConnection, String identifier, byte[] data, int size, int length) {
+            byte[] streamAction = RemoteProtocol.createStreamAction(identifier, data, size, length);
+
+            remoteConnection.writeStream(streamAction);
         }
 
         public static String decodeString(Message message) {
@@ -149,6 +209,12 @@ public class Connection {
             if(headers.containsKey(header))
                 return headers.get(header);
             else return null;
+        }
+
+        public void printHeaders() {
+            for(Map.Entry<String, String> stringMap : headers.entrySet()) {
+                Log.v(TAG, stringMap.getKey() + " - " + stringMap.getValue());
+            }
         }
     }
 }
