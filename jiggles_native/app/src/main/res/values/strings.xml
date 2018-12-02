@@ -6,6 +6,7 @@
     <string name="app_tools_placeholder_date">Mon Aug 06 2018</string>
 
     <string name="app_component_author">By %1$s</string>
+    <string name="app_component_beta">Beta</string>
 
     <string name="app_connectivity_negative">No valid internet connection, try again!</string>
 
@@ -61,6 +62,7 @@
     </string-array>
 
     <string name="home_account_profile">Profile</string>
+    <string name="home_account_account">Account</string>
     <string name="home_account_settings">Settings</string>
     <string name="home_account_log_out">Log Out</string>
 
@@ -141,6 +143,12 @@
 
     <string name="search_album_thumbnail">Album Thumbnail</string>
     <string name="search_artist_thumbnail">Artist Thumbnail</string>
+
+    <!-- Flow -->
+    <string name="flow_follow">Follow the Flow</string>
+    <string name="flow_not_follow">Be the Flow</string>
+    <string name="flow_genre">Flow Genre</string>
+    <string name="flow_nearby">%1$d nearby people are jamming to it.</string>
 
 
     <!-- Player -->

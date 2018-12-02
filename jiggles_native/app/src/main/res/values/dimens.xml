@@ -16,6 +16,7 @@
     <dimen name="activity_text_subparagraph">14sp</dimen>
     <dimen name="activity_text_span">12sp</dimen>
     <dimen name="activity_text_subspan">10sp</dimen>
+    <dimen name="activity_text_nano">6sp</dimen>
 
     <dimen name="auth_social_icon">48dp</dimen>
 

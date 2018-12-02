@@ -19,6 +19,7 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -36,6 +37,7 @@ import com.example.cchiv.jiggles.utilities.Tools;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -73,20 +75,31 @@ public class HomeActivity extends PlayerAppCompatActivity {
         Tools.resolveAuthToken(this);
         Tools.resolveUser(this);
 
-        findViewById(R.id.home_account).setOnClickListener((view) -> {
+        findViewById(R.id.home_notification).setOnClickListener(view -> {
+            Intent intent = new Intent(this, FlowActivity.class);
+            startActivity(intent);
+        });
+
+        findViewById(R.id.home_menu).setOnClickListener(view -> {
             PopupMenu popup = new PopupMenu(this, view);
 
-            Menu menu = popup.getMenu();
-            popup.getMenuInflater().inflate(R.menu.account_menu, menu);
+            MenuInflater inflater = popup.getMenuInflater();
+            inflater.inflate(R.menu.store_menu, popup.getMenu());
 
-            menu.findItem(R.id.account_log_out).setOnMenuItemClickListener(menuItem -> {
-                Intent intent = new Intent(this, AuthActivity.class);
-                startActivity(intent);
+            try {
+                Field field = PopupMenu.class.getDeclaredField("mPopup");
+                field.setAccessible(true);
 
-                return false;
-            });
-
-            popup.show();
+                Object menuHelper = field.get(popup);
+                menuHelper
+                        .getClass()
+                        .getDeclaredMethod("setForceShowIcon", boolean.class)
+                        .invoke(menuHelper, true);
+            } catch(Exception e) {
+                Log.v(TAG, e.toString());
+            } finally {
+                popup.show();
+            }
         });
 
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -129,6 +142,14 @@ public class HomeActivity extends PlayerAppCompatActivity {
         } else {
             viewPager.setCurrentItem(viewPager.getCurrentItem() - 1, false);
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.store_menu, menu);
+
+        return true;
     }
 
     public void onToggleBarLayout(boolean toggleBarLayout) {

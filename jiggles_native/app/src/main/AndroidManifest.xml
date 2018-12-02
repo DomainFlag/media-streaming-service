@@ -43,6 +43,10 @@
             android:launchMode="singleTask"/>
 
         <activity
+            android:name=".activities.FlowActivity"
+            android:launchMode="singleTop"/>
+
+        <activity
             android:name=".activities.HomeActivity"
             android:launchMode="singleTop"/>
 
