@@ -1,4 +1,4 @@
-package com.example.cchiv.jiggles.player;
+package com.example.cchiv.jiggles.player.protocol;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
@@ -15,18 +15,24 @@ import com.example.cchiv.jiggles.interfaces.OnManageStreamData;
 import com.example.cchiv.jiggles.interfaces.OnUpdatePairedDevices;
 import com.example.cchiv.jiggles.model.Image;
 import com.example.cchiv.jiggles.model.Track;
-import com.example.cchiv.jiggles.player.protocol.Connection;
-import com.example.cchiv.jiggles.player.protocol.RemoteConnection;
-import com.example.cchiv.jiggles.player.protocol.RemoteProtocol;
-import com.google.android.exoplayer2.Player;
+import com.example.cchiv.jiggles.player.MediaPlayer;
+import com.example.cchiv.jiggles.player.protocol.builder.Message;
+import com.example.cchiv.jiggles.player.protocol.builder.Messenger;
+import com.example.cchiv.jiggles.player.protocol.builder.Protocol;
 
 import java.io.IOException;
 import java.util.Set;
 
-public class PlayerRemote implements ConnectivityDialog.OnBluetoothDeviceSelect,
-        OnManageStreamData, OnUpdatePairedDevices, Connection.OnConnectionCallback {
+public class RemotePlayer implements ConnectivityDialog.OnBluetoothDeviceSelect,
+        OnManageStreamData, OnUpdatePairedDevices {
 
-    private static final String TAG = "PlayerRemote";
+    public class RemoteAction {
+        public static final int ACTION_RESUME = 0;
+        public static final int ACTION_PAUSE = 1;
+        public static final int ACTION_SEEK = 2;
+    }
+
+    private static final String TAG = "RemotePlayer";
 
     public interface OnUpdateInterface {
         void onUpdateInterface(BluetoothDevice bluetoothDevice);
@@ -36,11 +42,11 @@ public class PlayerRemote implements ConnectivityDialog.OnBluetoothDeviceSelect,
     private MediaPlayer mediaPlayer;
     private ConnectivityDialog connectivityDialog;
     private RemoteConnection remoteConnection;
-    private Connection connection;
+    private Messenger messenger = new Messenger(this);
 
     private Context context;
 
-    public PlayerRemote(Context context, MediaPlayer mediaPlayer) {
+    public RemotePlayer(Context context, MediaPlayer mediaPlayer) {
         this.context = context;
         this.onUpdateInterface = (OnUpdateInterface) context;
         this.mediaPlayer = mediaPlayer;
@@ -63,46 +69,69 @@ public class PlayerRemote implements ConnectivityDialog.OnBluetoothDeviceSelect,
         remoteConnection.startRemoteClient(bluetoothDevice);
     }
 
-    public void onStateChanged(int playbackState, boolean playWhenReady) {
-        String identifier = Connection.Message.generateIdentifier();
+    public void onStateChanged(int actionType, long value) {
+        String identifier = Message.generateIdentifier();
 
-        if((playbackState == Player.STATE_READY) && playWhenReady) {
-            remoteConnection.writeStream(RemoteProtocol.createResumeAction(identifier));
-        } else if(playbackState == Player.STATE_READY) {
-            remoteConnection.writeStream(RemoteProtocol.createPauseAction(identifier));
+        switch(actionType) {
+            case RemoteAction.ACTION_RESUME : {
+                remoteConnection.writeStream(Protocol.createResumeAction(identifier));
+                break;
+            }
+            case RemoteAction.ACTION_PAUSE : {
+                remoteConnection.writeStream(Protocol.createPauseAction(identifier));
+                break;
+            }
+            case RemoteAction.ACTION_SEEK : {
+                remoteConnection.writeStream(Protocol.createSeekAction(identifier, value));
+                break;
+            }
         }
     }
 
     /**
-     * Received data
-     * @param size
-     * @param data
+     * Received streamed data
      */
     @Override
     public void onManageStreamData(Context context, byte[] data, int size) {
-        Connection.Chunk chunk = RemoteProtocol.decodeChunk(data, size);
+        messenger.resolvePacket(data, size);
+    }
 
-        if(chunk != null) {
-            String action = chunk.getHeader(RemoteProtocol.ACTIONS.HEADER);
-
-            if(action == null) {
-                return;
-            }
+    public void onManageMessage(Message message) {
+        if(message != null) {
+            String action = message.getAction();
 
             switch(action) {
-                case RemoteProtocol.ACTIONS.ACTION_RESUME :
+                case Protocol.ACTIONS.ACTION_STREAM : {
+                    Bitmap bitmap = Protocol.decodeStreamImageMessage(message);
+
+                    ((Activity) context).runOnUiThread(() -> {
+                        ImageView imageView = ((Activity) context).findViewById(R.id.player_thumbnail);
+                        imageView.setImageBitmap(bitmap);
+                    });
+
+                    break;
+                }
+                case Protocol.ACTIONS.ACTION_RESUME : {
                     ((Activity) context).runOnUiThread(() -> {
                         mediaPlayer.togglePlayer(true);
                     });
+
                     break;
-                case RemoteProtocol.ACTIONS.ACTION_PAUSE :
+                }
+                case Protocol.ACTIONS.ACTION_PAUSE : {
                     ((Activity) context).runOnUiThread(() -> {
                         mediaPlayer.togglePlayer(false);
                     });
+
                     break;
-                case RemoteProtocol.ACTIONS.ACTION_STREAM :
-                    connection.resolve(chunk);
+                }
+                case Protocol.ACTIONS.ACTION_SEEK : {
+                    ((Activity) context).runOnUiThread(() -> {
+                        mediaPlayer.changeSeeker(Protocol.decodeSeekerMessage(message));
+                    });
+
                     break;
+                }
                 default:
                     Log.v(TAG, "Undefined action - " + action);
                     break;
@@ -121,20 +150,8 @@ public class PlayerRemote implements ConnectivityDialog.OnBluetoothDeviceSelect,
     }
 
     @Override
-    public void onConnectionImageCallback(Bitmap bitmap) {
-        ((Activity) context).runOnUiThread(() -> {
-            ImageView imageView = ((Activity) context).findViewById(R.id.player_thumbnail);
-            imageView.setImageBitmap(bitmap);
-        });
-    }
-
-    @Override
     public void onUpdateInterface(Context context, BluetoothDevice device) {
-        connection = new Connection(this);
-
         if(remoteConnection.getConnectionType() == RemoteConnection.CONNECTION_CLIENT) {
-            Log.v(TAG, "Started media transfer");
-
             Track track = mediaPlayer.getCurrentTrack();
             if(track.local) {
                 Image image = track.getAlbum().getArt();
@@ -143,7 +160,7 @@ public class PlayerRemote implements ConnectivityDialog.OnBluetoothDeviceSelect,
                     try {
                         Bitmap bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), Uri.parse(image.getUrl().toString()));
 
-                        Connection.Message.encodeStreamMessage(remoteConnection, bitmap);
+                        Protocol.encodeStreamMessage(remoteConnection, bitmap);
                     } catch(IOException e) {
                         Log.v(TAG, e.toString());
                     }

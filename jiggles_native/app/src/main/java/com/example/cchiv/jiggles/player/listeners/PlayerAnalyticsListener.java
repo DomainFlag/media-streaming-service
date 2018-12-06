@@ -17,6 +17,9 @@ import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import java.io.IOException;
 
 public abstract class PlayerAnalyticsListener implements AnalyticsListener {
+
+    private static final String TAG = "PlayerAnalyticsListener";
+
     @Override
     public void onPlayerStateChanged(EventTime eventTime, boolean playWhenReady, int playbackState) {
 
@@ -32,11 +35,6 @@ public abstract class PlayerAnalyticsListener implements AnalyticsListener {
 
     @Override
     public void onSeekStarted(EventTime eventTime) {
-
-    }
-
-    @Override
-    public void onSeekProcessed(EventTime eventTime) {
 
     }
 

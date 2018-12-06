@@ -25,9 +25,9 @@ import com.example.cchiv.jiggles.services.PlayerService;
 
 import java.io.IOException;
 
-public class PlayerMediaSession {
+public class MediaSessionPlayer {
 
-    private static final String TAG = "PlayerMediaSession";
+    private static final String TAG = "MediaSessionPlayer";
 
     public static final String NOTIFICATION_PLAYER_CONTROLLER = "NOTIFICATION_PLAYER_CONTROLLER";
 
@@ -41,7 +41,7 @@ public class PlayerMediaSession {
 
     private Context context;
 
-    public PlayerMediaSession(Context context, MediaPlayer mediaPlayer) {
+    public MediaSessionPlayer(Context context, MediaPlayer mediaPlayer) {
         this.context = context;
         this.mediaPlayer = mediaPlayer;
     }

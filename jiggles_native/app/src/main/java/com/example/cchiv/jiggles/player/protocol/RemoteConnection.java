@@ -14,7 +14,6 @@ import android.util.Log;
 import com.example.cchiv.jiggles.interfaces.OnManageStreamData;
 import com.example.cchiv.jiggles.interfaces.OnSearchPairedDevices;
 import com.example.cchiv.jiggles.interfaces.OnUpdatePairedDevices;
-import com.example.cchiv.jiggles.player.PlayerRemote;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -65,10 +64,10 @@ public class RemoteConnection implements OnSearchPairedDevices {
         }
     };
 
-    public RemoteConnection(Context context, PlayerRemote playerRemote) {
+    public RemoteConnection(Context context, RemotePlayer remotePlayer) {
         this.context = context;
-        this.onManageStreamData = playerRemote;
-        this.onUpdatePairedDevices = playerRemote;
+        this.onManageStreamData = remotePlayer;
+        this.onUpdatePairedDevices = remotePlayer;
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
@@ -303,8 +302,7 @@ public class RemoteConnection implements OnSearchPairedDevices {
     }
 
     public void writeStream(byte[] data) {
-        if(connectedThread != null)
-            connectedThread.write(data);
+        connectedThread.write(data);
     }
 
     public class ConnectedThread extends Thread {
@@ -312,7 +310,6 @@ public class RemoteConnection implements OnSearchPairedDevices {
         private final InputStream mmInStream;
         private final OutputStream mmOutStream;
 
-        // mmBuffer store for the stream
         private byte[] mmBuffer;
 
         private ConnectedThread(BluetoothSocket socket) {
@@ -320,8 +317,6 @@ public class RemoteConnection implements OnSearchPairedDevices {
             InputStream tmpIn = null;
             OutputStream tmpOut = null;
 
-            // Get the input and output streams; using temp objects because
-            // member streams are final.
             try {
                 tmpIn = socket.getInputStream();
             } catch (IOException e) {
@@ -341,15 +336,12 @@ public class RemoteConnection implements OnSearchPairedDevices {
         @Override
         public void run() {
             mmBuffer = new byte[1024];
-            int numBytes; // bytes returned from read()
+            int numBytes;
 
-            // Keep listening to the InputStream until an exception occurs.
             while(true) {
                 try {
-                    // Read from the InputStream.
                     numBytes = mmInStream.read(mmBuffer);
 
-                    // Send the obtained chunk to the UI activity.
                     onManageStreamData.onManageStreamData(context, mmBuffer, numBytes);
                 } catch(IOException e) {
                     Log.d(TAG, "Input stream was disconnected", e);
@@ -358,20 +350,18 @@ public class RemoteConnection implements OnSearchPairedDevices {
             }
         }
 
-        // Call this from the client thread to send data to the remote device.
-        public void write(byte[] bytes) {
+        private void write(byte[] bytes) {
             try {
                 mmOutStream.write(bytes, 0, bytes.length);
-            } catch (IOException e) {
+            } catch(IOException e) {
                 Log.e(TAG, "Error occurred when sending data", e);
             }
         }
 
-        // Call this method from the main activity to shut down the connection.
-        public void cancel() {
+        private void cancel() {
             try {
                 mmSocket.close();
-            } catch (IOException e) {
+            } catch(IOException e) {
                 Log.e(TAG, "Could not close the connect socket", e);
             }
         }

@@ -142,6 +142,12 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
             android:layout_centerInParent="true"
+            android:paddingLeft="@dimen/activity_margin_relative"
+            android:paddingStart="@dimen/activity_margin_relative"
+            android:paddingRight="@dimen/activity_margin_relative"
+            android:paddingEnd="@dimen/activity_margin_relative"
+            android:paddingTop="@dimen/activity_margin_component"
+            android:paddingBottom="@dimen/activity_margin_component"
             android:tint="@color/searchDarkColor"
             android:src="@drawable/ic_menu_simple_dark"/>
 

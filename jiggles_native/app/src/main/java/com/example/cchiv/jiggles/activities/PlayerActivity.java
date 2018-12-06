@@ -15,7 +15,7 @@ import com.example.cchiv.jiggles.model.Album;
 import com.example.cchiv.jiggles.model.Artist;
 import com.example.cchiv.jiggles.model.Image;
 import com.example.cchiv.jiggles.model.Track;
-import com.example.cchiv.jiggles.player.PlayerRemote;
+import com.example.cchiv.jiggles.player.protocol.RemotePlayer;
 import com.example.cchiv.jiggles.services.PlayerService;
 import com.example.cchiv.jiggles.services.PlayerServiceConnection;
 import com.example.cchiv.jiggles.utilities.Tools;
@@ -25,7 +25,7 @@ import com.squareup.picasso.Target;
 
 public class PlayerActivity extends AppCompatActivity implements
         PlayerService.OnCallbackListener, PlayerServiceConnection.OnCallbackConnectionComplete,
-        PlayerRemote.OnUpdateInterface {
+        RemotePlayer.OnUpdateInterface {
 
     private static final String TAG = "PlayerActivity";
 
@@ -60,8 +60,8 @@ public class PlayerActivity extends AppCompatActivity implements
         });
 
         findViewById(R.id.player_media_share).setOnClickListener((view) -> {
-            PlayerRemote playerRemote = new PlayerRemote(this, playerServiceConnection.getMediaPlayer());
-            playerRemote.createRemoteConnection();
+            RemotePlayer remotePlayer = new RemotePlayer(this, playerServiceConnection.getMediaPlayer());
+            remotePlayer.createRemoteConnection();
         });
 
         Intent intent = getIntent();

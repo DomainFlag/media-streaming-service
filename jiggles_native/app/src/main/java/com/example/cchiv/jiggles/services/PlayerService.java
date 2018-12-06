@@ -13,7 +13,7 @@ import com.example.cchiv.jiggles.data.ContentContract.TrackEntry;
 import com.example.cchiv.jiggles.model.Store;
 import com.example.cchiv.jiggles.model.Track;
 import com.example.cchiv.jiggles.player.MediaPlayer;
-import com.example.cchiv.jiggles.player.PlayerMediaSession;
+import com.example.cchiv.jiggles.player.MediaSessionPlayer;
 import com.example.cchiv.jiggles.utilities.JigglesLoader;
 
 import java.util.ArrayList;
@@ -39,12 +39,12 @@ public class PlayerService extends Service implements MediaPlayer.OnTrackStateCh
     public List<OnCallbackListener> listeners = new ArrayList<>();
 
     public MediaPlayer mediaPlayer;
-    public PlayerMediaSession playerMediaSession;
+    public MediaSessionPlayer mediaSessionPlayer;
 
     @Override
     public void onCreate() {
         mediaPlayer = new MediaPlayer(this);
-        playerMediaSession = new PlayerMediaSession(this, mediaPlayer);
+        mediaSessionPlayer = new MediaSessionPlayer(this, mediaPlayer);
     }
 
     @Override
@@ -68,9 +68,9 @@ public class PlayerService extends Service implements MediaPlayer.OnTrackStateCh
 
                     asyncTaskContentLoader.registerListener(LOADER_SERVICE_COLLECTION_ID, (loader, store) -> {
                         if(store != null) {
-                            playerMediaSession.createMediaSession();
+                            mediaSessionPlayer.createMediaSession();
 
-                            mediaPlayer.setPlayer(playerMediaSession);
+                            mediaPlayer.setPlayer(mediaSessionPlayer);
                             mediaPlayer.setSource(store, store.getPosition(resourceId, resourceType));
 
                             Track track = getCurrentTrack();
@@ -93,7 +93,7 @@ public class PlayerService extends Service implements MediaPlayer.OnTrackStateCh
     }
 
     public void setForegroundService(Track track) {
-        Notification notification = playerMediaSession
+        Notification notification = mediaSessionPlayer
                 .buildNotificationPlayer(track);
 
         startForeground(SERVICE_NOTIFICATION_ID, notification);
@@ -114,7 +114,7 @@ public class PlayerService extends Service implements MediaPlayer.OnTrackStateCh
 
     public void onRelease() {
         mediaPlayer.release();
-        playerMediaSession.setActive(false);
+        mediaSessionPlayer.setActive(false);
     }
 
     @Override
@@ -133,7 +133,7 @@ public class PlayerService extends Service implements MediaPlayer.OnTrackStateCh
 
     public void onTrackNotifyAll(Track track) {
         for(OnCallbackListener listener : listeners) {
-            listener.onCallbackListener(track, playerMediaSession.getState());
+            listener.onCallbackListener(track, mediaSessionPlayer.getState());
         }
     }
 
@@ -146,8 +146,8 @@ public class PlayerService extends Service implements MediaPlayer.OnTrackStateCh
         return mediaPlayer;
     }
 
-    public PlayerMediaSession getPlayerMediaSession() {
-        return playerMediaSession;
+    public MediaSessionPlayer getMediaSessionPlayer() {
+        return mediaSessionPlayer;
     }
 
     public Track getCurrentTrack() {
@@ -155,6 +155,6 @@ public class PlayerService extends Service implements MediaPlayer.OnTrackStateCh
     }
 
     public int getPlaybackStateCompat() {
-        return playerMediaSession.getState();
+        return mediaSessionPlayer.getState();
     }
 }

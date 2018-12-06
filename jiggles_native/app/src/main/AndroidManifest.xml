@@ -59,7 +59,7 @@
             android:authorities="com.example.android.JigglesProvider"
             android:exported="false"/>
 
-        <receiver android:name=".player.PlayerMediaSession$MediaPlayerReceiver">
+        <receiver android:name=".player.MediaSessionPlayer$MediaPlayerReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON"/>
             </intent-filter>

@@ -10,7 +10,7 @@ import android.util.Log;
 
 import com.example.cchiv.jiggles.model.Track;
 import com.example.cchiv.jiggles.player.MediaPlayer;
-import com.example.cchiv.jiggles.player.PlayerMediaSession;
+import com.example.cchiv.jiggles.player.MediaSessionPlayer;
 import com.google.android.exoplayer2.ui.PlayerView;
 
 public class PlayerServiceConnection implements ServiceConnection {
@@ -85,8 +85,8 @@ public class PlayerServiceConnection implements ServiceConnection {
         return playerService.getMediaPlayer();
     }
 
-    public PlayerMediaSession getPlayerMediaSession() {
-        return playerService.getPlayerMediaSession();
+    public MediaSessionPlayer getPlayerMediaSession() {
+        return playerService.getMediaSessionPlayer();
     }
 
     public void onDetachPlayerView() {

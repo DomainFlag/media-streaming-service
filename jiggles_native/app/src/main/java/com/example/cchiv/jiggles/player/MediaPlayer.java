@@ -12,6 +12,7 @@ import com.example.cchiv.jiggles.model.Store;
 import com.example.cchiv.jiggles.model.Track;
 import com.example.cchiv.jiggles.player.listeners.PlayerAnalyticsListener;
 import com.example.cchiv.jiggles.player.listeners.PlayerEventListener;
+import com.example.cchiv.jiggles.player.protocol.RemotePlayer;
 import com.example.cchiv.jiggles.utilities.VisualizerView;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlayer;
@@ -51,7 +52,7 @@ public class MediaPlayer {
 
     private Store store;
 
-    private PlayerMediaSession playerMediaSession = null;
+    private MediaSessionPlayer mediaSessionPlayer = null;
     private VisualizerView visualizerView = null;
     private Visualizer visualizer = null;
 
@@ -59,15 +60,15 @@ public class MediaPlayer {
     public boolean playerPlaybackAction = true;
 
     private SimpleExoPlayer exoPlayer = null;
-    private PlayerRemote playerRemote = null;
+    private RemotePlayer remotePlayer = null;
 
     public MediaPlayer(Context context) {
         this.context = context;
         this.onTrackStateChanged = ((OnTrackStateChanged) context);
     }
 
-    public void onAttachRemotePlayer(PlayerRemote playerRemote) {
-        this.playerRemote = playerRemote;
+    public void onAttachRemotePlayer(RemotePlayer remotePlayer) {
+        this.remotePlayer = remotePlayer;
     }
 
     public Track getCurrentTrack() {
@@ -90,8 +91,8 @@ public class MediaPlayer {
         return null;
     }
 
-    public void setPlayer(PlayerMediaSession playerMediaSession) {
-        this.playerMediaSession = playerMediaSession;
+    public void setPlayer(MediaSessionPlayer mediaSessionPlayer) {
+        this.mediaSessionPlayer = mediaSessionPlayer;
 
         if(exoPlayer != null)
             release();
@@ -106,7 +107,14 @@ public class MediaPlayer {
                         reason == ExoPlayer.DISCONTINUITY_REASON_SEEK_ADJUSTMENT) {
                     onTrackStateChanged.onTrackStateChanged(getCurrentTrack());
 
-                    playerMediaSession.buildNotificationPlayer(getCurrentTrack());
+                    mediaSessionPlayer.buildNotificationPlayer(getCurrentTrack());
+                }
+            }
+
+            @Override
+            public void onSeekProcessed(EventTime eventTime) {
+                if(remotePlayer != null) {
+                    remotePlayer.onStateChanged(RemotePlayer.RemoteAction.ACTION_SEEK, eventTime.currentPlaybackPositionMs);
                 }
             }
 
@@ -123,8 +131,12 @@ public class MediaPlayer {
                 if(!playerPlaybackState || playerPlaybackAction)
                     playerPlaybackState = playWhenReady;
 
-                if(playerRemote != null) {
-                    playerRemote.onStateChanged(playbackState, playWhenReady);
+                if(remotePlayer != null) {
+                    if((playbackState == Player.STATE_READY) && playWhenReady) {
+                        remotePlayer.onStateChanged(RemotePlayer.RemoteAction.ACTION_RESUME, -1);
+                    } else if(playbackState == Player.STATE_READY) {
+                        remotePlayer.onStateChanged(RemotePlayer.RemoteAction.ACTION_PAUSE, -1);
+                    }
                 }
 
                 triggerMediaSession(playbackState, playWhenReady);
@@ -134,13 +146,13 @@ public class MediaPlayer {
 
     public void triggerMediaSession(int playbackState, boolean playWhenReady) {
         if((playbackState == Player.STATE_READY) && playWhenReady) {
-            playerMediaSession.setState(PlaybackStateCompat.STATE_PLAYING);
+            mediaSessionPlayer.setState(PlaybackStateCompat.STATE_PLAYING);
         } else if((playbackState == Player.STATE_READY)) {
-            playerMediaSession.setState(PlaybackStateCompat.STATE_PAUSED);
+            mediaSessionPlayer.setState(PlaybackStateCompat.STATE_PAUSED);
         }
 
         Track track = getCurrentTrack();
-        playerMediaSession.buildNotificationPlayer(track);
+        mediaSessionPlayer.buildNotificationPlayer(track);
 
         onTrackStateChanged.onTrackStateChanged(getCurrentTrack());
     }
