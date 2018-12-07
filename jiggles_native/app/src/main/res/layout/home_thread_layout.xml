@@ -31,39 +31,36 @@
             android:layout_below="@id/thread_caption"
             android:background="@color/dividerColor"/>
 
-        <ImageView
-            android:id="@+id/thread_menu_button"
-            android:layout_width="wrap_content"
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:rotation="90"
-            android:contentDescription="@string/player_menu"
-            android:tint="@color/secondaryColor"
-            android:padding="@dimen/activity_margin_gap"
-            android:src="@drawable/ic_menu_simple_white"
-            tools:tint="@color/iconsTextColor"/>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:padding="@dimen/activity_margin_component"
+            android:layout_marginTop="@dimen/activity_margin_relative"
+            android:layout_marginBottom="@dimen/activity_margin_relative"
+            android:layout_marginLeft="@dimen/activity_margin_component"
+            android:layout_marginStart="@dimen/activity_margin_component"
+            android:layout_marginRight="@dimen/activity_margin_component"
+            android:layout_marginEnd="@dimen/activity_margin_component"
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:orientation="horizontal">
+            android:layout_alignParentStart="true">
 
             <ImageView
+                android:id="@+id/thread_account"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
                 android:src="@drawable/ic_account"/>
 
             <TextView
                 android:id="@+id/thread_author"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@id/thread_account"
+                android:layout_toEndOf="@id/thread_account"
                 android:layout_marginLeft="@dimen/activity_margin_relative"
                 android:layout_marginStart="@dimen/activity_margin_relative"
                 android:textSize="@dimen/activity_text_span"
@@ -71,8 +68,12 @@
                 tools:text="@string/app_tools_placeholder"/>
 
             <View
+                android:id="@+id/thread_point"
                 android:layout_width="4dp"
                 android:layout_height="4dp"
+                android:layout_toRightOf="@id/thread_author"
+                android:layout_toEndOf="@id/thread_author"
+                android:layout_centerVertical="true"
                 android:layout_marginLeft="@dimen/activity_margin_relative"
                 android:layout_marginStart="@dimen/activity_margin_relative"
                 android:background="@drawable/background_circle"
@@ -81,8 +82,12 @@
                 android:textStyle="bold"/>
 
             <ImageView
+                android:id="@+id/thread_clock"
                 android:layout_width="16dp"
                 android:layout_height="16dp"
+                android:layout_toRightOf="@id/thread_point"
+                android:layout_toEndOf="@id/thread_point"
+                android:layout_centerVertical="true"
                 android:layout_marginLeft="@dimen/activity_margin_relative"
                 android:layout_marginStart="@dimen/activity_margin_relative"
                 android:src="@drawable/ic_clock"
@@ -93,6 +98,9 @@
                 android:id="@+id/thread_timestamp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/thread_clock"
+                android:layout_toEndOf="@id/thread_clock"
+                android:layout_centerVertical="true"
                 android:layout_marginLeft="@dimen/activity_margin_relative"
                 android:layout_marginStart="@dimen/activity_margin_relative"
                 android:textColor="@color/defaultTextColor"
@@ -100,7 +108,20 @@
                 tools:textColor="@color/iconsTextColor"
                 tools:text="@string/app_tools_placeholder_date"/>
 
-        </LinearLayout>
+            <ImageView
+                android:id="@+id/thread_menu_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:rotation="90"
+                android:contentDescription="@string/player_menu"
+                android:tint="@color/secondaryColor"
+                android:paddingVertical="@dimen/activity_margin_relative"
+                android:src="@drawable/ic_menu_simple_white"/>
+
+        </RelativeLayout>
 
     </RelativeLayout>
 
@@ -116,7 +137,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="@dimen/activity_text_subparagraph"
-            android:textColor="@color/primaryTextColor"
+            android:textColor="@color/defaultTextColor"
             android:layout_marginTop="@dimen/activity_margin_sibling"
             android:layout_marginBottom="@dimen/activity_margin_relative"
             android:layout_marginHorizontal="@dimen/activity_margin_component"

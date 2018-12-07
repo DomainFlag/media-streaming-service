@@ -360,7 +360,7 @@ public class HomeActivity extends PlayerAppCompatActivity {
                     rootView.findViewById(R.id.dialog_release_impact)
             );
 
-            Tools.onComputeScore(getActivity(), release.getReviews(), scoreView, false);
+            Tools.onComputeScore(getActivity(), release.getReviews(), scoreView);
 
             LinearLayout linearLayout = rootView.findViewById(R.id.dialog_fresh_reviews);
             ImageView imageView = rootView.findViewById(R.id.dialog_fresh_caption);

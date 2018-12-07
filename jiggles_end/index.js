@@ -490,7 +490,7 @@ app.get(/^\/feed\/post/, function(req, res) {
 /**
  * Get user's store
  */
-app.get(/\/user\/store/, (req, res) => {
+app.get(/^\/user\/store/, (req, res) => {
     let contentType = req.params[0];
 
     simpleResponseQuery(res, 200, req.user.store[contentType], "application/json");
@@ -499,8 +499,8 @@ app.get(/\/user\/store/, (req, res) => {
 /**
  * Save an item to the user's store
  */
-app.post(/\/user\/store/, (req, res) => {
-    let body = _.pick(req.body, ["tracks", "albums", "tracks"]);
+app.post(/^\/user\/store/, (req, res) => {
+    let body = _.pick(req.body, ["tracks", "albums", "artists"]);
 
     Object.keys(body).forEach((key) => {
         if(req.user.store.hasOwnProperty(key)) {
@@ -524,7 +524,7 @@ app.post(/\/user\/store/, (req, res) => {
 /**
  * Delete an item from the user's store
  */
-app.delete(/\/user\/store/, (req, res) => {
+app.delete(/^\/user\/store/, (req, res) => {
     let body = _.pick(req.body, STORE_PROJECTION[type]);
 
     Object.keys(body.store).forEach((key) => {

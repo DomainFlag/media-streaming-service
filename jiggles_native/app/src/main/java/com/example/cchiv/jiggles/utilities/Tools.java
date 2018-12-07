@@ -19,10 +19,13 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.graphics.Palette;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.example.cchiv.jiggles.Constants;
@@ -191,7 +194,7 @@ public class Tools {
         return color;
     }
 
-    public static String onComputeScore(Context context, List<Review> reviews, ScoreView scoreView, boolean detailedLayout) {
+    public static String onComputeScore(Context context, List<Review> reviews, ScoreView scoreView, View detailedLayout) {
         float total = 0;
 
         for(int it = 0; it < reviews.size(); it++) {
@@ -204,20 +207,20 @@ public class Tools {
                 color = ContextCompat.getColor(context, R.color.colorScorePossitive);
             else color = ContextCompat.getColor(context, R.color.colorScoreAcclaim);
 
-//            if(detailedLayout) {
-//                LinearLayout root = rootView.findViewById(R.id.release_reviews);
-//
-//                View view = LayoutInflater.from(context)
-//                        .inflate(R.layout.feature_review_layout, root, false);
-//
-//                view.findViewById(R.id.review_score_indicator).setBackgroundColor(color);
-//
-//                ((TextView) view.findViewById(R.id.review_score)).setText(String.valueOf(score));
-//                ((TextView) view.findViewById(R.id.review_author)).setText(review.getAuthor());
-//                ((TextView) view.findViewById(R.id.review_content)).setText(review.getContent());
-//
-//                root.addView(view);
-//            }
+            if(detailedLayout != null) {
+                LinearLayout root = detailedLayout.findViewById(R.id.release_reviews);
+
+                if(root != null) {
+                    View view = LayoutInflater.from(context)
+                            .inflate(R.layout.feature_review_highligh_layout, root, false);
+
+                    ((RatingBar) view.findViewById(R.id.review_score)).setRating(score / 20);
+                    ((TextView) view.findViewById(R.id.review_author)).setText(review.getAuthor());
+                    ((TextView) view.findViewById(R.id.review_content)).setText(review.getContent());
+
+                    root.addView(view);
+                }
+            }
 
             total += review.getScore();
         }
@@ -226,7 +229,7 @@ public class Tools {
 
         String totalScore = String.format(Locale.US, "%.1f", total);
 
-        if(scoreView != null || detailedLayout) {
+        if(scoreView != null && detailedLayout != null) {
             if(total < IMPACT_THRESHOLD)
                 scoreView.imageView.setVisibility(View.GONE);
 
@@ -234,6 +237,10 @@ public class Tools {
         }
 
         return totalScore;
+    }
+
+    public static String onComputeScore(Context context, List<Review> reviews, ScoreView scoreView) {
+        return onComputeScore(context, reviews, scoreView, null);
     }
 
     public static class ScoreView {

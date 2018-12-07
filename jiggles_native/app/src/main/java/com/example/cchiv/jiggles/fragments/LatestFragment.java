@@ -70,6 +70,30 @@ public class LatestFragment extends Fragment {
         return rootView;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        featureAlbumAdapter.resume();
+        featureLatestAdapter.resume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        featureAlbumAdapter.pause();
+        featureLatestAdapter.pause();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        featureAlbumAdapter.release();
+        featureLatestAdapter.release();
+    }
+
     public void fetchCachedContent() {
         LoaderManager loaderManager = ((AppCompatActivity) context).getSupportLoaderManager();
 

@@ -4,10 +4,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
-    android:paddingLeft="@dimen/activity_margin_component"
-    android:paddingStart="@dimen/activity_margin_component"
-    android:paddingRight="@dimen/activity_margin_component"
-    android:paddingEnd="@dimen/activity_margin_component"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -32,13 +28,14 @@
         tools:text="@string/app_tools_placeholder"/>
 
     <RatingBar
+        android:id="@+id/review_score"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/activity_margin_sibling"
         android:progressTint="@color/iconsTextColor"
-        android:stepSize="20"
+        android:stepSize="0.1"
         android:numStars="5"
-        tools:rating="2.8"
+        tools:rating="4.4"
         style="?attr/ratingBarStyleSmall"/>
 
 </LinearLayout>

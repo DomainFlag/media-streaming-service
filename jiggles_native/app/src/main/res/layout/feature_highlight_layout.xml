@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="@dimen/activity_margin_component"
-    android:orientation="vertical">
+    android:padding="@dimen/activity_margin_component"
+    android:orientation="vertical"
+    tools:background="@color/unexpectedColor">
 
     <TextView
+        android:id="@+id/highlight_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/activity_margin_relative"
@@ -17,6 +19,8 @@
         android:textStyle="bold"/>
 
     <LinearLayout
+        android:id="@+id/highlight_layout"
+        android:layout_below="@id/highlight_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:baselineAligned="false"
@@ -32,14 +36,11 @@
             tools:src="@drawable/thumbnail"/>
 
         <LinearLayout
-            android:id="@+id/release_reviews"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
-            android:orientation="vertical"
-            android:background="@android:color/transparent"
-            tools:background="@color/iconsTextColor">
+            android:orientation="vertical">
 
             <LinearLayout
                 android:id="@+id/release_rating"
@@ -47,9 +48,6 @@
                 android:layout_height="wrap_content"
                 android:padding="@dimen/activity_margin_relative"
                 android:gravity="center_vertical"
-                android:layout_alignBottom="@id/release_caption"
-                android:layout_alignRight="@id/release_caption"
-                android:layout_alignEnd="@id/release_caption"
                 android:orientation="horizontal">
 
                 <ImageView
@@ -93,4 +91,33 @@
 
     </LinearLayout>
 
-</LinearLayout>
+    <RelativeLayout
+        android:id="@+id/highlight_layout_complimentary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:alpha="0"
+        android:layout_below="@id/highlight_title"
+        tools:alpha="1.0">
+
+        <LinearLayout
+            android:id="@+id/release_reviews"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"/>
+
+        <TextView
+            android:id="@+id/release_play"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/release_reviews"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:textStyle="bold"
+            android:textColor="@color/primaryTextColor"
+            android:typeface="sans"
+            android:textSize="@dimen/activity_text_paragraph"
+            android:text="Play it"/>
+
+    </RelativeLayout>
+
+</RelativeLayout>

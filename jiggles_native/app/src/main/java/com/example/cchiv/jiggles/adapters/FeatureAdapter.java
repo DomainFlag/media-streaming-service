@@ -33,6 +33,9 @@ public abstract class FeatureAdapter<T> extends ModelAdapter<FeatureAdapter.Feat
     private View rootView;
     private int resource;
 
+    private RecyclerView recyclerView;
+    private AutoLinearLayoutManager layoutManager = null;
+
     public FeatureAdapter(Context context, View view, int resource) {
         this.context = context;
         this.rootView = view;
@@ -40,17 +43,19 @@ public abstract class FeatureAdapter<T> extends ModelAdapter<FeatureAdapter.Feat
     }
 
     public void onAttachFeature(Feature feature) {
-        RecyclerView recyclerView = rootView.findViewById(R.id.feature_other);
+        recyclerView = rootView.findViewById(R.id.feature_other);
         recyclerView.setHasFixedSize(true);
         recyclerView.setNestedScrollingEnabled(false);
 
         FeatureItemDecoration featureItemDecoration = new FeatureItemDecoration(16);
         recyclerView.addItemDecoration(featureItemDecoration);
 
-        RecyclerView.LayoutManager layoutManager =
-                new LinearLayoutManager(context,
+        layoutManager =
+                new AutoLinearLayoutManager(context,
                         LinearLayoutManager.HORIZONTAL,
                         false);
+        layoutManager.setAutoScroll(recyclerView);
+        layoutManager.setOnTouchListener(recyclerView);
 
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(this);
@@ -59,6 +64,21 @@ public abstract class FeatureAdapter<T> extends ModelAdapter<FeatureAdapter.Feat
 
         inflateHighlightView(rootView, feature.getHighlight());
         inflateFreshView(rootView, feature.getFresh());
+    }
+
+    public void pause() {
+        if(layoutManager != null)
+            layoutManager.removeAutoScroll();
+    }
+
+    public void resume() {
+        if(layoutManager != null)
+            layoutManager.setAutoScroll(recyclerView);
+    }
+
+    public void release() {
+        if(layoutManager != null)
+            layoutManager.removeAutoScroll();
     }
 
     public void disableHighlightFeature() {

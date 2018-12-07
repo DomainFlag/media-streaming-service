@@ -1,6 +1,9 @@
 package com.example.cchiv.jiggles.adapters;
 
+import android.animation.AnimatorInflater;
+import android.animation.AnimatorSet;
 import android.content.Context;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -49,8 +52,41 @@ public class FeatureAlbumAdapter extends FeatureAdapter<Release> {
                     view.findViewById(R.id.release_impact)
             );
 
-            Tools.onComputeScore(getContext(), highlight.getReviews(), scoreView, false);
+            Tools.onComputeScore(getContext(), highlight.getReviews(), scoreView, view);
+
+            onSetFlipHighlight(rootView);
         }
+    }
+
+    private void onSetFlipHighlight(View rootView) {
+        Handler handler = new Handler();
+        Runnable runnable = new Runnable() {
+            private int position = 0;
+
+            private int animators[] = new int[] {
+                    R.animator.card_flip_left_out,
+                    R.animator.card_flip_left_in,
+                    R.animator.card_flip_right_in,
+                    R.animator.card_flip_right_out
+            };
+
+            @Override
+            public void run() {
+                AnimatorSet animatorSet = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(), animators[position]);
+                animatorSet.setTarget(rootView.findViewById(R.id.highlight_layout));
+                animatorSet.start();
+
+                AnimatorSet animatorSet1 = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(),  animators[position + 1]);
+                animatorSet1.setTarget(rootView.findViewById(R.id.highlight_layout_complimentary));
+                animatorSet1.start();
+
+                position = (position + 2) % 4;
+
+                handler.postDelayed(this, 5000);
+            }
+        };
+
+        handler.postDelayed(runnable, 5000);
     }
 
     @Override
@@ -71,7 +107,7 @@ public class FeatureAlbumAdapter extends FeatureAdapter<Release> {
                     view.findViewById(R.id.release_impact)
             );
 
-            Tools.onComputeScore(getContext(), release.getReviews(), scoreView, false);
+            Tools.onComputeScore(getContext(), release.getReviews(), scoreView);
 
             linearLayout.addView(view);
         }
@@ -90,7 +126,7 @@ public class FeatureAlbumAdapter extends FeatureAdapter<Release> {
         holder.artist.setText(getContext().getString(R.string.app_component_author, release.getArtist()));
 
         List<Review> reviews = release.getReviews();
-        String score = Tools.onComputeScore(getContext(), reviews, null, false);
+        String score = Tools.onComputeScore(getContext(), reviews, null);
         holder.score.setText(score);
     }
 }

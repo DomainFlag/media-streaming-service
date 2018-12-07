@@ -17,14 +17,28 @@
             android:id="@+id/post_menu_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
+            android:layout_marginRight="@dimen/activity_margin_relative"
+            android:layout_marginEnd="@dimen/activity_margin_relative"
+            android:layout_centerVertical="true"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:rotation="90"
             android:contentDescription="@string/player_menu"
             android:tint="@color/secondaryColor"
-            android:padding="@dimen/activity_margin_gap"
+            android:padding="@dimen/activity_margin_relative"
             android:src="@drawable/ic_menu_simple_white"/>
+
+        <TextView
+            android:id="@+id/post_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/activity_margin_relative"
+            android:layout_marginEnd="@dimen/activity_margin_relative"
+            android:layout_toLeftOf="@id/post_menu_button"
+            android:layout_toStartOf="@id/post_menu_button"
+            android:textSize="@dimen/activity_text_span"
+            tools:text="@string/post_like"/>
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -108,15 +122,6 @@
             android:layout_marginStart="@dimen/activity_margin_component">
 
             <TextView
-                android:id="@+id/post_type"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginVertical="@dimen/activity_margin_relative"
-                android:layout_alignParentRight="true"
-                android:textSize="@dimen/activity_text_span"
-                tools:text="@string/post_like"/>
-
-            <TextView
                 android:id="@+id/post_content_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -125,7 +130,7 @@
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
                 android:textColor="@color/defaultTextColor"
-                android:textSize="@dimen/activity_text_paragraph"
+                android:textSize="@dimen/activity_text_subparagraph"
                 android:layout_marginVertical="@dimen/activity_margin_sibling"
                 tools:text="@string/post_content_title_placeholder"/>
 
