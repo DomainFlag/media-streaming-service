@@ -5,14 +5,13 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.cchiv.jiggles.R;
-import com.example.cchiv.jiggles.model.Album;
-import com.example.cchiv.jiggles.model.Artist;
 import com.example.cchiv.jiggles.model.Image;
 import com.example.cchiv.jiggles.model.Track;
 import com.example.cchiv.jiggles.player.protocol.RemotePlayer;
@@ -29,16 +28,9 @@ public class PlayerActivity extends AppCompatActivity implements
 
     private static final String TAG = "PlayerActivity";
 
-    private static final int TRACK_LOADER_ID = 221;
-
-    public static final String RESOURCE_ID = "RESOURCE_ID";
-    public static final String RESOURCE_WHOLE = "RESOURCE_WHOLE";
-
     private boolean toolsToggle = false;
 
     public PlayerView playerView = null;
-
-    private boolean resourceWhole;
 
     public PlayerServiceConnection playerServiceConnection = null;
 
@@ -87,42 +79,44 @@ public class PlayerActivity extends AppCompatActivity implements
         TextView textTrackView = findViewById(R.id.player_track);
         textTrackView.setText(track.getName());
 
-        Album album = track.getAlbum();
-        Image artwork = album.getArt();
+        Tools.setWeightedGradientBackground(getBaseContext(), findViewById(R.id.player_underlay), track.getColor(this));
 
-        Tools.setWeightedGradientBackground(getBaseContext(), findViewById(R.id.player_underlay), artwork.getColor());
         ImageView thumbnail = findViewById(R.id.player_thumbnail);
-        Picasso
-                .get()
-                .load(artwork.getUrl())
-                .placeholder(R.drawable.ic_artwork_placeholder)
-                .error(R.drawable.ic_artwork_placeholder)
-                .into(new Target() {
-                    @Override
-                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                        thumbnail.setImageBitmap(bitmap);
-                    }
+        Image artwork = track.getArt();
+        if(artwork != null) {
+            Picasso
+                    .get()
+                    .load(artwork.getUrl())
+                    .placeholder(R.drawable.ic_artwork_placeholder)
+                    .error(R.drawable.ic_artwork_placeholder)
+                    .into(new Target() {
+                        @Override
+                        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                            thumbnail.setImageBitmap(bitmap);
+                        }
 
-                    @Override
-                    public void onBitmapFailed(Exception e, Drawable errorDrawable) {
-                        thumbnail.setImageDrawable(errorDrawable);
-                    }
+                        @Override
+                        public void onBitmapFailed(Exception e, Drawable errorDrawable) {
+                            thumbnail.setImageDrawable(errorDrawable);
+                        }
 
-                    @Override
-                    public void onPrepareLoad(Drawable placeHolderDrawable) {
-                        thumbnail.setImageDrawable(placeHolderDrawable);
-                    }
-                });
+                        @Override
+                        public void onPrepareLoad(Drawable placeHolderDrawable) {
+                            thumbnail.setImageDrawable(placeHolderDrawable);
+                        }
+                    });
+        } else if(track.getBitmap() != null) {
+            thumbnail.setImageBitmap(track.getBitmap());
+        } else {
+            thumbnail.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_artwork_placeholder));
+        }
 
         View view = findViewById(R.id.player_background);
-        Tools.setGradientBackground(this, view, artwork.getColor(), 145);
-        Tools.setStatusBarColor(this, artwork.getColor());
-
-        Artist artist = album.getArtist();
-        String artistName = artist.getName();
+        Tools.setGradientBackground(this, view, track.getColor(this), 145);
+        Tools.setStatusBarColor(this, track.getColor(this));
 
         TextView textArtistView = findViewById(R.id.player_artist);
-        textArtistView.setText(artistName);
+        textArtistView.setText(track.getArtistName());
     }
 
     @Override

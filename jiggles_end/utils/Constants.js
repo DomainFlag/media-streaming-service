@@ -7,6 +7,7 @@ const CONSTANTS = {
     API_SECURITY : "api",
     TOKEN : "token",
     API_ACCESS : "v1",
+    ME : "me",
     SEARCH : "search",
     grant_type : "client_credentials",
     COUNTRY : "US",

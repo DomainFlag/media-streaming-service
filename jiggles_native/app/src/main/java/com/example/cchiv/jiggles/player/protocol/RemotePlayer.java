@@ -8,12 +8,14 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.example.cchiv.jiggles.R;
 import com.example.cchiv.jiggles.dialogs.ConnectivityDialog;
 import com.example.cchiv.jiggles.interfaces.OnManageStreamData;
 import com.example.cchiv.jiggles.interfaces.OnUpdatePairedDevices;
 import com.example.cchiv.jiggles.model.Image;
+import com.example.cchiv.jiggles.model.Store;
 import com.example.cchiv.jiggles.model.Track;
 import com.example.cchiv.jiggles.player.MediaPlayer;
 import com.example.cchiv.jiggles.player.protocol.builder.Message;
@@ -42,12 +44,13 @@ public class RemotePlayer implements ConnectivityDialog.OnBluetoothDeviceSelect,
     private MediaPlayer mediaPlayer;
     private ConnectivityDialog connectivityDialog;
     private RemoteConnection remoteConnection;
-    private Messenger messenger = new Messenger(this);
+    private Messenger messenger;
 
     private Context context;
 
     public RemotePlayer(Context context, MediaPlayer mediaPlayer) {
         this.context = context;
+        this.messenger = new Messenger(context, this);
         this.onUpdateInterface = (OnUpdateInterface) context;
         this.mediaPlayer = mediaPlayer;
 
@@ -62,6 +65,10 @@ public class RemotePlayer implements ConnectivityDialog.OnBluetoothDeviceSelect,
 
         remoteConnection = new RemoteConnection(context, this);
         remoteConnection.startServerThread();
+    }
+
+    public MediaPlayer getMediaPlayer() {
+        return mediaPlayer;
     }
 
     @Override
@@ -100,14 +107,48 @@ public class RemotePlayer implements ConnectivityDialog.OnBluetoothDeviceSelect,
         if(message != null) {
             String action = message.getAction();
 
+            Activity activity = (Activity) context;
             switch(action) {
                 case Protocol.ACTIONS.ACTION_STREAM : {
-                    Bitmap bitmap = Protocol.decodeStreamImageMessage(message);
+                    String type = message.getType();
 
-                    ((Activity) context).runOnUiThread(() -> {
-                        ImageView imageView = ((Activity) context).findViewById(R.id.player_thumbnail);
-                        imageView.setImageBitmap(bitmap);
-                    });
+                    switch(type) {
+                        case Protocol.CONTENT.TYPE.TYPE_RAW : {
+                            Bitmap bitmap = Protocol.decodeStreamImageMessage(message);
+
+                            ((Activity) context).runOnUiThread(() -> {
+                                ImageView imageView = ((Activity) context).findViewById(R.id.player_thumbnail);
+                                imageView.setImageBitmap(bitmap);
+
+                                 mediaPlayer.getCurrentTrack().setBitmap(bitmap);
+                            });
+
+                            break;
+                        }
+                        case Protocol.CONTENT.TYPE.TYPE_AUDIO : {
+                            Log.v(TAG, "Streaming audio - " + action + " with type - " + type + " successfully");
+
+                            break;
+                        }
+                        default : {
+                            Log.v(TAG, "Undefined action - " + action + " with type - " + type);
+                            break;
+                        }
+                    }
+
+                    break;
+                }
+                case Protocol.ACTIONS.ACTION_METADATA : {
+                    Track track = Protocol.decodeJSONTrackMessage(message);
+
+                    if(track != null) {
+                        activity.runOnUiThread(() -> {
+                            mediaPlayer.setStore(new Store(track));
+
+                            ((TextView) activity.findViewById(R.id.player_track)).setText(track.getName());
+                            ((TextView) activity.findViewById(R.id.player_artist)).setText(track.getArtistName());
+                        });
+                    }
 
                     break;
                 }
@@ -160,7 +201,9 @@ public class RemotePlayer implements ConnectivityDialog.OnBluetoothDeviceSelect,
                     try {
                         Bitmap bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), Uri.parse(image.getUrl().toString()));
 
+                        Protocol.encodeJSONMessage(remoteConnection, track);
                         Protocol.encodeStreamMessage(remoteConnection, bitmap);
+                        Protocol.encodeStreamAudioMessage(remoteConnection, track.getUri());
                     } catch(IOException e) {
                         Log.v(TAG, e.toString());
                     }

@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import com.example.cchiv.jiggles.Constants;
 import com.example.cchiv.jiggles.R;
+import com.example.cchiv.jiggles.interfaces.RemoteMediaCallback;
 import com.example.cchiv.jiggles.model.Album;
 import com.example.cchiv.jiggles.model.FeedItem;
 import com.example.cchiv.jiggles.model.Post;
@@ -38,11 +39,13 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final String TAG = "FeedAdapter";
 
+    private RemoteMediaCallback remoteMediaCallback;
     private List<FeedItem> items;
     private Context context;
 
     public FeedAdapter(Context context, List<FeedItem> items) {
         this.context = context;
+        this.remoteMediaCallback = (RemoteMediaCallback) context;
         this.items = items;
     }
 
@@ -109,6 +112,12 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             holder.likeIcon.setColorFilter(color);
             holder.likeContent.setTextColor(color);
         }
+
+        holder.action.setOnClickListener(view -> {
+            if(remoteMediaCallback != null) {
+                remoteMediaCallback.onRemoteMediaClick(album.getUri());
+            }
+        });
 
         holder.likeLayout.setOnClickListener(view -> {
             // TODO(1) like for post
@@ -251,6 +260,7 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         private TextView title;
         private TextView subtitle;
         private TextView type;
+        private TextView action;
 
         private RecyclerView replies;
         private TextView repliesView;
@@ -269,6 +279,7 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             likeContent = itemView.findViewById(R.id.feed_item_like_content);
             title = itemView.findViewById(R.id.post_content_title);
             subtitle = itemView.findViewById(R.id.post_content_subtitle);
+            action = itemView.findViewById(R.id.post_action);
             type = itemView.findViewById(R.id.post_type);
 
 //            replies = itemView.findViewById(R.id.post_replies);

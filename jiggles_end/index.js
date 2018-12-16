@@ -617,6 +617,19 @@ app.delete(/^\/main\/(news|releases)$/, function(req, res) {
     }
 });
 
+/****************************************************************/
+app.post('/user/me/token', (req, res) => {
+    let body = _.pick(req.body, ["token"]);
+
+    RequestifyCollector.queryProfile(body.token)
+        .then((data) => {
+            simpleResponseQuery(res, 200, data, "application/json");
+        })
+        .catch((error) => {
+            simpleResponseQuery(res, 200, "Not valid token: " + error.toString());
+        });
+});
+
 app.get('/user/me', (req, res) => {
     res.send(req.user);
 });

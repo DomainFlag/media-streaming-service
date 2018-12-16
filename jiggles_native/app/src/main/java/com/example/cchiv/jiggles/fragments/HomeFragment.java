@@ -34,7 +34,10 @@ public class HomeFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_home_layout, container, false);
 
         RecyclerView recyclerView = rootView.findViewById(R.id.home_list);
-        recyclerView.addItemDecoration(new FeedItemDecoration(24));
+
+        float density = getResources().getDisplayMetrics().density;
+
+        recyclerView.addItemDecoration(new FeedItemDecoration((int) density * 8));
         recyclerView.setNestedScrollingEnabled(true);
         recyclerView.setHasFixedSize(true);
 

@@ -11,6 +11,7 @@ import android.util.Log;
 import com.example.cchiv.jiggles.model.Track;
 import com.example.cchiv.jiggles.player.MediaPlayer;
 import com.example.cchiv.jiggles.player.MediaSessionPlayer;
+import com.example.cchiv.jiggles.spotify.SpotifyConnection;
 import com.google.android.exoplayer2.ui.PlayerView;
 
 public class PlayerServiceConnection implements ServiceConnection {
@@ -79,6 +80,14 @@ public class PlayerServiceConnection implements ServiceConnection {
 
         playerService.onDetachCallbackListener(onCallbackListener);
         playerService.onRelease();
+    }
+
+    public SpotifyConnection getSpotifyConnection() {
+        return playerService.getSpotifyConnection();
+    }
+
+    public PlayerService getPlayerService() {
+        return playerService;
     }
 
     public MediaPlayer getMediaPlayer() {

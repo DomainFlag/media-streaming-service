@@ -57,6 +57,31 @@ class RequestifyCollector {
         }
     };
 
+    queryProfile(token) {
+        let url = new UriBuilder()
+            .setScheme(CONSTANTS.SCHEME)
+            .setAuthority(CONSTANTS.AUTHORITY_DEV)
+            .appendPath(CONSTANTS.API_ACCESS)
+            .appendPath(CONSTANTS.ME)
+            .build();
+
+        let options = {
+            url: url,
+            headers: {
+                "Authorization" : "Bearer " + token,
+                "Content-Type" : "application/json"
+            },
+            resolveWithFullResponse: true
+        };
+
+        return requestPromise.get({...options})
+            .then((response) => {
+                if(response.statusCode === 200) {
+                    return JSON.parse(response.body);
+                } else return Promise.reject("unsuccessful")
+            });
+    }
+
     querySearch(query, type) {
         let url = new UriBuilder()
             .setScheme(CONSTANTS.SCHEME)

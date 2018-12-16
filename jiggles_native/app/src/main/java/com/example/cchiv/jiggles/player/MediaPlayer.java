@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
+import com.example.cchiv.jiggles.interfaces.OnTrackStateChanged;
 import com.example.cchiv.jiggles.model.Album;
 import com.example.cchiv.jiggles.model.Store;
 import com.example.cchiv.jiggles.model.Track;
@@ -15,6 +16,8 @@ import com.example.cchiv.jiggles.player.listeners.PlayerEventListener;
 import com.example.cchiv.jiggles.player.protocol.RemotePlayer;
 import com.example.cchiv.jiggles.utilities.VisualizerView;
 import com.google.android.exoplayer2.C;
+import com.google.android.exoplayer2.DefaultLoadControl;
+import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.Player;
@@ -26,11 +29,13 @@ import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DataSpec;
+import com.google.android.exoplayer2.upstream.DefaultAllocator;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.upstream.TransferListener;
 import com.google.android.exoplayer2.util.Util;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -42,10 +47,6 @@ public class MediaPlayer {
 
     private static final String TAG = "MediaPlayer";
 
-    public interface OnTrackStateChanged {
-        void onTrackStateChanged(Track track);
-    }
-
     private Context context;
 
     private OnTrackStateChanged onTrackStateChanged;
@@ -55,6 +56,8 @@ public class MediaPlayer {
     private MediaSessionPlayer mediaSessionPlayer = null;
     private VisualizerView visualizerView = null;
     private Visualizer visualizer = null;
+
+    private DataFetcher dataFetcher = null;
 
     public boolean playerPlaybackState = true;
     public boolean playerPlaybackAction = true;
@@ -69,6 +72,10 @@ public class MediaPlayer {
 
     public void onAttachRemotePlayer(RemotePlayer remotePlayer) {
         this.remotePlayer = remotePlayer;
+    }
+
+    public void setStore(Store store) {
+        this.store = store;
     }
 
     public Track getCurrentTrack() {
@@ -97,9 +104,16 @@ public class MediaPlayer {
         if(exoPlayer != null)
             release();
 
+        DefaultAllocator allocator = new DefaultAllocator(true, C.DEFAULT_BUFFER_SEGMENT_SIZE);
+        DefaultLoadControl loadControl = new DefaultLoadControl.Builder()
+                .setAllocator(allocator)
+                .setBufferDurationsMs(400000, 400000, 1500, 1500)
+                .createDefaultLoadControl();
         DefaultTrackSelector defaultTrackSelector = new DefaultTrackSelector();
-        exoPlayer = ExoPlayerFactory.newSimpleInstance(context, defaultTrackSelector);
 
+        DefaultRenderersFactory renderersFactory = new DefaultRenderersFactory(context);
+
+        exoPlayer = ExoPlayerFactory.newSimpleInstance(renderersFactory, defaultTrackSelector, loadControl);
         exoPlayer.addAnalyticsListener(new PlayerAnalyticsListener() {
             @Override
             public void onPositionDiscontinuity(EventTime eventTime, int reason) {
@@ -153,23 +167,21 @@ public class MediaPlayer {
 
         Track track = getCurrentTrack();
         mediaSessionPlayer.buildNotificationPlayer(track);
-
         onTrackStateChanged.onTrackStateChanged(getCurrentTrack());
     }
 
-    public void prepareExoPlayerFromByteArray(Store store) {
-        this.store = store;
+    public void setStreamSource(DataFetcher dataFetcher) {
+        if(this.dataFetcher == null || this.dataFetcher != dataFetcher) {
+            this.dataFetcher = dataFetcher;
+        } else return;
 
-        DataFetcher dataFetcher = new DataFetcher(store.getTracks().get(0));
         PipedInputStream pipedInputStream = dataFetcher.getPipedInputStream();
-        dataFetcher.start();
 
         DefaultBandwidthMeter defaultBandwidthMeter = new DefaultBandwidthMeter();
-
         CustomDataSourceFactory customDataSource = new CustomDataSourceFactory(defaultBandwidthMeter, pipedInputStream);
 
         DataSpec dataSpec = new DataSpec(
-                Uri.parse("bytes:///data"), DataSpec.FLAG_ALLOW_CACHING_UNKNOWN_LENGTH
+                Uri.parse("bytes:///data_stream"), DataSpec.FLAG_ALLOW_CACHING_UNKNOWN_LENGTH
         );
 
         ExtractorMediaSource.Factory factory = new ExtractorMediaSource.Factory(customDataSource);
@@ -199,6 +211,7 @@ public class MediaPlayer {
 
         ExtractorMediaSource.Factory factory = new ExtractorMediaSource.Factory(defaultDataSourceFactory);
         ConcatenatingMediaSource concatenatingMediaSource = setMultipleSources(factory, store.getAlbums().get(0));
+
         exoPlayer.prepare(concatenatingMediaSource);
         exoPlayer.seekToDefaultPosition(defaultPosition);
         exoPlayer.setPlayWhenReady(true);
@@ -230,13 +243,16 @@ public class MediaPlayer {
     }
 
     public void togglePlayer(boolean play) {
-        exoPlayer.setPlayWhenReady(play);
+        if(exoPlayer != null) {
+            exoPlayer.setPlayWhenReady(play);
 
-        triggerMediaSession(Player.STATE_READY, play);
+            triggerMediaSession(Player.STATE_READY, play);
+        }
     }
 
     public void changeSeeker(long value) {
-        exoPlayer.seekTo(value);
+        if(exoPlayer != null)
+            exoPlayer.seekTo(value);
     }
 
     public void detachPlayer(PlayerView playerView) {
@@ -245,7 +261,7 @@ public class MediaPlayer {
 
     public void togglePlayback(boolean play) {
         // Only change playback state when not in(pause state but resume action)
-        if(playerPlaybackState || !play) {
+        if(exoPlayer != null && (playerPlaybackState || !play)) {
             playerPlaybackAction = play;
 
             exoPlayer.setPlayWhenReady(play);
@@ -253,8 +269,10 @@ public class MediaPlayer {
     }
 
     public void release() {
-        if(exoPlayer != null)
+        if(exoPlayer != null) {
             exoPlayer.release();
+            exoPlayer = null;
+        }
     }
 
     public void releaseVisualizer() {
@@ -271,13 +289,18 @@ public class MediaPlayer {
 
     public class CustomDataSource implements DataSource {
 
-        private final TransferListener<? super CustomDataSource> mTransferListener;
+        private TransferListener<? super CustomDataSource> mTransferListener;
+        private ByteArrayOutputStream mByteArrayOutputStream;
         private PipedInputStream mInputStream;
+        private byte[] mCachedStream;
         private Uri mUri;
+        private boolean mDataTransfer = false;
         private long mBytesRemaining = -1;
 
+        private long playerPos = 0;
 
         public CustomDataSource(TransferListener<? super CustomDataSource> transferListener, PipedInputStream inputStream) {
+            mByteArrayOutputStream = new ByteArrayOutputStream();
             mTransferListener = transferListener;
             mInputStream = inputStream;
         }
@@ -285,6 +308,7 @@ public class MediaPlayer {
         @Override
         public long open(DataSpec dataSpec) {
             mUri = dataSpec.uri;
+            playerPos = dataSpec.position;
 
             if(mTransferListener != null) {
                 mTransferListener.onTransferStart(this, dataSpec);
@@ -310,7 +334,6 @@ public class MediaPlayer {
 
         @Override
         public int read(byte[] buffer, int offset, int readLength) throws IOException {
-            Log.v(TAG, String.valueOf(offset));
             computeBytesRemaining();
 
             if(readLength == 0) {
@@ -321,12 +344,34 @@ public class MediaPlayer {
 
             int bytesRead = -1, bytesToRead = getBytesToRead(readLength);
             try {
-                bytesRead = mInputStream.read(buffer, offset, bytesToRead);
+                if(!mDataTransfer)
+                    bytesRead = mInputStream.read(buffer, offset, bytesToRead);
+                else {
+                    if(playerPos != mCachedStream.length) {
+                        bytesToRead = Math.min(bytesToRead, mCachedStream.length - (int) playerPos);
+
+                        System.arraycopy(mCachedStream, (int) playerPos, buffer, offset, bytesToRead);
+
+                        playerPos += bytesToRead;
+                        bytesRead = bytesToRead;
+                    }
+                }
+
+                if(!mDataTransfer && bytesRead != -1) {
+                    mByteArrayOutputStream.write(buffer, offset, bytesRead);
+                }
             } catch(IOException e) {
                 Log.v(TAG, e.toString());
             }
 
             if(bytesRead == -1) {
+                if(!mDataTransfer) {
+                    mInputStream.close();
+                    mDataTransfer = true;
+
+                    setCachedStream(mByteArrayOutputStream);
+                }
+
                 return C.RESULT_END_OF_INPUT;
             }
 
@@ -335,6 +380,10 @@ public class MediaPlayer {
             }
 
             return bytesRead;
+        }
+
+        private void setCachedStream(ByteArrayOutputStream byteArrayOutputStream) {
+            mCachedStream = byteArrayOutputStream.toByteArray();
         }
 
         @Nullable
@@ -375,27 +424,45 @@ public class MediaPlayer {
         }
     }
 
-    public class DataFetcher extends Thread {
+    public static class DataFetcher extends Thread {
 
         private Track track;
 
-        private PipedInputStream pipedInputStream;
-        private PipedOutputStream pipedOutputStream;
+        private PipedInputStream pipedInputStream = new PipedInputStream();
+        private PipedOutputStream pipedOutputStream = new PipedOutputStream();
 
-        public DataFetcher(Track track) {
-            this.pipedInputStream = new PipedInputStream();
-            this.pipedOutputStream = new PipedOutputStream();
-            this.track = track;
-
+        public DataFetcher() {
             try {
-                this.pipedInputStream.connect(this.pipedOutputStream);
+                pipedInputStream.connect(this.pipedOutputStream);
             } catch(IOException e) {
                 Log.v(TAG, e.toString());
             }
         }
 
+        public DataFetcher(Track track) {
+            this();
+
+            this.track = track;
+        }
+
         public PipedInputStream getPipedInputStream() {
             return pipedInputStream;
+        }
+
+        public void write(byte[] data, int offset, int len) {
+            try {
+                pipedOutputStream.write(data, offset, len);
+            } catch(IOException e) {
+                Log.v(TAG, e.toString());
+            }
+        }
+
+        public void write(byte[] data) {
+            try {
+                pipedOutputStream.write(data);
+            } catch(IOException e) {
+                Log.v(TAG, e.toString());
+            }
         }
 
         @Override
@@ -409,10 +476,12 @@ public class MediaPlayer {
 
                 int len = fileInputStream.read(data, 0, 1024);
                 while(len != -1) {
-                    pipedOutputStream.write(data, 0, len);
+                    write(data, 0, len);
 
                     len = fileInputStream.read(data, 0, 1024);
                 }
+
+                pipedOutputStream.close();
 
                 fileInputStream.close();
             } catch(FileNotFoundException e) {

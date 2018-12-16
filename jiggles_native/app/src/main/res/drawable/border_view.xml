@@ -3,5 +3,6 @@
     <item android:state_focused="true"
           android:drawable="@drawable/edit_text_focused" />
 
-    <item android:drawable="@drawable/edit_text_normal" />
+    <item
+        android:drawable="@drawable/edit_text_normal" />
 </selector>

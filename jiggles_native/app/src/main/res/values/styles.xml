@@ -47,4 +47,42 @@
         <item name="android:padding">@dimen/activity_margin_relative</item>
     </style>
 
+    <style name="auth_edit_label">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">@dimen/activity_margin_sibling</item>
+        <item name="android:textColor">@color/searchDarkColor</item>
+        <item name="android:textSize">@dimen/activity_text_subspan</item>
+        <item name="android:paddingLeft">@dimen/activity_margin_closer</item>
+        <item name="android:paddingStart">@dimen/activity_margin_closer</item>
+        <item name="android:paddingEnd">@dimen/activity_margin_closer</item>
+        <item name="android:paddingRight">@dimen/activity_margin_closer</item>
+        <item name="android:paddingTop">@dimen/activity_margin_relative</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="auth_edit_text">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:maxWidth">280dp</item>
+        <item name="android:minWidth">280dp</item>
+        <item name="android:paddingTop">@dimen/activity_margin_nano</item>
+        <item name="android:paddingBottom">@dimen/activity_margin_relative</item>
+        <item name="android:paddingLeft">@dimen/activity_margin_closer</item>
+        <item name="android:paddingStart">@dimen/activity_margin_closer</item>
+        <item name="android:paddingRight">@dimen/activity_margin_closer</item>
+        <item name="android:paddingEnd">@dimen/activity_margin_closer</item>
+        <item name="android:textSize">@dimen/activity_text_subparagraph</item>
+    </style>
+
+    <style name="auth_edit_layout">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/border_view</item>
+        <item name="android:layout_marginBottom">@dimen/activity_margin_relative</item>
+        <item name="android:layout_marginTop">@dimen/activity_margin_relative</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
 </resources>

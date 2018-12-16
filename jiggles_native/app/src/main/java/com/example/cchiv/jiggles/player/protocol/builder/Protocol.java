@@ -4,19 +4,27 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 
+import com.example.cchiv.jiggles.model.Track;
 import com.example.cchiv.jiggles.player.protocol.RemoteConnection;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Type;
 import java.util.Map;
 
 public class Protocol {
 
     private static final String TAG = "Protocol";
 
-    public static final int PACKET_SIZE = 1024;
-    public static final int BODY_SIZE = 512;
+    public static final int PACKET_SIZE = 16192;
+    public static final int BODY_SIZE = 15650;
 
     public static class IDENTIFIER {
         public static final String HEADER = "identifier-value";
@@ -26,6 +34,7 @@ public class Protocol {
         public static final String HEADER = "action-type";
 
         public static final String ACTION_STREAM = "stream";
+        public static final String ACTION_METADATA = "metadata";
         public static final String ACTION_SEEK = "seek";
         public static final String ACTION_PAUSE = "pause";
         public static final String ACTION_RESUME = "resume";
@@ -50,6 +59,7 @@ public class Protocol {
 
             public static final String TYPE_TEXT = "text";
             public static final String TYPE_RAW = "raw";
+            public static final String TYPE_AUDIO = "audio";
             public static final String TYPE_JSON = "json";
             public static final String TYPE_NONE = "none";
         }
@@ -58,6 +68,8 @@ public class Protocol {
             public static final String HEADER = "content-length";
         }
     }
+
+    private static final Gson gson = new Gson();
 
     /**
      * Resume Action
@@ -102,6 +114,21 @@ public class Protocol {
     }
 
     /**
+     * JSON Action
+     */
+    public static byte[] createJSONAction(String identifier, String body) {
+        Builder builder = new Builder();
+
+        return builder
+                .appendHeader(ACTIONS.HEADER, ACTIONS.ACTION_METADATA)
+                .appendHeader(IDENTIFIER.HEADER, identifier)
+                .appendHeader(CHUNKS.LENGTH.HEADER, 1)
+                .appendHeader(CONTENT.TYPE.HEADER, CONTENT.TYPE.TYPE_JSON)
+                .appendBody(body)
+                .build();
+    }
+
+    /**
      * Stream Action
      */
     public static byte[] createStreamAction(String identifier, byte[] data, int size, int length) {
@@ -116,11 +143,35 @@ public class Protocol {
                 .build();
     }
 
+    /**
+     * Stream Audio Action
+     */
+    public static byte[] createStreamAudioAction(String identifier, byte[] data, int size, int length) {
+        Builder builder = new Builder();
+
+        return builder
+                .appendHeader(ACTIONS.HEADER, ACTIONS.ACTION_STREAM)
+                .appendHeader(IDENTIFIER.HEADER, identifier)
+                .appendHeader(CHUNKS.LENGTH.HEADER, size)
+                .appendHeader(CONTENT.TYPE.HEADER, CONTENT.TYPE.TYPE_AUDIO)
+                .appendBody(data, length)
+                .build();
+    }
+
     /********************************************************/
     private static void sendMessage(RemoteConnection remoteConnection, String identifier, byte[] data, int size, int length) {
         byte[] streamAction = Protocol.createStreamAction(identifier, data, size, length);
 
         remoteConnection.writeStream(streamAction);
+    }
+
+    public static void encodeJSONMessage(RemoteConnection remoteConnection, Track track) {
+        String identifier = Message.generateIdentifier();
+        String json = gson.toJson(track, Track.class);
+
+        byte[] messageAction = Protocol.createJSONAction(identifier, json);
+
+        remoteConnection.writeStream(messageAction);
     }
 
     public static void encodeStreamMessage(RemoteConnection remoteConnection, Bitmap bitmap) {
@@ -139,6 +190,47 @@ public class Protocol {
         }
 
         sendMessage(remoteConnection, identifier, data, Protocol.CHUNKS.LENGTH.UNKNOWN_STREAM_END, 0);
+    }
+
+    public static void encodeStreamAudioMessage(RemoteConnection remoteConnection, String uri) {
+        File file = new File(uri);
+
+        try {
+            FileInputStream fileInputStream = new FileInputStream(file);
+
+            byte[] data = new byte[BODY_SIZE];
+            int len;
+
+            String identifier = Message.generateIdentifier();
+            while((len = fileInputStream.read(data, 0, BODY_SIZE)) != -1) {
+                remoteConnection.writeStream(Protocol.createStreamAudioAction(identifier, data,
+                        Protocol.CHUNKS.LENGTH.UNKNOWN_STREAM_LENGTH, len));
+            }
+
+            remoteConnection.writeStream(Protocol.createStreamAudioAction(identifier, data,
+                    Protocol.CHUNKS.LENGTH.UNKNOWN_STREAM_END, 0));
+
+            fileInputStream.close();
+        } catch(FileNotFoundException e) {
+            Log.v(TAG, e.toString());
+        } catch(IOException e) {
+            Log.v(TAG, e.toString());
+        }
+    }
+
+    public static Track decodeJSONTrackMessage(Message message) {
+        byte[] body = Message.decodeByteSource(message);
+
+        Type type = new TypeToken<Track>() {}.getType();
+        try {
+            String data = new String(body, "ISO-8859-1");
+
+            return gson.fromJson(data, type);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     public static Bitmap decodeStreamImageMessage(Message message) {

@@ -14,7 +14,9 @@ import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RectShape;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Build;
+import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.graphics.Palette;
@@ -33,6 +35,7 @@ import com.example.cchiv.jiggles.R;
 import com.example.cchiv.jiggles.model.Review;
 import com.example.cchiv.jiggles.model.User;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -192,6 +195,18 @@ public class Tools {
             color = palette.getDominantColor(defaultColor);
 
         return color;
+    }
+
+    public static int getPaletteColor(Context context, String imageUri) {
+        try {
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), Uri.parse(imageUri));
+
+            return getPaletteColor(context, bitmap);
+        } catch(IOException e) {
+            Log.v(TAG, e.toString());
+        }
+
+        return ContextCompat.getColor(context, R.color.primaryTextColor);
     }
 
     public static String onComputeScore(Context context, List<Review> reviews, ScoreView scoreView, View detailedLayout) {

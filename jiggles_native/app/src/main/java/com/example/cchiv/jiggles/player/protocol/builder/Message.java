@@ -2,6 +2,8 @@ package com.example.cchiv.jiggles.player.protocol.builder;
 
 import android.util.Log;
 
+import com.example.cchiv.jiggles.player.MediaPlayer;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,6 +15,7 @@ public class Message {
     private static final String TAG = "Message";
 
     List<Packet> packets = new ArrayList<>();
+    private MediaPlayer.DataFetcher dataFetcher = null;
     private String identifier;
     private boolean state = false;
 
@@ -26,6 +29,18 @@ public class Message {
 
     public String getAction() {
         return packets.get(0).getHeaders().getValue(Protocol.ACTIONS.HEADER);
+    }
+
+    public String getType() {
+        return packets.get(0).getHeaders().getValue(Protocol.CONTENT.TYPE.HEADER);
+    }
+
+
+    public MediaPlayer.DataFetcher getDataFetcher() {
+        if(dataFetcher == null)
+            dataFetcher = new MediaPlayer.DataFetcher();
+
+        return dataFetcher;
     }
 
     public void resolve(Packet packet) {

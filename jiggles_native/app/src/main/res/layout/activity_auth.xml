@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
+    android:background="@color/iconsTextColor"
     tools:context=".activities.AuthActivity">
 
     <android.support.constraint.ConstraintLayout
@@ -24,7 +25,7 @@
 
             <ImageView
                 android:id="@+id/imageView"
-                android:layout_width="144dp"
+                android:layout_width="75dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:layout_marginLeft="8dp"
@@ -32,7 +33,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="32dp"
                 android:adjustViewBounds="true"
-                android:src="@drawable/ic_logo"
+                android:src="@drawable/ic_logo_round"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"/>
@@ -94,129 +95,129 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
                 android:orientation="vertical"
                 app:layout_constraintStart_toStartOf="@+id/auth_remember_me"
                 app:layout_constraintTop_toBottomOf="@+id/auth_social_header">
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
+                <RelativeLayout
+                    android:id="@+id/auth_social_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:layout_marginBottom="@dimen/activity_margin_component"
+                    android:layout_marginTop="@dimen/activity_margin_component">
+
+                    <ImageView
+                        android:id="@+id/auth_social_profile_picture"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:adjustViewBounds="true"
+                        android:scaleType="centerCrop"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
+                        android:src="@drawable/ic_account"/>
+
+                    <TextView
+                        android:id="@+id/auth_social_greetings"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="@dimen/activity_text_span"
+                        android:textStyle="bold"
+                        android:textColor="@color/primaryTextColor"
+                        android:layout_marginLeft="@dimen/activity_margin_component"
+                        android:layout_marginStart="@dimen/activity_margin_component"
+                        android:layout_toRightOf="@id/auth_social_profile_picture"
+                        android:layout_toEndOf="@id/auth_social_profile_picture"
+                        android:text="@string/auth_social_greetings"/>
+
+                    <TextView
+                        android:id="@+id/auth_social_profile_email"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/defaultTextColor"
+                        android:textSize="@dimen/activity_text_subspan"
+                        android:layout_marginTop="@dimen/activity_margin_relative"
+                        android:layout_below="@id/auth_social_greetings"
+                        android:layout_alignLeft="@id/auth_social_greetings"
+                        android:layout_alignStart="@id/auth_social_greetings"
+                        android:text="@string/auth_social_email"/>
+
+                </RelativeLayout>
+
+                <TextView
+                    android:id="@+id/auth_error"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/activity_margin_relative"
                     android:layout_marginTop="@dimen/activity_margin_relative"
-                    android:orientation="vertical">
+                    android:visibility="gone"
+                    android:gravity="center"
+                    android:textColor="@android:color/holo_red_dark"
+                    android:text="@string/auth_error"/>
+
+                <LinearLayout
+                    android:id="@+id/auth_email_container"
+                    style="@style/auth_edit_layout">
 
                     <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/activity_margin_relative"
                         android:text="@string/auth_email_hint"
-                        android:textColor="@color/colorPrimaryDark"
-                        android:textSize="@dimen/activity_text_subheader"
-                        android:textStyle="bold"/>
+                        style="@style/auth_edit_label"/>
 
                     <EditText
                         android:id="@+id/auth_email_value"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/border_view"
                         android:hint="@string/auth_email_hint"
                         android:inputType="textEmailAddress"
-                        android:maxWidth="280dp"
-                        android:minWidth="280dp"
-                        android:padding="@dimen/activity_margin_closer"
-                        android:textSize="@dimen/activity_text_paragraph"/>
+                        style="@style/auth_edit_text"/>
 
                 </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/auth_name_container"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/activity_margin_relative"
-                    android:layout_marginTop="@dimen/activity_margin_relative"
-                    android:orientation="vertical">
+                    style="@style/auth_edit_layout">
 
                     <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/activity_margin_relative"
                         android:text="@string/auth_name_hint"
-                        android:textColor="@color/colorPrimaryDark"
-                        android:textSize="@dimen/activity_text_subheader"
-                        android:textStyle="bold"/>
+                        style="@style/auth_edit_label"/>
 
                     <EditText
                         android:id="@+id/auth_name_value"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/border_view"
                         android:hint="@string/auth_name_hint"
                         android:inputType="text"
-                        android:maxWidth="280dp"
-                        android:minWidth="280dp"
-                        android:padding="@dimen/activity_margin_closer"
-                        android:textSize="@dimen/activity_text_paragraph"/>
+                        style="@style/auth_edit_text"/>
 
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/activity_margin_relative"
-                    android:layout_marginTop="@dimen/activity_margin_relative"
-                    android:orientation="vertical">
+                    android:id="@+id/auth_password_container"
+                    style="@style/auth_edit_layout">
 
                     <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/activity_margin_relative"
                         android:text="@string/auth_password_hint"
-                        android:textColor="@color/colorPrimaryDark"
-                        android:textSize="@dimen/activity_text_subheader"
-                        android:textStyle="bold"/>
+                        style="@style/auth_edit_label"/>
 
                     <EditText
                         android:id="@+id/auth_password_value"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/border_view"
                         android:hint="@string/auth_password_hint"
                         android:inputType="textPassword"
-                        android:maxWidth="280dp"
-                        android:minWidth="280dp"
-                        android:padding="@dimen/activity_margin_closer"
-                        android:textSize="@dimen/activity_text_paragraph"/>
+                        style="@style/auth_edit_text"/>
 
                 </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/auth_password_repeat_container"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/activity_margin_relative"
-                    android:layout_marginTop="@dimen/activity_margin_relative"
-                    android:orientation="vertical">
+                    style="@style/auth_edit_layout">
 
                     <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/activity_margin_relative"
                         android:text="@string/auth_password_repeat_hint"
-                        android:textColor="@color/colorPrimaryDark"
-                        android:textSize="@dimen/activity_text_subheader"
-                        android:textStyle="bold"/>
+                        style="@style/auth_edit_label"/>
 
                     <EditText
                         android:id="@+id/auth_password_repeat_value"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/border_view"
                         android:hint="@string/auth_password_repeat_hint"
                         android:inputType="textPassword"
-                        android:maxWidth="280dp"
-                        android:minWidth="280dp"
-                        android:padding="@dimen/activity_margin_closer"
-                        android:textSize="@dimen/activity_text_paragraph"/>
+                        style="@style/auth_edit_text"/>
 
                 </LinearLayout>
 

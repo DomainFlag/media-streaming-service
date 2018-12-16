@@ -78,6 +78,7 @@ public class AlbumActivity extends PlayerAppCompatActivity {
         Intent intent = new Intent(this, PlayerActivity.class);
 
         Bundle bundle = new Bundle();
+        bundle.putString(PlayerService.RESOURCE_SOURCE, PlayerService.RESOURCE_LOCAL);
         bundle.putString(PlayerService.RESOURCE_IDENTIFIER, store.getTrack(0).getId());
         bundle.putString(PlayerService.RESOURCE_TYPE, TrackEntry._ID);
         bundle.putString(PlayerService.RESOURCE_PARENT_IDENTIFIER, store.getAlbum(0).getId());

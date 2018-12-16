@@ -1,9 +1,13 @@
 package com.example.cchiv.jiggles.model;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 
 import com.example.cchiv.jiggles.data.ContentContract.TrackEntry;
+import com.example.cchiv.jiggles.utilities.Tools;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,13 +18,17 @@ public class Track {
 
     private String id;
     private String name;
+    private String artistName = null;
+    private String albumName = null;
+    private String imageUri = null;
     private String type = "track";
     private String uri;
+    private Bitmap bitmap = null;
     public boolean favourite = false;
     public boolean local = false;
-    private Album album;
-    private List<Image> images;
-    private List<Artist> artists = new ArrayList<>();
+    private transient Album album = null;
+    private List<Image> images = null;
+    private transient List<Artist> artists = new ArrayList<>();
 
     public Track(String id, String name, String type, String uri,
                  List<Image> images, List<Artist> artists, boolean favourite) {
@@ -31,6 +39,10 @@ public class Track {
         this.images = images;
         this.artists = artists;
         this.favourite = favourite;
+
+
+        if(this.artists.size() > 0)
+            this.artistName = this.artists.get(0).getName();
     }
 
     public Track(String id, String name, String type, String uri,
@@ -55,12 +67,58 @@ public class Track {
         else return null;
     }
 
+    public String getArtistName() {
+        if(artists != null && artists.size() > 0) {
+            return artists.get(0).getName();
+        } else {
+            return artistName;
+        }
+    }
+
     public void setAlbum(Album album) {
         this.album = album;
     }
 
+    public Image getArt() {
+        if(album != null) {
+            return album.getArt();
+        }
+
+        return null;
+    }
+
+    public int getColor(Context context) {
+        Image image = getArt();
+
+        if(image == null) {
+            if(bitmap != null) {
+                return Tools.getPaletteColor(context, bitmap);
+            } else if(imageUri != null) {
+                return Tools.getPaletteColor(context, imageUri);
+            }
+        } else {
+            return image.getColor();
+        }
+
+        return Color.BLACK;
+    }
+
+    public void setArtistName(String artistName) {
+        this.artistName = artistName;
+    }
+
     public void setArtist(Artist artist) {
+        artistName = artist.getName();
+
         artists.add(artist);
+    }
+
+    public void setAlbumName(String albumName) {
+        this.albumName = albumName;
+    }
+
+    public void setImageUri(String imageUri) {
+        this.imageUri = imageUri;
     }
 
     public Track(String name) {
@@ -85,6 +143,14 @@ public class Track {
 
     public String getUri() {
         return uri;
+    }
+
+    public Bitmap getBitmap() {
+        return bitmap;
+    }
+
+    public void setBitmap(Bitmap bitmap) {
+        this.bitmap = bitmap;
     }
 
     public List<Image> getImages() {

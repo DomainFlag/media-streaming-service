@@ -19,6 +19,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.cchiv.jiggles.Constants;
@@ -60,6 +61,9 @@ public class ThreadFragment extends Fragment {
                 try {
                     Bitmap bitmap = BitmapFactory.decodeStream(contentResolver.openInputStream(data.getData()));
 
+                    RelativeLayout relativeLayout = rootView.findViewById(R.id.thread_caption_layout);
+                    relativeLayout.setVisibility(View.VISIBLE);
+
                     ImageView captionView = rootView.findViewById(R.id.thread_caption);
                     captionView.setImageBitmap(bitmap);
                 } catch(FileNotFoundException e) {
@@ -90,6 +94,11 @@ public class ThreadFragment extends Fragment {
 
             if(fragmentManager != null)
                 fragmentManager.beginTransaction().remove(this).commit();
+        });
+
+        rootView.findViewById(R.id.thread_caption_close).setOnClickListener(view -> {
+            ((ImageView) rootView.findViewById(R.id.thread_caption)).setImageBitmap(null);
+            (rootView.findViewById(R.id.thread_caption_layout)).setVisibility(View.GONE);
         });
 
         rootView.findViewById(R.id.thread_upload_media).setOnClickListener((view) -> {

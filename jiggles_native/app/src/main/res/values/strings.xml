@@ -11,6 +11,10 @@
     <string name="app_connectivity_negative">No valid internet connection, try again!</string>
 
 
+    <!-- Facebook -->
+    <string name="facebook_app_id">1285608168179291</string>
+    <string name="fb_login_protocol_scheme">fb1285608168179291</string>
+
     <!-- Feature -->
     <string name="feature_highlight">Highlight</string>
     <string name="feature_fresh">Fresh</string>
@@ -39,6 +43,13 @@
     <string name="auth_social_header_log_in">log in</string>
     <string name="auth_social_header_sing_up">sign up</string>
 
+    <string name="auth_social_greetings">Hi %1$s %2$s!\nThere\'s only one more thing to do.</string>
+    <string name="auth_social_email">Linked email: %1$s</string>
+
+    <string name="auth_error_cancel">Auth canceled</string>
+    <string name="auth_error_auth_resolved">You are already authenticated</string>
+    <string name="auth_error">%1$s*</string>
+
     <string name="auth_email_hint">E-Mail</string>
     <string name="auth_name_hint">Name</string>
     <string name="auth_password_hint">Password</string>
@@ -52,6 +63,7 @@
     <string name="auth_redirection_sign_up">Sign up here</string>
     <string name="auth_redirection_log_in">Login in here</string>
     <string name="auth_redirection_text">%1$s,\n%2$s</string>
+
 
     <!-- Home -->
     <string-array name="home_pager_fragments">

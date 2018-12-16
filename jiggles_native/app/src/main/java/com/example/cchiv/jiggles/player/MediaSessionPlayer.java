@@ -19,6 +19,7 @@ import android.util.Log;
 
 import com.example.cchiv.jiggles.R;
 import com.example.cchiv.jiggles.activities.PlayerActivity;
+import com.example.cchiv.jiggles.model.Album;
 import com.example.cchiv.jiggles.model.Image;
 import com.example.cchiv.jiggles.model.Track;
 import com.example.cchiv.jiggles.services.PlayerService;
@@ -71,7 +72,7 @@ public class MediaSessionPlayer {
     }
 
     public void setState(int state) {
-        builder.setState(state, mediaPlayer.getExoPlayer().getCurrentPosition(), 1f);
+        builder.setState(state, 0, 1f);
     }
 
     public int getState() {
@@ -80,10 +81,14 @@ public class MediaSessionPlayer {
         else return -1;
     }
 
+    public static MediaSessionCompat getMediaSessionCompat() {
+        return mediaSessionCompat;
+    }
+
     public Notification buildNotificationPlayer(Track track) {
         playbackStateCompat = builder.build();
 
-        mediaSessionCompat.setPlaybackState(builder.build());
+        mediaSessionCompat.setPlaybackState(playbackStateCompat);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, NOTIFICATION_PLAYER_CONTROLLER);
 
@@ -107,16 +112,24 @@ public class MediaSessionPlayer {
         PendingIntent contentPendingIntent = PendingIntent.getActivity
                 (context, 0, new Intent(context, PlayerActivity.class), 0);
 
-        Image art = track.getAlbum().getArt();
-        Bitmap largeIcon = null;
-        try {
-            if(art.getUrl() != null)
-                largeIcon = MediaStore.Images.Media.getBitmap(context.getContentResolver(), art.getUrl());
-            else largeIcon = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_artwork_placeholder);
-        } catch(IOException e) {
-            Log.v(TAG, e.toString());
-        }
+        Album album = track.getAlbum();
+        Image art = null;
+        if(album != null)
+            art = album.getArt();
 
+        Bitmap largeIcon = null;
+        if(art == null && track.getBitmap() == null) {
+            largeIcon = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_artwork_placeholder);
+        } else if(art != null) {
+            try {
+                if(art.getUrl() != null)
+                    largeIcon = MediaStore.Images.Media.getBitmap(context.getContentResolver(), art.getUrl());
+            } catch(IOException e) {
+                Log.v(TAG, e.toString());
+            }
+        } else {
+            largeIcon = track.getBitmap();
+        }
 
         if(notificationManager != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(NOTIFICATION_PLAYER_CONTROLLER,
@@ -131,8 +144,8 @@ public class MediaSessionPlayer {
                 .setColorized(true)
                 .setStyle(new android.support.v4.media.app.NotificationCompat.MediaStyle()
                         .setShowActionsInCompactView(0))
-                .setColor(art.getColor())
-                .setContentText(track.getArtist().getName())
+                .setColor(track.getColor(context))
+                .setContentText(track.getArtistName())
                 .setSmallIcon(R.drawable.ic_microphone)
                 .setLargeIcon(largeIcon)
                 .setPriority(NotificationCompat.PRIORITY_LOW)
