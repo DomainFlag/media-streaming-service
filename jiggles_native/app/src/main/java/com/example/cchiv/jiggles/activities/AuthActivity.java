@@ -244,7 +244,12 @@ public class AuthActivity extends AppCompatActivity {
             relativeSocialLayout.setVisibility(View.GONE);
 
             linearEmailLayout.setVisibility(View.VISIBLE);
-            linearNameLayout.setVisibility(View.VISIBLE);
+
+            Intent intent = getIntent();
+            authType = intent.getStringExtra(Constants.AUTH_TYPE_KEY);
+            if(authType != null && authType.equals(Constants.AUTH_SIGN_UP)) {
+                linearNameLayout.setVisibility(View.VISIBLE);
+            }
         }
     }
 

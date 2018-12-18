@@ -145,6 +145,8 @@ public abstract class FeatureAdapter<T> extends ModelAdapter<FeatureAdapter.Feat
 
     public abstract void inflateFreshView(View rootView, List<T> content);
 
+    public void onClickItemView(T item) {}
+
     public void onSwapData(Feature feature) {
         inflateHighlightView(rootView, feature.highlight);
         inflateFreshView(rootView, feature.fresh);

@@ -212,6 +212,18 @@ public class Tools {
     public static String onComputeScore(Context context, List<Review> reviews, ScoreView scoreView, View detailedLayout) {
         float total = 0;
 
+        LinearLayout root = null;
+        if(detailedLayout != null) {
+            View view = detailedLayout.findViewById(R.id.release_reviews);
+
+            if(view instanceof LinearLayout) {
+                root = (LinearLayout) view;
+
+                if(root.getChildCount() > 0)
+                    root.removeAllViewsInLayout();
+            }
+        }
+
         for(int it = 0; it < reviews.size(); it++) {
             Review review = reviews.get(it);
 
@@ -222,19 +234,15 @@ public class Tools {
                 color = ContextCompat.getColor(context, R.color.colorScorePossitive);
             else color = ContextCompat.getColor(context, R.color.colorScoreAcclaim);
 
-            if(detailedLayout != null) {
-                LinearLayout root = detailedLayout.findViewById(R.id.release_reviews);
+            if(root != null) {
+                View view = LayoutInflater.from(context)
+                        .inflate(R.layout.feature_review_highligh_layout, root, false);
 
-                if(root != null) {
-                    View view = LayoutInflater.from(context)
-                            .inflate(R.layout.feature_review_highligh_layout, root, false);
+                ((RatingBar) view.findViewById(R.id.review_score)).setRating(score / 20);
+                ((TextView) view.findViewById(R.id.review_author)).setText(review.getAuthor());
+                ((TextView) view.findViewById(R.id.review_content)).setText(review.getContent());
 
-                    ((RatingBar) view.findViewById(R.id.review_score)).setRating(score / 20);
-                    ((TextView) view.findViewById(R.id.review_author)).setText(review.getAuthor());
-                    ((TextView) view.findViewById(R.id.review_content)).setText(review.getContent());
-
-                    root.addView(view);
-                }
+                root.addView(view);
             }
 
             total += review.getScore();

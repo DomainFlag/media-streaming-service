@@ -58,7 +58,7 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     private Context context = null;
 
-    private OnItemClickListener onItemClickListener;
+    private OnItemClickListener onItemClickListener = null;
     private Store store;
     private int layoutMode = MODE_ALBUM;
     private View rootView = null;
@@ -79,6 +79,10 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         this(context, store, layoutMode, onItemClickListener);
 
         this.rootView = rootView;
+    }
+
+    public void onAttachItemClickListener(OnItemClickListener onItemClickListener) {
+        this.onItemClickListener = onItemClickListener;
     }
 
     @NonNull
@@ -161,7 +165,8 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         holder.itemView.setOnClickListener((view) -> {
             Store store = new Store(album);
 
-            this.onItemClickListener.onItemClickListener(store);
+            if(onItemClickListener != null)
+                onItemClickListener.onItemClickListener(store);
         });
     }
 
@@ -243,7 +248,8 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             Store store = new Store(album);
             store.setTrack(track);
 
-            onItemClickListener.onItemClickListener(store);
+            if(onItemClickListener != null)
+                onItemClickListener.onItemClickListener(store);
         });
     }
 

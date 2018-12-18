@@ -16,6 +16,10 @@ let ReleaseSchema = new mongoose.Schema({
         type: String,
         require: true
     },
+    uri: {
+        type: String,
+        require: true
+    },
     score: {
         type: Number,
         require: true,
@@ -31,6 +35,7 @@ let ReleaseSeed = () => {
             title: "Melodrama",
             artist: "Lorde",
             url: "https://images-na.ssl-images-amazon.com/images/I/51T8dh9dDML._SY355_.jpg",
+            uri: "spotify:track:7ARveOiD31w2Nq0n5FsSf8",
             score: 91,
             reviews: [{
                 author: "Tiny Mix Tapes",
@@ -47,7 +52,8 @@ let ReleaseSeed = () => {
         }, {
             title: "Plastic Beach",
             artist: "Gorillaz",
-            url: "https://upload.wikimedia.org/wikipedia/en/thumb/d/d1/Plasticbeach452.jpg/220px-Plasticbeach452.jpg",
+            url: "https://upload.wikimedia.org/wikipedia/en/9/9f/On_Melancholy_Hill_Promo_Art_by_GoRiLlAz6666.jpg",
+            uri: "spotify:track:0q6LuUqGLUiCPP1cbdwFs3",
             score: 82,
             reviews: [{
                 author: "No Ripcord",
@@ -66,6 +72,7 @@ let ReleaseSeed = () => {
             title: "In Colour",
             artist: "Jamie XX",
             url: "https://upload.wikimedia.org/wikipedia/commons/c/c2/Jamie_xx_-_In_Colour.png",
+            uri: "spotify:track:1nXRacxi1isUvleBB6Jgx7",
             score: 87,
             reviews: [
                 {
@@ -86,6 +93,7 @@ let ReleaseSeed = () => {
             title: "High As Hope",
             artist: "Florence + the Machine",
             url: "https://upload.wikimedia.org/wikipedia/en/thumb/6/61/HighAsHope.png/220px-HighAsHope.png",
+            uri: "spotify:track:6Ju28M6P8Y8sLjBgWjyUUD",
             score: 75,
             reviews: [{
                 author: "Paste Magazine",
@@ -102,6 +110,7 @@ let ReleaseSeed = () => {
             title: "Flower Boy",
             artist: "Tyler, the Creator",
             url: "https://upload.wikimedia.org/wikipedia/en/c/c3/Tyler%2C_the_Creator_-_Flower_Boy.png",
+            uri: "spotify:track:7KA4W4McWYRpgf0fWsJZWB",
             score: 84,
             reviews: [
                 {
@@ -121,6 +130,7 @@ let ReleaseSeed = () => {
             title: "I'm all ears",
             artist: "Let's Eat Grandma",
             url: "https://media.pitchfork.com/photos/5ae0a4228bec5b23c213a2f5/1:1/w_320/Let%E2%80%99s%20Eat%20Grandma:%20I'm%20All%20Ears.jpg",
+            uri: "spotify:track:5EXYJFie7L9GAXpZuuBar5",
             score: 86,
             reviews: [
                 {
@@ -140,6 +150,7 @@ let ReleaseSeed = () => {
             title: "Oil of Every Pearl's Un-Insides",
             artist: "SOPHIE",
             url: "http://cdn.albumoftheyear.org/album/113120-oil-of-every-pearls-un-insides-1.jpg",
+            uri: "spotify:track:5nTtCOCds6I0PHMNtqelas",
             score: 86,
             reviews: [
                 {

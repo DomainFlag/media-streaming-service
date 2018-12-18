@@ -118,7 +118,7 @@ public class TreeParser {
 
             for(Node parentNode : stack.stack.parent) {
                 for(Node childNode : stack.stack.child) {
-                    if(parentNode.comment.getId().equals(childNode.comment.getParent()))
+                    if(parentNode.comment.get_id().equals(childNode.comment.getParent()))
                         parentNode.children.add(childNode);
                 }
             }

@@ -17,7 +17,7 @@ public class SpotifyConnection {
     private static final String TAG = "SpotifyConnection";
 
     public interface SpotifyResolvedCallback {
-        void onSpotifyResolvedCallback(com.example.cchiv.jiggles.model.Track track);
+        void onSpotifyResolvedCallback(com.example.cchiv.jiggles.model.Track track, boolean isPaused);
     }
 
     private static SpotifyAppRemote spotifyAppRemote = null;
@@ -35,7 +35,7 @@ public class SpotifyConnection {
         this.mediaSessionPlayer = mediaSessionPlayer;
     }
 
-    public void connect() {
+    public void connect(SpotifyResolvedCallback spotifyResolvedCallback) {
         if(spotifyAppRemote != null)
             return;
 
@@ -51,7 +51,7 @@ public class SpotifyConnection {
                     public void onConnected(SpotifyAppRemote spotifyAppRemote) {
                         SpotifyConnection.spotifyAppRemote = spotifyAppRemote;
 
-                        resolve();
+                        play(null, spotifyResolvedCallback);
                     }
 
                     @Override
@@ -61,31 +61,16 @@ public class SpotifyConnection {
                 });
     }
 
-
-    private void resolve() {
-        spotifyAppRemote.getPlayerApi()
-                .subscribeToPlayerState()
-                .setEventCallback(playerState -> {
-                    Track track = playerState.track;
-
-                    if(track != null) {
-                        com.example.cchiv.jiggles.model.Track trackDecoded = new com.example
-                                .cchiv.jiggles.model.Track(track.name, track.uri);
-
-                        trackDecoded.setAlbumName(track.album.name);
-                        trackDecoded.setArtistName(track.artist.name);
-                    }
-                });
-    }
-
     public void play(String uri, SpotifyResolvedCallback spotifyResolvedCallback) {
         if(spotifyAppRemote != null) {
-            spotifyAppRemote.getPlayerApi().play(uri);
+            if(uri != null)
+                spotifyAppRemote.getPlayerApi().play(uri);
 
             spotifyAppRemote
                     .getPlayerApi()
                     .subscribeToPlayerState()
                     .setEventCallback(playerState -> {
+                        Log.v(TAG, "Do something with " + playerState);
                         Track track = playerState.track;
 
                         if(track != null) {
@@ -94,12 +79,16 @@ public class SpotifyConnection {
 
                             trackDecoded.setAlbumName(track.album.name);
                             trackDecoded.setArtistName(track.artist.name);
+                            trackDecoded.setBitmap(null);
 
-                            spotifyAppRemote.getImagesApi().getImage(track.imageUri).setResultCallback(bitmap -> {
-                                trackDecoded.setBitmap(bitmap);
-
-                                spotifyResolvedCallback.onSpotifyResolvedCallback(trackDecoded);
-                            });
+                            spotifyResolvedCallback.onSpotifyResolvedCallback(trackDecoded, playerState.isPaused);
+//                            spotifyAppRemote.getImagesApi().getImage(track.imageUri).setResultCallback(bitmap -> {
+//                                Log.v(TAG, "Do something with image ");
+//
+//                                trackDecoded.setBitmap(bitmap);
+//
+//                                spotifyResolvedCallback.onSpotifyResolvedCallback(trackDecoded, playerState.isPaused);
+//                            });
                         }
                     });
         }

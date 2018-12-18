@@ -8,7 +8,6 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.view.menu.MenuBuilder;
 import android.support.v7.view.menu.MenuPopupHelper;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -25,11 +24,8 @@ import com.example.cchiv.jiggles.interfaces.RemoteMediaCallback;
 import com.example.cchiv.jiggles.model.Album;
 import com.example.cchiv.jiggles.model.FeedItem;
 import com.example.cchiv.jiggles.model.Post;
-import com.example.cchiv.jiggles.model.Reply;
 import com.example.cchiv.jiggles.model.Thread;
-import com.example.cchiv.jiggles.utilities.NetworkUtilities;
 import com.example.cchiv.jiggles.utilities.Tools;
-import com.example.cchiv.jiggles.utilities.TreeParser;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
@@ -39,12 +35,18 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final String TAG = "FeedAdapter";
 
+    public interface OnClickReplies {
+        void onClickRepliesCallback(FeedItem feedItem);
+    }
+
+    private OnClickReplies onClickReplies;
     private RemoteMediaCallback remoteMediaCallback;
     private List<FeedItem> items;
     private Context context;
 
-    public FeedAdapter(Context context, List<FeedItem> items) {
+    public FeedAdapter(Context context, OnClickReplies onClickReplies, List<FeedItem> items) {
         this.context = context;
+        this.onClickReplies = onClickReplies;
         this.remoteMediaCallback = (RemoteMediaCallback) context;
         this.items = items;
     }
@@ -131,7 +133,7 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         holder.repliesView.setText(context.getString(R.string.feed_item_comments_label, post.getReplies().size()));
         holder.repliesView.setOnClickListener(view -> {
-            holder.replies.setVisibility(View.VISIBLE);
+            onClickReplies.onClickRepliesCallback(post);
         });
 
         holder.title.setText(album.getName());
@@ -159,7 +161,6 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     @Override
                     public void onBitmapFailed(Exception e, Drawable errorDrawable) {
                         holder.caption.setVisibility(View.GONE);
-                        holder.divider.setVisibility(View.GONE);
                     }
 
                     @Override
@@ -168,7 +169,7 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     }
                 });
 
-        holder.timestamp.setText(Tools.parseSocialDate(thread.getId()));
+        holder.timestamp.setText(Tools.parseSocialDate(thread.get_id()));
 
         holder.likeContent.setText(String.valueOf(thread.getLikes().size()));
         if(thread.isOwnership()) {
@@ -181,44 +182,26 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         holder.likeLayout.setOnClickListener(view -> {
             String token = Tools.getToken(context);
 
-            NetworkUtilities.ResolveThreadLike resolveThreadLike = new NetworkUtilities.ResolveThreadLike(result -> {
-                items.set(position, result);
-                notifyItemChanged(position);
-            }, thread.encodeJSONObject(), NetworkUtilities.RequestAdaptBuilder.getType(thread.isOwnership()), token);
+//            NetworkUtilities.ResolveThreadLike resolveThreadLike = new NetworkUtilities.ResolveThreadLike(result -> {
+//                items.set(position, result);
+//                notifyItemChanged(position);
+//            }, thread.encodeJSONObject(), NetworkUtilities.RequestAdaptBuilder.getType(thread.isOwnership()), token);
         });
 
-        holder.reply.setOnClickListener(view -> {
-            holder.replies.setVisibility(View.VISIBLE);
-        });
+        holder.reply.setOnClickListener(view -> onClickReplies.onClickRepliesCallback(thread));
         holder.author.setText(thread.getAuthor().getName());
 
-
         holder.repliesView.setText(context.getString(R.string.feed_item_comments_label, thread.getReplies().size()));
-        holder.repliesView.setOnClickListener(view -> {
-            holder.replies.setVisibility(View.VISIBLE);
-        });
+        holder.repliesView.setOnClickListener(view -> onClickReplies.onClickRepliesCallback(thread));
 
         holder.followersView.setText(context.getString(R.string.thread_following_label, "Jiggles"));
 
         holder.content.setText(thread.getContent());
-        buildThreadRepliesTree(holder, thread);
 
         holder.menuButton.setOnClickListener((view) -> {
             PopupMenu popupMenu = new ThreadPopupMenu(context, holder.menuButton);
             popupMenu.show();
         });
-    }
-
-    private void buildThreadRepliesTree(@NonNull ThreadViewHolder holder, Thread thread) {
-        TreeParser treeParser = new TreeParser();
-        List<Reply> comments = treeParser.queryTree(thread.getReplies());
-
-        CommentAdapter commentAdapter = new CommentAdapter(context, comments);
-        holder.replies.setAdapter(commentAdapter);
-        holder.replies.setNestedScrollingEnabled(true);
-
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
-        holder.replies.setLayoutManager(linearLayoutManager);
     }
 
     private Uri buildUriResource(String path) {
@@ -262,9 +245,7 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         private TextView type;
         private TextView action;
 
-        private RecyclerView replies;
         private TextView repliesView;
-
         private ImageView menuButton;
 
         public PostViewHolder(View itemView) {
@@ -282,7 +263,6 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             action = itemView.findViewById(R.id.post_action);
             type = itemView.findViewById(R.id.post_type);
 
-//            replies = itemView.findViewById(R.id.post_replies);
             repliesView = itemView.findViewById(R.id.post_replies_view);
 
             menuButton = itemView.findViewById(R.id.post_menu_button);
@@ -292,7 +272,6 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public class ThreadViewHolder extends RecyclerView.ViewHolder {
 
         private ImageView caption;
-        private View divider;
         private LinearLayout likeLayout;
         private ImageView likeIcon;
         private TextView likeContent;
@@ -301,7 +280,6 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         private TextView timestamp;
         private TextView content;
 
-        private RecyclerView replies;
         private TextView repliesView;
         private TextView followersView;
 
@@ -311,7 +289,6 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             super(itemView);
 
             caption = itemView.findViewById(R.id.thread_caption);
-            divider = itemView.findViewById(R.id.thread_divider);
             timestamp = itemView.findViewById(R.id.thread_timestamp);
             reply = itemView.findViewById(R.id.feed_item_reply);
             author = itemView.findViewById(R.id.thread_author);
@@ -319,7 +296,6 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             likeIcon = itemView.findViewById(R.id.feed_item_like_icon);
             likeContent = itemView.findViewById(R.id.feed_item_like_content);
             content = itemView.findViewById(R.id.thread_content);
-            replies = itemView.findViewById(R.id.thread_replies);
             repliesView = itemView.findViewById(R.id.thread_replies_view);
             followersView = itemView.findViewById(R.id.thread_followers_view);
 

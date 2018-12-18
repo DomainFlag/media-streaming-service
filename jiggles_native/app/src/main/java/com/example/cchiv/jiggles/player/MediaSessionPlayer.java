@@ -23,6 +23,7 @@ import com.example.cchiv.jiggles.model.Album;
 import com.example.cchiv.jiggles.model.Image;
 import com.example.cchiv.jiggles.model.Track;
 import com.example.cchiv.jiggles.services.PlayerService;
+import com.example.cchiv.jiggles.spotify.SpotifyConnection;
 
 import java.io.IOException;
 
@@ -32,6 +33,7 @@ public class MediaSessionPlayer {
 
     public static final String NOTIFICATION_PLAYER_CONTROLLER = "NOTIFICATION_PLAYER_CONTROLLER";
 
+    private SpotifyConnection spotifyConnection = null;
     private MediaPlayer mediaPlayer;
 
     private static MediaSessionCompat mediaSessionCompat = null;
@@ -45,6 +47,10 @@ public class MediaSessionPlayer {
     public MediaSessionPlayer(Context context, MediaPlayer mediaPlayer) {
         this.context = context;
         this.mediaPlayer = mediaPlayer;
+    }
+
+    public void onAttachSpotifyConnection(SpotifyConnection spotifyConnection) {
+        this.spotifyConnection = spotifyConnection;
     }
 
     public void createMediaSession() {
@@ -183,15 +189,24 @@ public class MediaSessionPlayer {
             playbackStateCompat = null;
     }
 
+    private void toggleSpotifyPlayback(boolean state) {
+        if(spotifyConnection != null)
+            spotifyConnection.toggle(state);
+    }
+
     private class JigglesSessionCallback extends MediaSessionCompat.Callback {
         @Override
         public void onPlay() {
             mediaPlayer.togglePlayback(true);
+
+            toggleSpotifyPlayback(true);
         }
 
         @Override
         public void onPause() {
             mediaPlayer.togglePlayback(false);
+
+            toggleSpotifyPlayback(false);
         }
 
         @Override

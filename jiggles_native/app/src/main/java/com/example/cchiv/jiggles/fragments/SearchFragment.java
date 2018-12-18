@@ -24,6 +24,7 @@ import android.widget.TextView;
 
 import com.example.cchiv.jiggles.R;
 import com.example.cchiv.jiggles.adapters.ContentAdapter;
+import com.example.cchiv.jiggles.interfaces.RemoteMediaCallback;
 import com.example.cchiv.jiggles.utilities.NetworkUtilities;
 import com.example.cchiv.jiggles.utilities.Tools;
 
@@ -58,6 +59,12 @@ public class SearchFragment extends Fragment implements TextView.OnEditorActionL
         recyclerView.setLayoutManager(gridLayoutManager);
 
         contentAdapter = new ContentAdapter(context, null);
+        contentAdapter.onAttachItemClickListener(store -> {
+            if(store != null && store.getAlbums().size() > 0) {
+                ((RemoteMediaCallback) context).onRemoteMediaClick(store.getAlbum(0).getUri());
+            }
+        });
+
         recyclerView.setAdapter(contentAdapter);
 
         ImageView imageView = rootView.findViewById(R.id.home_bar_switch);

@@ -18,7 +18,7 @@ public class ContentContract {
     public static final String PATH_RELEASES = "releases";
     public static final String PATH_NEWS = "news";
     public static final String PATH_IMAGES = "images";
-    public static final String PATH_COMMENTS = "comments";
+    public static final String PATH_REPLIES = "replies";
 
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + AUTHORITY);
 
@@ -209,6 +209,7 @@ public class ContentContract {
         public static final String COL_RELEASE_TITLE = "release_title";
         public static final String COL_RELEASE_ARTIST = "release_artist";
         public static final String COL_RELEASE_URL = "release_url";
+        public static final String COL_RELEASE_URI = "release_uri";
     }
 
 
@@ -249,19 +250,19 @@ public class ContentContract {
     /**
      * Table with thread
      */
-    public static final class CommentEntry implements BaseColumns {
+    public static final class ReplyEntry implements BaseColumns {
 
         public static final Uri CONTENT_URI =
-                BASE_CONTENT_URI.buildUpon().appendPath(PATH_COMMENTS).build();
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_REPLIES).build();
 
         public static final String TABLE_NAME = "comment";
 
         public static final String _ID = TABLE_NAME + BaseColumns._ID;
-        public static final String COL_COMMENT_AUTHOR = "comment_author";
-        public static final String COL_COMMENT_THREAD = "comment_thread";
-        public static final String COL_COMMENT_PARENT = "comment_parent";
-        public static final String COL_COMMENT_DEPTH = "comment_depth";
-        public static final String COL_COMMENT_CONTENT = "comment_content";
-        public static final String COL_COMMENT_LIKES = "comment_likes";
+        public static final String COL_REPLY_AUTHOR = "reply_author";
+        public static final String COL_REPLY_THREAD = "reply_thread";
+        public static final String COL_REPLY_PARENT = "reply_parent";
+        public static final String COL_REPLY_DEPTH = "reply_depth";
+        public static final String COL_REPLY_CONTENT = "reply_content";
+        public static final String COL_REPLY_LIKES = "reply_likes";
     }
 }

@@ -93,6 +93,7 @@
     <string name="forum_thread_reply_hint">Reply\.\.\.</string>
 
     <string name="forum_thread_creator_content_hint">What do you think of\.\.\.</string>
+    <string name="forum_thread_reply_content_hint">What to say\.\.\.</string>
     <string name="forum_thread_creator_create">Post</string>
 
     <string name="forum_menu">Thread More</string>

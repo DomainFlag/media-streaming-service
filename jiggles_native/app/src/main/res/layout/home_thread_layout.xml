@@ -17,21 +17,20 @@
             android:id="@+id/thread_caption"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/activity_margin_component"
+            android:layout_marginLeft="@dimen/activity_margin_component"
+            android:layout_marginStart="@dimen/activity_margin_component"
+            android:layout_marginRight="@dimen/activity_margin_component"
+            android:layout_marginEnd="@dimen/activity_margin_component"
+            android:layout_below="@id/thread_info"
             android:maxHeight="275dp"
-            android:layout_alignParentTop="true"
             android:scaleType="centerCrop"
             android:adjustViewBounds="true"
             android:contentDescription="@string/forum_thread_comment"
             tools:src="@drawable/thumbnail"/>
 
-        <View
-            android:id="@+id/thread_divider"
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:layout_below="@id/thread_caption"
-            android:background="@color/dividerColor"/>
-
         <RelativeLayout
+            android:id="@+id/thread_info"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/activity_margin_relative"
@@ -129,7 +128,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/iconsTextColor"
-        android:layout_below="@id/thread_divider"
         android:orientation="vertical">
 
         <TextView
@@ -192,12 +190,6 @@
             </LinearLayout>
 
         </LinearLayout>
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/thread_replies"
-            android:visibility="gone"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
 
     </LinearLayout>
 

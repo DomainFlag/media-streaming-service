@@ -13,7 +13,7 @@ import com.example.cchiv.jiggles.data.ContentContract.UserEntry;
 import com.example.cchiv.jiggles.data.ContentContract.ReleaseEntry;
 import com.example.cchiv.jiggles.data.ContentContract.NewsEntry;
 import com.example.cchiv.jiggles.data.ContentContract.ImageEntry;
-import com.example.cchiv.jiggles.data.ContentContract.CommentEntry;
+import com.example.cchiv.jiggles.data.ContentContract.ReplyEntry;
 import com.example.cchiv.jiggles.data.ContentContract.NotificationEntry;
 
 public class ContentDbHelper extends SQLiteOpenHelper {
@@ -130,7 +130,8 @@ public class ContentDbHelper extends SQLiteOpenHelper {
                 ReleaseEntry._ID + " TEXT PRIMARY KEY, " +
                 ReleaseEntry.COL_RELEASE_TITLE + " TEXT NOT NULL, " +
                 ReleaseEntry.COL_RELEASE_ARTIST + " TEXT NOT NULL, " +
-                ReleaseEntry.COL_RELEASE_URL + " TEXT NOT NULL " +
+                ReleaseEntry.COL_RELEASE_URL + " TEXT NOT NULL, " +
+                ReleaseEntry.COL_RELEASE_URI + " TEXT NOT NULL " +
                 ")";
 
         sqLiteDatabase.execSQL(sqlReleaseQuery);
@@ -144,16 +145,16 @@ public class ContentDbHelper extends SQLiteOpenHelper {
 
         sqLiteDatabase.execSQL(sqlNewsQuery);
 
-        String sqlCommentQuery = "CREATE TABLE " + CommentEntry.TABLE_NAME + " (" +
-                CommentEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                CommentEntry.COL_COMMENT_AUTHOR + " TEXT NOT NULL, " +
-                CommentEntry.COL_COMMENT_THREAD + " INTEGER REFERENCES " +
+        String sqlCommentQuery = "CREATE TABLE " + ReplyEntry.TABLE_NAME + " (" +
+                ReplyEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                ReplyEntry.COL_REPLY_AUTHOR + " TEXT NOT NULL, " +
+                ReplyEntry.COL_REPLY_THREAD + " INTEGER REFERENCES " +
                     ThreadEntry.TABLE_NAME + "(" + ThreadEntry._ID + ")" + ", " +
-                CommentEntry.COL_COMMENT_PARENT + " INTEGER REFERENCES " +
-                    CommentEntry.TABLE_NAME + "(" + CommentEntry._ID + ")" + ", " +
-                CommentEntry.COL_COMMENT_DEPTH + " INTEGER DEFAULT 0, " +
-                CommentEntry.COL_COMMENT_CONTENT + " TEXT NOT NULL, " +
-                CommentEntry.COL_COMMENT_LIKES + " INTEGER DEFAULT 0 " +
+                ReplyEntry.COL_REPLY_PARENT + " INTEGER REFERENCES " +
+                    ReplyEntry.TABLE_NAME + "(" + ReplyEntry._ID + ")" + ", " +
+                ReplyEntry.COL_REPLY_DEPTH + " INTEGER DEFAULT 0, " +
+                ReplyEntry.COL_REPLY_CONTENT + " TEXT NOT NULL, " +
+                ReplyEntry.COL_REPLY_LIKES + " INTEGER DEFAULT 0 " +
                 ")";
 
         sqLiteDatabase.execSQL(sqlCommentQuery);

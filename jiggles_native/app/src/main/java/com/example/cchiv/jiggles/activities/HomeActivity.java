@@ -122,7 +122,7 @@ public class HomeActivity extends PlayerAppCompatActivity {
         });
 
         setTabLayout(pageAdapter, viewPager);
-//        setFreshDialog();
+        setFreshDialog();
     }
 
     @Override

@@ -20,14 +20,16 @@ public class Release {
     private String title;
     private String artist;
     private String url;
+    private String uri;
 
     private List<Review> reviews;
 
-    public Release(String _id, String title, String artist, String url, List<Review> reviews) {
+    public Release(String _id, String title, String artist, String url, String uri, List<Review> reviews) {
         this._id = _id;
         this.title = title;
         this.artist = artist;
         this.url = url;
+        this.uri = uri;
         this.reviews = reviews;
     }
 
@@ -45,6 +47,10 @@ public class Release {
 
     public String getUrl() {
         return url;
+    }
+
+    public String getUri() {
+        return uri;
     }
 
     public List<Review> getReviews() {
@@ -66,19 +72,21 @@ public class Release {
 
         int indexReleaseId = cursor.getColumnIndex(ReleaseEntry._ID);
         int indexReleaseArtist = cursor.getColumnIndexOrThrow(ReleaseEntry.COL_RELEASE_ARTIST);
-        int indexReleaseUrl = cursor.getColumnIndexOrThrow(ReleaseEntry.COL_RELEASE_URL);
         int indexReleaseTitle = cursor.getColumnIndexOrThrow(ReleaseEntry.COL_RELEASE_TITLE);
+        int indexReleaseUrl = cursor.getColumnIndexOrThrow(ReleaseEntry.COL_RELEASE_URL);
+        int indexReleaseUri = cursor.getColumnIndexOrThrow(ReleaseEntry.COL_RELEASE_URI);
 
         Release release = null;
         Review review = null;
         while(cursor.moveToNext()) {
             if(!Release.isUnique(release, cursor)) {
                 String id = cursor.getString(indexReleaseId);
-                String releaseUrl = cursor.getString(indexReleaseUrl);
                 String releaseArtist = cursor.getString(indexReleaseArtist);
                 String releaseTitle = cursor.getString(indexReleaseTitle);
+                String releaseUrl = cursor.getString(indexReleaseUrl);
+                String releaseUri = cursor.getString(indexReleaseUri);
 
-                release = new Release(id, releaseTitle, releaseArtist, releaseUrl, new ArrayList<>());
+                release = new Release(id, releaseTitle, releaseArtist, releaseUrl, releaseUri, new ArrayList<>());
                 releases.add(release);
             }
 
@@ -98,6 +106,7 @@ public class Release {
         contentValues.put(ReleaseEntry.COL_RELEASE_ARTIST, release.getArtist());
         contentValues.put(ReleaseEntry.COL_RELEASE_TITLE, release.getTitle());
         contentValues.put(ReleaseEntry.COL_RELEASE_URL, release.getUrl());
+        contentValues.put(ReleaseEntry.COL_RELEASE_URI, release.getUri());
 
         return contentValues;
     }

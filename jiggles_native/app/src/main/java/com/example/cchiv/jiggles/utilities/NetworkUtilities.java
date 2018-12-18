@@ -183,7 +183,6 @@ public class NetworkUtilities {
 
         @Override
         public List<Post> onParseNetworkCallback(Gson gson, Headers headers, String body) {
-            Log.v(TAG, body);
             Type type = new TypeToken<List<Post>>() {}.getType();
 
             return gson.fromJson(body, type);
@@ -254,6 +253,40 @@ public class NetworkUtilities {
         @Override
         public Reply onParseNetworkCallback(Gson gson, Headers headers, String body) {
             Type type = new TypeToken<Reply>() {}.getType();
+
+            return gson.fromJson(body, type);
+        }
+    }
+
+    /* Resolve Reply Like */
+    public static class ResolveReplyAction extends AsyncNetworkTask<Thread> {
+
+        public ResolveReplyAction(NetworkCallbacks<Thread> networkCallbacks, JSONObject jsonObject, String type, String token) {
+            super(networkCallbacks);
+
+            Uri uri = new Uri.Builder()
+                    .scheme(Constants.SCHEME)
+                    .authority(Constants.AUTHORITY)
+                    .appendPath(Constants.FEED)
+                    .appendPath(Constants.THREAD)
+                    .appendPath(Constants.REPLY)
+                    .build();
+
+            RequestBody requestBody = RequestBody.create(JSON, jsonObject.toString());
+
+            Request request = new RequestAdaptBuilder()
+                    .setType(requestBody, type)
+                    .url(uri.toString())
+                    .addHeader("Content-Type", "application/json")
+                    .addHeader("X-Auth", token)
+                    .build();
+
+            execute(request);
+        }
+
+        @Override
+        public Thread onParseNetworkCallback(Gson gson, Headers headers, String body) {
+            Type type = new TypeToken<Thread>() {}.getType();
 
             return gson.fromJson(body, type);
         }

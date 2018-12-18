@@ -38,7 +38,7 @@ const CONTENT_TYPES = {
     },
     releases  : {
         resource : require("./models/release").Release,
-        projection : "id title artist url score reviews"
+        projection : "id title artist url uri score reviews"
     }
 };
 
@@ -292,7 +292,8 @@ app.post(/^\/feed\/thread\/reply/, function(req, res) {
  */
 app.put(/^\/feed\/thread\/reply/, function(req, res) {
     let thread = _.pick(req.body, ["thread_id"]);
-    let body = _.pick(req.body, ["parent", "depth", "depth"]);
+
+    let body = _.pick(req.body, ["parent", "depth", "content"]);
 
     Thread.update({ "_id" : thread.thread_id, "replies.author" : req.user._id },
         body.reduce((acc, value) => {

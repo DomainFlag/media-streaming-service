@@ -12,6 +12,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.cchiv.jiggles.R;
+import com.example.cchiv.jiggles.interfaces.RemoteMediaCallback;
 import com.example.cchiv.jiggles.model.Release;
 import com.example.cchiv.jiggles.model.Review;
 import com.example.cchiv.jiggles.utilities.Tools;
@@ -23,8 +24,12 @@ public class FeatureAlbumAdapter extends FeatureAdapter<Release> {
 
     private static final String TAG = "FeatureAlbumAdapter";
 
+    private RemoteMediaCallback remoteMediaCallback;
+
     public FeatureAlbumAdapter(Context context, List<Release> releases, String title, View rootView) {
         super(context, rootView, R.layout.feature_other_layout);
+
+        remoteMediaCallback = (RemoteMediaCallback) context;
 
         Feature feature = onCreateFeature(title, releases);
         onAttachFeature(feature);
@@ -41,6 +46,7 @@ public class FeatureAlbumAdapter extends FeatureAdapter<Release> {
 
             View view = LayoutInflater.from(getContext())
                     .inflate(R.layout.feature_highlight_layout, relativeLayout, true);
+            view.setOnClickListener(item -> onClickItemView(highlight));
 
             fillCaptionView(view, rootView, highlight.getUrl(), 325, 325);
 
@@ -96,6 +102,7 @@ public class FeatureAlbumAdapter extends FeatureAdapter<Release> {
         for(Release release : content) {
             View view = LayoutInflater.from(getContext())
                     .inflate(R.layout.feature_fresh_layout, linearLayout, false);
+            view.setOnClickListener(item -> onClickItemView(release));
 
             fillCaptionView(view, null, release.getUrl(), 250, 250);
 
@@ -114,6 +121,13 @@ public class FeatureAlbumAdapter extends FeatureAdapter<Release> {
     }
 
     @Override
+    public void onClickItemView(Release item) {
+        super.onClickItemView(item);
+
+        remoteMediaCallback.onRemoteMediaClick(item.getUri());
+    }
+
+    @Override
     public void onBindViewHolder(@NonNull FeatureAdapter.FeatureViewHolder holder, int position) {
         Release release = data.get(position);
 
@@ -122,6 +136,7 @@ public class FeatureAlbumAdapter extends FeatureAdapter<Release> {
                 .resize(200, 200)
                 .into(holder.caption);
 
+        holder.itemView.setOnClickListener(view -> onClickItemView(release));
         holder.title.setText(release.getTitle());
         holder.artist.setText(getContext().getString(R.string.app_component_author, release.getArtist()));
 

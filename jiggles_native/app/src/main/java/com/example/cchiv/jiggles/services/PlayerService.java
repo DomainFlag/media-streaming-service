@@ -63,7 +63,9 @@ public class PlayerService extends Service implements OnTrackStateChanged {
         mediaSessionPlayer.createMediaSession();
 
         spotifyConnection = new SpotifyConnection(this, mediaSessionPlayer);
-        spotifyConnection.connect();
+
+        mediaSessionPlayer.onAttachSpotifyConnection(spotifyConnection);
+        spotifyConnection.connect(this::onSpotifyResolved);
     }
 
     @Override
@@ -98,17 +100,31 @@ public class PlayerService extends Service implements OnTrackStateChanged {
         String resourceId = bundle.getString(RESOURCE_IDENTIFIER, null);
 
         if(resourceId != null)
-            spotifyConnection.play(resourceId, track -> {
+            spotifyConnection.play(resourceId, (track, isPaused) -> {
                 this.track = track;
 
-                if(state == -1)
+                if(!isPaused)
                     state = PlaybackStateCompat.STATE_PLAYING;
+                else state = PlaybackStateCompat.STATE_PAUSED;
 
                 mediaSessionPlayer.setState(state);
 
                 setForegroundService(track);
                 onTrackNotifyAll(track);
             });
+    }
+
+    public void onSpotifyResolved(Track track, boolean isPaused) {
+        this.track = track;
+
+        if(!isPaused)
+            state = PlaybackStateCompat.STATE_PLAYING;
+        else state = PlaybackStateCompat.STATE_PAUSED;
+
+        mediaSessionPlayer.setState(state);
+
+        setForegroundService(track);
+        onTrackNotifyAll(track);
     }
 
     public void resolveLocalMedia(Bundle bundle) {
