@@ -1,12 +1,18 @@
 package com.example.cchiv.jiggles.fragments;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,19 +21,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.cchiv.jiggles.R;
 import com.example.cchiv.jiggles.adapters.FeedAdapter;
 import com.example.cchiv.jiggles.adapters.ReplyAdapter;
 import com.example.cchiv.jiggles.model.FeedItem;
-import com.example.cchiv.jiggles.model.Reply;
 import com.example.cchiv.jiggles.utilities.NetworkUtilities;
 import com.example.cchiv.jiggles.utilities.Tools;
-import com.example.cchiv.jiggles.utilities.TreeParser;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -41,6 +47,10 @@ public class HomeFragment extends Fragment implements FeedAdapter.OnClickReplies
     private FeedAdapter feedAdapter;
     private ReplyAdapter replyAdapter;
     private FeedItem feedItem = null;
+
+    @BindView(R.id.home_account_layout) LinearLayout linearAccountLayout;
+    @BindView(R.id.home_account_creator) TextView textAccountCreatorView;
+    @BindView(R.id.home_account_caption) ImageView imageAccountCaptionView;
 
     @BindView(R.id.home_list) RecyclerView recyclerView;
 
@@ -62,7 +72,38 @@ public class HomeFragment extends Fragment implements FeedAdapter.OnClickReplies
 
         ButterKnife.bind(this, rootView);
 
-//        textAuthorNameView.setText(Tools.getUser().getName());
+        Tools.resolveCallbackUser(result -> {
+            textAuthorNameView.setText(result.getName());
+
+            Picasso
+                    .get()
+                    .load(result.getCaption())
+                    .placeholder(R.drawable.ic_account)
+                    .error(R.drawable.ic_account)
+                    .into(new Target() {
+                        @Override
+                        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                            RoundedBitmapDrawable imageDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
+                            imageDrawable.setCircular(true);
+                            imageDrawable.setCornerRadius(Math.max(bitmap.getWidth(), bitmap.getHeight()) / 2.0f);
+
+                            imageAccountCaptionView.setImageDrawable(imageDrawable);
+                            imageAuthorCaptionView.setImageDrawable(imageDrawable);
+                        }
+
+                        @Override
+                        public void onBitmapFailed(Exception e, Drawable errorDrawable) {
+                            imageAccountCaptionView.setImageDrawable(errorDrawable);
+                            imageAuthorCaptionView.setImageDrawable(errorDrawable);
+                        }
+
+                        @Override
+                        public void onPrepareLoad(Drawable placeHolderDrawable) {
+                            imageAccountCaptionView.setImageDrawable(placeHolderDrawable);
+                            imageAuthorCaptionView.setImageDrawable(placeHolderDrawable);
+                        }
+                    });
+        });
 
         cardRepliesLayoutView.setVisibility(View.GONE);
         imageRepliesCloseView.setOnClickListener(view -> {
@@ -83,23 +124,28 @@ public class HomeFragment extends Fragment implements FeedAdapter.OnClickReplies
         feedAdapter = new FeedAdapter(context, this, new ArrayList<>());
         recyclerView.setAdapter(feedAdapter);
 
-//        rootView.findViewById(R.id.home_thread_creator).setOnClickListener((view) -> {
-//            FragmentManager fragmentManager = ((AppCompatActivity) context).getSupportFragmentManager();
-//
-//            ThreadFragment fragment = new ThreadFragment();
-//            fragment.onAttachThreadCreationCallback(thread -> {
-//                feedAdapter.onAddItem(thread);
-//                feedAdapter.notifyItemChanged(feedAdapter.getItemCount() - 1);
-//
-//                fragmentManager.beginTransaction()
-//                        .remove(fragment)
-//                        .commit();
-//            });
-//
-//            fragmentManager.beginTransaction()
-//                    .add(R.id.home_thread, fragment)
-//                    .commit();
-//        });
+        linearAccountLayout.setVisibility(View.VISIBLE);
+        linearAccountLayout.setOnClickListener((view) -> {
+            FragmentManager fragmentManager = ((AppCompatActivity) context).getSupportFragmentManager();
+
+            ThreadFragment fragment = new ThreadFragment();
+            fragment.onAttachThreadCreationCallback(thread -> {
+                feedAdapter.onAddItem(thread);
+                feedAdapter.notifyItemChanged(feedAdapter.getItemCount() - 1);
+
+                fragmentManager.beginTransaction()
+                        .remove(fragment)
+                        .commit();
+
+                linearAccountLayout.setVisibility(View.VISIBLE);
+            });
+
+            fragmentManager.beginTransaction()
+                    .add(R.id.home_thread, fragment)
+                    .commit();
+
+            linearAccountLayout.setVisibility(View.GONE);
+        });
 
         NetworkUtilities.FetchThreads fetchThreads = new NetworkUtilities.FetchThreads(threads -> {
             feedAdapter.getItems().addAll(threads);
@@ -142,10 +188,10 @@ public class HomeFragment extends Fragment implements FeedAdapter.OnClickReplies
 
         setClickReplyCallback(0);
 
-        TreeParser treeParser = new TreeParser();
-        List<Reply> replies = treeParser.queryTree(feedItem.getReplies());
+//        TreeParser treeParser = new TreeParser();
+//        List<Reply> replies = treeParser.queryTree(feedItem.getReplies());
 
-        replyAdapter = new ReplyAdapter(context, replies);
+        replyAdapter = new ReplyAdapter(context, feedItem.getReplies());
         recyclerRepliesView.setAdapter(replyAdapter);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);

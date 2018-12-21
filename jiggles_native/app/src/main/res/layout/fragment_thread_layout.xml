@@ -125,14 +125,13 @@
 
     <ImageView
         android:id="@+id/thread_close"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/activity_margin_sibling"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:tint="@color/defaultTextColor"
         android:padding="@dimen/activity_margin_component"
-        android:src="@drawable/ic_cancel"/>
+        android:src="@drawable/ic_close"/>
 
     <RelativeLayout
         android:id="@+id/thread_content_layout"
@@ -171,15 +170,15 @@
 
             <ImageView
                 android:id="@+id/thread_caption_close"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:layout_alignTop="@id/thread_caption"
                 android:layout_alignRight="@id/thread_caption"
                 android:layout_alignEnd="@id/thread_caption"
                 android:padding="@dimen/activity_margin_relative"
                 android:alpha="0.85"
                 android:tint="@color/iconsTextColor"
-                android:src="@drawable/ic_cancel"/>
+                android:src="@drawable/ic_close"/>
 
         </RelativeLayout>
 

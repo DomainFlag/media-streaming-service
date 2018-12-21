@@ -26,12 +26,17 @@ import com.example.cchiv.jiggles.Constants;
 import com.example.cchiv.jiggles.R;
 import com.example.cchiv.jiggles.model.Thread;
 import com.example.cchiv.jiggles.utilities.NetworkUtilities;
+import com.example.cchiv.jiggles.utilities.Tools;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -84,10 +89,22 @@ public class ThreadFragment extends Fragment {
         this.onThreadCreationCallback = onThreadCreationCallback;
     }
 
+    @BindView(R.id.thread_account) ImageView imageThreadAccountView;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_thread_layout, container, false);
+
+        ButterKnife.bind(this, rootView);
+
+        Tools.resolveCallbackUser(user -> {
+            Picasso.get()
+                    .load(user.getCaption())
+                    .placeholder(R.drawable.ic_account)
+                    .error(R.drawable.ic_account)
+                    .into(imageThreadAccountView);
+        });
 
         rootView.findViewById(R.id.thread_close).setOnClickListener(view -> {
             FragmentManager fragmentManager = getFragmentManager();

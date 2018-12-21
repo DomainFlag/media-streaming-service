@@ -35,10 +35,12 @@ public class RemoteConnection implements OnSearchPairedDevices {
 
     private static final String UUID_IDENTIFIER = "74911d97-529f-4d4c-9aa9-20445d526923";
     private static final int REQUEST_ENABLE_BT = 1201;
+
     private BluetoothAdapter mBluetoothAdapter;
 
     private Context context;
 
+    private RemotePlayer remotePlayer;
     private ConnectedThread connectedThread = null;
     private ClientThread clientThread;
     private RemoteThread remoteThread;
@@ -66,6 +68,7 @@ public class RemoteConnection implements OnSearchPairedDevices {
 
     public RemoteConnection(Context context, RemotePlayer remotePlayer) {
         this.context = context;
+        this.remotePlayer = remotePlayer;
         this.onManageStreamData = remotePlayer;
         this.onUpdatePairedDevices = remotePlayer;
 
@@ -345,6 +348,8 @@ public class RemoteConnection implements OnSearchPairedDevices {
                     onManageStreamData.onManageStreamData(context, mmBuffer, numBytes);
                 } catch(IOException e) {
                     Log.d(TAG, "Input stream was disconnected", e);
+                    remotePlayer.releasePlayer();
+
                     break;
                 }
             }

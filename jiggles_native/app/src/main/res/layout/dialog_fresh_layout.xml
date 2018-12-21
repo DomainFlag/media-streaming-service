@@ -28,7 +28,9 @@
             android:tint="@color/iconsTextColor"
             android:layout_margin="@dimen/activity_margin_ogre"
             android:layout_alignParentRight="true"
-            android:src="@drawable/ic_cancel"/>
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:src="@drawable/ic_close"/>
 
         <LinearLayout
             android:id="@+id/dialog_release_score_layout"
@@ -95,6 +97,7 @@
                 tools:text="@string/app_tools_placeholder"/>
 
             <LinearLayout
+                android:id="@+id/dialog_release_action"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"

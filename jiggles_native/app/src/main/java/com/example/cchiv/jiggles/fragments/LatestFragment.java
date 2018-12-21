@@ -54,9 +54,10 @@ public class LatestFragment extends Fragment {
 
         swipeRefreshLayout = rootView.findViewById(R.id.swipe_refresh_layout);
         swipeRefreshLayout.setOnRefreshListener(() -> {
-            if(Tools.checkInternetConnectivity(context))
-                fetchLiveContent();
-            else {
+            if(Tools.checkInternetConnectivity(context)) {
+                fetchLiveReleasesContent();
+                fetchLiveNewsContent();
+            } else {
                 Toast.makeText(context, R.string.app_connectivity_negative, Toast.LENGTH_SHORT).show();
                 swipeRefreshLayout.setRefreshing(false);
             }
@@ -112,7 +113,7 @@ public class LatestFragment extends Fragment {
         loaderManager.initLoader(HOME_RELEASES_LOADER_ID, Release.bundleValues(), jigglesReleasesLoader).forceLoad();
     }
 
-    public void fetchLiveContent() {
+    public void fetchLiveReleasesContent() {
         NetworkUtilities.FetchReleases fetchReleases = new NetworkUtilities.FetchReleases(releases -> {
             // Do something with releases
             if(releases != null) {
@@ -132,7 +133,9 @@ public class LatestFragment extends Fragment {
 
             swipeRefreshLayout.setRefreshing(false);
         });
+    }
 
+    public void fetchLiveNewsContent() {
         NetworkUtilities.FetchNews fetchNews = new NetworkUtilities.FetchNews(news -> {
             if(news != null) {
                 ContentValues[] contentValues = new ContentValues[news.size()];
@@ -158,11 +161,21 @@ public class LatestFragment extends Fragment {
     }
 
     public void updateLayoutNews(List<News> news) {
+        if(news == null || news.isEmpty()) {
+            if(Tools.checkInternetConnectivity(context))
+                fetchLiveNewsContent();
+        }
+
         FeatureAdapter.Feature feature = featureLatestAdapter.onCreateFeature("Latest", news);
         featureLatestAdapter.onSwapData(feature);
     }
 
     public void updateLayoutReleases(List<Release> releases) {
+        if(releases == null || releases.isEmpty()) {
+            if(Tools.checkInternetConnectivity(context))
+                fetchLiveReleasesContent();
+        }
+
         FeatureAdapter.Feature feature = featureAlbumAdapter.onCreateFeature("New", releases);
         featureAlbumAdapter.onSwapData(feature);
     }

@@ -13,7 +13,7 @@ public class ContentContract {
     public static final String PATH_USERS = "users";
     public static final String PATH_THREADS = "threads";
     public static final String PATH_POSTS = "posts";
-    public static final String PATH_NOTIFICATIONS = "notifications";
+    public static final String PATH_FEED = "feed";
     public static final String PATH_REVIEWS = "reviews";
     public static final String PATH_RELEASES = "releases";
     public static final String PATH_NEWS = "news";
@@ -159,18 +159,18 @@ public class ContentContract {
     /**
      * Table with replies
      */
-    public static final class NotificationEntry implements BaseColumns {
+    public static final class FeedItemEntry implements BaseColumns {
 
         public static final Uri CONTENT_URI =
-                BASE_CONTENT_URI.buildUpon().appendPath(PATH_NOTIFICATIONS).build();
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_FEED).build();
 
-        public static final String TABLE_NAME = "notification";
+        public static final String TABLE_NAME = "feed_it";
 
         public static final String _ID = TABLE_NAME + BaseColumns._ID;
-        public static final String COL_NOTIFICATION_AUTHOR = "notification_author";
-        public static final String COL_NOTIFICATION_TYPE = "notification_type";
-        public static final String COL_NOTIFICATION_RESOURCE = "notification_resource";
-        public static final String COL_NOTIFICATION_VOTES = "notification_votes";
+        public static final String COL_FEED_AUTHOR = "feed_author";
+        public static final String COL_FEED_TYPE = "feed_type";
+        public static final String COL_FEED_RESOURCE = "feed_resource";
+        public static final String COL_FEED_VOTES = "feed_votes";
     }
 
     /**

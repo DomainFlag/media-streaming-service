@@ -4,11 +4,16 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.provider.MediaStore;
+import android.util.Log;
 
+import com.example.cchiv.jiggles.R;
 import com.example.cchiv.jiggles.data.ContentContract.TrackEntry;
 import com.example.cchiv.jiggles.utilities.Tools;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -97,7 +102,9 @@ public class Track {
                 return Tools.getPaletteColor(context, imageUri);
             }
         } else {
-            return image.getColor();
+            if(image.getColor() == Color.WHITE || image.color == -1 || image.color == 0)
+                return Color.BLACK;
+            else return image.getColor();
         }
 
         return Color.BLACK;
@@ -119,6 +126,10 @@ public class Track {
 
     public void setImageUri(String imageUri) {
         this.imageUri = imageUri;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public Track(String name) {
@@ -145,7 +156,26 @@ public class Track {
         return uri;
     }
 
-    public Bitmap getBitmap() {
+    public Bitmap getBitmap(Context context) {
+        if(bitmap != null)
+            return bitmap;
+
+        Image art = null;
+        if(album != null)
+            art = album.getArt();
+
+        Bitmap bitmap = null;
+        if(art == null) {
+            bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_artwork_placeholder);
+        } else {
+            try {
+                if(art.getUrl() != null)
+                    bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), art.getUrl());
+            } catch(IOException e) {
+                Log.v(TAG, e.toString());
+            }
+        }
+
         return bitmap;
     }
 

@@ -20,6 +20,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.Headers;
@@ -360,9 +361,13 @@ public class NetworkUtilities {
     /* Fetch User  */
     public static class FetchUser extends AsyncNetworkTask<User> {
 
-        public FetchUser(NetworkCallbacks<User> networkCallbacks, String token) {
-            super(networkCallbacks);
+        private Request request;
 
+        public FetchUser(NetworkCallbacks<User> networkCallbacks) {
+            super(networkCallbacks);
+        }
+
+        public void setFetchUser(String token) {
             Uri uri = new Uri.Builder()
                     .scheme(Constants.SCHEME)
                     .authority(Constants.AUTHORITY)
@@ -370,14 +375,15 @@ public class NetworkUtilities {
                     .appendPath(Constants.ME)
                     .build();
 
-            Request request = new Request.Builder()
+            request = new Request.Builder()
                     .url(uri.toString())
                     .addHeader("Content-Type", "application/json")
                     .addHeader("X-Auth", token)
                     .get()
                     .build();
+        }
 
-
+        public void execute() {
             execute(request);
         }
 
@@ -427,7 +433,7 @@ public class NetworkUtilities {
     public static class ResolveAuth extends AsyncNetworkTask<String> {
 
         public ResolveAuth(NetworkCallbacks<String> networkCallbacks, String authType,
-                           String email, String password, String name) {
+                           User user) {
             super(networkCallbacks);
 
             Uri.Builder builder = new Uri.Builder()
@@ -442,9 +448,10 @@ public class NetworkUtilities {
 
             JSONObject jsonObject = new JSONObject();
             try {
-                jsonObject.put("email", email);
-                jsonObject.put("password", password);
-                jsonObject.put("name", name);
+                jsonObject.put("email", user.getEmail());
+                jsonObject.put("password", user.getPassword());
+                jsonObject.put("name", user.getName());
+                jsonObject.put("caption", user.getCaption());
 
                 RequestBody requestBody = RequestBody.create(JSON, jsonObject.toString());
                 Request request = new Request.Builder()
@@ -490,14 +497,20 @@ public class NetworkUtilities {
             void onPostNetworkCallback(T result);
         }
 
-        private NetworkCallbacks<T> networkCallbacks;
+        private List<NetworkCallbacks<T>> networkCallbacks = new ArrayList<>();
 
         private OkHttpClient client = new OkHttpClient();
 
         public abstract T onParseNetworkCallback(Gson gson, Headers headers, String body);
 
         public AsyncNetworkTask(NetworkCallbacks<T> networkCallbacks) {
-            this.networkCallbacks = networkCallbacks;
+            if(networkCallbacks != null)
+                this.networkCallbacks.add(networkCallbacks);
+        }
+
+        public void registerPostNetworkCallback(NetworkCallbacks<T> networkCallbacks) {
+            if(networkCallbacks != null)
+                this.networkCallbacks.add(networkCallbacks);
         }
 
         @Override
@@ -530,7 +543,9 @@ public class NetworkUtilities {
         protected void onPostExecute(T result) {
             super.onPostExecute(result);
 
-            networkCallbacks.onPostNetworkCallback(result);
+            for(NetworkCallbacks<T> networkCallbacks : this.networkCallbacks) {
+                networkCallbacks.onPostNetworkCallback(result);
+            }
         }
     }
 }

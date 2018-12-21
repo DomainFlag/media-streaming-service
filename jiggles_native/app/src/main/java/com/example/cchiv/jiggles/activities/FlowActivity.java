@@ -80,9 +80,4 @@ public class FlowActivity extends PlayerAppCompatActivity {
             else objectAnimator.pause();
         });
     }
-
-    @Override
-    protected void onDestroyActivity() {
-
-    }
 }

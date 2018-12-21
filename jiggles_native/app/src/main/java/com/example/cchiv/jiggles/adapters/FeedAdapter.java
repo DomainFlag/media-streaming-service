@@ -25,6 +25,7 @@ import com.example.cchiv.jiggles.model.Album;
 import com.example.cchiv.jiggles.model.FeedItem;
 import com.example.cchiv.jiggles.model.Post;
 import com.example.cchiv.jiggles.model.Thread;
+import com.example.cchiv.jiggles.utilities.NetworkUtilities;
 import com.example.cchiv.jiggles.utilities.Tools;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
@@ -104,16 +105,23 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 .load(uri)
                 .into(holder.caption);
 
-        // TODO(4) Album, Track, Artist has both _id and id
-//        holder.timestamp.setText(Tools.parseSocialDate(album.getId()));
+        holder.timestamp.setText(Tools.parseSocialDate(post.get_id()));
+
+        Picasso.get()
+                .load(post.getAuthor().getCaption())
+                .error(R.drawable.ic_account)
+                .placeholder(R.drawable.ic_account)
+                .into(holder.account);
 
         holder.likeContent.setText(String.valueOf(post.getLikes().size()));
-        if(post.isOwnership()) {
-            int color = context.getResources().getColor(R.color.unexpectedColor);
+        Tools.resolveCallbackUser(user -> {
+            if(post.getLikes().containsKey(user.get_id())) {
+                int color = context.getResources().getColor(R.color.unexpectedColor);
 
-            holder.likeIcon.setColorFilter(color);
-            holder.likeContent.setTextColor(color);
-        }
+                holder.likeIcon.setColorFilter(color);
+                holder.likeContent.setTextColor(color);
+            }
+        });
 
         holder.action.setOnClickListener(view -> {
             if(remoteMediaCallback != null) {
@@ -169,23 +177,36 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     }
                 });
 
+        Picasso.get()
+                .load(thread.getAuthor().getCaption())
+                .error(R.drawable.ic_account)
+                .placeholder(R.drawable.ic_account)
+                .into(holder.account);
+
         holder.timestamp.setText(Tools.parseSocialDate(thread.get_id()));
 
         holder.likeContent.setText(String.valueOf(thread.getLikes().size()));
-        if(thread.isOwnership()) {
-            int color = context.getResources().getColor(R.color.unexpectedColor);
 
-            holder.likeIcon.setColorFilter(color);
-            holder.likeContent.setTextColor(color);
-        }
+        Tools.resolveCallbackUser(user -> {
+            if(thread.getLikes().containsKey(user.get_id())) {
+                int color = context.getResources().getColor(R.color.unexpectedColor);
+
+                holder.likeIcon.setColorFilter(color);
+                holder.likeContent.setTextColor(color);
+            }
+        });
 
         holder.likeLayout.setOnClickListener(view -> {
             String token = Tools.getToken(context);
 
-//            NetworkUtilities.ResolveThreadLike resolveThreadLike = new NetworkUtilities.ResolveThreadLike(result -> {
-//                items.set(position, result);
-//                notifyItemChanged(position);
-//            }, thread.encodeJSONObject(), NetworkUtilities.RequestAdaptBuilder.getType(thread.isOwnership()), token);
+            Tools.resolveCallbackUser(user -> {
+                NetworkUtilities.ResolveThreadLike resolveThreadLike = new NetworkUtilities.ResolveThreadLike(result -> {
+                    items.set(position, result);
+
+                    notifyItemChanged(position);
+                }, thread.encodeJSONObject(null, null),
+                        NetworkUtilities.RequestAdaptBuilder.getType(user.resolveOwnership(thread)), token);
+            });
         });
 
         holder.reply.setOnClickListener(view -> onClickReplies.onClickRepliesCallback(thread));
@@ -234,6 +255,7 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public class PostViewHolder extends RecyclerView.ViewHolder {
 
         private ImageView caption;
+        private ImageView account;
         private LinearLayout likeLayout;
         private ImageView likeIcon;
         private TextView likeContent;
@@ -252,6 +274,7 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             super(itemView);
 
             caption = itemView.findViewById(R.id.post_caption);
+            account = itemView.findViewById(R.id.post_account);
             timestamp = itemView.findViewById(R.id.post_timestamp);
             reply = itemView.findViewById(R.id.feed_item_reply);
             author = itemView.findViewById(R.id.post_author);
@@ -272,6 +295,7 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public class ThreadViewHolder extends RecyclerView.ViewHolder {
 
         private ImageView caption;
+        private ImageView account;
         private LinearLayout likeLayout;
         private ImageView likeIcon;
         private TextView likeContent;
@@ -289,6 +313,7 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             super(itemView);
 
             caption = itemView.findViewById(R.id.thread_caption);
+            account = itemView.findViewById(R.id.thread_account);
             timestamp = itemView.findViewById(R.id.thread_timestamp);
             reply = itemView.findViewById(R.id.feed_item_reply);
             author = itemView.findViewById(R.id.thread_author);
@@ -314,6 +339,10 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
             Menu menu = getMenu();
             getMenuInflater().inflate(R.menu.thread_menu, menu);
+
+            setOnMenuItemClickListener(menuItem -> {
+                return false;
+            });
 
             menuPopupHelper.setForceShowIcon(true);
         }

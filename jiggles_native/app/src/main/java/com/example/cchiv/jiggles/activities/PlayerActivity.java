@@ -2,10 +2,7 @@ package com.example.cchiv.jiggles.activities;
 
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
@@ -14,16 +11,16 @@ import android.widget.TextView;
 import com.example.cchiv.jiggles.R;
 import com.example.cchiv.jiggles.model.Image;
 import com.example.cchiv.jiggles.model.Track;
+import com.example.cchiv.jiggles.player.players.LocalPlayer;
 import com.example.cchiv.jiggles.player.protocol.RemotePlayer;
 import com.example.cchiv.jiggles.services.PlayerService;
 import com.example.cchiv.jiggles.services.PlayerServiceConnection;
 import com.example.cchiv.jiggles.utilities.Tools;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
 public class PlayerActivity extends AppCompatActivity implements
-        PlayerService.OnCallbackListener, PlayerServiceConnection.OnCallbackConnectionComplete,
+        PlayerService.OnCallbackListener, PlayerServiceConnection.OnConnectionCallback,
         RemotePlayer.OnUpdateInterface {
 
     private static final String TAG = "PlayerActivity";
@@ -44,24 +41,29 @@ public class PlayerActivity extends AppCompatActivity implements
         });
 
         findViewById(R.id.player_media_lyrics).setOnClickListener((view) -> {
-            // Do something later with lyrics
+            // Do something later with song lyrics
         });
 
         findViewById(R.id.player_media_identifier).setOnClickListener((view) -> {
-            // Do something later with identifier
+            // Do something later with song identifier
         });
 
         findViewById(R.id.player_media_share).setOnClickListener((view) -> {
-            RemotePlayer remotePlayer = new RemotePlayer(this, playerServiceConnection.getMediaPlayer());
+            LocalPlayer localPlayer = playerServiceConnection.getMediaPlayer().getLocalAlphaPlayer();
+            RemotePlayer remotePlayer = localPlayer.getRemotePlayer();
+
+            remotePlayer.onAttachUpdateInterfaceCallback(this);
             remotePlayer.createRemoteConnection();
         });
 
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
 
-        playerView = findViewById(R.id.player);
-        playerServiceConnection = new PlayerServiceConnection(this, playerView);
-        playerServiceConnection.onStartService(bundle);
+        if(bundle != null) {
+            playerView = findViewById(R.id.player);
+            playerServiceConnection = new PlayerServiceConnection(this, playerView);
+            playerServiceConnection.onStartService(bundle);
+        }
     }
 
     public void attachTrack(Track track) {
@@ -89,26 +91,9 @@ public class PlayerActivity extends AppCompatActivity implements
                     .load(artwork.getUrl())
                     .placeholder(R.drawable.ic_artwork_placeholder)
                     .error(R.drawable.ic_artwork_placeholder)
-                    .into(new Target() {
-                        @Override
-                        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                            thumbnail.setImageBitmap(bitmap);
-                        }
-
-                        @Override
-                        public void onBitmapFailed(Exception e, Drawable errorDrawable) {
-                            thumbnail.setImageDrawable(errorDrawable);
-                        }
-
-                        @Override
-                        public void onPrepareLoad(Drawable placeHolderDrawable) {
-                            thumbnail.setImageDrawable(placeHolderDrawable);
-                        }
-                    });
-        } else if(track.getBitmap() != null) {
-            thumbnail.setImageBitmap(track.getBitmap());
+                    .into(thumbnail);
         } else {
-            thumbnail.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_artwork_placeholder));
+            thumbnail.setImageBitmap(track.getBitmap(this));
         }
 
         View view = findViewById(R.id.player_background);
@@ -117,16 +102,6 @@ public class PlayerActivity extends AppCompatActivity implements
 
         TextView textArtistView = findViewById(R.id.player_artist);
         textArtistView.setText(track.getArtistName());
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
     }
 
     @Override
@@ -140,8 +115,8 @@ public class PlayerActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onCallbackConnectionComplete() {
-        Track track = playerServiceConnection.getCurrentTrack();
+    public void onConnectionCallbackComplete() {
+        Track track = playerServiceConnection.getPlayerService().getCurrentTrack();
         if(track != null) {
             attachTrack(track);
         }
@@ -151,7 +126,9 @@ public class PlayerActivity extends AppCompatActivity implements
     public void onCallbackListener(Track track, int playbackStateCompat) {
         attachTrack(track);
 
-        playerView.setPlayer(playerServiceConnection.getMediaPlayer().getExoPlayer());
+        LocalPlayer localPlayer = playerServiceConnection.getMediaPlayer().getLocalAlphaPlayer();
+
+        playerView.setPlayer(localPlayer.getExoPlayer());
         playerView.showController();
     }
 
@@ -160,5 +137,12 @@ public class PlayerActivity extends AppCompatActivity implements
         TextView textView = findViewById(R.id.player_devices);
         textView.setAlpha(1.0f);
         textView.setText(getString(R.string.player_share_message, bluetoothDevice.getName()));
+
+        textView.setOnClickListener(view -> {
+            playerServiceConnection.getMediaPlayer().detachTop();
+
+            textView.setAlpha(0.4f);
+            textView.setText(null);
+        });
     }
 }

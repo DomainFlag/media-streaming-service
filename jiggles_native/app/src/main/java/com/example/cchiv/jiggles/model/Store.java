@@ -1,6 +1,7 @@
 package com.example.cchiv.jiggles.model;
 
 import android.content.ContentProviderOperation;
+import android.content.ContentProviderResult;
 import android.database.Cursor;
 
 import com.example.cchiv.jiggles.Constants;
@@ -21,6 +22,10 @@ public class Store {
     private List<Artist> artists = new ArrayList<>();
     private List<Track> tracks = new ArrayList<>();
     private List<Album> albums = new ArrayList<>();
+
+    private int position = 0;
+
+    public boolean isFetching = false;
 
     public Store() {}
 
@@ -47,6 +52,13 @@ public class Store {
         setTrack(track);
     }
 
+    public Track getTrack() {
+        if(tracks.size() > 0 && position >= 0 && position < tracks.size())
+            return tracks.get(position);
+
+        return null;
+    }
+
     public Track getTrack(int pos) {
         return tracks.get(pos);
     }
@@ -59,12 +71,12 @@ public class Store {
         return artists.get(pos);
     }
 
-    public void setFilterBy() {
-        this.filterBy = filterBy;
-    }
-
     public String getFilterBy() {
         return filterBy;
+    }
+
+    public int getPosition() {
+        return position;
     }
 
     private String getOptProperty(String s, String def) {
@@ -126,18 +138,22 @@ public class Store {
         return artist.addItem(this, track, albumName);
     }
 
-    public int getPosition(String resourceId, String resourceType) {
+    // Setting up the position for specific track playback
+    public void setPosition(int position) {
+        this.position = position;
+    }
+
+    // Setting up explicitly the position for specific track playback
+    public void setPosition(String resourceId, String resourceType) {
         if(resourceType.equals(TrackEntry._ID) && !albums.isEmpty()) {
             List<Track> tracks = albums.get(0).getTracks();
             for(int i = 0;  i < tracks.size(); i++) {
                 Track track = tracks.get(i);
 
                 if(track.getId().equals(resourceId))
-                    return i;
+                    position = i;
             }
         }
-
-        return 0;
     }
 
     public int getCount(String filterBy) {
@@ -194,6 +210,56 @@ public class Store {
         }
 
         return store;
+    }
+
+    public static Store resolveRemoteStore(String name, String uri, String albumName, String artistName) {
+        Track track = new Track(name, uri);
+        track.local = false;
+
+        track.setAlbumName(albumName);
+        track.setArtistName(artistName);
+
+        return new Store(track);
+    }
+
+    public static String parseValue(ContentProviderResult result) {
+        return result.uri.getLastPathSegment();
+    }
+
+    public static void setValues(Store store, ContentProviderResult[] results)  {
+        List<Artist> artists = store.getArtists();
+
+        int index = 0;
+        for(int g = 0; g < artists.size(); g++) {
+            Artist artist = artists.get(g);
+            artist.setId(parseValue(results[index]));
+
+            index++;
+
+            List<Album> albums = artist.getAlbums();
+            for(int h = 0; h < albums.size(); h++) {
+                Album album = albums.get(h);
+                album.setId(parseValue(results[index]));
+
+                index++;
+
+                List<Image> images = album.getImages();
+                for(int i = 0; i < images.size(); i++) {
+                    Image image = images.get(i);
+                    image.setId(parseValue(results[index]));
+
+                    index++;
+                }
+
+                List<Track> tracks = album.getTracks();
+                for(int i = 0; i < tracks.size(); i++) {
+                    Track track = tracks.get(i);
+                    track.setId(parseValue(results[index]));
+
+                    index++;
+                }
+            }
+        }
     }
 
     public static ArrayList<ContentProviderOperation> parseValues(Store store) {

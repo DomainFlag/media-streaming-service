@@ -3,7 +3,7 @@ const {APP} = require("./../app_config");
 const CONSTANTS = {
     SCHEME : "https",
     AUTHORITY : APP,
-    USERS : "users",
+    USERS : "user",
     LOGIN : "login",
     SIGNUP : "signup",
     ME : "me",

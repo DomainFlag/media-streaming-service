@@ -71,9 +71,6 @@ public class AlbumActivity extends PlayerAppCompatActivity {
         return recyclerView;
     }
 
-    @Override
-    protected void onDestroyActivity() {}
-
     private void createPlayerIntent(Store store) {
         Intent intent = new Intent(this, PlayerActivity.class);
 

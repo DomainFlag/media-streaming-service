@@ -20,10 +20,12 @@
 
             <include
                 android:id="@+id/feature_highlights"
+                android:visibility="gone"
                 layout="@layout/feature_layout" />
 
             <include
                 android:id="@+id/feature_latest"
+                android:visibility="gone"
                 layout="@layout/feature_layout" />
 
         </LinearLayout>

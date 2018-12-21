@@ -52,6 +52,7 @@ export default class Query extends Component {
     componentWillReceiveProps = (nextProps) => {
         if(nextProps.content !== this.props.content ||
             nextProps.type !== this.props.type) {
+
             this.setState({
                 content : this.parseQuery(nextProps)
             })
@@ -66,6 +67,8 @@ export default class Query extends Component {
                 acc[type]["items"] = props.content[type].items;
             else acc[type]["items"] = props.content[type];
         } else acc[type]["items"] = [];
+
+        acc[type]["items"] = props.content[type];
 
         return acc;
     }, {});

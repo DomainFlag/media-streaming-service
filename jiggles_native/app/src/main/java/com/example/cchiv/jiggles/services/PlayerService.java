@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
 import com.example.cchiv.jiggles.data.ContentContract;
@@ -16,14 +15,13 @@ import com.example.cchiv.jiggles.interfaces.OnTrackStateChanged;
 import com.example.cchiv.jiggles.model.Store;
 import com.example.cchiv.jiggles.model.Track;
 import com.example.cchiv.jiggles.player.MediaPlayer;
-import com.example.cchiv.jiggles.player.MediaSessionPlayer;
-import com.example.cchiv.jiggles.spotify.SpotifyConnection;
 import com.example.cchiv.jiggles.utilities.JigglesLoader;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class PlayerService extends Service implements OnTrackStateChanged {
+public class PlayerService extends Service implements
+        OnTrackStateChanged, MediaPlayer.PlayerNotificationManager {
 
     private static final String TAG = "PlayerService";
 
@@ -39,7 +37,6 @@ public class PlayerService extends Service implements OnTrackStateChanged {
     public static final String RESOURCE_LOCAL = "RESOURCE_LOCAL";
     public static final String RESOURCE_REMOTE = "RESOURCE_REMOTE";
 
-
     public static final String RESOURCE_TYPE = "RESOURCE_TYPE";
     public static final String RESOURCE_IDENTIFIER = "RESOURCE_IDENTIFIER";
     public static final String RESOURCE_PARENT_TYPE = "RESOURCE_PARENT_TYPE";
@@ -47,25 +44,11 @@ public class PlayerService extends Service implements OnTrackStateChanged {
 
     public List<OnCallbackListener> listeners = new ArrayList<>();
 
-    private Track track = null;
-
-    public SpotifyConnection spotifyConnection;
     public MediaPlayer mediaPlayer;
-    public MediaSessionPlayer mediaSessionPlayer;
-
-    private int state = -1;
 
     @Override
     public void onCreate() {
         mediaPlayer = new MediaPlayer(this);
-
-        mediaSessionPlayer = new MediaSessionPlayer(this,  mediaPlayer);
-        mediaSessionPlayer.createMediaSession();
-
-        spotifyConnection = new SpotifyConnection(this, mediaSessionPlayer);
-
-        mediaSessionPlayer.onAttachSpotifyConnection(spotifyConnection);
-        spotifyConnection.connect(this::onSpotifyResolved);
     }
 
     @Override
@@ -79,10 +62,12 @@ public class PlayerService extends Service implements OnTrackStateChanged {
                     switch(resourceSource) {
                         case RESOURCE_LOCAL : {
                             resolveLocalMedia(bundle);
+
                             break;
                         }
                         case RESOURCE_REMOTE : {
                             resolveRemoteMedia(bundle);
+
                             break;
                         }
                         default : {
@@ -97,34 +82,10 @@ public class PlayerService extends Service implements OnTrackStateChanged {
     }
 
     public void resolveRemoteMedia(Bundle bundle) {
-        String resourceId = bundle.getString(RESOURCE_IDENTIFIER, null);
+        String resource = bundle.getString(RESOURCE_IDENTIFIER, null);
 
-        if(resourceId != null)
-            spotifyConnection.play(resourceId, (track, isPaused) -> {
-                this.track = track;
-
-                if(!isPaused)
-                    state = PlaybackStateCompat.STATE_PLAYING;
-                else state = PlaybackStateCompat.STATE_PAUSED;
-
-                mediaSessionPlayer.setState(state);
-
-                setForegroundService(track);
-                onTrackNotifyAll(track);
-            });
-    }
-
-    public void onSpotifyResolved(Track track, boolean isPaused) {
-        this.track = track;
-
-        if(!isPaused)
-            state = PlaybackStateCompat.STATE_PLAYING;
-        else state = PlaybackStateCompat.STATE_PAUSED;
-
-        mediaSessionPlayer.setState(state);
-
-        setForegroundService(track);
-        onTrackNotifyAll(track);
+        if(resource != null)
+            mediaPlayer.setResource(resource);
     }
 
     public void resolveLocalMedia(Bundle bundle) {
@@ -144,49 +105,14 @@ public class PlayerService extends Service implements OnTrackStateChanged {
 
             asyncTaskContentLoader.registerListener(LOADER_SERVICE_COLLECTION_ID, (loader, store) -> {
                 if(store != null) {
-                    mediaPlayer.setPlayer(mediaSessionPlayer);
-                    mediaPlayer.setSource(store, store.getPosition(resourceId, resourceType));
+                    store.setPosition(resourceId, resourceType);
 
-                    Track track = getCurrentTrack();
-                    setForegroundService(track);
+                    mediaPlayer.setStore(store);
                 }
             });
 
             asyncTaskContentLoader.forceLoad();
         }
-    }
-
-    public void togglePlayer(boolean state) {
-        this.state = state ? PlaybackStateCompat.STATE_PLAYING : PlaybackStateCompat.STATE_PAUSED;
-
-        if(!state) {
-            mediaSessionPlayer.setState(PlaybackStateCompat.STATE_PAUSED);
-        } else {
-            mediaSessionPlayer.setState(PlaybackStateCompat.STATE_PLAYING);
-        }
-
-        mediaSessionPlayer.buildNotificationPlayer(track);
-        onTrackStateChanged(track);
-
-        spotifyConnection.toggle(state);
-    }
-
-    public class PlayerBinder extends Binder {
-        public PlayerService getService() {
-            return PlayerService.this;
-        }
-    }
-
-    public void setForegroundService(Track track) {
-        Notification notification = mediaSessionPlayer
-                .buildNotificationPlayer(track);
-
-        startForeground(SERVICE_NOTIFICATION_ID, notification);
-    }
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        return new PlayerBinder();
     }
 
     public void onAttachCallbackListener(OnCallbackListener onCallbackListener) {
@@ -197,10 +123,34 @@ public class PlayerService extends Service implements OnTrackStateChanged {
         listeners.remove(onCallbackListener);
     }
 
-    public void onRelease() {
+    public void release() {
         mediaPlayer.release();
-        mediaSessionPlayer.setActive(false);
     }
+
+    public MediaPlayer getMediaPlayer() {
+        return mediaPlayer;
+    }
+
+    public Track getCurrentTrack() {
+        return mediaPlayer.getCurrentTrack();
+    }
+
+    public class PlayerBinder extends Binder {
+        public PlayerService getService() {
+            return PlayerService.this;
+        }
+    }
+
+    @Override
+    public void onManagePlayerNotification(Notification notification) {
+        startForeground(SERVICE_NOTIFICATION_ID, notification);
+    }
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        return new PlayerBinder();
+    }
+
 
     @Override
     public void onTaskRemoved(Intent rootIntent) {
@@ -211,39 +161,15 @@ public class PlayerService extends Service implements OnTrackStateChanged {
 
     @Override
     public void onDestroy() {
-        onRelease();
+        release();
 
         stopSelf();
     }
 
-    public void onTrackNotifyAll(Track track) {
-        for(OnCallbackListener listener : listeners) {
-            listener.onCallbackListener(track, mediaSessionPlayer.getState());
-        }
-    }
-
     @Override
     public void onTrackStateChanged(Track track) {
-        onTrackNotifyAll(track);
-    }
-
-    public MediaPlayer getMediaPlayer() {
-        return mediaPlayer;
-    }
-
-    public MediaSessionPlayer getMediaSessionPlayer() {
-        return mediaSessionPlayer;
-    }
-
-    public Track getCurrentTrack() {
-        return mediaPlayer.getCurrentTrack();
-    }
-
-    public int getPlaybackStateCompat() {
-        return mediaSessionPlayer.getState();
-    }
-
-    public SpotifyConnection getSpotifyConnection() {
-        return spotifyConnection;
+        for(OnCallbackListener listener : listeners) {
+            listener.onCallbackListener(track, mediaPlayer.getPlaybackState());
+        }
     }
 }

@@ -17,58 +17,48 @@ import com.example.cchiv.jiggles.player.MediaPlayer;
 import com.example.cchiv.jiggles.services.PlayerService;
 import com.example.cchiv.jiggles.services.PlayerServiceConnection;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public abstract class PlayerAppCompatActivity extends AppCompatActivity implements
-        PlayerService.OnCallbackListener, PlayerServiceConnection.OnCallbackConnectionComplete, RemoteMediaCallback {
+        PlayerService.OnCallbackListener, PlayerServiceConnection.OnConnectionCallback, RemoteMediaCallback {
 
     private static final String TAG = "PlayerAppCompatActivity";
 
     public PlayerServiceConnection playerServiceConnection = null;
 
-    public View barPlayerLayout;
-    public TextView barPlayerTitle;
-    public ImageView barPlayerController;
+    @BindView(R.id.home_player) View barPlayerLayout;
+    @BindView(R.id.home_player_title) TextView barPlayerTitle;
+    @BindView(R.id.home_player_controller) ImageView barPlayerController;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         onCreateActivity(savedInstanceState);
 
-        barPlayerLayout = findViewById(R.id.home_player);
-        barPlayerTitle = findViewById(R.id.home_player_title);
-        barPlayerController = findViewById(R.id.home_player_controller);
+        ButterKnife.bind(this);
 
         playerServiceConnection = new PlayerServiceConnection(this);
         playerServiceConnection.onStartService(null);
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        onChangeCurrentTrack();
-    }
-
-    public void onChangeCurrentTrack() {
-        Track track = playerServiceConnection.getCurrentTrack();
-        int playbackStateCompat = playerServiceConnection.getPlaybackStateCompat();
-
-        updatePlayerBar(track, playbackStateCompat);
-    }
-
     private void updatePlayerBar(Track track, int playbackStateCompat) {
         if(track == null) {
+            // Setting the PlayerBar invisible as there is no content to be played
             barPlayerLayout.setVisibility(View.GONE);
-            barPlayerLayout.setOnClickListener(null);
         } else {
-            barPlayerLayout.setVisibility(View.VISIBLE);
-
+            // Setting the title and intent action
             barPlayerTitle.setText(getString(R.string.home_bar_title, track.getArtistName(), track.getName()));
             barPlayerTitle.setOnClickListener((view) -> {
                 Intent intent = new Intent(this, PlayerActivity.class);
+
                 startActivity(intent);
             });
 
+            // Setting the background color of the PlayerBar
             barPlayerLayout.setBackgroundColor(track.getColor(this));
+
+            // Set up the PlayerBar controller for resume/pause state
             switch(playbackStateCompat) {
                 case PlaybackStateCompat.STATE_PLAYING : {
                     barPlayerController.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.exo_controls_pause));
@@ -83,7 +73,17 @@ public abstract class PlayerAppCompatActivity extends AppCompatActivity implemen
                     break;
                 }
             }
+
+            // Setting the PlayerBar visible
+            barPlayerLayout.setVisibility(View.VISIBLE);
         }
+    }
+
+    public void onChangeCurrentTrack() {
+        MediaPlayer mediaPlayer = playerServiceConnection.getMediaPlayer();
+
+        if(mediaPlayer != null)
+            updatePlayerBar(mediaPlayer.getCurrentTrack(), mediaPlayer.getPlaybackState());
     }
 
     public void startService(Bundle bundle) {
@@ -93,15 +93,27 @@ public abstract class PlayerAppCompatActivity extends AppCompatActivity implemen
     private void onAttachControllerListener(boolean state) {
         barPlayerController.setOnClickListener((view) -> {
             MediaPlayer mediaPlayer = playerServiceConnection.getMediaPlayer();
-            mediaPlayer.togglePlayer(state);
 
-            playerServiceConnection.getPlayerService().togglePlayer(state);
+            mediaPlayer.togglePlayer(state);
         });
     }
 
     protected abstract void onCreateActivity(@Nullable Bundle savedInstanceState);
 
-    protected abstract void onDestroyActivity();
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // Activity is resumed, thus query is performed to get updated current state
+        onChangeCurrentTrack();
+    }
+
+    @Override
+    protected void onDestroy() {
+        playerServiceConnection.release();
+
+        super.onDestroy();
+    }
 
     @Override
     public void onCallbackListener(Track track, int playbackStateCompat) {
@@ -109,7 +121,7 @@ public abstract class PlayerAppCompatActivity extends AppCompatActivity implemen
     }
 
     @Override
-    public void onCallbackConnectionComplete() {
+    public void onConnectionCallbackComplete() {
         onChangeCurrentTrack();
     }
 

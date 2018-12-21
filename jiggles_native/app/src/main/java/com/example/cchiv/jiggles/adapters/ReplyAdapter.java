@@ -51,12 +51,14 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.CommentViewH
         holder.content.setText(reply.getContent());
 
         holder.likeContent.setText(String.valueOf(reply.getLikes().size()));
-        if(reply.isOwnership()) {
-            int color = context.getResources().getColor(R.color.unexpectedColor);
+        Tools.resolveCallbackUser(user -> {
+            if(reply.getLikes().containsKey(user.get_id())) {
+                int color = context.getResources().getColor(R.color.unexpectedColor);
 
-            holder.likeIcon.setColorFilter(color);
-            holder.likeContent.setTextColor(color);
-        }
+                holder.likeIcon.setColorFilter(color);
+                holder.likeContent.setTextColor(color);
+            }
+        });
 
         holder.likeLayout.setOnClickListener(view -> {
             String token = Tools.getToken(context);

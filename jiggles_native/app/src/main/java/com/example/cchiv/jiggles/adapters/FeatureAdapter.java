@@ -62,8 +62,7 @@ public abstract class FeatureAdapter<T> extends ModelAdapter<FeatureAdapter.Feat
 
         ((TextView) rootView.findViewById(R.id.feature_title)).setText(feature.title);
 
-        inflateHighlightView(rootView, feature.getHighlight());
-        inflateFreshView(rootView, feature.getFresh());
+        onSwapData(feature);
     }
 
     public void pause() {
@@ -148,6 +147,12 @@ public abstract class FeatureAdapter<T> extends ModelAdapter<FeatureAdapter.Feat
     public void onClickItemView(T item) {}
 
     public void onSwapData(Feature feature) {
+        if(feature.highlight != null) {
+            rootView.setVisibility(View.VISIBLE);
+        } else {
+            rootView.setVisibility(View.GONE);
+        }
+
         inflateHighlightView(rootView, feature.highlight);
         inflateFreshView(rootView, feature.fresh);
 

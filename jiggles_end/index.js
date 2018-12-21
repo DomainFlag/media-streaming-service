@@ -80,7 +80,7 @@ app.use('/resources', express.static(__dirname + '/resources'));
 
 /* Public & Non-protected Routes */
 app.post('/user', (req, res) => {
-    let body = _.pick(req.body, ['email', 'name', 'password']);
+    let body = _.pick(req.body, ['email', 'name', 'password', 'caption']);
     let user = new User(body);
 
     user.save().then(() => {
@@ -94,6 +94,8 @@ app.post('/user', (req, res) => {
 
         res.send(JSON.stringify(user));
     }).catch((e) => {
+        console.log(e.toString());
+
         res.status(400).send(e);
     })
 });

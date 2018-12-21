@@ -14,12 +14,23 @@ public class Post extends FeedItem {
 
     private static final String TAG = "Post";
 
+    private String type;
     private Store store;
 
-    public Post(String _id, User author, Store store, String content, HashMap<String, Boolean> likes, List<Reply> replies) {
+    public Post(String _id, User author, String type,
+                Store store, String content, HashMap<String, Boolean> likes, List<Reply> replies) {
         super(_id, author, content, likes, replies);
 
+        this.type = type;
         this.store = store;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public Album getAlbum() {

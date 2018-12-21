@@ -20,6 +20,31 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
+            <LinearLayout
+                android:id="@+id/home_account_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/activity_margin_component"
+                android:gravity="center">
+
+                <ImageView
+                    android:id="@+id/home_account_caption"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:padding="@dimen/activity_margin_relative"
+                    android:contentDescription="@string/home_account_account"
+                    android:src="@drawable/ic_account"/>
+
+                <TextView
+                    android:id="@+id/home_account_creator"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/defaultTextColor"
+                    android:padding="@dimen/activity_margin_relative"
+                    android:text="Write something..."/>
+
+            </LinearLayout>
+
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/home_list"
                 android:layout_width="match_parent"
@@ -31,6 +56,7 @@
 
     <include
         android:id="@+id/home_replies_layout"
+        android:visibility="invisible"
         layout="@layout/home_replies_layout" />
 
 </RelativeLayout>

@@ -15,8 +15,7 @@ let ArtistSchema = new mongoose.Schema({
     },
     uri : {
         type: String,
-        required: true,
-        unique: true
+        required: true
     },
     favourite : {
         type : Boolean,

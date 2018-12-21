@@ -49,7 +49,11 @@ public class Tools {
 
     private static final Float IMPACT_THRESHOLD = 8.0f;
 
-    private static User user;
+    private static User user = null;
+
+    private static NetworkUtilities.FetchUser fetchUser = new NetworkUtilities.FetchUser(user -> {
+        Tools.user = user;
+    });
 
     public static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy:MM:dd HH:mm", Locale.US);
 
@@ -82,15 +86,24 @@ public class Tools {
     }
 
     public static void resolveUser(Context context) {
-        String token = Tools.getToken(context);
+        if(user == null) {
+            String token = Tools.getToken(context);
 
-        NetworkUtilities.FetchUser fetchUser = new NetworkUtilities.FetchUser(user -> {
-            Tools.user = user;
-        }, token);
+            fetchUser.setFetchUser(token);
+            fetchUser.execute();
+
+            fetchUser.registerPostNetworkCallback(null);
+        }
     }
 
     public static User getUser() {
         return user;
+    }
+
+    public static void resolveCallbackUser(NetworkUtilities.AsyncNetworkTask.NetworkCallbacks<User> networkCallbacks) {
+        if(user != null)
+            networkCallbacks.onPostNetworkCallback(user);
+        else fetchUser.registerPostNetworkCallback(networkCallbacks);
     }
 
     public static Date parseStringDate(String source) {

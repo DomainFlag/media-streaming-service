@@ -3,8 +3,9 @@ package com.example.cchiv.jiggles.player.protocol.builder;
 import android.app.Activity;
 import android.content.Context;
 
-import com.example.cchiv.jiggles.player.MediaPlayer;
+import com.example.cchiv.jiggles.player.players.LocalPlayer;
 import com.example.cchiv.jiggles.player.protocol.RemotePlayer;
+import com.example.cchiv.jiggles.player.tools.DataFetcher;
 
 import java.util.HashMap;
 
@@ -63,13 +64,14 @@ public class Messenger {
         }
     }
 
-    public void resolveAudioPacket(Message message, Packet packet) {
-        final MediaPlayer.DataFetcher dataFetcher = message.getDataFetcher();
-        MediaPlayer mediaPlayer = remotePlayer.getMediaPlayer();
+    private void resolveAudioPacket(Message message, Packet packet) {
+        DataFetcher dataFetcher = message.getDataFetcher();
+
+        LocalPlayer localPlayer = remotePlayer.getLocalPlayer();
         ((Activity) context).runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                mediaPlayer.setStreamSource(dataFetcher);
+                localPlayer.setStreamSource(dataFetcher);
 
                 if(packet.getBody() != null)
                     dataFetcher.write(packet.getBody().getInput());

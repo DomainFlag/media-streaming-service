@@ -17,7 +17,7 @@ import com.example.cchiv.jiggles.interfaces.OnUpdatePairedDevices;
 import com.example.cchiv.jiggles.model.Image;
 import com.example.cchiv.jiggles.model.Store;
 import com.example.cchiv.jiggles.model.Track;
-import com.example.cchiv.jiggles.player.MediaPlayer;
+import com.example.cchiv.jiggles.player.players.LocalPlayer;
 import com.example.cchiv.jiggles.player.protocol.builder.Message;
 import com.example.cchiv.jiggles.player.protocol.builder.Messenger;
 import com.example.cchiv.jiggles.player.protocol.builder.Protocol;
@@ -41,23 +41,28 @@ public class RemotePlayer implements ConnectivityDialog.OnBluetoothDeviceSelect,
     }
 
     private OnUpdateInterface onUpdateInterface;
-    private MediaPlayer mediaPlayer;
+    private LocalPlayer localPlayer;
     private ConnectivityDialog connectivityDialog;
     private RemoteConnection remoteConnection;
     private Messenger messenger;
 
+    private boolean active = false;
+
     private Context context;
 
-    public RemotePlayer(Context context, MediaPlayer mediaPlayer) {
+    public RemotePlayer(Context context, LocalPlayer localPlayer) {
         this.context = context;
         this.messenger = new Messenger(context, this);
-        this.onUpdateInterface = (OnUpdateInterface) context;
-        this.mediaPlayer = mediaPlayer;
+        this.localPlayer = localPlayer;
+    }
 
-        this.mediaPlayer.onAttachRemotePlayer(this);
+    public void onAttachUpdateInterfaceCallback(Context context) {
+        this.onUpdateInterface = (OnUpdateInterface) context;
     }
 
     public void createRemoteConnection() {
+        active = true;
+
         connectivityDialog = new ConnectivityDialog();
         connectivityDialog.onAttach(context);
         connectivityDialog.onAttachBluetoothDeviceListener(this);
@@ -67,13 +72,28 @@ public class RemotePlayer implements ConnectivityDialog.OnBluetoothDeviceSelect,
         remoteConnection.startServerThread();
     }
 
-    public MediaPlayer getMediaPlayer() {
-        return mediaPlayer;
+    public LocalPlayer getLocalPlayer() {
+        return localPlayer;
+    }
+
+    public boolean isEnabled() {
+        return active;
     }
 
     @Override
     public void onBluetoothDeviceSelect(BluetoothDevice bluetoothDevice) {
         remoteConnection.startRemoteClient(bluetoothDevice);
+    }
+
+    public void release() {
+        active = false;
+
+        if(remoteConnection != null)
+            remoteConnection.release();
+    }
+
+    public void releasePlayer() {
+        localPlayer.release();
     }
 
     public void onStateChanged(int actionType, long value) {
@@ -95,14 +115,6 @@ public class RemotePlayer implements ConnectivityDialog.OnBluetoothDeviceSelect,
         }
     }
 
-    /**
-     * Received streamed data
-     */
-    @Override
-    public void onManageStreamData(Context context, byte[] data, int size) {
-        messenger.resolvePacket(data, size);
-    }
-
     public void onManageMessage(Message message) {
         if(message != null) {
             String action = message.getAction();
@@ -120,7 +132,7 @@ public class RemotePlayer implements ConnectivityDialog.OnBluetoothDeviceSelect,
                                 ImageView imageView = ((Activity) context).findViewById(R.id.player_thumbnail);
                                 imageView.setImageBitmap(bitmap);
 
-                                 mediaPlayer.getCurrentTrack().setBitmap(bitmap);
+                                 localPlayer.getCurrentTrack().setBitmap(bitmap);
                             });
 
                             break;
@@ -143,7 +155,7 @@ public class RemotePlayer implements ConnectivityDialog.OnBluetoothDeviceSelect,
 
                     if(track != null) {
                         activity.runOnUiThread(() -> {
-                            mediaPlayer.setStore(new Store(track));
+                            localPlayer.setStore(new Store(track));
 
                             ((TextView) activity.findViewById(R.id.player_track)).setText(track.getName());
                             ((TextView) activity.findViewById(R.id.player_artist)).setText(track.getArtistName());
@@ -154,21 +166,21 @@ public class RemotePlayer implements ConnectivityDialog.OnBluetoothDeviceSelect,
                 }
                 case Protocol.ACTIONS.ACTION_RESUME : {
                     ((Activity) context).runOnUiThread(() -> {
-                        mediaPlayer.togglePlayer(true);
+                        localPlayer.toggle(true);
                     });
 
                     break;
                 }
                 case Protocol.ACTIONS.ACTION_PAUSE : {
                     ((Activity) context).runOnUiThread(() -> {
-                        mediaPlayer.togglePlayer(false);
+                        localPlayer.toggle(false);
                     });
 
                     break;
                 }
                 case Protocol.ACTIONS.ACTION_SEEK : {
                     ((Activity) context).runOnUiThread(() -> {
-                        mediaPlayer.changeSeeker(Protocol.decodeSeekerMessage(message));
+                        localPlayer.seek(Protocol.decodeSeekerMessage(message));
                     });
 
                     break;
@@ -178,6 +190,14 @@ public class RemotePlayer implements ConnectivityDialog.OnBluetoothDeviceSelect,
                     break;
             }
         }
+    }
+
+    /**
+     * Received streamed data
+     */
+    @Override
+    public void onManageStreamData(Context context, byte[] data, int size) {
+        messenger.resolvePacket(data, size);
     }
 
     @Override
@@ -192,8 +212,14 @@ public class RemotePlayer implements ConnectivityDialog.OnBluetoothDeviceSelect,
 
     @Override
     public void onUpdateInterface(Context context, BluetoothDevice device) {
+        ((Activity) context).runOnUiThread(() -> {
+            connectivityDialog.dismiss();
+
+            onUpdateInterface.onUpdateInterface(device);
+        });
+
         if(remoteConnection.getConnectionType() == RemoteConnection.CONNECTION_CLIENT) {
-            Track track = mediaPlayer.getCurrentTrack();
+            Track track = localPlayer.getCurrentTrack();
             if(track.local) {
                 Image image = track.getAlbum().getArt();
 
@@ -210,11 +236,5 @@ public class RemotePlayer implements ConnectivityDialog.OnBluetoothDeviceSelect,
                 }
             }
         }
-
-        ((Activity) context).runOnUiThread(() -> {
-            connectivityDialog.dismiss();
-
-            onUpdateInterface.onUpdateInterface(device);
-        });
     }
 }

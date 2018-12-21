@@ -1,5 +1,4 @@
 package com.example.cchiv.jiggles.model;
-
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -86,6 +85,10 @@ public class Album {
 
     public void setArt(List<Image> images) {
         this.images = images;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public void addItem(Store store, Track track) {

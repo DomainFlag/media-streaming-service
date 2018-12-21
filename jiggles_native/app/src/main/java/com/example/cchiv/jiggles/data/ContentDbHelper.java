@@ -14,7 +14,6 @@ import com.example.cchiv.jiggles.data.ContentContract.ReleaseEntry;
 import com.example.cchiv.jiggles.data.ContentContract.NewsEntry;
 import com.example.cchiv.jiggles.data.ContentContract.ImageEntry;
 import com.example.cchiv.jiggles.data.ContentContract.ReplyEntry;
-import com.example.cchiv.jiggles.data.ContentContract.NotificationEntry;
 
 public class ContentDbHelper extends SQLiteOpenHelper {
 
@@ -34,7 +33,7 @@ public class ContentDbHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         String sqlArtistQuery = "CREATE TABLE " + ArtistEntry.TABLE_NAME + " (" +
                 ArtistEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                ArtistEntry.COL_ARTIST_NAME + " TEXT NOT NULL, " +
+                ArtistEntry.COL_ARTIST_NAME + " TEXT NOT NULL UNIQUE, " +
                 ArtistEntry.COL_ARTIST_URI + " TEXT, " +
                 ArtistEntry.COL_ARTIST_LOCAL + " INTEGER DEFAULT 0, " +
                 ArtistEntry.COL_ARTIST_TYPE + " TEXT DEFAULT 'album', " +
@@ -47,7 +46,7 @@ public class ContentDbHelper extends SQLiteOpenHelper {
                 AlbumEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 AlbumEntry.COL_ALBUM_ARTIST + " INTEGER REFERENCES " +
                     ArtistEntry.TABLE_NAME + "(" + ArtistEntry._ID + ")" + ", " +
-                AlbumEntry.COL_ALBUM_NAME + " TEXT NOT NULL, " +
+                AlbumEntry.COL_ALBUM_NAME + " TEXT NOT NULL UNIQUE, " +
                 AlbumEntry.COL_ALBUM_RELEASE_DATE + " TEXT NOT NULL, " +
                 AlbumEntry.COL_ALBUM_URI + " TEXT, " +
                 AlbumEntry.COL_ALBUM_LOCAL + " INTEGER DEFAULT 0, " +
@@ -62,7 +61,7 @@ public class ContentDbHelper extends SQLiteOpenHelper {
                 TrackEntry.COL_TRACK_ALBUM + " INTEGER REFERENCES " +
                     AlbumEntry.TABLE_NAME + "(" + AlbumEntry._ID + ")" + ", " +
                 TrackEntry.COL_TRACK_NAME + " TEXT NOT NULL, " +
-                TrackEntry.COL_TRACK_URI + " TEXT, " +
+                TrackEntry.COL_TRACK_URI + " TEXT UNIQUE, " +
                 TrackEntry.COL_TRACK_LOCAL + " INTEGER DEFAULT 0, " +
                 TrackEntry.COL_TRACK_TYPE + " TEXT DEFAULT 'album', " +
                 TrackEntry.COL_TRACK_FAVOURITE + " TEXT DEFAULT 1 " +
@@ -87,32 +86,10 @@ public class ContentDbHelper extends SQLiteOpenHelper {
                 ImageEntry.COL_IMAGE_WIDTH + " INTEGER, " +
                 ImageEntry.COL_IMAGE_HEIGHT + " INTEGER, " +
                 ImageEntry.COL_IMAGE_COLOR + " INTEGER, " +
-                ImageEntry.COL_IMAGE_URI + " TEXT NOT NULL " +
+                ImageEntry.COL_IMAGE_URI + " TEXT NOT NULL UNIQUE" +
                 ")";
 
         sqLiteDatabase.execSQL(sqlImageQuery);
-
-        // Notification
-        String sqlNotificationQuery = "CREATE TABLE " + NotificationEntry.TABLE_NAME + " (" +
-                NotificationEntry._ID + " TEXT PRIMARY KEY, " +
-                NotificationEntry.COL_NOTIFICATION_AUTHOR + " TEXT NOT NULL, " +
-                NotificationEntry.COL_NOTIFICATION_TYPE + " TEXT NOT NULL, " +
-                NotificationEntry.COL_NOTIFICATION_RESOURCE + " TEXT NOT NULL, " +
-                NotificationEntry.COL_NOTIFICATION_VOTES + " INTEGER DEFAULT 0 " +
-                ")";
-
-        sqLiteDatabase.execSQL(sqlNotificationQuery);
-
-        // Thread
-        String sqlThreadQuery = "CREATE TABLE " + ThreadEntry.TABLE_NAME + " (" +
-                ThreadEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                ThreadEntry.COL_THREAD_AUTHOR + " TEXT NOT NULL, " +
-                ThreadEntry.COL_THREAD_CAPTION + " TEXT NOT NULL, " +
-                ThreadEntry.COL_THREAD_CONTENT + " TEXT NOT NULL, " +
-                ThreadEntry.COL_THREAD_VOTES + " INTEGER DEFAULT 0 " +
-                ")";
-
-        sqLiteDatabase.execSQL(sqlThreadQuery);
 
         String sqlReviewQuery = "CREATE TABLE " + ReviewEntry.TABLE_NAME + " (" +
                 ReviewEntry._ID + " TEXT PRIMARY KEY, " +
@@ -144,20 +121,6 @@ public class ContentDbHelper extends SQLiteOpenHelper {
                 ")";
 
         sqLiteDatabase.execSQL(sqlNewsQuery);
-
-        String sqlCommentQuery = "CREATE TABLE " + ReplyEntry.TABLE_NAME + " (" +
-                ReplyEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                ReplyEntry.COL_REPLY_AUTHOR + " TEXT NOT NULL, " +
-                ReplyEntry.COL_REPLY_THREAD + " INTEGER REFERENCES " +
-                    ThreadEntry.TABLE_NAME + "(" + ThreadEntry._ID + ")" + ", " +
-                ReplyEntry.COL_REPLY_PARENT + " INTEGER REFERENCES " +
-                    ReplyEntry.TABLE_NAME + "(" + ReplyEntry._ID + ")" + ", " +
-                ReplyEntry.COL_REPLY_DEPTH + " INTEGER DEFAULT 0, " +
-                ReplyEntry.COL_REPLY_CONTENT + " TEXT NOT NULL, " +
-                ReplyEntry.COL_REPLY_LIKES + " INTEGER DEFAULT 0 " +
-                ")";
-
-        sqLiteDatabase.execSQL(sqlCommentQuery);
     }
 
     @Override

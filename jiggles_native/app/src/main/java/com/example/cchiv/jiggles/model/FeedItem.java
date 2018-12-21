@@ -2,15 +2,20 @@ package com.example.cchiv.jiggles.model;
 
 import android.util.Log;
 
+import com.example.cchiv.jiggles.Constants;
 import com.example.cchiv.jiggles.data.ContentContract;
-import com.example.cchiv.jiggles.utilities.Tools;
+import com.google.firebase.messaging.RemoteMessage;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public abstract class FeedItem {
 
@@ -25,24 +30,15 @@ public abstract class FeedItem {
     private String _id;
     private User author;
     private String content;
-    private Boolean ownership = null;
     private HashMap<String, Boolean> likes;
-    private List<Reply> replies = new ArrayList<>();
+    private List<Reply> replies;
 
     public FeedItem(String _id, User author, String content, HashMap<String, Boolean> likes, List<Reply> replies) {
         this._id = _id;
         this.author = author;
         this.content = content;
-        this.ownership = isOwnership();
         this.likes = likes;
         this.replies = replies;
-    }
-
-    public boolean isOwnership() {
-        if(ownership == null)
-            ownership = likes.containsKey(Tools.getUser().get_id());
-
-        return ownership;
     }
 
     public String get_id() {
@@ -68,14 +64,6 @@ public abstract class FeedItem {
     public JSONObject encodeJSONObject(Reply reply, String content) {
         JSONObject jsonObject = new JSONObject();
 
-        String parent = null;
-        int depth = 0;
-
-        if(reply != null) {
-            parent = reply.getParent();
-            depth = reply.getDepth();
-        }
-
         try {
             switch(getViewType()) {
                 case ViewType.VIEW_POST : {
@@ -91,9 +79,19 @@ public abstract class FeedItem {
                 }
             }
 
-            jsonObject.put(getSimpleColumnName(ContentContract.ReplyEntry.COL_REPLY_PARENT), parent);
-            jsonObject.put(getSimpleColumnName(ContentContract.ReplyEntry.COL_REPLY_CONTENT), content);
-            jsonObject.put(getSimpleColumnName(ContentContract.ReplyEntry.COL_REPLY_DEPTH), depth);
+            if(content != null) {
+                String parent = null;
+                int depth = 0;
+
+                if(reply != null) {
+                    parent = reply.getParent();
+                    depth = reply.getDepth();
+                }
+
+                jsonObject.put(getSimpleColumnName(ContentContract.ReplyEntry.COL_REPLY_PARENT), parent);
+                jsonObject.put(getSimpleColumnName(ContentContract.ReplyEntry.COL_REPLY_CONTENT), content);
+                jsonObject.put(getSimpleColumnName(ContentContract.ReplyEntry.COL_REPLY_DEPTH), depth);
+            }
         } catch(JSONException e) {
             Log.v(TAG, e.toString());
         }
@@ -109,4 +107,28 @@ public abstract class FeedItem {
     }
 
     public abstract int getViewType();
+
+    public static FeedItem decodeMessage(RemoteMessage remoteMessage, Gson gson) {
+        Map<String, String> data = remoteMessage.getData();
+
+        JSONObject jsonObject = new JSONObject(data);
+
+        JsonParser jsonParser = new JsonParser();
+        JsonObject outerRoot = jsonParser.parse(jsonObject.toString()).getAsJsonObject();
+        JsonElement jsonElement = outerRoot.get(Constants.MESSAGE).getAsJsonPrimitive();
+
+        String type = data.get(Constants.FEED_ITEM_TYPE);
+        if(type != null) {
+            switch(type) {
+                case Constants.THREAD : {
+                    return gson.fromJson(jsonElement, Thread.class);
+                }
+                case Constants.POST : {
+                    return gson.fromJson(jsonElement, Post.class);
+                }
+            }
+        }
+
+        return null;
+    }
 }

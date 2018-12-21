@@ -1,5 +1,6 @@
 package com.example.cchiv.jiggles.messaging;
 
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.os.Build;
@@ -8,12 +9,10 @@ import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 
 import com.example.cchiv.jiggles.R;
-import com.example.cchiv.jiggles.model.Notification;
-import com.google.firebase.iid.FirebaseInstanceId;
+import com.example.cchiv.jiggles.model.FeedItem;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
-
-import java.util.Map;
+import com.google.gson.Gson;
 
 public class MessagingService extends FirebaseMessagingService {
 
@@ -22,44 +21,43 @@ public class MessagingService extends FirebaseMessagingService {
     private static final String MESSAGING_CHANNEL_ID = "MESSAGING_CHANNEL_ID";
     private static final int MESSAGING_ID = 5121;
 
-    public MessagingService() {
-        super();
-
-        String id = FirebaseInstanceId.getInstance().getId();
-    }
+    private static final Gson gson = new Gson();
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        Map<String, String> data = remoteMessage.getData();
 
-        Notification message = Notification.decodeMessage(data);
+        // Decoding the feed item
+        FeedItem feedItem = FeedItem.decodeMessage(remoteMessage, gson);
 
-//        ContentValues contentValues = Notification.parseValues(message);
-//        getContentResolver().insert(NotificationEntry.CONTENT_URI, contentValues);
+        if(feedItem != null) {
+            // Setting up the notification
+            Notification notification = buildNotification(feedItem);
+            createNotificationChannel();
 
-        android.app.Notification notification = buildNotification(message);
-        createNotificationChannel();
-
-        NotificationManagerCompat.from(this).notify(MESSAGING_ID, notification);
+            // Notifying user
+            NotificationManagerCompat.from(this).notify(MESSAGING_ID, notification);
+        }
 
         super.onMessageReceived(remoteMessage);
     }
 
-    private android.app.Notification buildNotification(Notification notification) {
+    private Notification buildNotification(FeedItem feedItem) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, MESSAGING_CHANNEL_ID);
 
         return builder
-                .setSmallIcon(R.drawable.ic_microphone)
-                .setContentTitle("New notification")
-                .setContentText(notification.getType())
+                .setSmallIcon(R.drawable.ic_logo_round)
+                .setContentTitle(feedItem.getAuthor().getName())
+                .setContentText(feedItem.getContent())
                 .setPriority(NotificationCompat.PRIORITY_LOW)
                 .build();
     }
 
     private void createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        // Notification support for devices running on Oreo and up
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             int importance = NotificationManager.IMPORTANCE_LOW;
 
+            // Creating the notification channel
             NotificationChannel channel = new NotificationChannel(MESSAGING_CHANNEL_ID, getPackageName(), importance);
 
             // Register the channel with the system

@@ -8,10 +8,8 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
-import com.example.cchiv.jiggles.model.Track;
 import com.example.cchiv.jiggles.player.MediaPlayer;
-import com.example.cchiv.jiggles.player.MediaSessionPlayer;
-import com.example.cchiv.jiggles.spotify.SpotifyConnection;
+import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ui.PlayerView;
 
 public class PlayerServiceConnection implements ServiceConnection {
@@ -22,11 +20,11 @@ public class PlayerServiceConnection implements ServiceConnection {
 
     private PlayerService.OnCallbackListener onCallbackListener;
 
-    public interface OnCallbackConnectionComplete {
-        void onCallbackConnectionComplete();
+    public interface OnConnectionCallback {
+        void onConnectionCallbackComplete();
     }
 
-    private OnCallbackConnectionComplete onCallbackConnectionComplete;
+    private OnConnectionCallback onConnectionCallback;
 
     private PlayerService playerService = null;
     private PlayerView playerView = null;
@@ -34,11 +32,12 @@ public class PlayerServiceConnection implements ServiceConnection {
     public PlayerServiceConnection(Context context) {
         this.context = context;
         this.onCallbackListener = (PlayerService.OnCallbackListener) context;
-        this.onCallbackConnectionComplete = (OnCallbackConnectionComplete) context;
+        this.onConnectionCallback = (OnConnectionCallback) context;
     }
 
     public PlayerServiceConnection(Context context, PlayerView playerView) {
         this(context);
+
         this.playerView = playerView;
     }
 
@@ -54,7 +53,7 @@ public class PlayerServiceConnection implements ServiceConnection {
             playerView.showController();
         }
 
-        onCallbackConnectionComplete.onCallbackConnectionComplete();
+        onConnectionCallback.onConnectionCallbackComplete();
     }
 
     @Override
@@ -71,19 +70,12 @@ public class PlayerServiceConnection implements ServiceConnection {
         context.bindService(serviceIntent, this, Context.BIND_AUTO_CREATE);
     }
 
-    public void onAttachPlayerView(PlayerView playerView) {
-        this.playerView = playerView;
-    }
-
     public void release() {
         onDetachPlayerView();
 
         playerService.onDetachCallbackListener(onCallbackListener);
-        playerService.onRelease();
-    }
 
-    public SpotifyConnection getSpotifyConnection() {
-        return playerService.getSpotifyConnection();
+        context.unbindService(this);
     }
 
     public PlayerService getPlayerService() {
@@ -91,11 +83,14 @@ public class PlayerServiceConnection implements ServiceConnection {
     }
 
     public MediaPlayer getMediaPlayer() {
-        return playerService.getMediaPlayer();
+        if(playerService != null)
+            return playerService.getMediaPlayer();
+
+        return null;
     }
 
-    public MediaSessionPlayer getPlayerMediaSession() {
-        return playerService.getMediaSessionPlayer();
+    public ExoPlayer getExoPlayer() {
+        return playerService.getMediaPlayer().getExoPlayer();
     }
 
     public void onDetachPlayerView() {
@@ -104,17 +99,5 @@ public class PlayerServiceConnection implements ServiceConnection {
 
             PlayerView.switchTargetView(mediaPlayer.getExoPlayer(), playerView, null);
         }
-    }
-
-    public Track getCurrentTrack() {
-        if(playerService != null)
-            return playerService.getCurrentTrack();
-        else return null;
-    }
-
-    public int getPlaybackStateCompat() {
-        if(playerService != null)
-            return playerService.getPlaybackStateCompat();
-        else return -1;
     }
 }

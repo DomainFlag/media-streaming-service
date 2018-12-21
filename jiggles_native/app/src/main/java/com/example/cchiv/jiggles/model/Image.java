@@ -71,6 +71,10 @@ public class Image {
         return id;
     }
 
+    public void setId(String id) {
+        this.id = id;
+    }
+
     public void setColor(int color) {
         this.color = color;
     }

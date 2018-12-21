@@ -1,6 +1,6 @@
 package com.example.cchiv.jiggles.utilities;
 
-import android.app.Activity;
+import android.content.ContentProviderResult;
 import android.content.Context;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
@@ -176,8 +176,10 @@ public class ItemScanner {
         if(store != null) {
             try {
                 // Do something with ContentProviderResult[]
-                ((Activity) context).getContentResolver()
+                ContentProviderResult[] results = context.getContentResolver()
                         .applyBatch(ContentContract.AUTHORITY, Store.parseValues(store));
+
+                Store.setValues(store, results);
             } catch (RemoteException e) {
                 Log.v(TAG, e.toString());
             } catch (OperationApplicationException e) {

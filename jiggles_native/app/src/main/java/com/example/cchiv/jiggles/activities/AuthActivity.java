@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import com.example.cchiv.jiggles.Constants;
 import com.example.cchiv.jiggles.R;
+import com.example.cchiv.jiggles.model.User;
 import com.example.cchiv.jiggles.utilities.NetworkUtilities;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -43,7 +44,8 @@ public class AuthActivity extends AppCompatActivity {
 
     private static final String TAG = "AuthActivity";
 
-    private UserAuth userAuth = new UserAuth();
+    private User user = new User();
+
     private CallbackManager callbackManager;
     private Typeface typeface;
 
@@ -93,13 +95,13 @@ public class AuthActivity extends AppCompatActivity {
         typeface = Typeface.createFromAsset(getAssets(), "fonts/Brandon_bld.otf");
 
         if(savedInstanceState != null) {
-            userAuth.resolveBundle(savedInstanceState);
+            user.resolveDecodeBundle(savedInstanceState);
         }
 
         SharedPreferences sharedPreferences = getSharedPreferences(Constants.OTHER_PREFERENCES, MODE_PRIVATE);
         String email = sharedPreferences.getString(Constants.PREFERENCE_EMAIL, null);
         if(email != null) {
-            userAuth.email = email;
+            user.setName(email);
 
             editEmailText.setText(email);
         }
@@ -109,29 +111,40 @@ public class AuthActivity extends AppCompatActivity {
         });
 
         imageSpotifyView.setOnClickListener(view -> {
-//            SpotifyConnection spotifyConnection = new SpotifyConnection(this);
-//            spotifyConnection.connect();
+//            SpotifyPlayer spotifyPlayer = new SpotifyPlayer(this);
+//            spotifyPlayer.connect();
         });
 
         changeAuthState();
     }
 
     public void onClickAction(View view) {
-        String name = getEditTextValue(R.id.auth_name_value);
-        String email = getEditTextValue(R.id.auth_email_value);
-        String password = getEditTextValue(R.id.auth_password_value);
+        if(user == null) {
+            user = new User();
+        }
 
-        if(email != null && !email.isEmpty()) {
+        if(!user.social) {
+            if(user.getEmail() == null || user.getEmail().isEmpty())
+                user.setEmail(editEmailText.getText().toString());
+
+            if(user.getName() == null || user.getName().isEmpty()) {
+                user.setName(editNameText.getText().toString());
+            }
+        }
+
+        user.setPassword(getEditTextValue(R.id.auth_password_value));
+
+        if(user.getEmail() != null && !user.getEmail().isEmpty()) {
             CheckBox rememberMe = findViewById(R.id.auth_remember_me);
             if(rememberMe.isChecked()) {
                 SharedPreferences sharedPreferences = getSharedPreferences(Constants.OTHER_PREFERENCES, MODE_PRIVATE);
                 sharedPreferences.edit()
-                        .putString(Constants.PREFERENCE_EMAIL, email)
+                        .putString(Constants.PREFERENCE_EMAIL, user.getEmail())
                         .apply();
             }
         }
 
-        if(email != null && password != null) {
+        if(user.getEmail() != null && user.getPassword() != null) {
             NetworkUtilities.ResolveAuth resolveAuth = new NetworkUtilities.ResolveAuth(token -> {
                         if(token != null && !token.isEmpty()) {
                             SharedPreferences sharedPreferences = getSharedPreferences(Constants.AUTH_TOKEN, MODE_PRIVATE);
@@ -144,9 +157,10 @@ public class AuthActivity extends AppCompatActivity {
                         } else {
                             textErrorView.setText(getString(R.string.auth_error_auth_resolved));
                         }
-                    }, authType, email, password, name);
+                    }, authType, user);
         } else {
             // Error message to show
+            textErrorView.setText(getString(R.string.auth_error, "Please enter a valid email or password"));
         }
     }
 
@@ -201,15 +215,17 @@ public class AuthActivity extends AppCompatActivity {
         GraphRequest request = GraphRequest.newMeRequest(
                 accessToken, (object, response) -> {
                     try {
-                        userAuth.social = true;
+                        user.social = true;
 
-                        userAuth.email = response.getJSONObject().getString("email");
-                        userAuth.firstName = response.getJSONObject().getString("first_name");
-                        userAuth.lastName = response.getJSONObject().getString("last_name");
+                        user.setEmail(response.getJSONObject().getString("email"));
+                        user.setName(
+                                response.getJSONObject().getString("first_name") + " "
+                                        + response.getJSONObject().getString("last_name")
+                        );
 
                         Profile profile = Profile.getCurrentProfile();
                         if(profile != null) {
-                            userAuth.caption = Profile.getCurrentProfile().getProfilePictureUri(200, 200).toString();
+                            user.setCaption(Profile.getCurrentProfile().getProfilePictureUri(200, 200).toString());
                         }
 
                         changeSocialState();
@@ -226,17 +242,18 @@ public class AuthActivity extends AppCompatActivity {
     }
 
     private void changeSocialState() {
-        if(userAuth.social) {
+        if(user.social) {
             relativeSocialLayout.setVisibility(View.VISIBLE);
 
             Picasso.get()
-                    .load(userAuth.caption)
+                    .load(user.getCaption())
                     .error(R.drawable.ic_account)
                     .placeholder(R.drawable.ic_account)
                     .into(imageSocialProfileView);
 
-            textSocialGreetingsView.setText(getString(R.string.auth_social_greetings, userAuth.firstName, userAuth.lastName));
-            textSocialProfileView.setText(getString(R.string.auth_social_email, userAuth.email));
+            String[] names = user.getNames();
+            textSocialGreetingsView.setText(getString(R.string.auth_social_greetings, names[0], names[1]));
+            textSocialProfileView.setText(getString(R.string.auth_social_email, user.getEmail()));
 
             linearEmailLayout.setVisibility(View.GONE);
             linearNameLayout.setVisibility(View.GONE);
@@ -286,6 +303,7 @@ public class AuthActivity extends AppCompatActivity {
                 }
                 default : {
                     Log.v("AuthActivity", "Undefined Command");
+
                     finish();
                 }
             }
@@ -331,37 +349,7 @@ public class AuthActivity extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putString(UserAuth.PREF_EMAIL_KEY, userAuth.email);
-        outState.putString(UserAuth.PREF_FIRST_NAME_KEY, userAuth.firstName);
-        outState.putString(UserAuth.PREF_LAST_NAME_KEY, userAuth.lastName);
-        outState.putString(UserAuth.PREF_PASSWORD_KEY, userAuth.password);
-        outState.putString(UserAuth.PREF_CAPTION_KEY, userAuth.caption);
-        outState.putBoolean(UserAuth.PREF_SOCIAL_KEY, userAuth.social);
-    }
-
-    private static class UserAuth {
-        private static final String PREF_EMAIL_KEY = "PREF_EMAIL_KEY";
-        private static final String PREF_FIRST_NAME_KEY = "PREF_FIRST_NAME_KEY";
-        private static final String PREF_LAST_NAME_KEY = "PREF_LAST_NAME_KEY";
-        private static final String PREF_PASSWORD_KEY = "PREF_PASSWORD_KEY";
-        private static final String PREF_CAPTION_KEY = "PREF_CAPTION_KEY";
-        private static final String PREF_SOCIAL_KEY = "PREF_SOCIAL_KEY";
-
-        private String lastName;
-        private String firstName;
-        private String email;
-        private String caption;
-        private String password;
-        private boolean social;
-
-        private void resolveBundle(Bundle bundle) {
-            firstName = bundle.getString(PREF_FIRST_NAME_KEY, null);
-            lastName = bundle.getString(PREF_LAST_NAME_KEY, null);
-            email = bundle.getString(PREF_EMAIL_KEY, null);
-            caption = bundle.getString(PREF_CAPTION_KEY, null);
-            password = bundle.getString(PREF_PASSWORD_KEY, null);
-            social = bundle.getBoolean(PREF_SOCIAL_KEY, false);
-        }
+        user.resolveEncodeBundle(outState);
     }
 
     public class RedirectionText {

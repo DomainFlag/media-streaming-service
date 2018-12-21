@@ -164,7 +164,7 @@
     <string name="flow_nearby">%1$d nearby people are jamming to it.</string>
 
 
-    <!-- Player -->
+    <!-- AlphaPlayer -->
     <string name="player_play">Player Resume</string>
     <string name="player_pause">Player Pause</string>
     <string name="player_next">Player Next</string>
@@ -183,6 +183,7 @@
 
     <!-- Store -->
     <string name="collection_art">Track art</string>
+    <string name="collection_empty">No store. Click to refresh.</string>
 
     <string name="collection_save">Save</string>
 
