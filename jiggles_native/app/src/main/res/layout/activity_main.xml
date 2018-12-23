@@ -85,7 +85,7 @@
             android:padding="@dimen/activity_margin_relative"
             android:textSize="@dimen/activity_text_subheader"
             android:textStyle="bold"
-            android:textColor="@color/colorPrimaryDark"
+            android:textColor="@color/iconsTextColor"
             android:onClick="onClickGetStarted"
             android:text="@string/welcome_sign_in"/>
 
@@ -96,7 +96,7 @@
             android:padding="@dimen/activity_margin_relative"
             android:textSize="@dimen/activity_text_subheader"
             android:textStyle="bold"
-            android:textColor="@color/colorPrimaryDark"
+            android:textColor="@color/iconsTextColor"
             android:onClick="onClickGetStarted"
             android:text="@string/welcome_sign_up"/>
 

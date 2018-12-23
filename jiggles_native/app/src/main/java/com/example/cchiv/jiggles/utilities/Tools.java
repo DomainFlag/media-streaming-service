@@ -34,6 +34,7 @@ import com.example.cchiv.jiggles.Constants;
 import com.example.cchiv.jiggles.R;
 import com.example.cchiv.jiggles.model.Review;
 import com.example.cchiv.jiggles.model.User;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -123,6 +124,13 @@ public class Tools {
         String token = sharedPreferences.getString(Constants.TOKEN, null);
         if(token == null) {
             ((Activity) context).finish();
+        } else {
+            FirebaseMessaging.getInstance().subscribeToTopic("weather")
+                    .addOnCompleteListener(task -> {
+                        if(task.isSuccessful()) {
+                            Log.v(TAG, "Subscribed to topic successfully");
+                        }
+                    });
         }
     }
 

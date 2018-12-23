@@ -6,7 +6,6 @@ import com.example.cchiv.jiggles.Constants;
 import com.example.cchiv.jiggles.data.ContentContract;
 import com.google.firebase.messaging.RemoteMessage;
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -29,6 +28,7 @@ public abstract class FeedItem {
 
     private String _id;
     private User author;
+    private String authorName;
     private String content;
     private HashMap<String, Boolean> likes;
     private List<Reply> replies;
@@ -59,6 +59,10 @@ public abstract class FeedItem {
 
     public User getAuthor() {
         return author;
+    }
+
+    public String getAuthorName() {
+        return authorName;
     }
 
     public JSONObject encodeJSONObject(Reply reply, String content) {
@@ -115,16 +119,15 @@ public abstract class FeedItem {
 
         JsonParser jsonParser = new JsonParser();
         JsonObject outerRoot = jsonParser.parse(jsonObject.toString()).getAsJsonObject();
-        JsonElement jsonElement = outerRoot.get(Constants.MESSAGE).getAsJsonPrimitive();
 
         String type = data.get(Constants.FEED_ITEM_TYPE);
         if(type != null) {
             switch(type) {
                 case Constants.THREAD : {
-                    return gson.fromJson(jsonElement, Thread.class);
+                    return gson.fromJson(outerRoot, Thread.class);
                 }
                 case Constants.POST : {
-                    return gson.fromJson(jsonElement, Post.class);
+                    return gson.fromJson(outerRoot, Post.class);
                 }
             }
         }

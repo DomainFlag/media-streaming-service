@@ -1,6 +1,5 @@
 package com.example.cchiv.jiggles.player.protocol;
 
-import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
@@ -74,7 +73,7 @@ public class RemoteConnection implements OnSearchPairedDevices {
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
-        searchPairedDevices();
+        initiateBluetoothConnection();
     }
 
     /**
@@ -106,14 +105,14 @@ public class RemoteConnection implements OnSearchPairedDevices {
         context.startActivity(discoverableIntent);
     }
 
-    public void syncAudioData() {
+    public void initiateBluetoothConnection() {
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if(mBluetoothAdapter != null) {
             if(!mBluetoothAdapter.isEnabled()) {
-                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                ((Activity) context).startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+                mBluetoothAdapter.enable();
+//                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+//                ((Activity) context).startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
             } else {
-                Log.v(TAG, "The bluetooth is enabled");
                 searchPairedDevices();
 
                 Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
@@ -215,7 +214,7 @@ public class RemoteConnection implements OnSearchPairedDevices {
             connectedThread.start();
 
             // Updating the UI that the pairing went successfully
-            onUpdatePairedDevices.onUpdateInterface(context, mmDevice);
+            onUpdatePairedDevices.onNotifyInterface(context, mmDevice);
         }
 
         // Closes the client socket and causes the thread to finish.
@@ -277,7 +276,7 @@ public class RemoteConnection implements OnSearchPairedDevices {
 
                         // A connection was accepted. Perform work associated with
                         // the connection in a separate thread.
-                        onUpdatePairedDevices.onUpdateInterface(context, socket.getRemoteDevice());
+                        onUpdatePairedDevices.onNotifyInterface(context, socket.getRemoteDevice());
 
                         mmServerSocket.close();
                         break;

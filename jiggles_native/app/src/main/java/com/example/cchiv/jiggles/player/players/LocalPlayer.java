@@ -236,6 +236,23 @@ public class LocalPlayer extends AlphaPlayer {
     }
 
     @Override
+    public void skip(boolean next) {
+        if(exoPlayer != null && exoPlayer.isCurrentWindowSeekable()) {
+            int window;
+
+            if(next) {
+                window = exoPlayer.getNextWindowIndex();
+            } else {
+                window = exoPlayer.getPreviousWindowIndex();
+            }
+
+            if(window != C.INDEX_UNSET) {
+                exoPlayer.seekToDefaultPosition(window);
+            }
+        }
+    }
+
+    @Override
     public void release() {
         if(exoPlayer != null) {
             exoPlayer.release();

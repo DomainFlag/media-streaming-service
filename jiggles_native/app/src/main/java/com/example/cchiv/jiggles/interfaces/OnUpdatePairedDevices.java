@@ -8,5 +8,5 @@ import java.util.Set;
 public interface OnUpdatePairedDevices {
     void onUpdatePairedDevices(Set<BluetoothDevice> devices);
     void onUpdatePairedDevices(BluetoothDevice device);
-    void onUpdateInterface(Context context, BluetoothDevice bluetoothDevice);
+    void onNotifyInterface(Context context, BluetoothDevice bluetoothDevice);
 }

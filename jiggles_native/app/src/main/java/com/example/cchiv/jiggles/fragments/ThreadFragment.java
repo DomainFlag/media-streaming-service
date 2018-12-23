@@ -165,6 +165,7 @@ public class ThreadFragment extends Fragment {
         private String encodeBitmap(Bitmap bitmap) {
             if(bitmap != null) {
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
 
                 return Base64.encodeToString(byteArrayOutputStream.toByteArray(), Base64.DEFAULT);

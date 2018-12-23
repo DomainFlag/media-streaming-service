@@ -3,7 +3,9 @@ package com.example.cchiv.jiggles.messaging;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.media.AudioAttributes;
 import android.os.Build;
+import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
@@ -25,7 +27,6 @@ public class MessagingService extends FirebaseMessagingService {
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-
         // Decoding the feed item
         FeedItem feedItem = FeedItem.decodeMessage(remoteMessage, gson);
 
@@ -37,31 +38,41 @@ public class MessagingService extends FirebaseMessagingService {
             // Notifying user
             NotificationManagerCompat.from(this).notify(MESSAGING_ID, notification);
         }
-
-        super.onMessageReceived(remoteMessage);
     }
 
     private Notification buildNotification(FeedItem feedItem) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, MESSAGING_CHANNEL_ID);
 
         return builder
-                .setSmallIcon(R.drawable.ic_logo_round)
-                .setContentTitle(feedItem.getAuthor().getName())
+                .setSmallIcon(R.drawable.ic_logo)
+                .setColorized(true)
+                .setColor(getResources().getColor(R.color.unexpectedColor))
+                .setContentTitle(feedItem.getAuthorName())
+                .setDefaults(Notification.DEFAULT_ALL)
                 .setContentText(feedItem.getContent())
-                .setPriority(NotificationCompat.PRIORITY_LOW)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .build();
     }
 
     private void createNotificationChannel() {
         // Notification support for devices running on Oreo and up
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            int importance = NotificationManager.IMPORTANCE_LOW;
-
-            // Creating the notification channel
-            NotificationChannel channel = new NotificationChannel(MESSAGING_CHANNEL_ID, getPackageName(), importance);
-
             // Register the channel with the system
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
+
+            // Notification attributes
+            AudioAttributes attributes = new AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                    .build();
+
+            // Creating the notification channel
+            NotificationChannel channel = new NotificationChannel(MESSAGING_CHANNEL_ID, getPackageName(),
+                    NotificationManager.IMPORTANCE_HIGH);
+
+            // Configure the notification channel.
+            channel.enableVibration(true);
+            channel.setSound(Settings.System.DEFAULT_NOTIFICATION_URI, attributes);
+
             if(notificationManager != null)
                 notificationManager.createNotificationChannel(channel);
         }

@@ -97,7 +97,23 @@ public class MediaPlayer implements SpotifyPlayer.SpotifyResolvedCallback,
     }
 
     public void seekPlayer(long position) {
-        localAlphaPlayer.seek(position);
+        if(this.store != null) {
+            if(this.store.getTrack().local) {
+                localAlphaPlayer.seek(position);
+            } else {
+                remoteAlphaPlayer.seek(position);
+            }
+        }
+    }
+
+    public void seekWindow(boolean next) {
+        if(this.store != null) {
+            if(this.store.getTrack().local) {
+                localAlphaPlayer.skip(next);
+            } else {
+                remoteAlphaPlayer.skip(next);
+            }
+        }
     }
 
     public void release() {

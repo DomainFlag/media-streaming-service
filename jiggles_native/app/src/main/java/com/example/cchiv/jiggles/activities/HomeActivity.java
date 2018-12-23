@@ -148,14 +148,17 @@ public class HomeActivity extends PlayerAppCompatActivity {
         String token = Tools.getToken(this);
 
         NetworkUtilities.FetchFreshRelease fetchFreshRelease = new NetworkUtilities.FetchFreshRelease(releases -> {
-            FreshReleaseDialog freshReleaseDialog = new FreshReleaseDialog();
-            freshReleaseDialog.show(getSupportFragmentManager(), TAG);
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            if(fragmentManager != null) {
+                FreshReleaseDialog freshReleaseDialog = new FreshReleaseDialog();
+                freshReleaseDialog.show(fragmentManager, TAG);
 
-            getSupportFragmentManager().executePendingTransactions();
+                fragmentManager.executePendingTransactions();
 
-            freshReleaseDialog.onUpdateDialog(getSupportFragmentManager(), releases, release -> {
-                onRemoteMediaClick(release.getUri());
-            });
+                freshReleaseDialog.onUpdateDialog(getSupportFragmentManager(), releases, release -> {
+                    onRemoteMediaClick(release.getUri());
+                });
+            }
         }, token);
     }
 

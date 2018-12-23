@@ -39,5 +39,6 @@ public abstract class AlphaPlayer {
     public abstract void resolve(Store store);
     public abstract void toggle(boolean state);
     public abstract void seek(long position);
+    public abstract void skip(boolean next);
     public abstract void release();
 }

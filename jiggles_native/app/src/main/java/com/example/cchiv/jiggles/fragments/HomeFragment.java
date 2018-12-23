@@ -188,9 +188,6 @@ public class HomeFragment extends Fragment implements FeedAdapter.OnClickReplies
 
         setClickReplyCallback(0);
 
-//        TreeParser treeParser = new TreeParser();
-//        List<Reply> replies = treeParser.queryTree(feedItem.getReplies());
-
         replyAdapter = new ReplyAdapter(context, feedItem.getReplies());
         recyclerRepliesView.setAdapter(replyAdapter);
 

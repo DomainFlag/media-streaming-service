@@ -1,6 +1,7 @@
 package com.example.cchiv.jiggles.player.protocol;
 
 import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -37,10 +38,10 @@ public class RemotePlayer implements ConnectivityDialog.OnBluetoothDeviceSelect,
     private static final String TAG = "RemotePlayer";
 
     public interface OnUpdateInterface {
-        void onUpdateInterface(BluetoothDevice bluetoothDevice);
+        void onUpdateInterface(BluetoothDevice bluetoothDevice, boolean isActive);
     }
 
-    private OnUpdateInterface onUpdateInterface;
+    private OnUpdateInterface onUpdateInterface = null;
     private LocalPlayer localPlayer;
     private ConnectivityDialog connectivityDialog;
     private RemoteConnection remoteConnection;
@@ -63,13 +64,15 @@ public class RemotePlayer implements ConnectivityDialog.OnBluetoothDeviceSelect,
     public void createRemoteConnection() {
         active = true;
 
-        connectivityDialog = new ConnectivityDialog();
-        connectivityDialog.onAttach(context);
-        connectivityDialog.onAttachBluetoothDeviceListener(this);
-        connectivityDialog.show(((Activity) context).getFragmentManager(), TAG);
+        BluetoothAdapter.getDefaultAdapter();
+
+//        connectivityDialog = new ConnectivityDialog();
+//        connectivityDialog.onAttach(context);
+//        connectivityDialog.onAttachBluetoothDeviceListener(this);
+//        connectivityDialog.show(((Activity) context).getFragmentManager(), TAG);
 
         remoteConnection = new RemoteConnection(context, this);
-        remoteConnection.startServerThread();
+//        remoteConnection.startServerThread();
     }
 
     public LocalPlayer getLocalPlayer() {
@@ -90,6 +93,12 @@ public class RemotePlayer implements ConnectivityDialog.OnBluetoothDeviceSelect,
 
         if(remoteConnection != null)
             remoteConnection.release();
+
+        if(onUpdateInterface != null) {
+            ((Activity) context).runOnUiThread(() -> {
+                onUpdateInterface.onUpdateInterface(null, true);
+            });
+        }
     }
 
     public void releasePlayer() {
@@ -211,12 +220,14 @@ public class RemotePlayer implements ConnectivityDialog.OnBluetoothDeviceSelect,
     }
 
     @Override
-    public void onUpdateInterface(Context context, BluetoothDevice device) {
-        ((Activity) context).runOnUiThread(() -> {
-            connectivityDialog.dismiss();
+    public void onNotifyInterface(Context context, BluetoothDevice device) {
+        if(onUpdateInterface != null) {
+            ((Activity) context).runOnUiThread(() -> {
+                connectivityDialog.dismiss();
 
-            onUpdateInterface.onUpdateInterface(device);
-        });
+                onUpdateInterface.onUpdateInterface(device, true);
+            });
+        }
 
         if(remoteConnection.getConnectionType() == RemoteConnection.CONNECTION_CLIENT) {
             Track track = localPlayer.getCurrentTrack();

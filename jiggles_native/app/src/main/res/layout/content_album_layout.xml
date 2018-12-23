@@ -9,7 +9,7 @@
     android:padding="@dimen/activity_margin_component"
     tools:background="@color/primaryTextColor">
 
-    <com.example.cchiv.jiggles.VerticalTextView
+    <com.example.cchiv.jiggles.views.VerticalTextView
         android:id="@+id/album_genres"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

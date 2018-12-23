@@ -117,6 +117,17 @@ public class SpotifyPlayer extends AlphaPlayer {
     }
 
     @Override
+    public void skip(boolean next) {
+        if(spotifyAppRemote != null) {
+            if(next) {
+                spotifyAppRemote.getPlayerApi().skipNext();
+            } else {
+                spotifyAppRemote.getPlayerApi().skipPrevious();
+            }
+        }
+    }
+
+    @Override
     public void release() {
 
     }
