@@ -48,11 +48,6 @@ public class PlayerServiceConnection implements ServiceConnection {
         playerService = playerBinder.getService();
         playerService.onAttachCallbackListener(onCallbackListener);
 
-        if(playerView != null) {
-            playerView.setPlayer(getMediaPlayer().getExoPlayer());
-            playerView.showController();
-        }
-
         onConnectionCallback.onConnectionCallbackComplete();
     }
 

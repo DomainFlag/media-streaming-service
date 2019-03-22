@@ -24,4 +24,7 @@
     <dimen name="button_elevation">4dp</dimen>
 
     <dimen name="exo_player_button_dimen">28dp</dimen>
+
+    <dimen name="player_media_power_height">48dp</dimen>
+    <dimen name="player_media_power_width">48dp</dimen>
 </resources>

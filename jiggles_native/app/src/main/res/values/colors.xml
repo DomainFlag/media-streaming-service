@@ -26,7 +26,7 @@
     <color name="searchLightColor">#044F67</color>
     <color name="playedPlayerColor">#EEEEEE</color>
 
-    <color name="backgroundVibrantColor">#55FFFFFF</color>
+    <color name="backgroundVibrantColor">#D0D0D0</color>
 
     <color name="colorScoreAcclaim">#29A369</color>
     <color name="colorScorePossitive">#F2E827</color>

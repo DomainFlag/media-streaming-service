@@ -74,6 +74,8 @@ public class PlayerService extends Service implements
                             Log.v(TAG, "Unknown resource type");
                         }
                     }
+                } else {
+                    Log.v(TAG, "Unknown command");
                 }
             }
         }
@@ -150,7 +152,6 @@ public class PlayerService extends Service implements
     public IBinder onBind(Intent intent) {
         return new PlayerBinder();
     }
-
 
     @Override
     public void onTaskRemoved(Intent rootIntent) {

@@ -124,6 +124,10 @@ public class Track {
         this.albumName = albumName;
     }
 
+    public String getAlbumName() {
+        return albumName;
+    }
+
     public void setImageUri(String imageUri) {
         this.imageUri = imageUri;
     }

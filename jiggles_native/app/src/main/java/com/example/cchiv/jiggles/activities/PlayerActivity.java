@@ -21,6 +21,7 @@ import com.example.cchiv.jiggles.services.PlayerService;
 import com.example.cchiv.jiggles.services.PlayerServiceConnection;
 import com.example.cchiv.jiggles.utilities.Tools;
 import com.example.cchiv.jiggles.views.ToggleImageView;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.squareup.picasso.Picasso;
 
@@ -69,6 +70,7 @@ public class PlayerActivity extends AppCompatActivity implements
     @BindView(R.id.player_underlay) View playerUnderlayView;
 
     @BindView(R.id.player_track) TextView textTrackView;
+    @BindView(R.id.player_album) TextView textAlbumView;
     @BindView(R.id.player_artist) TextView textArtistView;
     @BindView(R.id.player_thumbnail) ImageView imageThumbnailView;
     @BindView(R.id.player_background) LinearLayout imageBackgroundView;
@@ -134,19 +136,18 @@ public class PlayerActivity extends AppCompatActivity implements
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
 
-        if(bundle != null) {
-            playerView = findViewById(R.id.player);
+        playerView = findViewById(R.id.player);
 
-            playerServiceConnection = new PlayerServiceConnection(this, playerView);
-            playerServiceConnection.onStartService(bundle);
-        }
+        playerServiceConnection = new PlayerServiceConnection(this, playerView);
+        playerServiceConnection.onStartService(bundle);
     }
 
     public void attachTrack(Track track) {
-        textTrackView.setText(track.getName());
-        textArtistView.setText(track.getArtistName());
-
         Tools.setWeightedGradientBackground(getBaseContext(), playerUnderlayView, track.getColor(this));
+
+        textTrackView.setText(track.getName());
+        textAlbumView.setText(track.getAlbumName());
+        textArtistView.setText(track.getArtistName());
 
         Image artwork = track.getArt();
         if(artwork != null) {
@@ -190,16 +191,23 @@ public class PlayerActivity extends AppCompatActivity implements
         if(track != null) {
             attachTrack(track);
         }
+
+        Player player = playerServiceConnection.getMediaPlayer().getCurrentPlayer();
+        if(player != null) {
+            playerView.setPlayer(player);
+            playerView.showController();
+        }
     }
 
     @Override
     public void onCallbackListener(Track track, int playbackStateCompat) {
         attachTrack(track);
 
-        LocalPlayer localPlayer = playerServiceConnection.getMediaPlayer().getLocalAlphaPlayer();
-
-        playerView.setPlayer(localPlayer.getExoPlayer());
-        playerView.showController();
+        Player player = playerServiceConnection.getMediaPlayer().getCurrentPlayer();
+        if(player != null) {
+            playerView.setPlayer(player);
+            playerView.showController();
+        }
     }
 
     @Override

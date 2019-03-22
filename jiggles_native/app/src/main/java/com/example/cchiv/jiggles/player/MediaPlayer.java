@@ -13,6 +13,7 @@ import com.example.cchiv.jiggles.player.players.AlphaPlayer;
 import com.example.cchiv.jiggles.player.players.LocalPlayer;
 import com.example.cchiv.jiggles.player.players.SpotifyPlayer;
 import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.Player;
 
 public class MediaPlayer implements SpotifyPlayer.SpotifyResolvedCallback,
         AlphaPlayer.PlayerStateChanged {
@@ -40,11 +41,11 @@ public class MediaPlayer implements SpotifyPlayer.SpotifyResolvedCallback,
         this.playerNotificationManager = ((PlayerNotificationManager) context);
         this.onTrackStateChanged = ((OnTrackStateChanged) context);
 
-        mediaSessionPlayer = new MediaSessionPlayer(context,  this);
+        mediaSessionPlayer = new MediaSessionPlayer(context,this);
         mediaSessionPlayer.createMediaSession();
 
-        remoteAlphaPlayer = new SpotifyPlayer(context, this, this);
-        localAlphaPlayer = new LocalPlayer(context, this);
+        remoteAlphaPlayer = new SpotifyPlayer(context, mediaSessionPlayer, this, this);
+        localAlphaPlayer = new LocalPlayer(context, mediaSessionPlayer, this);
     }
 
     public Track getCurrentTrack() {
@@ -81,6 +82,18 @@ public class MediaPlayer implements SpotifyPlayer.SpotifyResolvedCallback,
     public SpotifyPlayer getRemoteAlphaPlayer() {
         return remoteAlphaPlayer;
     }
+
+    public Player getCurrentPlayer() {
+        if(localAlphaPlayer != null && localAlphaPlayer.state) {
+            return localAlphaPlayer.getExoPlayer();
+        }
+
+        if(remoteAlphaPlayer != null && remoteAlphaPlayer.state){
+            return remoteAlphaPlayer;
+        }
+
+        return null;
+    };
 
     public void detachTop() {
 
@@ -141,6 +154,8 @@ public class MediaPlayer implements SpotifyPlayer.SpotifyResolvedCallback,
         boolean contentEqual = false;
         if(this.store != null)
             contentEqual = this.store.getTrack().getUri().equals(store.getTrack().getUri());
+
+        remoteAlphaPlayer.state = !isPaused;
 
         if(this.store == null) {
             onPlayerStateChanged(store, !isPaused);

@@ -7,6 +7,7 @@ import android.net.Uri;
 import com.example.cchiv.jiggles.model.Album;
 import com.example.cchiv.jiggles.model.Store;
 import com.example.cchiv.jiggles.model.Track;
+import com.example.cchiv.jiggles.player.MediaSessionPlayer;
 import com.example.cchiv.jiggles.player.listeners.PlayerAnalyticsListener;
 import com.example.cchiv.jiggles.player.listeners.PlayerEventListener;
 import com.example.cchiv.jiggles.player.protocol.RemotePlayer;
@@ -42,8 +43,8 @@ public class LocalPlayer extends AlphaPlayer {
     private SimpleExoPlayer exoPlayer = null;
     private RemotePlayer remotePlayer;
 
-    public LocalPlayer(Context context, PlayerStateChanged playerStateChanged) {
-        super(context, playerStateChanged);
+    public LocalPlayer(Context context, MediaSessionPlayer mediaSessionPlayer, PlayerStateChanged playerStateChanged) {
+        super(context, mediaSessionPlayer, playerStateChanged);
 
         this.remotePlayer = new RemotePlayer(getContext(), this);
     }

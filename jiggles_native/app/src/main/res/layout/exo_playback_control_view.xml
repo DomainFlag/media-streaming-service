@@ -1,62 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:layout_gravity="bottom"
-              android:orientation="vertical">
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom"
+    android:orientation="vertical"
+    tools:background="@color/primaryTextColor">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingHorizontal="@dimen/activity_margin_sibling"
-        android:orientation="horizontal"
-        android:gravity="center">
+        android:layout_height="wrap_content">
 
         <TextView
             android:id="@id/exo_position"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:includeFontPadding="false"
-            android:paddingLeft="4dp"
-            android:paddingRight="4dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
             android:textColor="@color/iconsTextColor"
-            android:textSize="@dimen/activity_text_span"
+            android:textSize="@dimen/activity_text_subspan"
             android:textStyle="bold"
             tools:text="0:00"/>
 
-        <com.google.android.exoplayer2.ui.DefaultTimeBar
-            android:id="@id/exo_progress"
-            android:layout_width="0dp"
-            android:layout_height="24dp"
-            android:layout_weight="1"
-            android:paddingHorizontal="@dimen/activity_margin_sibling"
-            app:unplayed_color="@color/playedPlayerColor"
-            app:played_color="@color/colorPrimary"
-            app:buffered_color="@color/secondaryColor"
-            app:scrubber_color="@color/colorPrimary"/>
-
         <TextView
             android:id="@id/exo_duration"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:includeFontPadding="false"
-            android:paddingLeft="4dp"
-            android:paddingRight="4dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:alpha="0.4"
             android:textColor="@color/iconsTextColor"
-            android:textSize="@dimen/activity_text_span"
+            android:textSize="@dimen/activity_text_subspan"
             android:textStyle="bold"
             tools:text="5:15"/>
 
-    </LinearLayout>
+        <com.example.cchiv.jiggles.views.PlayerTimeBar
+            android:id="@id/exo_progress"
+            android:layout_below="@id/exo_duration"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            app:unplayed_color="@color/playedPlayerColor"
+            app:played_color="@color/colorPrimary"
+            app:buffered_color="@color/colorPrimary"
+            app:scrubber_color="@color/iconsTextColor"/>
+
+    </RelativeLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:padding="@dimen/activity_margin_relative"
         android:gravity="center"
         android:orientation="horizontal"
-        android:paddingTop="4dp"
         tools:background="@color/primaryTextColor">
 
         <ImageButton
@@ -77,19 +80,15 @@
 
         <ImageButton
             android:id="@id/exo_play"
-            android:layout_width="0dp"
-            android:layout_weight="1"
             android:tint="@color/iconsTextColor"
             android:contentDescription="@string/player_play"
-            style="@style/ExoMediaButton.Play"/>
+            style="@style/player_power_play"/>
 
         <ImageButton
             android:id="@id/exo_pause"
-            android:layout_width="0dp"
-            android:layout_weight="1"
             android:tint="@color/iconsTextColor"
             android:contentDescription="@string/player_pause"
-            style="@style/ExoMediaButton.Pause"/>
+            style="@style/player_power_pause"/>
 
         <ImageButton
             android:id="@id/exo_next"

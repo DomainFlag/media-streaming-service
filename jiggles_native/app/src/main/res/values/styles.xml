@@ -87,4 +87,16 @@
         <item name="android:orientation">vertical</item>
     </style>
 
+    <style name="player_power_pause" parent="ExoMediaButton.Pause">
+        <item name="android:src">@drawable/ic_pause_button</item>
+        <item name="android:layout_width">@dimen/player_media_power_width</item>
+        <item name="android:layout_height">@dimen/player_media_power_height</item>
+    </style>
+
+    <style name="player_power_play" parent="ExoMediaButton.Play">
+        <item name="android:src">@drawable/ic_play_arrow</item>
+        <item name="android:layout_width">@dimen/player_media_power_width</item>
+        <item name="android:layout_height">@dimen/player_media_power_height</item>
+    </style>
+
 </resources>

@@ -19,6 +19,10 @@ public class Store {
 
     private String filterBy = Constants.ALBUM;
 
+    public long lastPlaybackPosition = System.currentTimeMillis();
+    public long playbackPosition = 0;
+    public long duration = 0;
+
     private List<Artist> artists = new ArrayList<>();
     private List<Track> tracks = new ArrayList<>();
     private List<Album> albums = new ArrayList<>();

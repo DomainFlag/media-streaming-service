@@ -3,6 +3,7 @@ package com.example.cchiv.jiggles.player.players;
 import android.content.Context;
 
 import com.example.cchiv.jiggles.model.Store;
+import com.example.cchiv.jiggles.player.MediaSessionPlayer;
 
 public abstract class AlphaPlayer {
 
@@ -10,12 +11,16 @@ public abstract class AlphaPlayer {
         void onPlayerStateChanged(Store store, Boolean state);
     }
 
+    public boolean state = false;
+
     private Context context;
     private Store store = null;
+    private MediaSessionPlayer mediaSessionPlayer;
     private PlayerStateChanged playerStateChanged;
 
-    public AlphaPlayer(Context context, PlayerStateChanged playerStateChanged) {
+    public AlphaPlayer(Context context, MediaSessionPlayer mediaSessionPlayer, PlayerStateChanged playerStateChanged) {
         this.context = context;
+        this.mediaSessionPlayer = mediaSessionPlayer;
         this.playerStateChanged = playerStateChanged;
     }
 
@@ -30,6 +35,10 @@ public abstract class AlphaPlayer {
     public Store getStore() {
         return store;
     }
+
+    public int getMediaPlayerState() {
+        return mediaSessionPlayer.getState();
+    };
 
     public void setStore(Store store) {
         this.store = store;

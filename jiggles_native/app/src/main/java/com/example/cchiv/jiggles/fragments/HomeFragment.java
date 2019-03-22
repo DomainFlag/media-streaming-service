@@ -73,6 +73,9 @@ public class HomeFragment extends Fragment implements FeedAdapter.OnClickReplies
         ButterKnife.bind(this, rootView);
 
         Tools.resolveCallbackUser(result -> {
+            if(result == null)
+                return;
+
             textAuthorNameView.setText(result.getName());
 
             Picasso
