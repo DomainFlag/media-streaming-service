@@ -1,0 +1,203 @@
+<resources>
+    <string name="app_name">Jiggles</string>
+
+    <string name="app_tools_placeholder">Random text</string>
+    <string name="app_tools_placeholder_number">21</string>
+    <string name="app_tools_placeholder_date">Mon Aug 06 2018</string>
+
+    <string name="app_component_author">By %1$s</string>
+    <string name="app_component_beta">Beta</string>
+
+    <string name="app_connectivity_negative">No valid internet connection, try again!</string>
+
+
+    <!-- Facebook -->
+    <string name="facebook_app_id">1285608168179291</string>
+    <string name="fb_login_protocol_scheme">fb1285608168179291</string>
+
+    <!-- Feature -->
+    <string name="feature_highlight">Highlight</string>
+    <string name="feature_fresh">Fresh</string>
+    <string name="feature_other">Other</string>
+
+    <!-- Dialog Fresh -->
+    <string name="dialog_fresh_title">Fresh %1$s</string>
+    <string name="dialog_fresh_action">Listen</string>
+
+
+    <!-- Welcome -->
+    <string name="welcome_header_text">More then just a music playerContent.</string>
+    <string name="welcome_subheader_text">Listen.  Connect.  Jiggle.</string>
+    <string name="welcome_helper_text">Get Started</string>
+
+    <string name="welcome_sign_in">Log In</string>
+    <string name="welcome_sign_up">Sign Up</string>
+
+
+    <!-- Authentication -->
+    <string name="auth_facebook_description">Facebook Auth</string>
+    <string name="auth_spotify_description">Spotify Auth</string>
+    <string name="auth_twitter_description">Twitter Auth</string>
+
+    <string name="auth_social_header">Social %1$s with any of\.\.\.</string>
+    <string name="auth_social_header_log_in">log in</string>
+    <string name="auth_social_header_sing_up">sign up</string>
+
+    <string name="auth_social_greetings">Hi %1$s %2$s!\nThere\'s only one more thing to do.</string>
+    <string name="auth_social_email">Linked email: %1$s</string>
+
+    <string name="auth_error_cancel">Auth canceled</string>
+    <string name="auth_error_auth_resolved">You are already authenticated</string>
+    <string name="auth_error">%1$s*</string>
+
+    <string name="auth_email_hint">E-Mail</string>
+    <string name="auth_name_hint">Name</string>
+    <string name="auth_password_hint">Password</string>
+    <string name="auth_password_repeat_hint">Repeat Password</string>
+
+    <string name="auth_action_remember_me">Remember Me</string>
+    <string name="auth_action_text">Log in</string>
+
+    <string name="auth_redirection_new_user">If you have no account</string>
+    <string name="auth_redirection_old_user">If you already registered</string>
+    <string name="auth_redirection_sign_up">Sign up here</string>
+    <string name="auth_redirection_log_in">Login in here</string>
+    <string name="auth_redirection_text">%1$s,\n%2$s</string>
+
+
+    <!-- Home -->
+    <string-array name="home_pager_fragments">
+        <item>Home</item>
+        <item>Latest</item>
+        <item>Store</item>
+        <item>Search</item>
+    </string-array>
+
+    <string name="home_account_profile">Profile</string>
+    <string name="home_account_account">Account</string>
+    <string name="home_account_settings">Settings</string>
+    <string name="home_account_log_out">Log Out</string>
+
+    <string name="home_bar_title">%1$s - %2$s</string>
+    <string name="home_bar_controller">Player controller</string>
+
+    <!-- Home Thread -->
+    <string name="home_tab_description">Tab Title</string>
+
+    <string name="forum_thread_comment">Reply</string>
+    <string name="forum_thread_like">Like</string>
+
+    <string name="forum_thread_thumbnail_description">Thread Thumbnail</string>
+
+    <string name="forum_thread_comment_reply">Reply</string>
+    <string name="forum_thread_reply_hint">Reply\.\.\.</string>
+
+    <string name="forum_thread_creator_content_hint">What do you think of\.\.\.</string>
+    <string name="forum_thread_reply_content_hint">What to say\.\.\.</string>
+    <string name="forum_thread_creator_create">Post</string>
+
+    <string name="forum_menu">Thread More</string>
+
+    <string name="thread_edit">Edit thread</string>
+    <string name="thread_delete">Delete thread</string>
+    <string name="feed_item_comments_label">%1$d replies</string>
+    <string name="thread_following_label">%1$s</string>
+
+    <string name="comment_caption">Author caption</string>
+
+    <!-- Thread Edit -->
+    <string name="thread_edit_account_description">Account</string>
+
+    <string name="thread_edit_music">Music</string>
+    <string name="thread_edit_music_description">Upload music</string>
+
+    <string name="thread_edit_media">Media</string>
+    <string name="thread_edit_media_description">Upload media</string>
+
+    <string name="thread_edit_empower">Empower</string>
+    <string name="thread_edit_empower_description">Empower</string>
+
+    <string name="thread_edit_emoji">Emoji</string>
+    <string name="thread_edit_emoji_description">Insert emoji</string>
+
+    <string name="thread_edit_preview">Preview</string>
+    <string name="thread_edit_preview_description">Preview Thread</string>
+
+    <string name="thread_edit_submit">Submit</string>
+
+    <!-- Home Update -->
+    <string name="post_like">Recently liked it.</string>
+    <string name="post_playlist">Created a new playlist.</string>
+
+    <string name="post_content_caption_description">Content caption</string>
+
+    <string name="post_content_title_placeholder">The xx</string>
+    <string name="post_content_subtitle_placeholder">xx</string>
+
+    <string name="forum_post_action">Listen to it.</string>
+
+    <!-- Latest -->
+    <string name="home_releases_label">Releases</string>
+    <string name="home_news_label">News</string>
+
+    <string name="home_release_caption">Release Caption</string>
+    <string name="home_release_impact">Release Impact</string>
+
+    <string name="home_news_caption">News Caption</string>
+
+
+    <!-- Search -->
+    <string name="search_text">Search</string>
+
+    <string name="search_close_description">Search Close</string>
+
+    <string name="search_hint">Search Track, Album, Artist\.\.\.</string>
+    <string name="search_result">Search result</string>
+
+    <string name="search_album_thumbnail">Album Thumbnail</string>
+    <string name="search_artist_thumbnail">Artist Thumbnail</string>
+
+    <!-- Flow -->
+    <string name="flow_follow">Follow the Flow</string>
+    <string name="flow_not_follow">Be the Flow</string>
+    <string name="flow_genre">Flow Genre</string>
+    <string name="flow_nearby">%1$d nearby people are jamming to it.</string>
+
+
+    <!-- AlphaPlayer -->
+    <string name="player_play">Player Resume</string>
+    <string name="player_pause">Player Pause</string>
+    <string name="player_next">Player Next</string>
+    <string name="player_previous">Player Previous</string>
+    <string name="player_shuffle">Player Shuffle</string>
+
+    <string name="player_menu">Player Menu</string>
+    <string name="player_thumbnail">Player Thumbnail</string>
+    <string name="player_media_lyrics">Media Sing Along</string>
+    <string name="player_media_identifier">Media Identifier</string>
+    <string name="player_media_share">Media Share</string>
+
+    <string name="player_back">Player Back</string>
+
+    <string name="player_share_message">Connected with %1$s</string>
+
+    <!-- PlayerContent -->
+    <string name="collection_art">Track art</string>
+    <string name="collection_empty">No playerContent. Click to refresh.</string>
+
+    <string name="collection_save">Save</string>
+
+    <string name="collection_refresh">Refresh</string>
+    <string name="collection_filter">Filter By</string>
+
+    <string name="collection_filter_artist">Artist</string>
+    <string name="collection_filter_album">Album</string>
+    <string name="collection_filter_track">Track</string>
+
+    <string name="collection_filter_all">All</string>
+
+    <!-- Dialog Alert - Devices -->
+    <string name="player_devices_label">Devices:</string>
+
+
+</resources>
