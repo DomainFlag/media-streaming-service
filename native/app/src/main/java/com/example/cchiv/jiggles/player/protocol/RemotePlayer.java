@@ -163,7 +163,7 @@ public class RemotePlayer implements ConnectivityDialog.OnBluetoothDeviceSelect,
 
                     if(track != null) {
                         activity.runOnUiThread(() -> {
-//                            localPlayer.setStore(new PlayerContent(track));
+//                            localPlayer.setStore(new Store(track));
 
                             ((TextView) activity.findViewById(R.id.player_track)).setText(track.getName());
                             ((TextView) activity.findViewById(R.id.player_artist)).setText(track.getArtistName());

@@ -2,20 +2,15 @@ package com.example.cchiv.jiggles.player;
 
 import android.app.Notification;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.support.annotation.NonNull;
 import android.util.SparseArray;
 
-import com.example.cchiv.jiggles.model.player.PlayerContent;
 import com.example.cchiv.jiggles.model.player.PlayerState;
-import com.example.cchiv.jiggles.model.player.content.Track;
-import com.example.cchiv.jiggles.player.core.AlphaPlayer;
+import com.example.cchiv.jiggles.player.players.AlphaPlayer;
 import com.example.cchiv.jiggles.player.players.LocalPlayer;
 import com.example.cchiv.jiggles.player.players.SpotifyPlayer;
 import com.google.android.exoplayer2.Player;
 
-public class MediaPlayer extends AlphaPlayer implements SpotifyPlayer.SpotifyResolvedCallback,
-        AlphaPlayer.PlayerStateChanged {
+public class MediaPlayer extends AlphaPlayer implements AlphaPlayer.PlayerStateChanged {
 
     private static final String TAG = "MediaPlayer";
 
@@ -23,10 +18,7 @@ public class MediaPlayer extends AlphaPlayer implements SpotifyPlayer.SpotifyRes
         void onManagePlayerNotification(Notification notification);
     };
 
-    private PlayerContent playerContent = null;
-
     private MediaSessionPlayer mediaSessionPlayer;
-
     private PlayerStateChanged playerStateChanged;
     private PlayerNotificationManager playerNotificationManager;
 
@@ -43,20 +35,16 @@ public class MediaPlayer extends AlphaPlayer implements SpotifyPlayer.SpotifyRes
         this.mediaSessionPlayer = new MediaSessionPlayer(context,this);
         this.mediaSessionPlayer.createMediaSession();
 
-        AlphaPlayer spotifyPlayer = new SpotifyPlayer(context, this, this);
-        this.players.append(spotifyPlayer.getIdentifier(), spotifyPlayer);
+        PlayerState playerState = new PlayerState();
+        setPlayerState(playerState);
+
+        AlphaPlayer spotifyPlayer = new SpotifyPlayer(context, this);
+        spotifyPlayer.setPlayerState(playerState);
+        players.append(spotifyPlayer.getIdentifier(), spotifyPlayer);
 
         AlphaPlayer localPlayer = new LocalPlayer(context, this);
-        this.players.append(localPlayer.getIdentifier(), localPlayer);
-    }
-
-    public void requestPlayerFocus(AlphaPlayer alphaPlayer) {
-        int key = alphaPlayer.getIdentifier();
-
-        AlphaPlayer alphaPlayingPlayer = this.players.get(key);
-        if(alphaPlayingPlayer != alphaPlayer) {
-            this.player = alphaPlayer;
-        }
+        localPlayer.setPlayerState(playerState);
+        players.append(localPlayer.getIdentifier(), localPlayer);
     }
 
     @Override
@@ -124,51 +112,37 @@ public class MediaPlayer extends AlphaPlayer implements SpotifyPlayer.SpotifyRes
         return mediaSessionPlayer.getState();
     }
 
-    @Override
-    public void onSpotifyResolvedCallback(@NonNull PlayerContent playerContent, boolean isPaused) {
-        boolean contentEqual = false;
+    public void requestPlayerFocus(int identifier) {
+        AlphaPlayer alphaPlayer = players.get(identifier);
 
-        PlayerState playerState = getPlayerState();
-        Track track = playerState.getPlayerContent().getTrack(playerState.getPosition());
-
-        if(this.playerContent != null)
-            contentEqual = track.getUri().equals(playerContent.getTrack(0).getUri());
-
-//        if(this.playerContent == null) {
-//            onPlayerStateChanged(playerContent, !isPaused);
-//        } else if(contentEqual) {
-//            onPlayerStateChanged(playerContent, !isPaused);
-//        } else if(!isPaused) {
-//            if(localAlphaPlayer.getState())
-//                localAlphaPlayer.toggle(false);
-//
-//            onPlayerStateChanged(playerContent, true);
-//        }
+        requestPlayerFocus(alphaPlayer);
     }
 
     @Override
-    public void onSpotifyResolvedCallback(@NonNull Bitmap bitmap) {
-        PlayerState playerState = getPlayerState();
-        PlayerContent playerContent = playerState.getPlayerContent();
+    public void requestPlayerFocus(AlphaPlayer alphaPlayer) {
+        if(player != null) {
+            int key = alphaPlayer.getIdentifier();
 
-        Track track = playerContent.getTrack(playerState.getPosition());
-        if(!track.local) {
-            track.setBitmap(bitmap);
-
-            onPlayerStateChanged(playerState);
+            if(key != player.getIdentifier()) {
+                player.toggle(false);
+            }
         }
+
+        player = alphaPlayer;
+        player.resolve(getPlayerState());
+
+        onPlayerStateChanged(alphaPlayer.getPlayerState());
     }
 
     @Override
     public void onPlayerStateChanged(PlayerState playerState) {
-        if(this.getPlayerState().getPlaybackState() != playerState.getPlaybackState()) {
-            mediaSessionPlayer.setState(this.getPlayerState().getPlaybackState());
-        }
+        mediaSessionPlayer.setState(getPlayerState().getPlaybackState());
 
         Notification notification = mediaSessionPlayer.buildNotificationPlayer(playerState);
         playerNotificationManager.onManagePlayerNotification(notification);
 
-        this.setPlayerState(playerState);
+        setPlayerState(playerState);
+        playerStateChanged.onPlayerStateChanged(playerState);
     }
 }
 

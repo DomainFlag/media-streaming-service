@@ -8,15 +8,17 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.LinearSnapHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SnapHelper;
+import android.util.Log;
 
 import com.example.cchiv.jiggles.R;
 import com.example.cchiv.jiggles.adapters.ContentAdapter;
 import com.example.cchiv.jiggles.data.ContentContract;
-import com.example.cchiv.jiggles.model.player.PlayerContent;
-import com.example.cchiv.jiggles.services.PlayerService;
-import com.example.cchiv.jiggles.utilities.JigglesLoader;
 import com.example.cchiv.jiggles.data.ContentContract.AlbumEntry;
 import com.example.cchiv.jiggles.data.ContentContract.TrackEntry;
+import com.example.cchiv.jiggles.model.player.Store;
+import com.example.cchiv.jiggles.model.player.content.Album;
+import com.example.cchiv.jiggles.services.PlayerService;
+import com.example.cchiv.jiggles.utilities.JigglesLoader;
 
 public class AlbumActivity extends PlayerAppCompatActivity {
 
@@ -36,7 +38,8 @@ public class AlbumActivity extends PlayerAppCompatActivity {
         setContentView(R.layout.activity_album);
 
         contentAlbumAdapter = new ContentAdapter(this, null, ContentAdapter.MODE_SCROLL,
-                findViewById(R.id.album_background), store -> {});
+                findViewById(R.id.album_background), (album, position) -> {});
+
         RecyclerView recyclerView = createRecyclerView(contentAlbumAdapter, RecyclerView.HORIZONTAL, R.id.album_list);
 
         SnapHelper helper = new LinearSnapHelper();
@@ -47,8 +50,8 @@ public class AlbumActivity extends PlayerAppCompatActivity {
         Intent intent = getIntent();
         String id = intent.getStringExtra(ALBUM_ID);
 
-        JigglesLoader<PlayerContent> jigglesLoader = new JigglesLoader<>(this, (JigglesLoader
-                .OnPostLoaderCallback<PlayerContent>) this::updateLayout, PlayerContent::parseCursor);
+        JigglesLoader<Store> jigglesLoader = new JigglesLoader<>(this, (JigglesLoader
+                .OnPostLoaderCallback<Store>) this::updateLayout, Store::parseCursor);
 
         Bundle bundle = new Bundle();
         bundle.putString(JigglesLoader.BUNDLE_URI_KEY, ContentContract.CONTENT_COLLECTION_URI.toString());
@@ -71,14 +74,16 @@ public class AlbumActivity extends PlayerAppCompatActivity {
         return recyclerView;
     }
 
-    private void createPlayerIntent(PlayerContent playerContent) {
+    private void createPlayerIntent(Album album, int position) {
         Intent intent = new Intent(this, PlayerActivity.class);
+
+        Log.v(TAG, String.valueOf(position));
 
         Bundle bundle = new Bundle();
         bundle.putString(PlayerService.RESOURCE_SOURCE, PlayerService.RESOURCE_LOCAL);
-        bundle.putString(PlayerService.RESOURCE_IDENTIFIER, playerContent.getTrack(0).getId());
+        bundle.putInt(PlayerService.RESOURCE_IDENTIFIER, position);
         bundle.putString(PlayerService.RESOURCE_TYPE, TrackEntry._ID);
-        bundle.putString(PlayerService.RESOURCE_PARENT_IDENTIFIER, playerContent.getAlbum(0).getId());
+        bundle.putString(PlayerService.RESOURCE_PARENT_IDENTIFIER, album.getId());
         bundle.putString(PlayerService.RESOURCE_PARENT_TYPE, AlbumEntry._ID);
 
         intent.putExtras(bundle);
@@ -86,11 +91,11 @@ public class AlbumActivity extends PlayerAppCompatActivity {
         startActivity(intent);
     }
 
-    private void updateLayout(PlayerContent playerContent) {
-        contentAlbumAdapter.swapCollection(playerContent);
+    private void updateLayout(Store store) {
+        contentAlbumAdapter.swapCollection(store);
         contentAlbumAdapter.notifyDataSetChanged();
 
-        contentTrackAdapter.swapCollection(playerContent);
+        contentTrackAdapter.swapCollection(store);
         contentTrackAdapter.notifyDataSetChanged();
     }
 }

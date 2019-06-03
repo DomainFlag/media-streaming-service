@@ -49,7 +49,7 @@ public class Constants {
     public static final String NEWS = "news";
     public static final String RELEASES = "releases";
 
-    // PlayerContent
+    // Store
     public static final String STORE = "store";
 
     public static final String ARTIST = "artist";

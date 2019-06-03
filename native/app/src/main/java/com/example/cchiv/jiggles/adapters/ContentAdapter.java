@@ -17,7 +17,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.cchiv.jiggles.R;
-import com.example.cchiv.jiggles.model.player.PlayerContent;
+import com.example.cchiv.jiggles.model.player.Store;
 import com.example.cchiv.jiggles.model.player.content.Album;
 import com.example.cchiv.jiggles.model.player.content.Artist;
 import com.example.cchiv.jiggles.model.Image;
@@ -51,7 +51,7 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public static final int MODE_SCROLL = 3;
 
     public interface OnItemClickListener {
-        void onItemClickListener(PlayerContent playerContent);
+        void onItemClickListener(Album album, int position);
     }
 
     private static final String TAG = "ContentAdapter";
@@ -59,24 +59,24 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private Context context = null;
 
     private OnItemClickListener onItemClickListener = null;
-    private PlayerContent playerContent;
+    private Store store;
     private int layoutMode = MODE_ALBUM;
     private View rootView = null;
 
-    public ContentAdapter(Context context, PlayerContent playerContent) {
+    public ContentAdapter(Context context, Store store) {
         this.context = context;
-        this.playerContent = playerContent;
+        this.store = store;
     }
 
-    public ContentAdapter(Context context, PlayerContent playerContent, int layoutMode, OnItemClickListener onItemClickListener) {
+    public ContentAdapter(Context context, Store store, int layoutMode, OnItemClickListener onItemClickListener) {
         this.context = context;
-        this.playerContent = playerContent;
+        this.store = store;
         this.layoutMode = layoutMode;
         this.onItemClickListener = onItemClickListener;
     }
 
-    public ContentAdapter(Context context, PlayerContent playerContent, int layoutMode, View rootView, OnItemClickListener onItemClickListener) {
-        this(context, playerContent, layoutMode, onItemClickListener);
+    public ContentAdapter(Context context, Store store, int layoutMode, View rootView, OnItemClickListener onItemClickListener) {
+        this(context, store, layoutMode, onItemClickListener);
 
         this.rootView = rootView;
     }
@@ -121,7 +121,7 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     private void onBindArtistViewHolder(ArtistViewHolder holder, int position) {
-        Artist artist = playerContent.getArtists().get(position);
+        Artist artist = store.getArtists().get(position);
 
         List<Image> images = artist.getImages();
         if(images.size() > 0)
@@ -133,19 +133,19 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     private void onBindAlbumViewHolder(AlbumViewHolder holder, int position, int viewType) {
-        Album album = playerContent.getAlbums().get(position);
+        Album album = store.getAlbums().get(position);
         loadAlbumArt(album, holder, viewType);
 
         if(album.local) {
             holder.save.setVisibility(View.GONE);
         } else {
             holder.save.setOnClickListener(view -> {
-                PlayerContent playerContent = new PlayerContent(album);
+                Store store = new Store(album);
                 String token = Tools.getToken(context);
 
                 NetworkUtilities.ResolveStore resolveStore = new NetworkUtilities.ResolveStore(raw -> {
                     Log.v(TAG, raw.toString());
-                }, playerContent, token);
+                }, store, token);
             });
         }
 
@@ -163,10 +163,8 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
 
         holder.itemView.setOnClickListener((view) -> {
-            PlayerContent playerContent = new PlayerContent(album);
-
             if(onItemClickListener != null)
-                onItemClickListener.onItemClickListener(playerContent);
+                onItemClickListener.onItemClickListener(album, 0);
         });
     }
 
@@ -232,7 +230,7 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     private void onBindTrackViewHolder(TrackViewHolder holder, int position) {
-        Track track = playerContent.getTrack(position);
+        Track track = store.getTrack(position);
 
         holder.name.setText(track.getName());
 
@@ -245,11 +243,8 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         } else holder.artist.setText(track.getName());
 
         holder.itemView.setOnClickListener((view) -> {
-            PlayerContent playerContent = new PlayerContent(album);
-            playerContent.addTrack(track);
-
             if(onItemClickListener != null)
-                onItemClickListener.onItemClickListener(playerContent);
+                onItemClickListener.onItemClickListener(album, track.getNumber());
         });
     }
 
@@ -296,18 +291,18 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         return -1;
     }
 
-    public void swapCollection(PlayerContent playerContent) {
-        this.playerContent = playerContent;
+    public void swapCollection(Store store) {
+        this.store = store;
     }
 
-    public void swapLiveCollection(PlayerContent playerContent) {
-        if(this.playerContent == null) {
-            this.playerContent = playerContent;
+    public void swapLiveCollection(Store store) {
+        if(this.store == null) {
+            this.store = store;
 
             notifyDataSetChanged();
-        } else if(playerContent != null && !playerContent.getAlbums().isEmpty()){
-            List<Album> oldAlbums = this.playerContent.getAlbums();
-            List<Album> newAlbums = playerContent.getAlbums();
+        } else if(store != null && !store.getAlbums().isEmpty()){
+            List<Album> oldAlbums = this.store.getAlbums();
+            List<Album> newAlbums = store.getAlbums();
             int g;
             for(int i = 0; i < newAlbums.size(); i++) {
                 boolean flag = false;
@@ -348,14 +343,14 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public int getItemCount() {
-        if(playerContent == null)
+        if(store == null)
             return 0;
 
         switch(layoutMode) {
-            case MODE_ARTIST : return playerContent.getArtists().size();
-            case MODE_ALBUM : return playerContent.getAlbums().size();
-            case MODE_TRACK : return playerContent.getTracks().size();
-            case MODE_SCROLL : return playerContent.getAlbums().size();
+            case MODE_ARTIST : return store.getArtists().size();
+            case MODE_ALBUM : return store.getAlbums().size();
+            case MODE_TRACK : return store.getTracks().size();
+            case MODE_SCROLL : return store.getAlbums().size();
         }
 
         return 0;

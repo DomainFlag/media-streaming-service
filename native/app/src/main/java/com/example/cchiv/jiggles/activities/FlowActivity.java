@@ -16,7 +16,7 @@ import android.widget.ImageView;
 import com.example.cchiv.jiggles.R;
 import com.example.cchiv.jiggles.adapters.FlowAdapter;
 import com.example.cchiv.jiggles.data.ContentContract;
-import com.example.cchiv.jiggles.model.player.PlayerContent;
+import com.example.cchiv.jiggles.model.player.Store;
 import com.example.cchiv.jiggles.utilities.JigglesLoader;
 
 public class FlowActivity extends PlayerAppCompatActivity {
@@ -42,8 +42,8 @@ public class FlowActivity extends PlayerAppCompatActivity {
         loaderBundle.putString(JigglesLoader.BUNDLE_URI_KEY, ContentContract.CONTENT_COLLECTION_URI.toString());
 
         JigglesLoader jigglesLoader = new JigglesLoader<>(this,
-                (JigglesLoader.OnPostLoaderCallback<PlayerContent>) this::updateRecyclerView,
-                PlayerContent::parseCursor
+                (JigglesLoader.OnPostLoaderCallback<Store>) this::updateRecyclerView,
+                Store::parseCursor
         );
 
         loaderManager.initLoader(154124, loaderBundle, jigglesLoader).forceLoad();
@@ -51,8 +51,8 @@ public class FlowActivity extends PlayerAppCompatActivity {
         createAnimatedDrawable();
     }
 
-    public void updateRecyclerView(PlayerContent playerContent) {
-        flowAdapter.onSwapStore(playerContent);
+    public void updateRecyclerView(Store store) {
+        flowAdapter.onSwapStore(store);
         flowAdapter.notifyDataSetChanged();
     }
 

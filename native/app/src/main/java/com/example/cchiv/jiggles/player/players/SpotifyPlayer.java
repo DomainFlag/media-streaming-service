@@ -1,15 +1,12 @@
 package com.example.cchiv.jiggles.player.players;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.example.cchiv.jiggles.Constants;
-import com.example.cchiv.jiggles.model.player.PlayerContent;
+import com.example.cchiv.jiggles.model.player.Store;
 import com.example.cchiv.jiggles.model.player.PlayerState;
-import com.example.cchiv.jiggles.player.core.AlphaPlayer;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.Format;
@@ -33,26 +30,21 @@ import java.util.List;
 
 public class SpotifyPlayer extends AlphaPlayer implements Player {
 
-    public interface SpotifyResolvedCallback {
-        void onSpotifyResolvedCallback(@NonNull PlayerContent playerContent, boolean isPaused);
-        void onSpotifyResolvedCallback(@NonNull Bitmap bitmap);
-    }
-
     private static final String TAG = "SpotifyPlayer";
 
-    private static final int PLAYER_ID = 1521;
+    public static final int PLAYER_ID = 1521;
 
     private static SpotifyAppRemote spotifyAppRemote = null;
 
     private List<EventListener> listeners = new ArrayList<>();
 
-    public SpotifyPlayer(Context context, PlayerStateChanged playerStateChanged, SpotifyResolvedCallback spotifyResolvedCallback) {
+    public SpotifyPlayer(Context context, PlayerStateChanged playerStateChanged) {
         super(context, PLAYER_ID, playerStateChanged);
 
-        SpotifyPlayer.connect(this, spotifyResolvedCallback);
+        SpotifyPlayer.connect(this);
     }
 
-    private static void connect(SpotifyPlayer spotifyPlayer, SpotifyResolvedCallback spotifyResolvedCallback) {
+    private static void connect(SpotifyPlayer spotifyPlayer) {
         if(spotifyAppRemote != null && spotifyAppRemote.isConnected())
             return;
 
@@ -71,26 +63,23 @@ public class SpotifyPlayer extends AlphaPlayer implements Player {
                         spotifyAppRemote
                                 .getPlayerApi()
                                 .subscribeToPlayerState()
-                                .setEventCallback(playerState -> {
-                                    SpotifyPlayer.resolveSpotifyConnection(spotifyPlayer, playerState, spotifyResolvedCallback);
-                                });
+                                .setEventCallback(playerState -> SpotifyPlayer.resolveSpotifyConnection(spotifyPlayer, playerState));
                     }
 
                     @Override
                     public void onFailure(Throwable throwable) {
                         Log.v(TAG, throwable.getMessage() + "; trying to re-establish connection");
 
-                        SpotifyPlayer.connect(spotifyPlayer, spotifyResolvedCallback);
+                        SpotifyPlayer.connect(spotifyPlayer);
                     }
                 });
     }
 
-    private static void resolveSpotifyConnection(SpotifyPlayer spotifyPlayer, com.spotify.protocol.types.PlayerState playerState,
-                                                 SpotifyResolvedCallback spotifyResolvedCallback) {
+    private static void resolveSpotifyConnection(SpotifyPlayer spotifyPlayer, com.spotify.protocol.types.PlayerState playerState) {
         Track track = playerState.track;
 
-        if(track != null) {
-            PlayerContent playerContent = PlayerContent.resolveRemoteStore(
+        if(track != null && !playerState.isPaused) {
+            Store store = Store.resolveRemoteStore(
                     track.name,
                     track.uri,
                     track.album.name,
@@ -99,26 +88,33 @@ public class SpotifyPlayer extends AlphaPlayer implements Player {
 
             long lastPlaybackPosition = System.currentTimeMillis();
             spotifyPlayer.getPlayerState().setLastPlaybackPosition(lastPlaybackPosition);
-
             spotifyPlayer.getPlayerState().setPlaybackPosition(playerState.playbackPosition);
             spotifyPlayer.getPlayerState().setDuration(track.duration);
-            spotifyPlayer.getPlayerState().setPlayerContent(playerContent);
+            spotifyPlayer.getPlayerState().isPlaying = true;
+            spotifyPlayer.getPlayerState().setPosition(0);
+            spotifyPlayer.getPlayerState().setStore(store);
 
-            spotifyResolvedCallback.onSpotifyResolvedCallback(playerContent, playerState.isPaused);
-            SpotifyPlayer.resolveImageUri(track.imageUri, spotifyResolvedCallback);
+            resolveImageUri(spotifyPlayer, track.imageUri);
+
+            spotifyPlayer.getPlayerStateChanged().requestPlayerFocus(spotifyPlayer);
         }
     }
 
-    private static void resolveImageUri(ImageUri imageUri, SpotifyResolvedCallback spotifyResolvedCallback) {
+    private static void resolveImageUri(SpotifyPlayer spotifyPlayer, ImageUri imageUri) {
         if(spotifyAppRemote != null) {
             spotifyAppRemote
                     .getImagesApi()
                     .getImage(imageUri)
-                    .setResultCallback(spotifyResolvedCallback::onSpotifyResolvedCallback)
-                    .setErrorCallback(errorCallback -> {
-                        Log.v(TAG, errorCallback.getCause().getMessage() + "; trying to fetch the image again");
+                    .setResultCallback(bitmap -> {
+                        PlayerState playerState = spotifyPlayer.getPlayerState();
+                        playerState.resolveBitmap(bitmap);
 
-                        resolveImageUri(imageUri, spotifyResolvedCallback);
+                        spotifyPlayer.getPlayerStateChanged().requestPlayerFocus(spotifyPlayer);
+                    })
+                    .setErrorCallback(errorCallback -> {
+                        Log.v(TAG, errorCallback.getMessage() + "; trying to fetch the image again");
+
+//                        resolveImageUri(spotifyPlayer, imageUri);
                     });
         }
     }
@@ -130,10 +126,10 @@ public class SpotifyPlayer extends AlphaPlayer implements Player {
 
     @Override
     public void resolve(PlayerState playerState) {
-        PlayerContent playerContent = playerState.getPlayerContent();
+        Store store = playerState.getStore();
 
-        if(spotifyAppRemote != null && playerContent != null && playerContent.getUri() != null) {
-            spotifyAppRemote.getPlayerApi().play(playerContent.getUri());
+        if(spotifyAppRemote != null && store != null && store.getUri() != null) {
+            spotifyAppRemote.getPlayerApi().play(store.getUri());
         }
     }
 

@@ -10,7 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.cchiv.jiggles.R;
-import com.example.cchiv.jiggles.model.player.PlayerContent;
+import com.example.cchiv.jiggles.model.player.Store;
 import com.example.cchiv.jiggles.model.player.content.Album;
 import com.example.cchiv.jiggles.model.player.content.Artist;
 import com.example.cchiv.jiggles.model.player.content.Track;
@@ -19,15 +19,15 @@ import com.squareup.picasso.Picasso;
 public class FlowAdapter extends RecyclerView.Adapter<FlowAdapter.FlowItemViewHolder> {
 
     private Context context;
-    private PlayerContent playerContent;
+    private Store store;
 
-    public FlowAdapter(Context context, PlayerContent playerContent) {
+    public FlowAdapter(Context context, Store store) {
         this.context = context;
-        this.playerContent = playerContent;
+        this.store = store;
     }
 
-    public void onSwapStore(PlayerContent playerContent) {
-        this.playerContent = playerContent;
+    public void onSwapStore(Store store) {
+        this.store = store;
     }
 
     @NonNull
@@ -42,7 +42,7 @@ public class FlowAdapter extends RecyclerView.Adapter<FlowAdapter.FlowItemViewHo
 
     @Override
     public void onBindViewHolder(@NonNull FlowItemViewHolder holder, int position) {
-        Artist artist = playerContent.getArtist(position);
+        Artist artist = store.getArtist(position);
         Album album = artist.getAlbums().get(0);
         Track track = album.getTracks().get(0);
 
@@ -59,8 +59,8 @@ public class FlowAdapter extends RecyclerView.Adapter<FlowAdapter.FlowItemViewHo
 
     @Override
     public int getItemCount() {
-        if(playerContent != null)
-            return playerContent.getArtists().size();
+        if(store != null)
+            return store.getArtists().size();
         else return 0;
     }
 

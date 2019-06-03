@@ -10,11 +10,11 @@ import android.util.Log;
 
 import com.example.cchiv.jiggles.data.ContentContract;
 import com.example.cchiv.jiggles.data.ContentContract.AlbumEntry;
-import com.example.cchiv.jiggles.data.ContentContract.TrackEntry;
-import com.example.cchiv.jiggles.model.player.PlayerContent;
 import com.example.cchiv.jiggles.model.player.PlayerState;
+import com.example.cchiv.jiggles.model.player.Store;
 import com.example.cchiv.jiggles.player.MediaPlayer;
-import com.example.cchiv.jiggles.player.core.AlphaPlayer;
+import com.example.cchiv.jiggles.player.players.AlphaPlayer;
+import com.example.cchiv.jiggles.player.players.LocalPlayer;
 import com.example.cchiv.jiggles.utilities.JigglesLoader;
 
 import java.util.ArrayList;
@@ -87,26 +87,24 @@ public class PlayerService extends Service implements
     }
 
     public void resolveLocalMedia(Bundle bundle) {
-        String resourceId = bundle.getString(RESOURCE_IDENTIFIER, null);
-        String resourceType = bundle.getString(RESOURCE_TYPE, TrackEntry._ID);
+        int resourceId = bundle.getInt(RESOURCE_IDENTIFIER, 0);
         String resourceParentId = bundle.getString(RESOURCE_PARENT_IDENTIFIER, null);
         String resourceParentType = bundle.getString(RESOURCE_PARENT_TYPE, AlbumEntry._ID);
 
-        if(resourceId != null && resourceParentId != null) {
+        if(resourceParentId != null) {
             Bundle loaderBundle = new Bundle();
             loaderBundle.putString(JigglesLoader.BUNDLE_URI_KEY, ContentContract.CONTENT_COLLECTION_URI.toString());
             loaderBundle.putString(JigglesLoader.BUNDLE_SELECTION_KEY, resourceParentType + "=?");
             loaderBundle.putStringArray(JigglesLoader.BUNDLE_SELECTION_ARGS_KEY, new String[] { resourceParentId });
 
-            JigglesLoader.AsyncTaskContentLoader<PlayerContent> asyncTaskContentLoader =
-                    new JigglesLoader.AsyncTaskContentLoader<>(this, loaderBundle, PlayerContent::parseCursor);
+            JigglesLoader.AsyncTaskContentLoader<Store> asyncTaskContentLoader =
+                    new JigglesLoader.AsyncTaskContentLoader<>(this, loaderBundle, Store::parseCursor);
 
             asyncTaskContentLoader.registerListener(LOADER_SERVICE_COLLECTION_ID, (loader, store) -> {
-                if(store != null) {
-//                    store.setPosition(resourceId, resourceType);
-//
-//                    mediaPlayer.setStore(store);
-                }
+                mediaPlayer.getPlayerState().setPosition(resourceId);
+                mediaPlayer.getPlayerState().setStore(store);
+
+                mediaPlayer.requestPlayerFocus(LocalPlayer.PLAYER_ID);
             });
 
             asyncTaskContentLoader.forceLoad();
@@ -133,6 +131,11 @@ public class PlayerService extends Service implements
 
     public MediaPlayer getMediaPlayer() {
         return mediaPlayer;
+    }
+
+    @Override
+    public void requestPlayerFocus(AlphaPlayer alphaPlayer) {
+
     }
 
     @Override

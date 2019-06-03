@@ -99,6 +99,7 @@ public class ContentContract {
         public static final String COL_TRACK_ALBUM = "track_album";
         public static final String COL_TRACK_NAME = "track_name";
         public static final String COL_TRACK_URI = "track_uri";
+        public static final String COL_TRACK_NUMBER = "track_number";
         public static final String COL_TRACK_LOCAL = "track_local";
         public static final String COL_TRACK_TYPE = "track_type";
         public static final String COL_TRACK_FAVOURITE = "track_favourite";

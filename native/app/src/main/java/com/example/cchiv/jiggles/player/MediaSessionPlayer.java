@@ -16,8 +16,8 @@ import android.support.v4.media.session.PlaybackStateCompat;
 
 import com.example.cchiv.jiggles.R;
 import com.example.cchiv.jiggles.activities.PlayerActivity;
-import com.example.cchiv.jiggles.model.player.PlayerContent;
 import com.example.cchiv.jiggles.model.player.PlayerState;
+import com.example.cchiv.jiggles.model.player.Store;
 import com.example.cchiv.jiggles.model.player.content.Track;
 import com.example.cchiv.jiggles.services.PlayerService;
 
@@ -80,9 +80,8 @@ public class MediaSessionPlayer {
         if(playerState == null)
             return null;
 
-        PlayerContent playerContent = playerState.getPlayerContent();
-
-        Track track = playerContent.getTrack(playerState.getPosition());
+        Store store = playerState.getStore();
+        Track track = store.getTrack(playerState.getPosition());
 
         PlaybackStateCompat playbackStateCompat = builder.build();
         setPlaybackStateCompat(playbackStateCompat);

@@ -9,7 +9,7 @@ import com.example.cchiv.jiggles.model.News;
 import com.example.cchiv.jiggles.model.Post;
 import com.example.cchiv.jiggles.model.Release;
 import com.example.cchiv.jiggles.model.Reply;
-import com.example.cchiv.jiggles.model.player.PlayerContent;
+import com.example.cchiv.jiggles.model.player.Store;
 import com.example.cchiv.jiggles.model.Thread;
 import com.example.cchiv.jiggles.model.User;
 import com.google.gson.Gson;
@@ -294,9 +294,9 @@ public class NetworkUtilities {
     }
 
     /* Fetch Search Results */
-    public static class FetchSearchResults extends AsyncNetworkTask<PlayerContent> {
+    public static class FetchSearchResults extends AsyncNetworkTask<Store> {
 
-        public FetchSearchResults(NetworkCallbacks<PlayerContent> networkCallbacks, String query, String token) {
+        public FetchSearchResults(NetworkCallbacks<Store> networkCallbacks, String query, String token) {
             super(networkCallbacks);
 
             Uri uri = new Uri.Builder()
@@ -318,8 +318,8 @@ public class NetworkUtilities {
         }
 
         @Override
-        public PlayerContent onParseNetworkCallback(Gson gson, Headers headers, String body) {
-            Type type = new TypeToken<PlayerContent>() {}.getType();
+        public Store onParseNetworkCallback(Gson gson, Headers headers, String body) {
+            Type type = new TypeToken<Store>() {}.getType();
 
             return gson.fromJson(body, type);
         }
@@ -395,10 +395,10 @@ public class NetworkUtilities {
         }
     }
 
-    /* Resolve PlayerContent */
-    public static class ResolveStore extends AsyncNetworkTask<PlayerContent> {
+    /* Resolve Store */
+    public static class ResolveStore extends AsyncNetworkTask<Store> {
 
-        public ResolveStore(NetworkCallbacks<PlayerContent> networkCallbacks, PlayerContent playerContent, String token) {
+        public ResolveStore(NetworkCallbacks<Store> networkCallbacks, Store store, String token) {
             super(networkCallbacks);
 
             Uri uri = new Uri.Builder()
@@ -409,7 +409,7 @@ public class NetworkUtilities {
                     .build();
 
             Gson gson = new Gson();
-            RequestBody requestBody = RequestBody.create(JSON, gson.toJson(playerContent));
+            RequestBody requestBody = RequestBody.create(JSON, gson.toJson(store));
 
             Request request = new Request.Builder()
                     .url(uri.toString())
@@ -422,8 +422,8 @@ public class NetworkUtilities {
         }
 
         @Override
-        public PlayerContent onParseNetworkCallback(Gson gson, Headers headers, String body) {
-            Type type = new TypeToken<PlayerContent>() {}.getType();
+        public Store onParseNetworkCallback(Gson gson, Headers headers, String body) {
+            Type type = new TypeToken<Store>() {}.getType();
 
             return gson.fromJson(body, type);
         }

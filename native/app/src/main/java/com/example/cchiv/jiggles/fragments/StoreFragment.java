@@ -26,7 +26,7 @@ import com.example.cchiv.jiggles.R;
 import com.example.cchiv.jiggles.activities.AlbumActivity;
 import com.example.cchiv.jiggles.adapters.ContentAdapter;
 import com.example.cchiv.jiggles.data.ContentContract;
-import com.example.cchiv.jiggles.model.player.PlayerContent;
+import com.example.cchiv.jiggles.model.player.Store;
 import com.example.cchiv.jiggles.utilities.ItemScanner;
 import com.example.cchiv.jiggles.utilities.JigglesLoader;
 
@@ -92,9 +92,9 @@ public class StoreFragment extends Fragment {
 
         fetchLocalData();
 
-        contentAdapter = new ContentAdapter(context, null, ContentAdapter.MODE_ALBUM, store -> {
+        contentAdapter = new ContentAdapter(context, null, ContentAdapter.MODE_ALBUM, (album, position) -> {
             Intent intent = new Intent(context, AlbumActivity.class);
-            intent.putExtra(AlbumActivity.ALBUM_ID, store.getAlbum(0).getId());
+            intent.putExtra(AlbumActivity.ALBUM_ID, album.getId());
 
             startActivity(intent);
         });
@@ -113,8 +113,8 @@ public class StoreFragment extends Fragment {
         onUpdateProgress();
 
         JigglesLoader jigglesLoader = new JigglesLoader<>(context,
-                (JigglesLoader.OnPostLoaderCallback<PlayerContent>) this::onUpdateFragment,
-                PlayerContent::parseCursor
+                (JigglesLoader.OnPostLoaderCallback<Store>) this::onUpdateFragment,
+                Store::parseCursor
         );
 
         Bundle args = new Bundle();
@@ -180,14 +180,14 @@ public class StoreFragment extends Fragment {
         linearEmptyStateLayout.setVisibility(View.GONE);
     }
 
-    public void onUpdateFragment(PlayerContent playerContent) {
-        if(playerContent.getAlbums().isEmpty()) {
+    public void onUpdateFragment(Store store) {
+        if(store.getAlbums().isEmpty()) {
             onEmptyState();
         } else {
             onPostContent();
         }
 
-        contentAdapter.swapCollection(playerContent);
+        contentAdapter.swapCollection(store);
         contentAdapter.notifyDataSetChanged();
     }
 

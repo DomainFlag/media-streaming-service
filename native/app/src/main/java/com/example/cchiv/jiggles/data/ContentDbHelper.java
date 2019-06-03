@@ -62,6 +62,7 @@ public class ContentDbHelper extends SQLiteOpenHelper {
                     AlbumEntry.TABLE_NAME + "(" + AlbumEntry._ID + ")" + ", " +
                 TrackEntry.COL_TRACK_NAME + " TEXT NOT NULL, " +
                 TrackEntry.COL_TRACK_URI + " TEXT UNIQUE, " +
+                TrackEntry.COL_TRACK_NUMBER + " INTEGER DEFAULT -1, " +
                 TrackEntry.COL_TRACK_LOCAL + " INTEGER DEFAULT 0, " +
                 TrackEntry.COL_TRACK_TYPE + " TEXT DEFAULT 'album', " +
                 TrackEntry.COL_TRACK_FAVOURITE + " TEXT DEFAULT 1 " +

@@ -216,7 +216,6 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         holder.repliesView.setOnClickListener(view -> onClickReplies.onClickRepliesCallback(thread));
 
         holder.followersView.setText(context.getString(R.string.thread_following_label, "Jiggles"));
-
         holder.content.setText(thread.getContent());
 
         holder.menuButton.setOnClickListener((view) -> {

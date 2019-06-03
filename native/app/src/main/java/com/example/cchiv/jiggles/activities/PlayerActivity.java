@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.example.cchiv.jiggles.R;
 import com.example.cchiv.jiggles.model.Image;
 import com.example.cchiv.jiggles.model.player.PlayerState;
+import com.example.cchiv.jiggles.model.player.Store;
 import com.example.cchiv.jiggles.model.player.content.Track;
 import com.example.cchiv.jiggles.player.MediaPlayer;
 import com.example.cchiv.jiggles.player.protocol.RemotePlayer;
@@ -146,36 +147,41 @@ public class PlayerActivity extends AppCompatActivity implements
 
         // bind current active player
         Player player = mediaPlayer.getPlayer();
-        if(player != null && player != playerView.getPlayer()) {
+        if(player != null) {
             playerView.showController();
             playerView.setPlayer(player);
         }
 
-        // inflate the views
-        Track track = playerState.getPlayerContent().getTrack(playerState.getPosition());
+        Store store = playerState.getStore();
+        if(store != null) {
 
-        Tools.setWeightedGradientBackground(getBaseContext(), playerUnderlayView,
-                track.getColor(this));
+            // inflate the views
+            Track track = store.getTrack(playerState.getPosition());
 
-        textTrackView.setText(track.getName());
-        textAlbumView.setText(track.getAlbumName());
-        textArtistView.setText(track.getArtistName());
+            Tools.setWeightedGradientBackground(getBaseContext(), playerUnderlayView,
+                    track.getColor(this));
 
-        Image artwork = track.getArt();
-        if(artwork != null) {
-            Picasso
-                    .get()
-                    .load(artwork.getUrl())
-                    .placeholder(R.drawable.ic_artwork_placeholder)
-                    .error(R.drawable.ic_artwork_placeholder)
-                    .into(imageThumbnailView);
-        } else {
-            imageThumbnailView.setImageBitmap(track.getBitmap(this));
+            textTrackView.setText(track.getName());
+            textAlbumView.setText(track.getAlbumName());
+            textArtistView.setText(track.getArtistName());
+
+            Image artwork = track.getArt();
+            if(artwork != null) {
+                Picasso
+                        .get()
+                        .load(artwork.getUrl())
+                        .placeholder(R.drawable.ic_artwork_placeholder)
+                        .error(R.drawable.ic_artwork_placeholder)
+                        .into(imageThumbnailView);
+            } else {
+                imageThumbnailView.setImageBitmap(track.getBitmap(this));
+            }
+
+            Tools.setGradientBackground(this, imageBackgroundView,
+                    track.getColor(this), 145);
+
+            Tools.setStatusBarColor(this, track.getColor(this));
         }
-
-        Tools.setGradientBackground(this, imageBackgroundView,
-                track.getColor(this), 145);
-        Tools.setStatusBarColor(this, track.getColor(this));
     }
 
     @Override

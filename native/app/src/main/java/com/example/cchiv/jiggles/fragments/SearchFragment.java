@@ -59,9 +59,9 @@ public class SearchFragment extends Fragment implements TextView.OnEditorActionL
         recyclerView.setLayoutManager(gridLayoutManager);
 
         contentAdapter = new ContentAdapter(context, null);
-        contentAdapter.onAttachItemClickListener(store -> {
-            if(store != null && store.getAlbums().size() > 0) {
-                ((RemoteMediaCallback) context).onRemoteMediaClick(store.getAlbum(0).getUri());
+        contentAdapter.onAttachItemClickListener((album, position) -> {
+            if(album != null) {
+                ((RemoteMediaCallback) context).onRemoteMediaClick(album.getUri());
             }
         });
 

@@ -11,8 +11,8 @@ import android.widget.TextView;
 
 import com.example.cchiv.jiggles.R;
 import com.example.cchiv.jiggles.interfaces.RemoteMediaCallback;
-import com.example.cchiv.jiggles.model.player.PlayerContent;
 import com.example.cchiv.jiggles.model.player.PlayerState;
+import com.example.cchiv.jiggles.model.player.Store;
 import com.example.cchiv.jiggles.model.player.content.Track;
 import com.example.cchiv.jiggles.player.MediaPlayer;
 import com.example.cchiv.jiggles.services.PlayerConnection;
@@ -52,9 +52,9 @@ public abstract class PlayerAppCompatActivity extends AppCompatActivity implemen
             barPlayerLayout.setVisibility(View.GONE);
         } else {
             PlayerState playerState = mediaPlayer.getPlayerState();
-            PlayerContent playerContent = playerState.getPlayerContent();
+            Store store = playerState.getStore();
 
-            Track track = playerContent.getTrack(playerState.getPosition());
+            Track track = store.getTrack(playerState.getPosition());
 
             // setting the title and intent action
             barPlayerTitle.setText(getString(R.string.home_bar_title, track.getArtistName(), track.getName()));

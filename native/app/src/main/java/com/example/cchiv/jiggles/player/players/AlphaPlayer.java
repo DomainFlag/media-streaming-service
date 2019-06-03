@@ -1,4 +1,4 @@
-package com.example.cchiv.jiggles.player.core;
+package com.example.cchiv.jiggles.player.players;
 
 import android.content.Context;
 
@@ -8,6 +8,7 @@ import com.google.android.exoplayer2.Player;
 public abstract class AlphaPlayer {
 
     public interface PlayerStateChanged {
+        void requestPlayerFocus(AlphaPlayer alphaPlayer);
         void onPlayerStateChanged(PlayerState playerState);
     }
 

@@ -16,7 +16,7 @@ import android.util.Log;
 
 import com.example.cchiv.jiggles.R;
 import com.example.cchiv.jiggles.data.ContentContract;
-import com.example.cchiv.jiggles.model.player.PlayerContent;
+import com.example.cchiv.jiggles.model.player.Store;
 import com.example.cchiv.jiggles.model.player.content.Album;
 import com.example.cchiv.jiggles.model.Image;
 import com.example.cchiv.jiggles.model.player.content.Track;
@@ -147,7 +147,7 @@ public class ItemScanner {
         }
     }
 
-    private static void extractMetaData(Context context, MediaMetadataRetriever mediaMetadataRetriever, PlayerContent playerContent, String uri) {
+    private static void extractMetaData(Context context, MediaMetadataRetriever mediaMetadataRetriever, Store store, String uri) {
         try {
             mediaMetadataRetriever.setDataSource(uri);
 
@@ -162,9 +162,10 @@ public class ItemScanner {
                 genreList = Arrays.asList(genres.split(" "));
 
             if(albumName != null && artistName != null) {
-                Track track = new Track(title, uri, Integer.valueOf(trackNumber));
+                int number = trackNumber == null ? -1 : Integer.valueOf(trackNumber) - 1;
 
-                Album album = playerContent.addItem(track, artistName, albumName, genreList);
+                Track track = new Track(title, uri, number);
+                Album album = store.addItem(track, artistName, albumName, genreList);
                 if(album != null) {
                     decodeBitmapArt(context, mediaMetadataRetriever, album, uri);
                 }
@@ -174,14 +175,14 @@ public class ItemScanner {
         }
     };
 
-    private static void cacheLocalData(Context context, PlayerContent playerContent) {
-        if(playerContent != null) {
+    private static void cacheLocalData(Context context, Store store) {
+        if(store != null) {
             try {
-                // Do something with ContentProviderResult[]
+                // TODO(21) do something with ContentProviderResult[]
                 ContentProviderResult[] results = context.getContentResolver()
-                        .applyBatch(ContentContract.AUTHORITY, PlayerContent.parseValues(playerContent));
+                        .applyBatch(ContentContract.AUTHORITY, Store.parseValues(store));
 
-                PlayerContent.setValues(playerContent, results);
+                Store.setValues(store, results);
             } catch (RemoteException e) {
                 Log.v(TAG, e.toString());
             } catch (OperationApplicationException e) {
@@ -190,9 +191,9 @@ public class ItemScanner {
         }
     }
 
-    public static PlayerContent resolveLocalMedia(Context context) {
+    public static Store resolveLocalMedia(Context context) {
         MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
-        PlayerContent playerContent = null;
+        Store store = null;
 
         Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 new String[] {
@@ -200,13 +201,13 @@ public class ItemScanner {
                 }, null, null, null);
 
         if(cursor != null) {
-            playerContent = new PlayerContent();
+            store = new Store();
             while(cursor.moveToNext()) {
                 int dataColumnIndex = cursor.getColumnIndex(MediaStore.Audio.Media.DATA);
 
                 String path = cursor.getString(dataColumnIndex);
 
-                extractMetaData(context, mediaMetadataRetriever, playerContent, path);
+                extractMetaData(context, mediaMetadataRetriever, store, path);
             }
 
             cursor.close();
@@ -214,15 +215,15 @@ public class ItemScanner {
 
         mediaMetadataRetriever.release();
 
-        cacheLocalData(context, playerContent);
+        cacheLocalData(context, store);
 
-        return playerContent;
+        return store;
     }
 
-    public static class AsyncItemScanner extends AsyncTask<Void, Void, PlayerContent> {
+    public static class AsyncItemScanner extends AsyncTask<Void, Void, Store> {
 
         public interface AsyncItemScannerListener {
-            void asyncItemScannerListener(PlayerContent playerContent);
+            void asyncItemScannerListener(Store store);
         }
 
         private WeakReference<Context> weakReference;
@@ -239,7 +240,7 @@ public class ItemScanner {
         }
 
         @Override
-        protected PlayerContent doInBackground(Void... voids) {
+        protected Store doInBackground(Void... voids) {
             Context context = this.weakReference.get();
             if(context != null)
                 return resolveLocalMedia(context);
@@ -247,8 +248,8 @@ public class ItemScanner {
         }
 
         @Override
-        protected void onPostExecute(PlayerContent playerContent) {
-            this.asyncItemScannerListener.asyncItemScannerListener(playerContent);
+        protected void onPostExecute(Store store) {
+            this.asyncItemScannerListener.asyncItemScannerListener(store);
         }
     }
 }

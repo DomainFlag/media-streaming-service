@@ -4,11 +4,10 @@ import android.content.Context;
 import android.media.audiofx.Visualizer;
 import android.net.Uri;
 
-import com.example.cchiv.jiggles.model.player.PlayerContent;
-import com.example.cchiv.jiggles.model.player.content.Album;
 import com.example.cchiv.jiggles.model.player.PlayerState;
+import com.example.cchiv.jiggles.model.player.Store;
+import com.example.cchiv.jiggles.model.player.content.Album;
 import com.example.cchiv.jiggles.model.player.content.Track;
-import com.example.cchiv.jiggles.player.core.AlphaPlayer;
 import com.example.cchiv.jiggles.player.listeners.PlayerAnalyticsListener;
 import com.example.cchiv.jiggles.player.listeners.PlayerEventListener;
 import com.example.cchiv.jiggles.player.protocol.RemotePlayer;
@@ -38,7 +37,7 @@ public class LocalPlayer extends AlphaPlayer {
 
     private static final String TAG = "LocalPlayer";
 
-    private static final int PLAYER_ID = 3215;
+    public static final int PLAYER_ID = 3215;
 
     private VisualizerView visualizerView = null;
     private DataFetcher dataFetcher = null;
@@ -159,11 +158,11 @@ public class LocalPlayer extends AlphaPlayer {
     /**
      * Setting up all tracks of an album in a queue
      * @param factory
-     * @param playerContent
+     * @param store
      * @return
      */
-    private ConcatenatingMediaSource setMultipleSources(ExtractorMediaSource.Factory factory, PlayerContent playerContent) {
-        Album album = playerContent.getAlbum(0);
+    private ConcatenatingMediaSource setMultipleSources(ExtractorMediaSource.Factory factory, Store store) {
+        Album album = store.getAlbum(0);
         ConcatenatingMediaSource concatenatingMediaSource = new ConcatenatingMediaSource();
 
         for(Track track : album.getTracks()) {
@@ -204,17 +203,17 @@ public class LocalPlayer extends AlphaPlayer {
     @Override
     public void resolve(PlayerState playerState) {
         if(exoPlayer == null)
-            this.setPlayer();
+            setPlayer();
 
         setPlayerState(playerState);
 
-        PlayerContent playerContent = playerState.getPlayerContent();
+        Store store = playerState.getStore();
 
         DefaultDataSourceFactory defaultDataSourceFactory = new DefaultDataSourceFactory(getContext(),
                 Util.getUserAgent(getContext(), getContext().getPackageName()));
 
         ExtractorMediaSource.Factory factory = new ExtractorMediaSource.Factory(defaultDataSourceFactory);
-        ConcatenatingMediaSource concatenatingMediaSource = setMultipleSources(factory, playerContent);
+        ConcatenatingMediaSource concatenatingMediaSource = setMultipleSources(factory, store);
 
         this.exoPlayer.prepare(concatenatingMediaSource);
         this.exoPlayer.seekToDefaultPosition(playerState.getPosition());

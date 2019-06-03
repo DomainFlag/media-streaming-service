@@ -26,7 +26,7 @@
 
 
     <!-- Welcome -->
-    <string name="welcome_header_text">More then just a music playerContent.</string>
+    <string name="welcome_header_text">More then just a music store.</string>
     <string name="welcome_subheader_text">Listen.  Connect.  Jiggle.</string>
     <string name="welcome_helper_text">Get Started</string>
 
@@ -181,9 +181,9 @@
 
     <string name="player_share_message">Connected with %1$s</string>
 
-    <!-- PlayerContent -->
+    <!-- Store -->
     <string name="collection_art">Track art</string>
-    <string name="collection_empty">No playerContent. Click to refresh.</string>
+    <string name="collection_empty">No store. Click to refresh.</string>
 
     <string name="collection_save">Save</string>
 

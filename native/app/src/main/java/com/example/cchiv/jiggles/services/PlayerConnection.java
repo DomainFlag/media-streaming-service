@@ -66,6 +66,7 @@ public class PlayerConnection implements ServiceConnection {
     }
 
     public void requestCallbackCall() {
-        playerService.requestCallbackCall();
+        if(playerService != null)
+            playerService.requestCallbackCall();
     }
 }
