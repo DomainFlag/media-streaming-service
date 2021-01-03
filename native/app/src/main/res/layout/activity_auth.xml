@@ -9,11 +9,11 @@
     android:background="@color/iconsTextColor"
     tools:context=".activities.AuthActivity">
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:descendantFocusability="beforeDescendants"
@@ -282,8 +282,8 @@
                 app:layout_constraintTop_toBottomOf="@+id/auth_action"
                 tools:text="@string/auth_redirection_new_user"/>
 
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </ScrollView>

@@ -6,13 +6,13 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.LoaderManager;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.loader.app.LoaderManager;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
@@ -26,12 +26,12 @@ import com.example.cchiv.jiggles.R;
 import com.example.cchiv.jiggles.activities.AlbumActivity;
 import com.example.cchiv.jiggles.adapters.ContentAdapter;
 import com.example.cchiv.jiggles.data.ContentContract;
+import com.example.cchiv.jiggles.databinding.FragmentHomeLayoutBinding;
+import com.example.cchiv.jiggles.databinding.FragmentStoreLayoutBinding;
 import com.example.cchiv.jiggles.model.player.Store;
 import com.example.cchiv.jiggles.utilities.ItemScanner;
 import com.example.cchiv.jiggles.utilities.JigglesLoader;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 public class StoreFragment extends Fragment {
 
@@ -42,6 +42,7 @@ public class StoreFragment extends Fragment {
     private static final int PERMISSION_STORE_CODE = 154;
 
     private Context context;
+    private FragmentStoreLayoutBinding binding;
 
     private ContentAdapter contentAdapter = null;
 
@@ -52,20 +53,14 @@ public class StoreFragment extends Fragment {
             R.id.filter_all
     };
 
-    @BindView(R.id.collection_empty_state) LinearLayout linearEmptyStateLayout;
-    @BindView(R.id.collection_progress) ProgressBar progressBar;
-    @BindView(R.id.collection_list) RecyclerView recyclerView;
-
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, Bundle
             savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_store_layout, container, false);
+        binding = FragmentStoreLayoutBinding.inflate(inflater, container, false);
+        View rootView = binding.getRoot();
 
-        ButterKnife.bind(this, rootView);
-
-
-        linearEmptyStateLayout.setOnClickListener(view -> {
+        binding.collectionEmptyState.setOnClickListener(view -> {
             resolvePermissionLocalMedia();
         });
 
@@ -99,12 +94,11 @@ public class StoreFragment extends Fragment {
             startActivity(intent);
         });
 
-        recyclerView = rootView.findViewById(R.id.collection_list);
-        recyclerView.setAdapter(contentAdapter);
-        recyclerView.setHasFixedSize(true);
+        binding.collectionList.setAdapter(contentAdapter);
+        binding.collectionList.setHasFixedSize(true);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
-        recyclerView.setLayoutManager(linearLayoutManager);
+        binding.collectionList.setLayoutManager(linearLayoutManager);
 
         return rootView;
     }
@@ -160,24 +154,24 @@ public class StoreFragment extends Fragment {
     }
 
     public void onEmptyState() {
-        linearEmptyStateLayout.setVisibility(View.VISIBLE);
+        binding.collectionEmptyState.setVisibility(View.VISIBLE);
 
-        progressBar.setVisibility(View.GONE);
-        recyclerView.setVisibility(View.GONE);
+        binding.collectionProgress.setVisibility(View.GONE);
+        binding.collectionList.setVisibility(View.GONE);
     }
 
     public void onUpdateProgress() {
-        progressBar.setVisibility(View.VISIBLE);
+        binding.collectionProgress.setVisibility(View.VISIBLE);
 
-        linearEmptyStateLayout.setVisibility(View.GONE);
-        recyclerView.setVisibility(View.GONE);
+        binding.collectionEmptyState.setVisibility(View.GONE);
+        binding.collectionList.setVisibility(View.GONE);
     }
 
     public void onPostContent() {
-        recyclerView.setVisibility(View.VISIBLE);
+        binding.collectionList.setVisibility(View.VISIBLE);
 
-        progressBar.setVisibility(View.GONE);
-        linearEmptyStateLayout.setVisibility(View.GONE);
+        binding.collectionProgress.setVisibility(View.GONE);
+        binding.collectionEmptyState.setVisibility(View.GONE);
     }
 
     public void onUpdateFragment(Store store) {

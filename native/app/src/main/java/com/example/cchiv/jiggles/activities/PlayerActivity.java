@@ -3,14 +3,16 @@ package com.example.cchiv.jiggles.activities;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.cchiv.jiggles.R;
+import com.example.cchiv.jiggles.databinding.ActivityAuthBinding;
+import com.example.cchiv.jiggles.databinding.ActivityPlayerBinding;
 import com.example.cchiv.jiggles.model.Image;
 import com.example.cchiv.jiggles.model.player.PlayerState;
 import com.example.cchiv.jiggles.model.player.Store;
@@ -26,8 +28,6 @@ import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.squareup.picasso.Picasso;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 public class PlayerActivity extends AppCompatActivity implements
         PlayerConnection.PlayerServiceConnection, RemotePlayer.OnUpdateInterface {
@@ -37,6 +37,8 @@ public class PlayerActivity extends AppCompatActivity implements
     public PlayerView playerView = null;
 
     public PlayerConnection playerConnection = null;
+    
+    private ActivityPlayerBinding binding;
 
     private Speech speech = new Speech(this, (action, position) -> {
         if(playerConnection != null) {
@@ -67,29 +69,12 @@ public class PlayerActivity extends AppCompatActivity implements
         }
     });
 
-    @BindView(R.id.player_underlay) View playerUnderlayView;
-
-    @BindView(R.id.player_track) TextView textTrackView;
-    @BindView(R.id.player_album) TextView textAlbumView;
-    @BindView(R.id.player_artist) TextView textArtistView;
-    @BindView(R.id.player_thumbnail) ImageView imageThumbnailView;
-    @BindView(R.id.player_background) LinearLayout imageBackgroundView;
-
-    @BindView(R.id.player_menu) ToggleImageView toggleMenuImageView;
-    @BindView(R.id.player_utilities) View utilitiesView;
-
-    @BindView(R.id.player_media_lyrics) ToggleImageView toggleLyricsImageView;
-    @BindView(R.id.player_media_identifier) ToggleImageView toggleIdentifierImageView;
-    @BindView(R.id.player_media_share) ToggleImageView toggleShareImageView;
-
-    @BindView(R.id.player_devices) TextView textDevicesView;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_player);
 
-        ButterKnife.bind(this);
+        binding = ActivityPlayerBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         // Back command
         findViewById(R.id.player_back).setOnClickListener((view) -> {
@@ -97,16 +82,16 @@ public class PlayerActivity extends AppCompatActivity implements
         });
 
         // Menu utilities
-        toggleMenuImageView.setOnActiveCallback((view, isActive) -> {
+        ((ToggleImageView) binding.playerMenu).setOnActiveCallback((view, isActive) -> {
             if(isActive) {
-                utilitiesView.setVisibility(View.VISIBLE);
+                binding.playerUtilities.setVisibility(View.VISIBLE);
             } else {
-                utilitiesView.setVisibility(View.GONE);
+                binding.playerUtilities.setVisibility(View.GONE);
             }
         });
 
         // Lyrics
-        toggleLyricsImageView.setOnActiveCallback((view, isActive) -> {
+        ((ToggleImageView) binding.playerMediaLyrics).setOnActiveCallback((view, isActive) -> {
             // Do something later with song lyrics
             if(isActive) {
                 speech.initiate();
@@ -116,12 +101,12 @@ public class PlayerActivity extends AppCompatActivity implements
         });
 
         // Identifier
-        toggleIdentifierImageView.setOnActiveCallback(((view, isActive) -> {
+        ((ToggleImageView) binding.playerMediaIdentifier).setOnActiveCallback(((view, isActive) -> {
             // Do something later with song identifier
         }));
 
         // Share
-        toggleShareImageView.setOnActiveCallback((view, isActive) -> {
+        ((ToggleImageView) binding.playerMediaShare).setOnActiveCallback((view, isActive) -> {
 //            LocalPlayer localPlayer = playerConnection.getMediaPlayer().getLocalAlphaPlayer();
 //            RemotePlayer remotePlayer = localPlayer.getRemotePlayer();
 //
@@ -158,12 +143,12 @@ public class PlayerActivity extends AppCompatActivity implements
             // inflate the views
             Track track = store.getTrack(playerState.getPosition());
 
-            Tools.setWeightedGradientBackground(getBaseContext(), playerUnderlayView,
+            Tools.setWeightedGradientBackground(getBaseContext(), binding.playerUnderlay,
                     track.getColor(this));
 
-            textTrackView.setText(track.getName());
-            textAlbumView.setText(track.getAlbumName());
-            textArtistView.setText(track.getArtistName());
+            binding.playerTrack.setText(track.getName());
+            binding.playerAlbum.setText(track.getAlbumName());
+            binding.playerArtist.setText(track.getArtistName());
 
             Image artwork = track.getArt();
             if(artwork != null) {
@@ -172,12 +157,12 @@ public class PlayerActivity extends AppCompatActivity implements
                         .load(artwork.getUrl())
                         .placeholder(R.drawable.ic_artwork_placeholder)
                         .error(R.drawable.ic_artwork_placeholder)
-                        .into(imageThumbnailView);
+                        .into(binding.playerThumbnail);
             } else {
-                imageThumbnailView.setImageBitmap(track.getBitmap(this));
+                binding.playerThumbnail.setImageBitmap(track.getBitmap(this));
             }
 
-            Tools.setGradientBackground(this, imageBackgroundView,
+            Tools.setGradientBackground(this, binding.playerBackground,
                     track.getColor(this), 145);
 
             Tools.setStatusBarColor(this, track.getColor(this));
@@ -215,11 +200,11 @@ public class PlayerActivity extends AppCompatActivity implements
     @Override
     public void onUpdateInterface(BluetoothDevice bluetoothDevice, boolean isActive) {
         if(isActive) {
-            textDevicesView.setAlpha(1.0f);
-            textDevicesView.setText(getString(R.string.player_share_message, bluetoothDevice.getName()));
+            binding.playerDevices.setAlpha(1.0f);
+            binding.playerDevices.setText(getString(R.string.player_share_message, bluetoothDevice.getName()));
         } else {
-            textDevicesView.setAlpha(0.4f);
-            textDevicesView.setText(null);
+            binding.playerDevices.setAlpha(0.4f);
+            binding.playerDevices.setText(null);
         }
     }
 }

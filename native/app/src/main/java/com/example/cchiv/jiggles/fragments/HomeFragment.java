@@ -5,17 +5,17 @@ import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.CardView;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.RoundedBitmapDrawable;
+import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +27,7 @@ import android.widget.TextView;
 import com.example.cchiv.jiggles.R;
 import com.example.cchiv.jiggles.adapters.FeedAdapter;
 import com.example.cchiv.jiggles.adapters.ReplyAdapter;
+import com.example.cchiv.jiggles.databinding.FragmentHomeLayoutBinding;
 import com.example.cchiv.jiggles.model.FeedItem;
 import com.example.cchiv.jiggles.utilities.NetworkUtilities;
 import com.example.cchiv.jiggles.utilities.Tools;
@@ -35,8 +36,6 @@ import com.squareup.picasso.Target;
 
 import java.util.ArrayList;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 public class HomeFragment extends Fragment implements FeedAdapter.OnClickReplies {
 
@@ -48,35 +47,20 @@ public class HomeFragment extends Fragment implements FeedAdapter.OnClickReplies
     private ReplyAdapter replyAdapter;
     private FeedItem feedItem = null;
 
-    @BindView(R.id.home_account_layout) LinearLayout linearAccountLayout;
-    @BindView(R.id.home_account_creator) TextView textAccountCreatorView;
-    @BindView(R.id.home_account_caption) ImageView imageAccountCaptionView;
-
-    @BindView(R.id.home_list) RecyclerView recyclerView;
-
-    @BindView(R.id.home_replies_layout) CardView cardRepliesLayoutView;
-    @BindView(R.id.home_replies_item) TextView textRepliesItemView;
-    @BindView(R.id.home_replies_close) ImageView imageRepliesCloseView;
-    @BindView(R.id.home_feed_item_replies) RecyclerView recyclerRepliesView;
-
-    @BindView(R.id.reply_author_caption) ImageView imageAuthorCaptionView;
-    @BindView(R.id.reply_author_name) TextView textAuthorNameView;
-    @BindView(R.id.reply_value) EditText editReplyValueText;
-    @BindView(R.id.reply_action) ImageView imageReplyActionView;
+    private FragmentHomeLayoutBinding binding;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_home_layout, container, false);
-
-        ButterKnife.bind(this, rootView);
+        binding = FragmentHomeLayoutBinding.inflate(inflater, container, false);
+        View rootView = binding.getRoot();
 
         Tools.resolveCallbackUser(result -> {
             if(result == null)
                 return;
 
-            textAuthorNameView.setText(result.getName());
+            // binding.replyAuthorName.setText(result.getName());
 
             Picasso
                     .get()
@@ -90,45 +74,45 @@ public class HomeFragment extends Fragment implements FeedAdapter.OnClickReplies
                             imageDrawable.setCircular(true);
                             imageDrawable.setCornerRadius(Math.max(bitmap.getWidth(), bitmap.getHeight()) / 2.0f);
 
-                            imageAccountCaptionView.setImageDrawable(imageDrawable);
-                            imageAuthorCaptionView.setImageDrawable(imageDrawable);
+                            binding.homeAccountCaption.setImageDrawable(imageDrawable);
+                            // binding.homeReplyAuthorCaption.setImageDrawable(imageDrawable);
                         }
 
                         @Override
                         public void onBitmapFailed(Exception e, Drawable errorDrawable) {
-                            imageAccountCaptionView.setImageDrawable(errorDrawable);
-                            imageAuthorCaptionView.setImageDrawable(errorDrawable);
+                            binding.homeAccountCaption.setImageDrawable(errorDrawable);
+                            // binding.replyAuthorCaption.setImageDrawable(errorDrawable);
                         }
 
                         @Override
                         public void onPrepareLoad(Drawable placeHolderDrawable) {
-                            imageAccountCaptionView.setImageDrawable(placeHolderDrawable);
-                            imageAuthorCaptionView.setImageDrawable(placeHolderDrawable);
+                            binding.homeAccountCaption.setImageDrawable(placeHolderDrawable);
+                            // binding.replyAuthorCaption.setImageDrawable(placeHolderDrawable);
                         }
                     });
         });
 
-        cardRepliesLayoutView.setVisibility(View.GONE);
-        imageRepliesCloseView.setOnClickListener(view -> {
-            cardRepliesLayoutView.setVisibility(View.GONE);
-
-            feedItem = null;
-        });
+//        binding.homeRepliesLayout.setVisibility(View.GONE);
+//        binding.homeRepliesClose.setOnClickListener(view -> {
+//            binding.homeRepliesLayout.setVisibility(View.GONE);
+//
+//            feedItem = null;
+//        });
 
         float density = getResources().getDisplayMetrics().density;
 
-        recyclerView.addItemDecoration(new FeedItemDecoration((int) density * 8));
-        recyclerView.setNestedScrollingEnabled(false);
-        recyclerView.setHasFixedSize(false);
+        binding.homeList.addItemDecoration(new FeedItemDecoration((int) density * 8));
+        binding.homeList.setNestedScrollingEnabled(false);
+        binding.homeList.setHasFixedSize(false);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
-        recyclerView.setLayoutManager(linearLayoutManager);
+        binding.homeList.setLayoutManager(linearLayoutManager);
 
         feedAdapter = new FeedAdapter(context, this, new ArrayList<>());
-        recyclerView.setAdapter(feedAdapter);
+        binding.homeList.setAdapter(feedAdapter);
 
-        linearAccountLayout.setVisibility(View.VISIBLE);
-        linearAccountLayout.setOnClickListener((view) -> {
+        binding.homeAccountLayout.setVisibility(View.VISIBLE);
+        binding.homeAccountLayout.setOnClickListener((view) -> {
             FragmentManager fragmentManager = ((AppCompatActivity) context).getSupportFragmentManager();
 
             ThreadFragment fragment = new ThreadFragment();
@@ -140,14 +124,14 @@ public class HomeFragment extends Fragment implements FeedAdapter.OnClickReplies
                         .remove(fragment)
                         .commit();
 
-                linearAccountLayout.setVisibility(View.VISIBLE);
+                binding.homeAccountLayout.setVisibility(View.VISIBLE);
             });
 
             fragmentManager.beginTransaction()
                     .add(R.id.home_thread, fragment)
                     .commit();
 
-            linearAccountLayout.setVisibility(View.GONE);
+            binding.homeAccountLayout.setVisibility(View.GONE);
         });
 
         NetworkUtilities.FetchThreads fetchThreads = new NetworkUtilities.FetchThreads(threads -> {
@@ -164,40 +148,40 @@ public class HomeFragment extends Fragment implements FeedAdapter.OnClickReplies
     }
 
     public void setClickReplyCallback(int position) {
-        imageReplyActionView.setOnClickListener(view -> {
-            if(feedItem != null) {
-                String content = editReplyValueText.getText().toString();
-
-                if(content.isEmpty())
-                    return;
-
-                imageReplyActionView.setColorFilter(ContextCompat.getColor(context, R.color.unexpectedColor));
-                NetworkUtilities.ResolveReplyAction resolveReplyAction = new NetworkUtilities.ResolveReplyAction(thread -> {
-                    feedAdapter.getItems().set(position, thread);
-                    feedAdapter.notifyItemChanged(position);
-
-                    replyAdapter.getReplies().add(thread.getReplies().get(thread.getReplies().size() - 1));
-                    replyAdapter.notifyDataSetChanged();
-
-                    imageReplyActionView.setColorFilter(ContextCompat.getColor(context, R.color.primaryTextColor));
-                }, feedItem.encodeJSONObject(null, content), NetworkUtilities.RequestAdaptBuilder.getType(false), Tools.getToken(context));
-            }
-        });
+//        binding.replyAction.setOnClickListener(view -> {
+//            if(feedItem != null) {
+//                String content = binding.replyValue.getText().toString();
+//
+//                if(content.isEmpty())
+//                    return;
+//
+//                binding.replyAction.setColorFilter(ContextCompat.getColor(context, R.color.unexpectedColor));
+//                NetworkUtilities.ResolveReplyAction resolveReplyAction = new NetworkUtilities.ResolveReplyAction(thread -> {
+//                    feedAdapter.getItems().set(position, thread);
+//                    feedAdapter.notifyItemChanged(position);
+//
+//                    replyAdapter.getReplies().add(thread.getReplies().get(thread.getReplies().size() - 1));
+//                    replyAdapter.notifyDataSetChanged();
+//
+//                    binding.replyAction.setColorFilter(ContextCompat.getColor(context, R.color.primaryTextColor));
+//                }, feedItem.encodeJSONObject(null, content), NetworkUtilities.RequestAdaptBuilder.getType(false), Tools.getToken(context));
+//            }
+//        });
     }
 
     @Override
     public void onClickRepliesCallback(FeedItem feedItem) {
-        this.feedItem = feedItem;
-
-        setClickReplyCallback(0);
-
-        replyAdapter = new ReplyAdapter(context, feedItem.getReplies());
-        recyclerRepliesView.setAdapter(replyAdapter);
-
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
-        recyclerRepliesView.setLayoutManager(linearLayoutManager);
-
-        cardRepliesLayoutView.setVisibility(View.VISIBLE);
+//        this.feedItem = feedItem;
+//
+//        setClickReplyCallback(0);
+//
+//        replyAdapter = new ReplyAdapter(context, feedItem.getReplies());
+//        binding.homeFeedItemReplies.setAdapter(replyAdapter);
+//
+//        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
+//        binding.homeFeedItemReplies.setLayoutManager(linearLayoutManager);
+//
+//        binding.homeRepliesLayout.setVisibility(View.VISIBLE);
     }
 
     public class FeedItemDecoration extends RecyclerView.ItemDecoration {

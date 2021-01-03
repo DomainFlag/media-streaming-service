@@ -10,8 +10,8 @@ import android.media.MediaMetadataRetriever;
 import android.os.AsyncTask;
 import android.os.RemoteException;
 import android.provider.MediaStore;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.graphics.Palette;
+import androidx.core.content.ContextCompat;
+import androidx.palette.graphics.Palette;
 import android.util.Log;
 
 import com.example.cchiv.jiggles.R;

@@ -1,7 +1,7 @@
 package com.example.cchiv.jiggles.player.tools;
 
 import android.net.Uri;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.util.Log;
 
 import com.google.android.exoplayer2.C;

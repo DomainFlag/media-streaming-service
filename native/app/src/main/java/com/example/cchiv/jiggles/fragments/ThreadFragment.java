@@ -9,10 +9,10 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,6 +24,8 @@ import android.widget.TextView;
 
 import com.example.cchiv.jiggles.Constants;
 import com.example.cchiv.jiggles.R;
+import com.example.cchiv.jiggles.databinding.FragmentStoreLayoutBinding;
+import com.example.cchiv.jiggles.databinding.FragmentThreadLayoutBinding;
 import com.example.cchiv.jiggles.model.Thread;
 import com.example.cchiv.jiggles.utilities.NetworkUtilities;
 import com.example.cchiv.jiggles.utilities.Tools;
@@ -34,9 +36,6 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -88,43 +87,42 @@ public class ThreadFragment extends Fragment {
     public void onAttachThreadCreationCallback(OnThreadCreationCallback onThreadCreationCallback) {
         this.onThreadCreationCallback = onThreadCreationCallback;
     }
-
-    @BindView(R.id.thread_account) ImageView imageThreadAccountView;
+    
+    private FragmentThreadLayoutBinding binding;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        rootView = inflater.inflate(R.layout.fragment_thread_layout, container, false);
-
-        ButterKnife.bind(this, rootView);
+        binding = FragmentThreadLayoutBinding.inflate(inflater, container, false);
+        View rootView = binding.getRoot();
 
         Tools.resolveCallbackUser(user -> {
             Picasso.get()
                     .load(user.getCaption())
                     .placeholder(R.drawable.ic_account)
                     .error(R.drawable.ic_account)
-                    .into(imageThreadAccountView);
+                    .into(binding.threadAccount);
         });
 
-        rootView.findViewById(R.id.thread_close).setOnClickListener(view -> {
+        binding.threadClose.setOnClickListener(view -> {
             FragmentManager fragmentManager = getFragmentManager();
 
             if(fragmentManager != null)
                 fragmentManager.beginTransaction().remove(this).commit();
         });
 
-        rootView.findViewById(R.id.thread_caption_close).setOnClickListener(view -> {
+        binding.threadCaptionClose.setOnClickListener(view -> {
             ((ImageView) rootView.findViewById(R.id.thread_caption)).setImageBitmap(null);
             (rootView.findViewById(R.id.thread_caption_layout)).setVisibility(View.GONE);
         });
 
-        rootView.findViewById(R.id.thread_upload_media).setOnClickListener((view) -> {
+        binding.threadUploadMedia.setOnClickListener((view) -> {
             Intent intent = new Intent(Intent.ACTION_PICK);
             intent.setType("image/*");
             startActivityForResult(Intent.createChooser(intent, "Select Thumbnail"), ACTION_PICK_CODE);
         });
 
-        rootView.findViewById(R.id.thread_edit_submit).setOnClickListener((view) -> {
+        binding.threadEditSubmit.setOnClickListener((view) -> {
             BitmapDrawable bitmapDrawable = (BitmapDrawable) ((ImageView) rootView.findViewById(R.id.thread_caption)).getDrawable();
             Bitmap bitmap = null;
             if(bitmapDrawable != null)

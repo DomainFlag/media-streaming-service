@@ -2,14 +2,13 @@ package com.example.cchiv.jiggles.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.appcompat.app.AppCompatActivity;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.example.cchiv.jiggles.R;
+import com.example.cchiv.jiggles.databinding.PlayerBarLayoutBinding;
 import com.example.cchiv.jiggles.interfaces.RemoteMediaCallback;
 import com.example.cchiv.jiggles.model.player.PlayerState;
 import com.example.cchiv.jiggles.model.player.Store;
@@ -19,8 +18,6 @@ import com.example.cchiv.jiggles.services.PlayerConnection;
 import com.example.cchiv.jiggles.services.PlayerService;
 import com.google.android.exoplayer2.Player;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 public abstract class PlayerAppCompatActivity extends AppCompatActivity implements
         PlayerConnection.PlayerServiceConnection, RemoteMediaCallback {
@@ -28,17 +25,16 @@ public abstract class PlayerAppCompatActivity extends AppCompatActivity implemen
     private static final String TAG = "PlayerAppCompatActivity";
 
     private PlayerConnection playerConnection;
-
-    @BindView(R.id.home_player) View barPlayerLayout;
-    @BindView(R.id.home_player_title) TextView barPlayerTitle;
-    @BindView(R.id.home_player_controller) ImageView barPlayerController;
+    private PlayerBarLayoutBinding binding;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         onCreateActivity(savedInstanceState);
 
-        ButterKnife.bind(this);
+        binding = PlayerBarLayoutBinding.inflate(getLayoutInflater());
+        // TODO(0): Should we keep it that way?
+        // setContentView(binding.getRoot());
 
         playerConnection = new PlayerConnection(this);
         playerConnection.onStartService(null);
@@ -49,7 +45,7 @@ public abstract class PlayerAppCompatActivity extends AppCompatActivity implemen
 
         if(player == null) {
             // no active player
-            barPlayerLayout.setVisibility(View.GONE);
+            binding.homePlayer.setVisibility(View.GONE);
         } else {
             PlayerState playerState = mediaPlayer.getPlayerState();
             Store store = playerState.getStore();
@@ -57,26 +53,26 @@ public abstract class PlayerAppCompatActivity extends AppCompatActivity implemen
             Track track = store.getTrack(playerState.getPosition());
 
             // setting the title and intent action
-            barPlayerTitle.setText(getString(R.string.home_bar_title, track.getArtistName(), track.getName()));
-            barPlayerTitle.setOnClickListener((view) -> {
+            binding.homePlayerTitle.setText(getString(R.string.home_bar_title, track.getArtistName(), track.getName()));
+            binding.homePlayerTitle.setOnClickListener((view) -> {
                 Intent intent = new Intent(this, PlayerActivity.class);
 
                 startActivity(intent);
             });
 
             // set PlayerBar's background color
-            barPlayerLayout.setBackgroundColor(track.getColor(this));
+            binding.homePlayer.setBackgroundColor(track.getColor(this));
 
             boolean state = playerState.isPlaying;
             int controlDrawableResource = state ? R.drawable.exo_controls_pause : R.drawable.exo_controls_play;
 
-            barPlayerController.setImageDrawable(ContextCompat.getDrawable(this, controlDrawableResource));
+            binding.homePlayerController.setImageDrawable(ContextCompat.getDrawable(this, controlDrawableResource));
 
-            barPlayerController.setOnClickListener((view) -> {
+            binding.homePlayerController.setOnClickListener((view) -> {
                 mediaPlayer.toggle(state);
             });
 
-            barPlayerLayout.setVisibility(View.VISIBLE);
+            binding.homePlayer.setVisibility(View.VISIBLE);
         }
     }
 

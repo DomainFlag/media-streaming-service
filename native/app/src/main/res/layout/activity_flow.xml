@@ -69,7 +69,7 @@
                 android:textColor="@color/iconsTextColor"
                 android:text="@string/flow_genre"/>
 
-            <android.support.v7.widget.RecyclerView
+            <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/flow_list"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"

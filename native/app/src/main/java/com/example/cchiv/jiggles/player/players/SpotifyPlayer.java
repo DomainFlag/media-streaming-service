@@ -1,7 +1,7 @@
 package com.example.cchiv.jiggles.player.players;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.util.Log;
 
 import com.example.cchiv.jiggles.Constants;

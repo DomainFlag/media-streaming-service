@@ -4,8 +4,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.appcompat.app.AppCompatActivity;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
@@ -21,6 +21,8 @@ import android.widget.TextView;
 
 import com.example.cchiv.jiggles.Constants;
 import com.example.cchiv.jiggles.R;
+import com.example.cchiv.jiggles.databinding.ActivityAuthBinding;
+import com.example.cchiv.jiggles.databinding.PlayerBarLayoutBinding;
 import com.example.cchiv.jiggles.model.User;
 import com.example.cchiv.jiggles.utilities.NetworkUtilities;
 import com.facebook.AccessToken;
@@ -37,9 +39,6 @@ import org.json.JSONException;
 
 import java.util.Collections;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 public class AuthActivity extends AppCompatActivity {
 
     private static final String TAG = "AuthActivity";
@@ -50,32 +49,8 @@ public class AuthActivity extends AppCompatActivity {
     private Typeface typeface;
 
     private String authType = null;
-
-    @BindView(R.id.auth_facebook) ImageView imageFacebookView;
-    @BindView(R.id.auth_spotify) ImageView imageSpotifyView;
-    @BindView(R.id.auth_social_layout) RelativeLayout relativeSocialLayout;
-    @BindView(R.id.auth_social_profile_picture) ImageView imageSocialProfileView;
-    @BindView(R.id.auth_social_greetings) TextView textSocialGreetingsView;
-    @BindView(R.id.auth_social_profile_email) TextView textSocialProfileView;
-
-    @BindView(R.id.auth_social_header) TextView textSocialHeaderView;
-    @BindView(R.id.auth_error) TextView textErrorView;
-
-    @BindView(R.id.auth_email_container) LinearLayout linearEmailLayout;
-    @BindView(R.id.auth_email_value) EditText editEmailText;
-
-    @BindView(R.id.auth_name_container) LinearLayout linearNameLayout;
-    @BindView(R.id.auth_name_value) EditText editNameText;
-
-    @BindView(R.id.auth_password_container) LinearLayout linearPasswordLayout;
-    @BindView(R.id.auth_password_value) EditText editPasswordText;
-
-    @BindView(R.id.auth_password_repeat_container) LinearLayout linearPasswordRepeatLayout;
-    @BindView(R.id.auth_password_repeat_value) EditText editPasswordRepeatText;
-
-    @BindView(R.id.auth_remember_me) CheckBox checkRememberMeBox;
-    @BindView(R.id.auth_action) Button buttonActionView;
-    @BindView(R.id.auth_redirection) TextView textRedirectionView;
+    
+    private ActivityAuthBinding binding;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -87,9 +62,9 @@ public class AuthActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_auth);
 
-        ButterKnife.bind(this);
+        binding = ActivityAuthBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         typeface = Typeface.createFromAsset(getAssets(), "fonts/Brandon_bld.otf");
 
@@ -102,14 +77,14 @@ public class AuthActivity extends AppCompatActivity {
         if(email != null) {
             user.setName(email);
 
-            editEmailText.setText(email);
+            binding.authEmailValue.setText(email);
         }
 
-        imageFacebookView.setOnClickListener(view -> {
+        binding.authFacebook.setOnClickListener(view -> {
             setFacebookAuth();
         });
 
-        imageSpotifyView.setOnClickListener(view -> {
+        binding.authSpotify.setOnClickListener(view -> {
             // TODO(0) Spotify Auth
         });
 
@@ -123,10 +98,10 @@ public class AuthActivity extends AppCompatActivity {
 
         if(!user.social) {
             if(user.getEmail() == null || user.getEmail().isEmpty())
-                user.setEmail(editEmailText.getText().toString());
+                user.setEmail(binding.authEmailValue.getText().toString());
 
             if(user.getName() == null || user.getName().isEmpty()) {
-                user.setName(editNameText.getText().toString());
+                user.setName(binding.authNameValue.getText().toString());
             }
         }
 
@@ -153,12 +128,12 @@ public class AuthActivity extends AppCompatActivity {
                             Intent intent = new Intent(this, HomeActivity.class);
                             startActivity(intent);
                         } else {
-                            textErrorView.setText(getString(R.string.auth_error_auth_resolved));
+                            binding.authError.setText(getString(R.string.auth_error_auth_resolved));
                         }
                     }, authType, user);
         } else {
             // Error message to show
-            textErrorView.setText(getString(R.string.auth_error, "Please enter a valid email or password"));
+            binding.authError.setText(getString(R.string.auth_error, "Please enter a valid email or password"));
         }
     }
 
@@ -196,14 +171,14 @@ public class AuthActivity extends AppCompatActivity {
 
                 @Override
                 public void onCancel() {
-                    textErrorView.setVisibility(View.VISIBLE);
-                    textErrorView.setText(getString(R.string.auth_error_cancel));
+                    binding.authError.setVisibility(View.VISIBLE);
+                    binding.authError.setText(getString(R.string.auth_error_cancel));
                 }
 
                 @Override
                 public void onError(FacebookException exception) {
-                    textErrorView.setVisibility(View.VISIBLE);
-                    textErrorView.setText(getString(R.string.auth_error, exception.toString()));
+                    binding.authError.setVisibility(View.VISIBLE);
+                    binding.authError.setText(getString(R.string.auth_error, exception.toString()));
                 }
             });
         }
@@ -241,29 +216,29 @@ public class AuthActivity extends AppCompatActivity {
 
     private void changeSocialState() {
         if(user.social) {
-            relativeSocialLayout.setVisibility(View.VISIBLE);
+            binding.authSocialLayout.setVisibility(View.VISIBLE);
 
             Picasso.get()
                     .load(user.getCaption())
                     .error(R.drawable.ic_account)
                     .placeholder(R.drawable.ic_account)
-                    .into(imageSocialProfileView);
+                    .into(binding.authSocialProfilePicture);
 
             String[] names = user.getNames();
-            textSocialGreetingsView.setText(getString(R.string.auth_social_greetings, names[0], names[1]));
-            textSocialProfileView.setText(getString(R.string.auth_social_email, user.getEmail()));
+            binding.authSocialGreetings.setText(getString(R.string.auth_social_greetings, names[0], names[1]));
+            binding.authSocialProfileEmail.setText(getString(R.string.auth_social_email, user.getEmail()));
 
-            linearEmailLayout.setVisibility(View.GONE);
-            linearNameLayout.setVisibility(View.GONE);
+            binding.authEmailContainer.setVisibility(View.GONE);
+            binding.authNameContainer.setVisibility(View.GONE);
         } else {
-            relativeSocialLayout.setVisibility(View.GONE);
+            binding.authSocialLayout.setVisibility(View.GONE);
 
-            linearEmailLayout.setVisibility(View.VISIBLE);
+            binding.authEmailContainer.setVisibility(View.VISIBLE);
 
             Intent intent = getIntent();
             authType = intent.getStringExtra(Constants.AUTH_TYPE_KEY);
             if(authType != null && authType.equals(Constants.AUTH_SIGN_UP)) {
-                linearNameLayout.setVisibility(View.VISIBLE);
+                binding.authNameContainer.setVisibility(View.VISIBLE);
             }
         }
     }
@@ -285,8 +260,8 @@ public class AuthActivity extends AppCompatActivity {
                             getString(R.string.auth_redirection_sign_up)
                     );
 
-                    linearNameLayout.setVisibility(View.GONE);
-                    linearPasswordRepeatLayout.setVisibility(View.GONE);
+                    binding.authNameContainer.setVisibility(View.GONE);
+                    binding.authPasswordRepeatContainer.setVisibility(View.GONE);
                     break;
                 }
                 case Constants.AUTH_SIGN_UP : {
@@ -307,8 +282,8 @@ public class AuthActivity extends AppCompatActivity {
             }
 
             if(authTypeText != null) {
-                textSocialHeaderView.setText(getString(R.string.auth_social_header, authTypeText));
-                buttonActionView.setText(authTypeText);
+                binding.authSocialHeader.setText(getString(R.string.auth_social_header, authTypeText));
+                binding.authAction.setText(authTypeText);
             }
 
             if(authRedirectionText != null) {
@@ -324,8 +299,8 @@ public class AuthActivity extends AppCompatActivity {
                         spannableString.length(),
                         Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-                textRedirectionView.setText(spannableString);
-                textRedirectionView.setTypeface(typeface);
+                binding.authRedirection.setText(spannableString);
+                binding.authRedirection.setTypeface(typeface);
             }
         }
 

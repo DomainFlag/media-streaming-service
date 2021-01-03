@@ -5,6 +5,7 @@ node_modules/
 
 playground/
 model/
+libraries/
 
 native/spotify-app-remote
 native/spotify-auth-release

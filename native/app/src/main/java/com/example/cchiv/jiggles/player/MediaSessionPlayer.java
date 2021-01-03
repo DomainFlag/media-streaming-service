@@ -8,9 +8,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.media.session.MediaButtonReceiver;
+import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
+import androidx.media.session.MediaButtonReceiver;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
@@ -122,7 +122,7 @@ public class MediaSessionPlayer {
         Notification notification = new NotificationCompat.Builder(context, NOTIFICATION_PLAYER_CONTROLLER)
                 .setContentTitle(track.getName())
                 .setColorized(true)
-                .setStyle(new android.support.v4.media.app.NotificationCompat.MediaStyle()
+                .setStyle(new androidx.media.app.NotificationCompat.MediaStyle()
                         .setShowActionsInCompactView(0))
                 .setColor(track.getColor(context))
                 .setContentText(track.getArtistName())
@@ -134,7 +134,7 @@ public class MediaSessionPlayer {
                 .setContentIntent(contentPendingIntent)
                 .addAction(restartAction)
                 .addAction(playbackAction)
-                .setStyle(new android.support.v4.media.app.NotificationCompat.MediaStyle()
+                .setStyle(new androidx.media.app.NotificationCompat.MediaStyle()
                         .setMediaSession(mediaSessionCompat.getSessionToken())
                         .setShowActionsInCompactView(0, 1))
                 .build();

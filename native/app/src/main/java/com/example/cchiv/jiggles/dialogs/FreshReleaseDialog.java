@@ -6,11 +6,11 @@ import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +18,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.cchiv.jiggles.R;
+import com.example.cchiv.jiggles.databinding.DialogFreshLayoutBinding;
+import com.example.cchiv.jiggles.databinding.FragmentThreadLayoutBinding;
 import com.example.cchiv.jiggles.model.Release;
 import com.example.cchiv.jiggles.utilities.Tools;
 import com.squareup.picasso.Picasso;
@@ -25,27 +27,17 @@ import com.squareup.picasso.Target;
 
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 public class FreshReleaseDialog extends DialogFragment {
 
     private static final String TAG = "FreshReleaseDialog";
+    private DialogFreshLayoutBinding binding;
 
     public interface OnActionClickRelease {
         void onClickRelease(Release release);
     }
 
     private View rootView;
-
-    @BindView(R.id.dialog_fresh_title) TextView textTitleView;
-
-    @BindView(R.id.dialog_release_title) TextView textReleaseTitleView;
-    @BindView(R.id.dialog_release_artist) TextView textReleaseArtistView;
-    @BindView(R.id.dialog_fresh_caption) ImageView textReleaseArtView;
-    @BindView(R.id.dialog_release_impact) ImageView textReleaseImpactView;
-    @BindView(R.id.dialog_release_score) TextView textReleaseScoreView;
-    @BindView(R.id.dialog_release_action) View textReleaseActionView;
 
     @NonNull
     @Override
@@ -58,7 +50,8 @@ public class FreshReleaseDialog extends DialogFragment {
             LayoutInflater inflater = fragmentActivity.getLayoutInflater();
 
             // Pass null as the parent view because its going in the dialog layout
-            rootView = inflater.inflate(R.layout.dialog_fresh_layout, null, false);
+            binding = DialogFreshLayoutBinding.inflate(inflater, null, false);
+            rootView = binding.getRoot();
 
             rootView.setVisibility(View.GONE);
             rootView.setOnClickListener(view -> dismiss());
@@ -67,8 +60,6 @@ public class FreshReleaseDialog extends DialogFragment {
 
             // Inflate and set the layout for the dialog
             builder.setView(rootView);
-
-            ButterKnife.bind(this, rootView);
         } else {
             setShowsDialog(false);
             dismiss();
@@ -95,19 +86,19 @@ public class FreshReleaseDialog extends DialogFragment {
         Release release = releases.get(0);
 
         // Title
-        textTitleView.setText(getString(R.string.dialog_fresh_title, "album"));
+        binding.dialogFreshTitle.setText(getString(R.string.dialog_fresh_title, "album"));
 
         // Metadata
-        textReleaseTitleView.setText(release.getTitle());
-        textReleaseArtistView.setText(getString(R.string.app_component_author, release.getArtist()));
+        binding.dialogReleaseTitle.setText(release.getTitle());
+        binding.dialogReleaseArtist.setText(getString(R.string.app_component_author, release.getArtist()));
 
         // Action
-        textReleaseActionView.setOnClickListener(view -> onActionClickRelease.onClickRelease(release));
+        binding.dialogReleaseAction.setOnClickListener(view -> onActionClickRelease.onClickRelease(release));
 
         // Score
         Tools.ScoreView scoreView = new Tools.ScoreView(
-                textReleaseScoreView,
-                textReleaseImpactView
+                binding.dialogReleaseScore,
+                binding.dialogReleaseImpact
         );
         Tools.onComputeScore(getActivity(), release.getReviews(), scoreView);
 
@@ -117,7 +108,7 @@ public class FreshReleaseDialog extends DialogFragment {
                 .into(new Target() {
                     @Override
                     public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                        textReleaseArtView.setImageBitmap(bitmap);
+                        binding.dialogFreshCaption.setImageBitmap(bitmap);
 
                         rootView.setVisibility(View.VISIBLE);
                     }

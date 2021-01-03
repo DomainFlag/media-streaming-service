@@ -7,7 +7,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <android.support.v7.widget.CardView
+    <androidx.cardview.widget.CardView
         android:id="@+id/feature_highlight_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -19,15 +19,15 @@
             android:layout_height="wrap_content"
             android:background="@drawable/background_transparent_gradient"/>
 
-    </android.support.v7.widget.CardView>
+    </androidx.cardview.widget.CardView>
 
-    <android.support.v7.widget.CardView
+    <androidx.cardview.widget.CardView
         android:orientation="vertical"
         android:layout_margin="@dimen/activity_margin_relative"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -91,7 +91,7 @@
                     android:textSize="@dimen/activity_text_subparagraph"
                     android:textStyle="bold"/>
 
-                <android.support.v7.widget.RecyclerView
+                <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/feature_other"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -99,8 +99,8 @@
 
             </LinearLayout>
 
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </android.support.v7.widget.CardView>
+    </androidx.cardview.widget.CardView>
 
 </LinearLayout>
